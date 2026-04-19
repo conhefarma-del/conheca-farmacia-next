@@ -318,7 +318,7 @@ Utilizadores autenticados (admin, editors).
 
 ## 📧 Contacto & Suporte
 
-- **Email**: contato@conhecafarmacia.pt
+- **Email**: conhecerfarmacia@gmail.com
 - **Issues**: https://github.com/seu-user/conheca-farmacia/issues
 - **Documentação**: Consulte as Guidelines em `src/content/`
 
