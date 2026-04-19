@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Conexão Supabase - Conheça Farmácia</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #00493a;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-left: 4px solid #ddd;
+            background: #fafafa;
+        }
+        .test-section.pass {
+            border-left-color: #0a844f;
+            background: #f0f9f6;
+        }
+        .test-section.fail {
+            border-left-color: #dc2626;
+            background: #fef2f2;
+        }
+        .test-section.loading {
+            border-left-color: #006171;
+            background: #f0f9fb;
+        }
+        .status {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .status.pass { color: #0a844f; }
+        .status.fail { color: #dc2626; }
+        .status.loading { color: #006171; }
+        .output {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            color: #333;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        button {
+            background: #00493a;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        button:hover {
+            background: #003328;
+        }
+        .results {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            display: none;
+        }
+        .results.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Teste de Conexão Supabase</h1>
+
+        <div class="test-section">
+            <div class="status loading">⏳ Verificando Supabase Library...</div>
+            <div id="library-check" class="output">Aguardando...</div>
+        </div>
+
+        <div class="test-section">
+            <div class="status loading">⏳ Verificando Cliente Supabase...</div>
+            <div id="client-check" class="output">Aguardando...</div>
+        </div>
+
+        <div class="test-section">
+            <div class="status loading">⏳ Testando Inscrição...</div>
+            <div id="inscription-check" class="output">Aguardando...</div>
+        </div>
+
+        <button onclick="runTests()">Iniciar Testes</button>
+
+        <div id="results" class="results">
+            <h3>📊 Resultados</h3>
+            <div id="results-content"></div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        async function runTests() {
+            console.clear();
+            console.log('🧪 Iniciando testes...');
+
+            // Teste 1: Library check
+            const libraryCheck = document.getElementById('library-check');
+
+            // Aguardar até 5 segundos pelo Supabase
+            let attempts = 0;
+            while (!window.supabase && attempts < 50) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+                attempts++;
+            }
+
+            if (window.supabase && typeof window.supabase.from === 'function') {
+                libraryCheck.textContent = '✅ Supabase library carregada com sucesso';
+                libraryCheck.parentElement.className = 'status pass';
+            } else {
+                libraryCheck.textContent = '❌ Supabase library não foi carregada\n\nVerifique:\n1. Console do navegador (F12)\n2. Conexão com internet\n3. Se o CDN está acessível';
+                libraryCheck.parentElement.className = 'status fail';
+                return;
+            }
+
+            // Teste 2: Client check
+            await new Promise(resolve => setTimeout(resolve, 500));
+            const clientCheck = document.getElementById('client-check');
+
+            if (window.supabase && window.SUPABASE_CONFIG) {
+                clientCheck.textContent = `✅ Cliente Supabase inicializado
+URL: ${window.SUPABASE_CONFIG.url}
+Anon Key: ${window.SUPABASE_CONFIG.anonKey.substring(0, 30)}...`;
+                clientCheck.parentElement.className = 'status pass';
+            } else {
+                clientCheck.textContent = '❌ Cliente não inicializado';
+                clientCheck.parentElement.className = 'status fail';
+                return;
+            }
+
+            // Teste 3: Test inscription
+            await new Promise(resolve => setTimeout(resolve, 500));
+            const inscriptionCheck = document.getElementById('inscription-check');
+
+            try {
+                inscriptionCheck.textContent = '⏳ Tentando inserir inscrição de teste...';
+                inscriptionCheck.parentElement.className = 'status loading';
+
+                const testData = {
+                    nome: 'Teste Diagnóstico ' + new Date().getTime(),
+                    email: 'teste@exemplo.com',
+                    telefone: '+244 900 000 000',
+                    profissao: 'farmaceutico',
+                    origem_evento: 'teste',
+                    evento_slug: 'teste-diagnostico'
+                };
+
+                console.log('📝 Inserindo dados de teste:', testData);
+
+                const { data, error } = await window.supabase
+                    .from('inscricoes')
+                    .insert([testData]);
+
+                if (error) {
+                    console.error('Erro completo:', error);
+                    throw error;
+                }
+
+                console.log('✅ Sucesso:', data);
+
+                inscriptionCheck.textContent = `✅ Inscrição de teste inserida com sucesso!
+ID: ${data[0]?.id || 'N/A'}
+Timestamp: ${new Date().toLocaleString('pt-PT')}
+
+Verifique em: https://app.supabase.com/project/tbqsazriorqzexjwhekw/editor/62`;
+                inscriptionCheck.parentElement.className = 'status pass';
+
+                // Show results
+                const results = document.getElementById('results');
+                const resultsContent = document.getElementById('results-content');
+                results.className = 'results show';
+                resultsContent.innerHTML = `
+                    <p>✅ Todos os testes passaram!</p>
+                    <p><strong>Próximos passos:</strong></p>
+                    <ol>
+                        <li>Verifique a tabela 'inscricoes' no Supabase para confirmar o registo</li>
+                        <li>Tente inscrever-se em um evento real</li>
+                        <li>Consulte o console do navegador (F12) para mais detalhes</li>
+                    </ol>
+                `;
+
+            } catch (error) {
+                console.error('Erro:', error);
+                inscriptionCheck.textContent = `❌ Erro ao inserir inscrição:
+Tipo: ${error.code || 'Desconhecido'}
+Mensagem: ${error.message}
+
+Possíveis causas:
+1. Tabela 'inscricoes' não foi criada
+2. RLS Policies incorretas
+3. Chave ANON_KEY é inválida ou está a usar PUBLISHABLE_KEY
+4. Problema de conexão
+
+Verifique a chave no config.js - deve começar com "eyJhbGc..."`;
+                inscriptionCheck.parentElement.className = 'status fail';
+
+                // Show error results
+                const results = document.getElementById('results');
+                const resultsContent = document.getElementById('results-content');
+                results.className = 'results show';
+                resultsContent.innerHTML = `
+                    <p>❌ Erro encontrado</p>
+                    <p><strong>Debug Console:</strong></p>
+                    <pre style="background: #f0f0f0; padding: 10px; border-radius: 4px; overflow-x: auto;">${error.message}</pre>
+                `;
+            }
+
+            console.log('✅ Testes concluídos');
+        }
+
+        // Log initial info
+        console.log('🧪 Página de diagnóstico carregada');
+        console.log('Clique em "Iniciar Testes" para começar');
+    </script>
+</body>
+</html>
