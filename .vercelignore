@@ -1,0 +1,56 @@
+# Node modules
+node_modules/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Documentação
+*.md
+README.md
+DIAGNOSTICO.md
+DUPLICATE_INSCRIPTION_PROTECTION.md
+CAPACITY_SYNCHRONIZATION.md
+FORM_VALIDATION_GUIDE.md
+EMAIL_TEMPLATE_DOCS.md
+INSCRIPTION_SETUP.md
+RESEND_EDGE_FUNCTIONS_SETUP.md
+GIT_SETUP_INSTRUCTIONS.md
+
+# Supabase
+supabase/
+SUPABASE_MIGRATION.sql
+
+# Config
+.env
+.env.local
+.env.*.local
+.openclaude/
+.prettierrc
+
+# Testes
+test-inscription.html
+teste-final.html
+diagnostico.html
+
+# Documentação interna
+Prompt.txt
+"Conheça Farmácia Website.txt"
+"Sobre o CF.txt"
+instructions.md
+conheca_farmacia_style_guide.html
+
+# Planos e agentes
+.claude/
+
+# Lock files (optional - Vercel handles)
+package-lock.json
+
+# Source files
+src/input.css
