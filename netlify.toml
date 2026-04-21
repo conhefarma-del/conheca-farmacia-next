@@ -1,0 +1,60 @@
+[build]
+  command = "npm run build"
+  publish = "."
+
+[[redirects]]
+  from = "/artigos"
+  to = "/artigos.html"
+  status = 200
+
+[[redirects]]
+  from = "/artigos/:id"
+  to = "/artigo.html?id=:id"
+  status = 200
+
+[[redirects]]
+  from = "/artigo"
+  to = "/artigo.html"
+  status = 200
+
+[[redirects]]
+  from = "/eventos"
+  to = "/eventos.html"
+  status = 200
+
+[[redirects]]
+  from = "/eventos/:id"
+  to = "/evento.html?id=:id"
+  status = 200
+
+[[redirects]]
+  from = "/evento"
+  to = "/evento.html"
+  status = 200
+
+[[redirects]]
+  from = "/inscricao"
+  to = "/inscricao.html"
+  status = 200
+
+[[redirects]]
+  from = "/sobre"
+  to "/sobre.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, s-maxage=3600"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+
+[[headers]]
+  for = "/dist/output.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
