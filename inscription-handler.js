@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Validar se o slug foi encontrado
             if (!eventSlug || eventSlug.trim() === '') {
                 console.error('❌ data-event-slug não foi encontrado no botão');
-                alert('Erro: Não foi possível identificar o evento. Por favor, tente novamente.');
+                ErrorHandler.handle(new Error('data-event-slug não foi encontrado'), 'TOAST', 'Erro: Não foi possível identificar o evento. Por favor, tente novamente.');
                 return;
             }
 

@@ -11,7 +11,7 @@ async function loadArticle() {
     const articleId = params.get('id');
 
     if (!articleId) {
-        document.body.innerHTML = '<div class="container-center py-20 text-center"><h1>Artigo não encontrado</h1></div>';
+        ErrorHandler.handle(new Error('ID do artigo não fornecido'), 'PAGE', 'Artigo não encontrado');
         return;
     }
 
@@ -31,8 +31,7 @@ async function loadArticle() {
         const article = catalog.articles.find(a => a.id == articleId);
 
         if (!article) {
-            console.error('Artigo não encontrado. ID:', articleId);
-            document.body.innerHTML = '<div class="container-center py-20 text-center"><h1>Artigo não encontrado</h1></div>';
+            ErrorHandler.handle(new Error(`Artigo com ID ${articleId} não encontrado`), 'PAGE', 'Artigo não encontrado');
             return;
         }
 
@@ -107,9 +106,7 @@ async function loadArticle() {
         document.title = `${article.title} - Conheça Farmácia`;
 
     } catch (error) {
-        console.error('Erro ao carregar artigo:', error);
-        // SECURITY: Não expor error.message ao utilizador (Information Disclosure)
-        document.body.innerHTML = `<div class="container-center py-20 text-center"><h1>Desculpe, artigo não disponível</h1><p>Não conseguimos carregar este artigo neste momento. Por favor, tente novamente mais tarde ou contacte o suporte.</p></div>`;
+        ErrorHandler.handle(error, 'PAGE', 'Desculpe, artigo não disponível');
     }
 }
 

@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const email = document.getElementById('newsletter-email').value;
         console.log('Newsletter signup:', email);
-        alert('Obrigado por se inscrever! Verificaremos em breve');
+        ErrorHandler.handle(new Error('Newsletter signup'), 'TOAST', 'Obrigado por se inscrever! Verificaremos em breve');
         newsletterForm.reset();
     });
 
@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
             renderEvents();
         } catch (error) {
             console.error('Erro ao carregar catálogo de eventos:', error);
-            alert('Não foi possível carregar os eventos neste momento. Por favor, recarregue a página e tente novamente.');
+            ErrorHandler.handle(error, 'TOAST', 'Não foi possível carregar os eventos neste momento.');
         }
     }
 

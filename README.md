@@ -32,7 +32,7 @@ Este WebApp foi construído sob o paradigma **"Security-First"**, garantindo que
 | **Backend** | Supabase (PostgreSQL, Auth, Edge Functions) | Banco de dados e API serverless |
 | **Segurança** | DOMPurify | Sanitização de XSS |
 | **Email** | Resend | Transações de email |
-| **Deployment** | GitHub Pages / Vercel | Hospedagem estática e CI/CD |
+| **Deployment** | Netlify | Hospedagem estática e CI/CD |
 
 ---
 

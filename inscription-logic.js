@@ -185,6 +185,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Show error message
     function showError(message) {
         console.error('❌ Erro:', message);
+        ErrorHandler.handle(new Error(message), 'TOAST', message);
         errorContainer.classList.remove('hidden');
         document.getElementById('error-message').textContent = message;
 

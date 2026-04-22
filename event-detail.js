@@ -227,6 +227,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     } catch (error) {
         console.error('Erro ao carregar detalhe do evento:', error);
+        ErrorHandler.handle(error, 'LOG', 'Erro ao carregar detalhe do evento');
         eventNotFound.classList.remove('hidden');
     }
 

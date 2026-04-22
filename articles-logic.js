@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
             renderArticles();
         } catch (error) {
             console.error('Erro ao carregar catálogo de artigos:', error);
-            alert('Não foi possível carregar os artigos neste momento. Por favor, recarregue a página e tente novamente.');
+            ErrorHandler.handle(error, 'TOAST', 'Não foi possível carregar os artigos neste momento.');
         }
     }
 

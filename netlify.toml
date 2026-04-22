@@ -39,7 +39,7 @@
 
 [[redirects]]
   from = "/sobre"
-  to "/sobre.html"
+  to = "/sobre.html"
   status = 200
 
 [[headers]]
@@ -47,7 +47,10 @@
   [headers.values]
     Cache-Control = "public, max-age=3600, s-maxage=3600"
     X-Content-Type-Options = "nosniff"
-    X-Frame-Options = "SAMEORIGIN"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://*.supabase.co; connect-src 'self' https://*.supabase.co; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;"
 
 [[headers]]
   for = "/dist/output.css"
