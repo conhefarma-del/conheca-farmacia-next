@@ -208,11 +208,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ==========================================
     // SERVER-SIDE VALIDATION: Edge Function call
     // ==========================================
+    // ==========================================
+    // SERVER-SIDE VALIDATION: Edge Function call
+    // ==========================================
     async function validateWithEdgeFunction(data, honeypot) {
-        try {
-            const SUPABASE_URL = 'https://tbqsazriorqzexjwhekw.supabase.co';
-            const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/validate-inscription`;
+        const SUPABASE_URL = 'https://tbqsazriorqzexjwhekw.supabase.co';
+        const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/validate-inscription`;
 
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+        try {
             const response = await fetch(edgeFunctionUrl, {
                 method: 'POST',
                 headers: {
@@ -222,8 +228,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 body: JSON.stringify({
                     ...data,
                     honeypot: honeypot
-                })
+                }),
+                signal: controller.signal
             });
+
+            clearTimeout(timeoutId);
 
             const result = await response.json();
 
@@ -244,6 +253,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log('✅ Validação server-side passou com sucesso');
             return true;
         } catch (error) {
+            clearTimeout(timeoutId);
+            if (error.name === 'AbortError') {
+                throw new Error('A ligação ao servidor demorou demasiado tempo. Por favor, tente novamente.');
+            }
+            // Catch TypeError (CORS or Network issues)
+            if (error instanceof TypeError) {
+                console.error('⚠️ Erro de rede ou CORS detetado:', error);
+                throw new Error('Não foi possível contactar o servidor. Por favor, verifique a sua ligação ou tente mais tarde.');
+            }
             console.error('⚠️ Erro na validação server-side:', error);
             throw error;
         }
@@ -372,6 +390,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             showError(error.message || 'Não foi possível completar a sua inscrição neste momento. Por favor, tente novamente mais tarde ou contacte o suporte.');
+
+            // GARANTIA: Resetar o estado do botão independentemente do erro
             submitBtn.disabled = false;
             submitBtn.classList.remove('btn-loading');
             btnText.textContent = 'Confirmar Inscrição';
