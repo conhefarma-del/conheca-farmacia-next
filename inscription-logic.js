@@ -185,7 +185,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Show error message
     function showError(message) {
         console.error('❌ Erro:', message);
-        ErrorHandler.handle(new Error(message), 'TOAST', message);
         errorContainer.classList.remove('hidden');
         document.getElementById('error-message').textContent = message;
 
@@ -326,6 +325,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         console.log('📋 Dados do formulário (sanitizados):', data);
 
+        // ==========================================
+        // VALIDAÇÃO ANTES DO ENVIO: Garantir que nenhum campo é vazio
+        // ==========================================
+        const fieldsCheck = {
+            nome: data.nome,
+            email: data.email,
+            telefone: data.telefone,
+            profissao: data.profissao,
+            origem_evento: data.origem_evento,
+            evento_slug: data.evento_slug
+        };
+
+        for (const [field, value] of Object.entries(fieldsCheck)) {
+            if (!value || (typeof value === 'string' && value.trim() === '')) {
+                console.error(`❌ Campo vazio detectado: ${field}`);
+            } else {
+                console.log(`✓ ${field}: "${value}" (${value.length} caracteres)`);
+            }
+        }
+
         // Validar dados antes de enviar
         const validationErrors = validateFormData(data);
         if (validationErrors.length > 0) {
@@ -358,14 +377,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 console.error('Código:', error.code);
                 console.error('Mensagem:', error.message);
 
+                // Tratamento específico para erro de RLS (42501)
+                if (error.code === '42501') {
+                    console.error('ℹ️ ERRO RLS: Verifique os dados contra a política de segurança');
+                    throw new Error('A inscrição foi rejeitada pelas políticas de segurança. Verifique se preencheu todos os campos corretamente.');
+                }
+
                 // Tratamento específico para erro de duplicata
                 if (error.code === '23505' || error.message.includes('unique')) {
                     throw new Error('Já tem uma inscrição neste evento com este endereço de email. Se tem dúvidas, contacte-nos.');
-                }
-
-                // Tratamento para RLS (insuficiente permissão)
-                if (error.code === '42501' || error.message.includes('permission')) {
-                    throw new Error('Não foi possível completar a sua inscrição neste momento. Por favor, tente novamente mais tarde ou contacte o suporte.');
                 }
 
                 throw new Error(error.message || 'Erro ao salvar inscrição');
