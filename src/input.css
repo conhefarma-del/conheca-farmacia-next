@@ -51,16 +51,32 @@
     @apply hidden md:flex items-center gap-8;
   }
 
-  /* Mobile Menu Styles */
-  @media (max-width: 768px) {
-    .nav-links {
-      @apply fixed top-20 left-0 w-full bg-brand-bg flex-col items-center gap-6 py-10 transition-all duration-300 ease-in-out -translate-y-full opacity-0;
+/* Mobile Menu Styles */
+  @media (max-width: 768px) {                                                                          .nav-links {                                                                                 
+      @apply fixed top-[70px] left-0 w-full bg-brand-bg flex flex-col items-center shadow-xl
+             transition-all duration-500 ease-in-out -translate-y-10 opacity-0 invisible
+             pointer-events-none z-40;
+      padding: 0;
     }
 
     .nav-links.mobile-active {
-      @apply translate-y-0 opacity-100;
+      @apply translate-y-0 opacity-100 visible pointer-events-auto;
+    }
+
+    .nav-links li {
+      @apply w-full border-b border-brand-divider/10 text-center;
+    }
+
+    .nav-links li:last-child {
+      @apply border-b-0;
+    }
+
+    .nav-links li a {
+      @apply block w-full py-5 text-lg font-medium text-brand-deep
+             active:bg-brand-divider/5 transition-colors;
     }
   }
+
 
   .nav-links a {
     @apply text-brand-deep font-medium transition-colors duration-300 hover:text-brand-accent;
@@ -75,6 +91,7 @@
   }
 
   .hero-container {
+.hero-content {@apply text-center;}
     @apply w-full max-w-[1400px] mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center;
   }
 
@@ -103,7 +120,7 @@
   }
 
   .floating-card {
-    @apply absolute bottom-8 -left-8 md:-left-12 bg-white p-5 rounded-2xl shadow-md-soft flex flex-col gap-4 min-w-[220px];
+    @apply absolute bottom-0 left-0 -translate-x-0 -translate-y-0 md:-left-12 bg-white p-5 rounded-2xl shadow-md-soft flex flex-col gap-4 min-w-[220px];
   }
 
   .card-item {
@@ -180,37 +197,38 @@
   }
 
   /* Event Card */
-  .event-card {
-    @apply bg-white rounded-2xl overflow-hidden shadow-soft transition-all duration-300 hover:shadow-md-soft hover:-translate-y-2 flex flex-col h-full;
-  }
+/* Event Card Refatorado */
+.event-card {
+  @apply bg-white rounded-2xl overflow-hidden shadow-soft transition-all duration-300 
+         hover:shadow-md-soft hover:-translate-y-2 flex flex-col h-full border border-brand-divider/10;
+}
 
-  .event-card-header {
-    @apply relative h-48 overflow-hidden;
-  }
+.event-card-header {
+  @apply relative h-48 overflow-hidden;
+}
 
-  .event-card-img {
-    @apply w-full h-full object-cover;
-  }
+.event-card-image {
+  @apply w-full h-full object-cover;
+}
 
-  .event-badge {
-    @apply absolute top-4 left-4 text-xs font-bold px-3 py-1 rounded-full;
-  }
+/* Removido o absolute daqui para não flutuar sobre a imagem */
+.event-badge {
+  @apply text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider;
+}
 
-  .event-card-content {
-    @apply p-6 flex flex-col flex-grow;
-  }
+.event-card-content {
+  @apply p-6 flex flex-col flex-grow;
+}
 
-  .event-date {
-    @apply text-brand-accent font-bold text-sm mb-2 flex items-center gap-2;
-  }
+.event-card-title {
+  /* Reduzi um pouco a margem superior já que os badges agora estão acima */
+  @apply text-lg font-bold text-brand-deep mb-3 leading-tight;
+}
 
-  .event-card-title {
-    @apply text-xl font-bold text-brand-deep mb-3;
-  }
-
-  .event-card-desc {
-    @apply text-brand-deep/70 text-sm mb-6 line-clamp-2 flex-grow;
-  }
+/* Meta itens com melhor espaçamento */
+.event-meta-item {
+  @apply flex items-center gap-2 text-sm text-brand-deep/70 mb-1;
+}
 
   /* Stats Section */
   .stats-section {

@@ -3,6 +3,7 @@
 		"supabase": {
 			"type": "http",
 			"url": "https://mcp.supabase.com/mcp?project_ref=tbqsazriorqzexjwhekw"
+      		}
 		},
 		"io.github.github/github-mcp-server": {
 			"type": "stdio",
@@ -14,16 +15,14 @@
 				"-e",
 				"GITHUB_PERSONAL_ACCESS_TOKEN=${input:token}",
 				"ghcr.io/github/github-mcp-server:1.0.0"
-			],
-			"gallery": "https://api.mcp.github.com",
-			"version": "1.0.0"
+			]
 		}
 	},
 	"inputs": [
 		{
 			"id": "token",
 			"type": "promptString",
-			"description": "",
+			"description": "GitHub Personal Access Token",
 			"password": true
 		}
 	]

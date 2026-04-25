@@ -1,6 +1,6 @@
 ---
-title: "Workshop: Farmacologia Clínica Aplicada a Grupos de Risco"
-date: "2024-05-22"
+title: "Workshop: Farmacologia Clínica Aplicada — Módulo III"
+date: "2026-05-22"
 time: "09:00 - 14:00"
 location: "Procente, Avenida 21 de Janeiro"
 capacity: "60 Vagas"

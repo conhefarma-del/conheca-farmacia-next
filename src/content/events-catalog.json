@@ -1,7 +1,7 @@
 {
   "events": [
     {
-      "id": 1,
+      "id": "001-farmacologia-clinica",
       "slug": "001-farmacologia-clinica",
       "title": "Workshop: Farmacologia Clínica Aplicada — Módulo III",
       "excerpt": "Aprenda técnicas avançadas de acompanhamento clínico em contexto hospitalar. Três dias intensivos com especialistas.",
@@ -14,17 +14,16 @@
       "location": "Luanda, Angola",
       "type": "presencial",
       "capacity": 40,
-      "registered": 23,
       "host": {
         "name": "João Pedro",
         "role": "Farmacêutico · Palestrante",
         "organization": "UNILA"
       },
-      "image": "assets/content/events/Workshop - Farmacologia Clínica Aplicada III",
+      "image": "assets/content/events/workshop_farmacologia_capa.png",
       "registrationLink": "#"
     },
     {
-      "id": 2,
+      "id": "002-uso-racional-medicamentos",
       "slug": "002-uso-racional-medicamentos",
       "title": "Palestra: Uso Racional de Medicamentos para a Comunidade",
       "excerpt": "Explore estratégias de comunicação sobre uso seguro de medicamentos com o público. Aberto a profissionais e interessados.",
@@ -37,17 +36,16 @@
       "location": "Online",
       "type": "online",
       "capacity": 500,
-      "registered": 187,
       "host": {
         "name": "Ana Costa",
         "role": "Estudante · Colaboradora",
         "organization": "Conheça Farmácia"
       },
-      "image": "assets/content/events/Palestra - Uso Racional",
+      "image": "assets/content/events/palestra_uso_racional_capa.png",
       "registrationLink": "#"
     },
     {
-      "id": 3,
+      "id": "003-congresso-farmacia",
       "slug": "003-congresso-farmacia",
       "title": "Congresso: Excelência em Cuidado Farmacêutico 2026",
       "excerpt": "O maior evento anual reunindo profissionais de farmácia angolanos. Keynotes, workshops, networking e certificação.",
@@ -60,7 +58,6 @@
       "location": "Luanda, Angola",
       "type": "presencial",
       "capacity": 200,
-      "registered": 89,
       "host": {
         "name": "Maria Lima",
         "role": "Farmacêutica · Autora",
@@ -70,7 +67,7 @@
       "registrationLink": "#"
     },
     {
-      "id": 4,
+      "id": "004-live-covid-tratamento",
       "slug": "004-live-covid-tratamento",
       "title": "Live: COVID-19 e Novos Tratamentos — O que Mudou?",
       "excerpt": "Transmissão ao vivo discutindo atualizações sobre COVID-19 e opções terapêuticas emergentes. Perguntas em tempo real.",
@@ -83,7 +80,6 @@
       "location": "YouTube Live",
       "type": "online",
       "capacity": 5000,
-      "registered": 1203,
       "host": {
         "name": "João Pedro",
         "role": "Farmacêutico · Palestrante",
@@ -93,7 +89,7 @@
       "registrationLink": "#"
     },
     {
-      "id": 5,
+      "id": "005-webinar-interacoes-medicamentosas",
       "slug": "005-webinar-interacoes-medicamentosas",
       "title": "Webinar: Detecção e Prevenção de Interações Medicamentosas",
       "excerpt": "Webinar de 90 minutos com ferramentas práticas para identificar e evitar interações perigosas. Gravado para consulta posterior.",
@@ -106,7 +102,6 @@
       "location": "Zoom",
       "type": "online",
       "capacity": 300,
-      "registered": 142,
       "host": {
         "name": "Ana Costa",
         "role": "Estudante · Colaboradora",
@@ -116,7 +111,7 @@
       "registrationLink": "#"
     },
     {
-      "id": 6,
+      "id": "006-workshop-farmacocinética",
       "slug": "006-workshop-farmacocinética",
       "title": "Workshop: Farmacocinética Aplicada na Prática Clínica",
       "excerpt": "Dois dias de imersão prática em farmacocinética. Casos reais, cálculos de dose e interpretação de níveis plasmáticos.",
@@ -129,7 +124,6 @@
       "location": "Luanda, Angola",
       "type": "presencial",
       "capacity": 25,
-      "registered": 18,
       "host": {
         "name": "Maria Lima",
         "role": "Farmacêutica · Autora",
@@ -139,7 +133,7 @@
       "registrationLink": "#"
     },
     {
-      "id": 7,
+      "id": "007-palestra-legislacao-medicamentos",
       "slug": "007-palestra-legislacao-medicamentos",
       "title": "Palestra: Legislação de Medicamentos em Angola — Atualizações 2026",
       "excerpt": "Apresentação dos novos regulamentos e compliance requirements. Essencial para farmácias e professores.",
@@ -152,7 +146,6 @@
       "location": "Online",
       "type": "online",
       "capacity": 400,
-      "registered": 267,
       "host": {
         "name": "João Pedro",
         "role": "Farmacêutico · Palestrante",
@@ -162,7 +155,7 @@
       "registrationLink": "#"
     },
     {
-      "id": 8,
+      "id": "008-live-cancer-supportive-care",
       "slug": "008-live-cancer-supportive-care",
       "title": "Live: Supportive Care em Oncologia — Role do Farmacêutico",
       "excerpt": "Discussão sobre o papel crucial do farmacêutico no manejo de sintomas e qualidade de vida em pacientes com cancro.",
@@ -175,7 +168,6 @@
       "location": "Facebook Live",
       "type": "online",
       "capacity": 2000,
-      "registered": 892,
       "host": {
         "name": "Ana Costa",
         "role": "Estudante · Colaboradora",
@@ -185,7 +177,7 @@
       "registrationLink": "#"
     },
     {
-      "id": 9,
+      "id": "009-congresso-2025",
       "slug": "009-congresso-2025",
       "title": "Congresso: Excelência em Cuidado Farmacêutico 2025 — Recap",
       "excerpt": "Retrospectiva do congresso de 2025. Highlights, keynotes, networking e insights dos participantes.",
@@ -198,7 +190,6 @@
       "location": "Luanda, Angola",
       "type": "presencial",
       "capacity": 180,
-      "registered": 156,
       "host": {
         "name": "Maria Lima",
         "role": "Farmacêutica · Autora",
@@ -208,7 +199,7 @@
       "registrationLink": "#"
     },
     {
-      "id": 10,
+      "id": "010-webinar-adesao-terapeutica",
       "slug": "010-webinar-adesao-terapeutica",
       "title": "Webinar: Estratégias de Adesão à Terapêutica — Comportamento do Doente",
       "excerpt": "Webinar focado em psicologia do paciente e técnicas comportamentais para aumentar adesão. Acesso permanente ao gravado.",
@@ -221,7 +212,6 @@
       "location": "Zoom",
       "type": "online",
       "capacity": 250,
-      "registered": 203,
       "host": {
         "name": "João Pedro",
         "role": "Farmacêutico · Palestrante",

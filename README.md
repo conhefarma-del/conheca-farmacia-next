@@ -8,6 +8,27 @@ O **Conheça Farmácia** é uma plataforma dedicada a promover o papel clínico 
 
 ---
 
+## ⚡ Início Rápido
+
+> **⚠️ IMPORTANTE:** Este projeto usa Vite e **NÃO** pode ser aberto diretamente no browser (file://). É necessário um servidor de desenvolvimento.
+
+```bash
+# Instalar dependências
+npm install
+
+# Servidor de desenvolvimento (com hot-reload)
+npm run dev
+# → O site abre em http://localhost:5173
+
+# Build de produção
+npm run build
+npm run preview
+```
+
+Para mais detalhes, consulte [DESENVOLVIMENTO.md](./DESENVOLVIMENTO.md).
+
+---
+
 ## 🚀 Visão Geral
 
 Este WebApp foi construído sob o paradigma **"Security-First"**, garantindo que informações sensíveis de profissionais (como nomes, e-mails e registos) sejam tratadas com os mais altos padrões de proteção moderna.

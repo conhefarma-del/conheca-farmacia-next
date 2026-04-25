@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "npx @tailwindcss/cli -i ./src/input.css -o ./dist/output.css --watch",
-    "build": "npx @tailwindcss/cli -i ./src/input.css -o ./dist/output.css --minify",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "format": "npx prettier --write ."
   },
   "keywords": [],
@@ -17,6 +18,8 @@
     "tailwindcss": "^4.2.2"
   },
   "devDependencies": {
-    "prettier": "3.8.3"
+    "@tailwindcss/vite": "^4.2.4",
+    "prettier": "3.8.3",
+    "vite": "^8.0.10"
   }
 }

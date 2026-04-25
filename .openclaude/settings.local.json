@@ -10,7 +10,18 @@
       "Bash(npx tailwindcss:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(python \"C:/Users/bapti/Documents/Criação de WebSites/Conheça Farmácia/fix-css2.py\")",
+      "Bash(python:*)",
+      "Bash(grep -E \"\\\\.html$\")",
+      "Bash(dir .claude)",
+      "Bash(cd C:/Users/bapti/Documents/Criação de WebSites/Conheça Farmácia)",
+      "Bash(npx supabase-mcp:*)",
+      "mcp__ide__executeCode",
+      "Bash(curl -s -X GET \"https://tbqsazriorqzexjwhekw.supabase.co/rest/v1/\" -H \"apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRicXNhenJpb3JxemV4andoZWt3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTQ0MjgsImV4cCI6MjA5MjA5MDQyOH0.r3dpXNtYtoezSDSk4DJOYIXrLbGgq6P9MK1f8lIR3IE\" -H \"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRicXNhenJpb3JxemV4andoZWt3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTQ0MjgsImV4cCI6MjA5MjA5MDQyOH0.r3dpXNtYtoezSDSk4DJOYIXrLbGgq6P9MK1f8lIR3IE\")",
+      "Bash(curl:*)",
+      "Bash(cd:*)",
+      "Bash(npx -y @supabase/mcp@latest --help)"
     ]
   }
 }

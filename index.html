@@ -1,233 +1,239 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conheça Farmácia - Excelência no Cuidado Farmacêutico</title>
-    <!-- Google Fonts: Inter (Fallback for Overused Grotesk) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./dist/output.css">
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Conheça Farmácia - Excelência no Cuidado Farmacêutico</title>
+ <!-- Google Fonts: Inter (Fallback for Overused Grotesk) -->
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+ <!--
+  ⚠️ IMPORTANTE: Este ficheiro requer o servidor Vite para carregar o CSS!
+  Para desenvolvimento, execute: npm run dev
+  Para produção, execute: npm run build && npm run preview
+  → Verifique DESENVOLVIMENTO.md para mais informações
+ -->
 </head>
 <body class="antialiased text-brand-deep bg-brand-bg">
 
-    <!-- Header -->
-    <header class="header">
-        <nav class="nav-container">
-            <div class="logo">
-                <a href="index.html">
-                    <img src="assets/logo/logo-principal-verde.svg" alt="Conheça Farmácia Logo">
-                </a>
-            </div>
+ <!-- Header -->
+ <header class="header">
+ <nav class="nav-container">
+ <div class="logo">
+ <a href="index.html">
+ <img src="assets/logo/logo-principal-verde.svg" alt="Conheça Farmácia Logo">
+ </a>
+ </div>
 
-            <ul class="nav-links">
-                <li><a href="index.html#inicio">Início</a></li>
-                <li><a href="artigos.html">Artigos</a></li>
-                <li><a href="eventos.html">Eventos</a></li>
-                <li><a href="sobre.html">Sobre Nós</a></li>
-            </ul>
+ <div class="header-right">
+ <ul class="nav-links">
+ <li><a href="index.html#inicio">Início</a></li>
+ <li><a href="artigos.html">Artigos</a></li>
+ <li><a href="eventos.html">Eventos</a></li>
+ <li><a href="sobre.html">Sobre Nós</a></li>
+ </ul>
+ <button class="hamburger" aria-label="Menu">
+ <span></span>
+ <span></span>
+ <span></span>
+ </button>
+ </div>
+ </nav>
+ </header>
 
-            <div class="header-cta">
-                <a href="https://wa.me/244925696002" class="btn btn-primary btn-small">Fale Conosco</a>
-                <button class="hamburger" aria-label="Menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-            </div>
-        </nav>
-    </header>
+ <main>
+ <!-- Hero Section -->
+ <section id="inicio" class="hero">
+ <div class="hero-container">
 
-    <main>
-        <!-- Hero Section -->
-        <section id="inicio" class="hero">
-            <div class="hero-container">
+<!-- Left Column: Text and CTA -->
+<div class="hero-content">
+<h1 class="hero-title flex justify-center">Excelência no Cuidado Farmacêutico</span></h1>
+<p class="hero-subtitle">Acompanhamento clínico especializado para garantir a eficácia e segurança do tratamento. Valorizando a saúde através do conhecimento farmacêutico.</p>
+<div class="hero-actions flex justify-center">
+<a href="https://wa.me/+244925696002" class="btn btn-primary">Fale Connosco</a>
+</div>
+</div>
 
-                <!-- Left Column: Text and CTA -->
-                <div class="hero-content">
-                    <h1 class="hero-title">Excelência no Cuidado <span class="highlight">Farmacêutico</span></h1>
-                    <p class="hero-subtitle">Acompanhamento clínico especializado para garantir a eficácia e segurança do seu tratamento. Valorizando a saúde através do conhecimento farmacêutico.</p>
-                    <div class="hero-actions">
-                        <a href="#servicos" class="btn btn-primary">Nossos Serviços</a>
-                    </div>
-                </div>
+ <!-- Right Column: Image and Floating Card -->
+ <div class="hero-visual">
+ <div class="image-wrapper">
+ <!-- Placeholder for the professional pharmacist image -->
+ <img src="assets/images/095bf382-00ca-4f62-979c-654e3720017a.png" alt="Farmacêutico Clínico" class="hero-image">
 
-                <!-- Right Column: Image and Floating Card -->
-                <div class="hero-visual">
-                    <div class="image-wrapper">
-                        <!-- Placeholder for the professional pharmacist image -->
-                        <img src="assets/images/095bf382-00ca-4f62-979c-654e3720017a.png" alt="Farmacêutico Clínico" class="hero-image">
+ <!-- Floating Card -->
+ <div class="floating-card">
+ <div class="card-item">
+ <span class="checkmark">✓</span>
+ <p>Eventos Especializados</p>
+ </div>
+ <div class="card-item">
+ <span class="checkmark">✓</span>
+ <p>Conhecimento de Qualidade</p>
+ </div>
+ </div>
+ </div>
+ </div>
 
-                        <!-- Floating Card -->
-                        <div class="floating-card">
-                            <div class="card-item">
-                                <span class="checkmark">✓</span>
-                                <p>Eventos Especializados</p>
-                            </div>
-                            <div class="card-item">
-                                <span class="checkmark">✓</span>
-                                <p>Conhecimento de Qualidade</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+ </div>
+ </section>
 
-            </div>
-        </section>
+ <!-- 1. Artigos em Destaque -->
+ <section id="artigos" class="section-padding bg-brand-bg-alt">
+ <div class="container-center">
+ <h2 class="section-title">Artigos em Destaque</h2>
+ <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
-        <!-- 1. Artigos em Destaque -->
-        <section id="artigos" class="section-padding bg-brand-bg-alt">
-            <div class="container-center">
-                <h2 class="section-title">Artigos em Destaque</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+ <!-- Artigo 1 -->
+ <article class="article-card">
+ <img src="assets/content/articles/Saúde-e-Informação.png" alt="Genéricos vs Referência" class="article-card-img">
+ <div class="article-card-content">
+  <h3 class="article-card-title">A diferença entre Genéricos e Similares</h3>
+  <a href="artigo.html?id=1" class="article-card-link">Ler mais <span>→</span></a>
+ </div>
+ </article>
 
-                    <!-- Artigo 1 -->
-                    <article class="article-card">
-                        <img src="assets/content/articles/Saúde-e-Informação.png" alt="Genéricos vs Referência" class="article-card-img">
-                        <div class="article-card-content">
-                            <span class="article-tag tag-voce-sabia">Você Sabia?</span>
-                            <h3 class="article-card-title">A diferença entre Genéricos e Similares</h3>
-                            <p class="article-card-excerpt">Entenda de uma vez por todas as principais distinções entre medicamentos genéricos e similares e como isso afeta sua adesão ao tratamento.</p>
-                            <a href="#" class="article-card-link">Ler mais <span>→</span></a>
-                        </div>
-                    </article>
+ <!-- Artigo 2 -->
+ <article class="article-card">
+ <img src="assets/content/articles/Para-Profissionais---Carrossel_01.png" alt="Boas Práticas" class="article-card-img">
+ <div class="article-card-content">
+  <h3 class="article-card-title">3 Práticas Clínicas Essenciais para Farmacêuticos</h3>
+  <a href="artigo.html?id=2" class="article-card-link">Ler mais <span>→</span></a>
+ </div>
+ </article>
 
-                    <!-- Artigo 2 -->
-                    <article class="article-card">
-                        <img src="assets/content/articles/Para-Profissionais---Carrossel_01.png" alt="Boas Práticas" class="article-card-img">
-                        <div class="article-card-content">
-                            <span class="article-tag tag-profissionais">Para Profissionais</span>
-                            <h3 class="article-card-title">3 Práticas Clínicas Essenciais para Farmacêuticos</h3>
-                            <p class="article-card-excerpt">Descubra como elevar o nível do seu atendimento clínico com estas três estratégias fundamentais de acompanhamento.</p>
-                            <a href="#" class="article-card-link">Ler mais <span>→</span></a>
-                        </div>
-                    </article>
+ <!-- Artigo 3 -->
+ <article class="article-card">
+ <img src="assets/content/articles/Para-Profissionais---Carrossel_01.png" alt="Boas Práticas" class="article-card-img">
+ <div class="article-card-content">
+  <h3 class="article-card-title">Como ler uma bula corretamente</h3>
+  <a href="artigo.html?id=3" class="article-card-link">Ler mais <span>→</span></a>
+ </div>
+ </article>
 
-                </div>
-            </div>
-        </section>
+ </div>
+ </div>
+ </section>
 
-        <!-- 2. Próximos Eventos -->
-        <section id="eventos" class="section-padding bg-brand-bg">
-            <div class="container-center">
-                <h2 class="section-title">Próximos Eventos</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+ <!-- 2. Próximos Eventos -->
+ <section id="eventos" class="section-padding bg-brand-bg">
+ <div class="container-center">
+ <h2 class="section-title">Eventos em Destaque</h2>
+ <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-                    <!-- Evento 1 -->
-                    <div class="event-card">
-                        <div class="event-card-header">
-                            <img src="assets/content/events/IMG_5613.jpg" alt="Simpósio" class="event-card-img">
-                            <span class="event-badge tag-profissionais">Profissionais</span>
-                        </div>
-                        <div class="event-card-content">
-                            <div class="event-date">
-                                <span>📅</span> 15 de Maio, 2026
-                            </div>
-                            <h3 class="event-card-title">Simpósio de Inovações em Farmacoterapia</h3>
-                            <p class="event-card-desc">Um encontro técnico para discutir as novas diretrizes de tratamento e a integração de IA na dispensação.</p>
-                            <button data-event-slug="simposio-inovacoes-farmacoterapia" class="btn btn-primary btn-small w-full btn-inscrever">Inscrever-se Agora</button>
-                        </div>
-                    </div>
+ <!-- Evento 1 -->
+ <div class="event-card">
+ <div class="event-card-header">
+ <img src="assets/content/events/IMG_5613.jpg" alt="Simpósio" class="event-card-img">
+  </div>
+ <div class="event-card-content">
+ <div class="event-date">
+  15 de Maio, 2026
+ </div>
+ <h3 class="event-card-title">Simpósio de Inovações em Farmacoterapia</h3>
+ <p class="event-card-desc">Um encontro técnico para discutir as novas diretrizes de tratamento e a integração de IA na dispensação.</p>
+ <button data-event-slug="simposio-inovacoes-farmacoterapia" class="btn btn-primary btn-small w-full btn-inscrever">Mais Informações</button>
+ </div>
+ </div>
 
-                    <!-- Evento 2 -->
-                    <div class="event-card">
-                        <div class="event-card-header">
-                            <img src="assets/content/events/IMG_5615.jpg" alt="Atualização" class="event-card-img">
-                            <span class="event-badge tag-legislacao">Legislação</span>
-                        </div>
-                        <div class="event-card-content">
-                            <div class="event-date">
-                                <span>📅</span> 05 de Junho, 2026
-                            </div>
-                            <h3 class="event-card-title">Atualização Normativa: Dispensação de Psicotrópicos</h3>
-                            <p class="event-card-desc">Análise detalhada das novas portarias sobre a prescrição e controlo de substâncias psicotrópicas.</p>
-                            <button data-event-slug="atualizacao-normativa-psicotropicos" class="btn btn-primary btn-small w-full btn-inscrever">Inscrever-se Agora</button>
-                        </div>
-                    </div>
+ <!-- Evento 2 -->
+ <div class="event-card">
+ <div class="event-card-header">
+ <img src="assets/content/events/IMG_5615.jpg" alt="Atualização" class="event-card-img">
+  </div>
+ <div class="event-card-content">
+ <div class="event-date">
+  05 de Junho, 2026
+ </div>
+ <h3 class="event-card-title">Atualização Normativa: Dispensação de Psicotrópicos</h3>
+ <p class="event-card-desc">Análise detalhada das novas portarias sobre a prescrição e controlo de substâncias psicotrópicas.</p>
+ <button data-event-slug="atualizacao-normativa-psicotropicos" class="btn btn-primary btn-small w-full btn-inscrever">Mais Informações</button>
+ </div>
+ </div>
 
-                </div>
-            </div>
-        </section>
+ </div>
+ </div>
+ </section>
 
-        <!-- 3. Impacto e Números -->
-        <section class="stats-section">
-            <div class="container-center">
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <span class="stat-number">500+</span>
-                        <span class="stat-label">Profissionais Formados</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">50+</span>
-                        <span class="stat-label">Entrevistas de Especialistas</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">12+</span>
-                        <span class="stat-label">Eventos por Ano</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">10k+</span>
-                        <span class="stat-label">Leitores Mensais</span>
-                    </div>
-                </div>
-            </div>
-        </section>
+ <!-- 3. Impacto e Números -->
+ <section class="stats-section">
+ <div class="container-center">
+ <div class="stats-grid">
+ <div class="stat-item">
+ <span class="stat-number">500+</span>
+ <span class="stat-label">Profissionais Formados</span>
+ </div>
+ <div class="stat-item">
+ <span class="stat-number">50+</span>
+ <span class="stat-label">Entrevistas de Especialistas</span>
+ </div>
+ <div class="stat-item">
+ <span class="stat-number">12+</span>
+ <span class="stat-label">Eventos por Ano</span>
+ </div>
+ <div class="stat-item">
+ <span class="stat-number">10k+</span>
+ <span class="stat-label">Leitores Mensais</span>
+ </div>
+ </div>
+ </div>
+ </section>
 
-        <!-- 4. Footer -->
-        <footer class="footer">
-            <div class="container-center">
-                <div class="footer-grid">
-                    <!-- Brand Info -->
-                    <div class="footer-logo">
-                        <img src="assets/logo/logo-principal-branco.svg" alt="Conheça Farmácia Logo">
-                        <p class="text-white/70 text-sm mt-4">Conhecimento que conecta. Formação que transforma. Saúde que evolui.</p>
-                    </div>
+ <!-- 4. Footer -->
+ <footer class="footer">
+ <div class="container-center">
+ <div class="footer-grid">
+ <!-- Brand Info -->
+ <div class="footer-logo">
+ <img src="assets/logo/logo-principal-branco.svg" alt="Conheça Farmácia Logo">
+ <p class="text-white/70 text-sm mt-4">Conhecimento que conecta. Formação que transforma. Saúde que evolui.</p>
+ </div>
 
-                    <!-- Quick Links -->
-                    <div class="footer-links">
-                        <h4>Navegação</h4>
-                        <ul>
-                            <li><a href="index.html#inicio">Início</a></li>
-                            <li><a href="artigos.html">Artigos</a></li>
-                            <li><a href="eventos.html">Eventos</a></li>
-                            <li><a href="sobre.html">Sobre Nós</a></li>
-                        </ul>
-                    </div>
+ <!-- Quick Links -->
+ <div class="footer-links">
+ <h4>Navegação</h4>
+ <ul>
+ <li><a href="index.html#inicio">Início</a></li>
+ <li><a href="artigos.html">Artigos</a></li>
+ <li><a href="eventos.html">Eventos</a></li>
+ <li><a href="sobre.html">Sobre Nós</a></li>
+ </ul>
+ </div>
 
-                    <!-- Contact -->
-                    <div class="footer-links">
-                        <h4>Contato</h4>
-                        <ul class="text-sm text-white/70">
-                            <li>Luanda, Angola</li>
-                            <li><a href="mailto:conhecerfarmacia@gmail.com" class="text-white/70 hover:text-brand-accent">conhecerfarmacia@gmail.com</a></li>
-                            <li><a href="https://wa.me/244925696002" class="text-white/70 hover:text-brand-accent">+244 925 696 002</a></li>
-                        </ul>
-                    </div>
+ <!-- Contact -->
+ <div class="footer-links">
+ <h4>Contato</h4>
+ <ul class="text-sm text-white/70">
+ <li>Luanda, Angola</li>
+ <li><a href="mailto:conhecerfarmacia@gmail.com" class="text-white/70 hover:text-brand-accent">conhecerfarmacia@gmail.com</a></li>
+ <li><a href="https://wa.me/244925696002" class="text-white/70 hover:text-brand-accent">+244 925 696 002</a></li>
+ </ul>
+ </div>
 
-                    <!-- Social Media -->
-                    <div class="footer-links">
-                        <h4>Redes Sociais</h4>
-                        <ul class="text-sm">
-                            <li><a href="https://www.facebook.com/conhecafarmacia" target="_blank">Facebook</a></li>
-                            <li><a href="https://www.instagram.com/conhecafarmacia" target="_blank">Instagram</a></li>
-                            <li><a href="https://www.tiktok.com/conhecafarmaciaofficial" target="_blank">TikTok</a></li>
-                            <li><a href="https://www.linkedin.com/company/conhecafarmacia" target="_blank">LinkedIn</a></li>
-                        </ul>
-                    </div>
-                </div>
+ <!-- Social Media -->
+ <div class="footer-links">
+ <h4>Redes Sociais</h4>
+ <ul class="text-sm">
+ <li><a href="https://www.facebook.com/conhecafarmacia" target="_blank">Facebook</a></li>
+ <li><a href="https://www.instagram.com/conhecafarmacia" target="_blank">Instagram</a></li>
+ <li><a href="https://www.tiktok.com/conhecafarmaciaofficial" target="_blank">TikTok</a></li>
+ <li><a href="https://www.linkedin.com/company/conhecafarmacia" target="_blank">LinkedIn</a></li>
+ </ul>
+ </div>
+ </div>
 
-                <div class="footer-divider"></div>
+ <div class="footer-divider"></div>
 
-                <div class="footer-bottom">
-                    <p>&copy; 2026 Conheça Farmácia. Todos os direitos reservados.</p>
-                </div>
-            </div>
-        </footer>
+ <div class="footer-bottom">
+ <p>&copy; 2026 Conheça Farmácia. Todos os direitos reservados.</p>
+ </div>
+ </div>
+ </footer>
 
-    </main>
+ </main>
 
-<script src="script.js" defer></script>
-    <script src="inscription-handler.js" defer></script>
+<!-- Vite: This is where Vite injects CSS/JS during development -->
+<script type="module" src="/main.js"></script>
 </body>
 </html>

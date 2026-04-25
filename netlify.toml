@@ -1,6 +1,6 @@
 [build]
-  command = ""
-  publish = "."
+  command = "npm run build"
+  publish = "dist"
 
 [[redirects]]
   from = "/artigos"
@@ -48,7 +48,7 @@
     Cache-Control = "public, max-age=3600, s-maxage=3600"
     X-Content-Type-Options = "nosniff"
     X-Frame-Options = "SAMEORIGIN"
-    
+
 [[headers]]
   for = "/dist/output.css"
   [headers.values]

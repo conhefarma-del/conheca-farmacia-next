@@ -116,6 +116,38 @@ Texto com **negrito**, *itálico* e `código inline`.
 
 ---
 
+## 🏠 Artigos em Destaque na Página Inicial
+
+Os artigos exibidos na seção "Artigos em Destaque" da página inicial (`index.html`) são **cards estáticos hardcoded em HTML**, diferentes dos artigos dinâmicos da página `artigos.html`.
+
+### Para adicionar, substituir ou modificar esses cards:
+
+1. **Edite o arquivo**: `index.html`
+2. **Localize a seção**: `<section id="artigos">` (aproximadamente linha 82)
+3. **Dentro da div**: `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">`
+4. **Cada card segue esta estrutura simplificada**:
+```html
+<article class="article-card">
+<img src="PATH/TO/IMAGE.png" alt="TÍTULO DO ARTIGO" class="article-card-img">
+<div class="article-card-content">
+<h3 class="article-card-title">TÍTULO DO ARTIGO</h3>
+<a href="#" class="article-card-link">Ler mais <span>→</span></a>
+</div>
+</article>
+```
+5. **Substitua**:
+   - `PATH/TO/IMAGE.png`: caminho relativo da imagem (ex: `assets/content/articles/nova-imagem.png`)
+   - `TÍTULO DO ARTIGO`: título que aparecerá no card
+   - Mantenha o `href="#"` como placeholder (a funcionalidade de link pode ser implementada separadamente)
+
+### ⚠️ Importante:
+- Estas alterações **não afetam** a página `artigos.html` ou o sistema dinâmico de artigos
+- Para que o card funcione como um link real, você precisará implementar a rota destino separadamente
+- As imagens devem seguir as mesmas diretrizes de tamanho (900×600px, proporção 3:2)
+- Após modificar, teste abrindo `index.html` para verificar o visual
+
+---
+
 ## 📊 Artigos Atuais
 
 Total de artigos: **9**

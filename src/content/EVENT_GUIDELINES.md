@@ -8,21 +8,24 @@ Os eventos são armazenados em `content/events-catalog.json` e contêm todos os 
 
 ## 🔄 NOVO: Sistema de Sincronização de Vagas em Tempo Real
 
-**⚠️ IMPORTANTE:** O campo `registered` no JSON é apenas um valor **inicial/padrão**. O número real de vagas é consultado **diretamente do Supabase** sempre que a página carrega.
+**⚠️ IMPORTANTE:** A capacidade do evento é guardada em **2 locais**:
+1. **`events-catalog.json`** - Dados visuais (apenas para exibição)
+2. **Tabela `events` do Supabase** - Fonte de verdade para capacidade e validação
 
 ### Como Funciona:
 
 1. **Inscrição criada** → Dados guardados em tabela `inscricoes` do Supabase
 2. **Página de evento carrega** → JavaScript consulta Supabase automaticamente
-3. **Vagas sincronizadas** → Mostra número REAL de inscrições
-4. **Se capacidade atingida** → Botão "Inscrever-me" fica desabilido com "Evento Completo"
+3. **Vagas sincronizadas** → Mostra número REAL de inscrições (Supabase)
+4. **Se capacidade atingida** → Botão "Inscrever-me" fica desabilitado com "Evento Completo"
+5. **Validação no servidor** → Edge Function verifica se evento está cheio antes de permitir inscrição
 
 ### Exemplo:
 ```
-Evento: Workshop (capacidade 40)
-JSON diz: registered = 23 (desatualizado)
-Supabase diz: 5 inscrições reais
+Evento: Workshop (capacidade 40 em Supabase)
+Supabase inscricoes: 5 registos
 Resultado na página: 40 - 5 = 35 vagas disponíveis ✓
+Alguém tenta inscrever-se quando cheio: Edge Function bloqueia ✓
 ```
 
 ---
@@ -55,7 +58,7 @@ O sistema **bloqueia automaticamente** tentativas de inscrição duplicada:
 
 ```json
 {
-  "id": 11,
+  "id": "011-seu-evento",
   "slug": "011-seu-evento",
   "title": "Workshop: Seu Título do Evento",
   "excerpt": "Resumo breve (2-3 linhas) que aparece no card de listagem",
@@ -68,7 +71,6 @@ O sistema **bloqueia automaticamente** tentativas de inscrição duplicada:
   "location": "Luanda, Angola",
   "type": "presencial",
   "capacity": 50,
-  "registered": 28,
   "host": {
     "name": "Nome do Apresentador",
     "role": "Cargo · Função",
@@ -107,8 +109,8 @@ O campo `status` é **calculado automaticamente** com base na data:
 
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
-| `id` | número | ID único incremental |
-| `slug` | texto | URL-friendly identifier (ex: `001-farmacologia`) |
+| `id` | texto | ID único (ex: `011-seu-evento`) |
+| `slug` | texto | URL-friendly identifier (ex: `011-seu-evento`) |
 | `title` | texto | Título do evento (máx 80 caracteres) |
 | `excerpt` | texto | Resumo breve (máx 150 caracteres) |
 | `category` | texto | Uma das categorias acima (minúscula) |
@@ -119,10 +121,11 @@ O campo `status` é **calculado automaticamente** com base na data:
 | `location` | texto | Localização ou "Online" |
 | `type` | texto | `"presencial"` ou `"online"` |
 | `capacity` | número | Número máximo de participantes |
-| `registered` | número | **NOTA:** Valor inicial apenas. Número real é consultado do Supabase |
 | `host` | objeto | { name, role, organization } |
 | `image` | caminho | Localização da imagem (proporção 16:9) |
 | `registrationLink` | URL | Link de inscrição (pode ser `"#"` por enquanto) |
+
+**NOTA IMPORTANTE:** O campo `registered` foi **removido** do JSON. As vagas são consultadas do Supabase em tempo real.
 
 ---
 
@@ -185,25 +188,118 @@ O campo `status` é **calculado automaticamente** com base na data:
 
 ## 🚀 Fluxo de Adição de Novo Evento
 
+### Passo 1: Preparar Dados
 1. **Preparar imagem**: 1280×720px, proporção 16:9
 2. **Guardar imagem**: `assets/content/articles/seu-evento.png`
-3. **Adicionar ao JSON**: Copiar template acima e preencher
-4. **Verificar campos**: Todos os campos obrigatórios preenchidos
-5. **Testar em eventos.html**:
+
+### Passo 2: Adicionar ao JSON
+3. **Editar arquivo**: `src/content/events-catalog.json`
+4. **Copiar estrutura acima** e preencher todos os campos
+5. **Verificar campos**: Todos os campos obrigatórios preenchidos
+
+### Passo 3: Adicionar à Tabela `events` (Supabase)
+6. **Ir ao Supabase Dashboard** → SQL Editor
+7. **Executar query**:
+```sql
+INSERT INTO events (slug, title, capacity) VALUES
+('011-seu-evento', 'Seu Título Completo do Evento', 50);
+```
+
+**Importante:** O `slug` deve ser idêntico em ambos os locais (JSON e Supabase).
+
+### Passo 4: Testar
+8. **Testar em eventos.html**:
    - Filtro temporal (Próximos/Passados)
    - Filtro por categoria
    - Card exibe corretamente
    - Vagas sincronizadas com Supabase ✓
-6. **Testar em evento.html?id=X**:
+9. **Testar em evento.html?id=X**:
    - Título, imagem, detalhes carregam
    - Vagas mostram número real (não JSON)
    - Barra de progresso funciona
-7. **Testar inscrição**:
+10. **Testar inscrição**:
    - Clique "Inscrever-me"
    - Formulário abre em inscricao.html?evento=XXX
    - Preencher com dados válidos
    - Confirmação de inscrição exibida
    - Email recebido com sucesso
+
+---
+
+## ⚠️ IMPORTANTE: Duas Fontes de Dados para Novo Evento
+
+**Quando criar novo evento, você DEVE atualizar AMBOS os locais:**
+
+1. **`events-catalog.json`** - Informação visual (título, data, imagem, host, etc.)
+2. **Tabela `events` no Supabase** - Capacidade do evento (fonte de verdade para bloqueio de inscrições)
+
+**Se esquecer um deles:**
+- ❌ JSON faltando → Evento não aparece no site
+- ❌ Supabase faltando → Vagas não sincronizam, bloqueio de capacidade não funciona, inscrições funcionam mas sem limite
+
+**Checklist obrigatório:**
+- ✔️ Campo `slug` é idêntico em ambos os locais?
+- ✔️ Campo `capacity` é idêntico em ambos os locais?
+- ✔️ Todos os outros dados (título, data, imagem, etc.) estão preenchidos no JSON?
+- ✔️ O evento foi inserido na tabela `events` do Supabase?
+
+**Exemplo completo:**
+
+```json
+// Em events-catalog.json
+{
+  "slug": "011-webinar-novo",
+  "title": "Webinar: Seu Título Aqui",
+  "capacity": 100,
+  ...
+}
+```
+
+```sql
+-- No Supabase SQL Editor
+INSERT INTO events (slug, title, capacity) VALUES
+('011-webinar-novo', 'Webinar: Seu Título Aqui', 100);
+```
+
+---
+
+Os eventos exibidos na seção "Próximos Eventos" da página inicial (`index.html`) são **cards estáticos hardcoded em HTML**, diferentes dos eventos dinâmicos da página `eventos.html`.
+
+### Para adicionar, substituir ou modificar esses cards:
+
+1. **Edite o arquivo**: `index.html`
+2. **Localize a seção**: `<section id="eventos">` (aproximadamente linha 119)
+3. **Dentro da div**: `<div class="grid grid-cols-1 md:grid-cols-2 gap-8">`
+4. **Cada card segue esta estrutura simplificada**:
+```html
+<div class="event-card">
+<div class="event-card-header">
+<img src="PATH/TO/IMAGE.jpg" alt="TÍTULO DO EVENTO" class="event-card-img">
+</div>
+<div class="event-card-content">
+<div class="event-date">
+DATA DO EVENTO (sem emoji de calendário)
+</div>
+<h3 class="event-card-title">TÍTULO DO EVENTO</h3>
+<p class="event-card-desc">DESCRIÇÃO DO EVENTO</p>
+<button data-event-slug="seu-evento-slug" class="btn btn-primary btn-small w-full btn-inscrever">Mais Informações</button>
+</div>
+</div>
+```
+5. **Substitua**:
+   - `PATH/TO/IMAGE.jpg`: caminho relativo da imagem (ex: `assets/content/events/nova-imagem.jpg`)
+   - `TÍTULO DO EVENTO`: título que aparecerá no card
+   - `DATA DO EVENTO`: data formatada (ex: "15 de Maio, 2026") - **sem** o emoji 📅
+   - `DESCRIÇÃO DO EVENTO`: descrição breve do evento
+   - `seu-evento-slug`: slug único do evento (usado para identificar o evento)
+   - Mantenha o `data-event-slug` para possível integração futura
+   - Mantenha o texto do botão como "Mais Informações" (conforme padrão da página inicial)
+
+### ⚠️ Importante:
+- Estas alterações **não afetam** a página `eventos.html` ou o sistema dinâmico de eventos
+- Para que o card funcione como um link real para detalhes do evento, você precisará implementar a rota destino separadamente
+- As imagens devem seguir as mesmas diretrizes de tamanho (1280×720px, proporção 16:9)
+- Após modificar, teste abrindo `index.html` para verificar o visual
 
 ---
 

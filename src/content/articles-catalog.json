@@ -1,7 +1,7 @@
 {
   "articles": [
     {
-      "id": 1,
+      "id": "001-genericos-similares",
       "slug": "001-genericos-similares",
       "title": "A diferença entre Genéricos e Similares",
       "excerpt": "Entenda de uma vez por todas as principais distinções entre medicamentos genéricos e similares e como isso afeta sua adesão ao tratamento.",
@@ -20,7 +20,7 @@
       "content": "## O que são medicamentos genéricos?\n\nMedicamentos genéricos são cópias exatas de medicamentos de marca já existentes, fabricados depois de expirado o período de patente. Contêm o mesmo ingrediente ativo, na mesma dosagem, forma farmacêutica e via de administração que o original.\n\nOs genéricos devem cumprir com rigorosos padrões de qualidade e eficácia estabelecidos pelas autoridades regulatórias, como a Agência Europeia de Medicamentos (EMA) e órgãos similares internacionais.\n\n## O que são medicamentos similares?\n\nMedicamentos similares são aqueles que contêm os mesmos princípios ativos, concentração, forma farmacêutica e via de administração que o medicamento de referência, mas **não são comparados bioquimicamente** com o original.\n\nIsso significa que, embora tenham a mesma composição, não há garantia de bioequivalência absoluta — ou seja, o corpo pode absorver e processar o medicamento de forma ligeiramente diferente.\n\n## Principais diferenças\n\n### Qualidade e Segurança\n- **Genéricos**: Aprovados através de estudos de bioequivalência. Devem ter a mesma eficácia que o original.\n- **Similares**: Aprovados com base em dados clínicos e não-clínicos, mas sem comprovação direta de bioequivalência.\n\n### Preço\n- **Genéricos**: Significativamente mais baratos (podem custar 50-80% menos).\n- **Similares**: Geralmente mais baratos que o original, mas mais caros que os genéricos.\n\n### Eficácia\n- **Genéricos**: Garantida como bioequivalente ao medicamento original.\n- **Similares**: Presumível eficácia similar, mas sem total garantia.\n\n## Impacto na adesão ao tratamento\n\nA grande vantagem dos genéricos e similares é o **custo reduzido**, que pode facilitar a adesão do doente ao tratamento.\n\n## Conclusão\n\nTanto genéricos quanto similares são opções válidas para reduzir custos farmacêuticos. No entanto, os genéricos oferecem maior garantia de eficácia equivalente ao original."
     },
     {
-      "id": 2,
+      "id": "002-praticas-clinicas",
       "slug": "002-praticas-clinicas",
       "title": "3 Práticas Clínicas Essenciais para Farmacêuticos",
       "excerpt": "Descubra como elevar o nível do seu atendimento clínico com estas três estratégias fundamentais de acompanhamento.",
@@ -39,7 +39,7 @@
       "content": "## Introdução\n\nO papel do farmacêutico evoluiu significativamente. Já não nos limitamos a dispensar medicamentos — somos profissionais de saúde com responsabilidade clínica.\n\n## 1. Anamnese Farmacêutica Estruturada\n\nA anamnese farmacêutica é a coleta sistemática de informações sobre o doente, seus medicamentos e condições de saúde.\n\n### O que fazer\n- Questionar sobre medicações anteriores e reações adversas\n- Avaliar a comorbilidade (doenças concomitantes)\n- Compreender a adesão do doente à terapêutica\n- Identificar interações medicamentosas potenciais\n\n## 2. Reconciliação Medicamentosa\n\nA reconciliação medicamentosa é o processo de comparar medicamentos que o doente estava a tomar com os que lhe foram prescritos.\n\n### Como implementar\n1. Obter lista completa de medicamentos\n2. Comparar com nova prescrição\n3. Documentar discrepâncias\n4. Comunicar com o médico se necessário\n\n## 3. Farmacovigilância Ativa\n\nNão é suficiente esperar que os doentes reportem reações adversas. Devemos questionar proativamente sobre sintomas."
     },
     {
-      "id": 3,
+      "id": "003-bula-corretamente",
       "slug": "003-bula-corretamente",
       "title": "Como ler uma bula corretamente",
       "excerpt": "Muitas informações importantes passam despercebidas. Aprenda a identificar os pontos cruciais para sua segurança.",
@@ -58,7 +58,7 @@
       "content": "## A bula é mais importante do que pensa\n\nA bula é um documento legal que acompanha cada medicamento, mas muitas pessoas a ignoram ou têm dificuldade em compreendê-la.\n\n## Secções principais que deve ler\n\n### 1. Composição\nIdentifique o ingrediente ativo e a dosagem. Isto é especialmente importante se sofre de alergias ou sensibilidades.\n\n### 2. Indicações\nConfirme que o medicamento é realmente para a condição que tem.\n\n### 3. Contraindicações\nEstas são situações em que **não deve** tomar o medicamento. Se tem gravidez, amamentação, problemas de fígado ou rim, leia atentamente.\n\n### 4. Reações Adversas\nNem todas reações causam preocupação, mas deve saber quais são comuns e quais são graves.\n\n## Como interpretá-la como leigo\n\nA bula usa linguagem técnica, mas pode compreendê-la focando-se nas secções acima. Se tiver dúvidas, **pergunte ao farmacêutico ou médico** — não é uma pergunta \"tonta\"."
     },
     {
-      "id": 4,
+      "id": "004-plantas-medicinais",
       "slug": "004-plantas-medicinais",
       "title": "Curiosidades sobre o uso de plantas medicinais",
       "excerpt": "O conhecimento ancestral encontra a ciência moderna. Descubra o que é fato e o que é mito.",
@@ -77,7 +77,7 @@
       "content": "## A sabedoria ancestral e a ciência moderna\n\nAs plantas medicinais têm sido usadas há milhares de anos por várias culturas. Mas quanto disto é baseado em evidência científica? Vamos explorar alguns mitos e factos.\n\n## Factos: Plantas com Benefícios Comprovados\n\n### Gengibre\n- **Uso tradicional**: Náuseas e problemas digestivos\n- **Evidência científica**: Sim, reduz náuseas em ~25-30% em estudos clínicos\n\n### Camomila\n- **Uso tradicional**: Relaxante e insónia\n- **Evidência científica**: Moderada. Ajuda alguns doentes.\n\n### Valeriana\n- **Uso tradicional**: Distúrbios do sono\n- **Evidência científica**: Apoio moderado\n\n## Mitos: O que NÃO tem comprovação\n\n### \"Natural = Seguro\"\n**Mito.** Muitas plantas são tóxicas. A cicuta é natural, mas letal.\n\n### \"Plantas não têm efeitos colaterais\"\n**Mito.** Plantas contêm moléculas biologicamente ativas que podem causar alergias, interações medicamentosas e toxicidade.\n\n## Como usar plantas medicinais com segurança\n\n1. **Consulte um profissional** — farmacêutico ou herborista qualificado\n2. **Procure produtos registados** — que cumpram padrões de qualidade\n3. **Informe seu médico** — sobre qualquer suplemento que está a tomar"
     },
     {
-      "id": 5,
+      "id": "005-antibioticos-resistencia",
       "slug": "005-antibioticos-resistencia",
       "title": "Resistência aos Antibióticos: Um Desafio Global",
       "excerpt": "Compreenda como o uso inadequado de antibióticos contribui para a resistência microbiana e o que pode fazer para ajudar.",
@@ -96,7 +96,7 @@
       "content": "## A crise de resistência aos antibióticos\n\nA resistência aos antibióticos é uma das maiores ameaças à saúde global. Bactérias desenvolvem resistência quando expostas a antibióticos de forma inadequada.\n\n## Como ocorre a resistência?\n\nQuando um antibiótico é usado, elimina a maioria das bactérias suscetíveis. No entanto, bactérias com mutações que conferem resistência conseguem sobreviver e multiplicar-se.\n\n## Papel do Farmacêutico\n\n1. **Educação do doente**: Garantir que completa o tratamento\n2. **Dispensação racional**: Recusar prescrições inadequadas\n3. **Monitorização**: Acompanhar resultados do tratamento\n\n## Recomendações práticas\n\n- Nunca dispensar antibióticos sem prescrição\n- Instruir sobre importância da adesão\n- Reportar reações adversas\n- Participar em programas de stewardship"
     },
     {
-      "id": 6,
+      "id": "006-saude-mental-medicamentos",
       "slug": "006-saude-mental-medicamentos",
       "title": "Saúde Mental e Medicamentos: O que Precisa Saber",
       "excerpt": "Explore a relação entre saúde mental, medicamentos psiquiátricos e a importância do acompanhamento profissional.",
@@ -115,7 +115,7 @@
       "content": "## Destigmatização da saúde mental\n\nA saúde mental é tão importante quanto a saúde física. Os medicamentos psiquiátricos são ferramentas válidas no tratamento.\n\n## Tipos de medicamentos psiquiátricos\n\n### Antidepressivos\nUsados no tratamento de depressão e ansiedade. Trabalham ajustando neurotransmissores no cérebro.\n\n### Antipsicóticos\nIndicados em condições como esquizofrenia e transtorno bipolar.\n\n### Ansiolíticos\nUsados para reduzir sintomas de ansiedade.\n\n## Importância do acompanhamento\n\n- Regularidade nas consultas com profissional\n- Comunicar efeitos colaterais\n- Nunca interromper medicação sem orientação\n- Complementar com terapia psicológica\n\n## Recomendações para farmacêuticos\n\n- Oferecer apoio empático\n- Garantir confidencialidade\n- Orientar sobre efeitos esperados e colaterais\n- Facilitar acesso a recursos de saúde mental"
     },
     {
-      "id": 7,
+      "id": "007-vitaminas-suplementos",
       "slug": "007-vitaminas-suplementos",
       "title": "Vitaminas e Suplementos: Nem Sempre Mais é Melhor",
       "excerpt": "Descubra quando vitaminas e suplementos são realmente necessários e como tomar com segurança.",
@@ -134,7 +134,7 @@
       "content": "## O mito das megadoses\n\nMuitas pessoas acreditam que quanto mais vitaminas tomam, melhor. Isso não é verdade — e pode ser prejudicial.\n\n## Quando as vitaminas são necessárias?\n\n### Deficiências comprovadas\nSe tem carência de uma vitamina específica, suplementação é importante.\n\n### Populações em risco\n- Grávidas (ácido fólico)\n- Vegetarianos (vitamina B12)\n- Maiores de 60 anos (vitamina D e B12)\n\n## Riscos do excesso\n\n- **Vitamina A**: Toxicidade em doses altas\n- **Vitamina D**: Hipercalcemia\n- **Ferro**: Sobrecarga e danos hepáticos\n- **Vitamina E**: Aumento do risco de hemorragia\n\n## Recomendação final\n\nUma alimentação equilibrada é geralmente suficiente. Suplementação deve ser recomendada por profissional apenas quando necessário."
     },
     {
-      "id": 8,
+      "id": "008-idosos-medicamentos",
       "slug": "008-idosos-medicamentos",
       "title": "Medicamentos em Idosos: Cuidados Especiais",
       "excerpt": "Compreenda por que os idosos precisam de cuidados especiais com medicamentos e qual é o papel do farmacêutico.",
@@ -153,7 +153,7 @@
       "content": "## Mudanças fisiológicas nos idosos\n\nO envelhecimento altera como o corpo processa medicamentos. Absorção, distribuição e eliminação são diferentes.\n\n## Polimedicação\n\nIdosos frequentemente tomam múltiplos medicamentos, aumentando o risco de interações.\n\n## Estratégias de segurança\n\n### Revisão regular\nRevisar todos os medicamentos periodicamente.\n\n### Simplificação\nReduzir número de medicamentos quando possível.\n\n### Monitorização\nAcompanhar reações adversas com cuidado.\n\n## Papel do farmacêutico\n\n- Avaliar apropriabilidade dos medicamentos\n- Orientar sobre horários simples de administração\n- Verificar adesão\n- Detectar polifarmácia inadequada"
     },
     {
-      "id": 9,
+      "id": "009-tecnologia-farmacia",
       "slug": "009-tecnologia-farmacia",
       "title": "Tecnologia na Farmácia: Inovações que Mudam a Prática",
       "excerpt": "Conheça as tecnologias emergentes que estão transformando a profissão farmacêutica e melhorando a segurança do doente.",
