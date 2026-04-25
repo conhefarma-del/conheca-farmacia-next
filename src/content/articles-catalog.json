@@ -54,7 +54,7 @@
       },
       "date": "2026-04-05",
       "readTime": 6,
-      "image": "content/articles/bula-corretamente.png",
+      "image": "assets/content/articles/bula-corretamente.png",
       "content": "## A bula é mais importante do que pensa\n\nA bula é um documento legal que acompanha cada medicamento, mas muitas pessoas a ignoram ou têm dificuldade em compreendê-la.\n\n## Secções principais que deve ler\n\n### 1. Composição\nIdentifique o ingrediente ativo e a dosagem. Isto é especialmente importante se sofre de alergias ou sensibilidades.\n\n### 2. Indicações\nConfirme que o medicamento é realmente para a condição que tem.\n\n### 3. Contraindicações\nEstas são situações em que **não deve** tomar o medicamento. Se tem gravidez, amamentação, problemas de fígado ou rim, leia atentamente.\n\n### 4. Reações Adversas\nNem todas reações causam preocupação, mas deve saber quais são comuns e quais são graves.\n\n## Como interpretá-la como leigo\n\nA bula usa linguagem técnica, mas pode compreendê-la focando-se nas secções acima. Se tiver dúvidas, **pergunte ao farmacêutico ou médico** — não é uma pergunta \"tonta\"."
     },
     {
@@ -73,7 +73,7 @@
       },
       "date": "2026-03-30",
       "readTime": 10,
-      "image": "content/articles/plantas-medicinais.png",
+      "image": "assets/content/articles/plantas-medicinais.png",
       "content": "## A sabedoria ancestral e a ciência moderna\n\nAs plantas medicinais têm sido usadas há milhares de anos por várias culturas. Mas quanto disto é baseado em evidência científica? Vamos explorar alguns mitos e factos.\n\n## Factos: Plantas com Benefícios Comprovados\n\n### Gengibre\n- **Uso tradicional**: Náuseas e problemas digestivos\n- **Evidência científica**: Sim, reduz náuseas em ~25-30% em estudos clínicos\n\n### Camomila\n- **Uso tradicional**: Relaxante e insónia\n- **Evidência científica**: Moderada. Ajuda alguns doentes.\n\n### Valeriana\n- **Uso tradicional**: Distúrbios do sono\n- **Evidência científica**: Apoio moderado\n\n## Mitos: O que NÃO tem comprovação\n\n### \"Natural = Seguro\"\n**Mito.** Muitas plantas são tóxicas. A cicuta é natural, mas letal.\n\n### \"Plantas não têm efeitos colaterais\"\n**Mito.** Plantas contêm moléculas biologicamente ativas que podem causar alergias, interações medicamentosas e toxicidade.\n\n## Como usar plantas medicinais com segurança\n\n1. **Consulte um profissional** — farmacêutico ou herborista qualificado\n2. **Procure produtos registados** — que cumpram padrões de qualidade\n3. **Informe seu médico** — sobre qualquer suplemento que está a tomar"
     },
     {
@@ -92,7 +92,7 @@
       },
       "date": "2026-04-12",
       "readTime": 9,
-      "image": "content/articles/antibioticos-resistencia.png",
+      "image": "assets/content/articles/antibioticos-resistencia.png",
       "content": "## A crise de resistência aos antibióticos\n\nA resistência aos antibióticos é uma das maiores ameaças à saúde global. Bactérias desenvolvem resistência quando expostas a antibióticos de forma inadequada.\n\n## Como ocorre a resistência?\n\nQuando um antibiótico é usado, elimina a maioria das bactérias suscetíveis. No entanto, bactérias com mutações que conferem resistência conseguem sobreviver e multiplicar-se.\n\n## Papel do Farmacêutico\n\n1. **Educação do doente**: Garantir que completa o tratamento\n2. **Dispensação racional**: Recusar prescrições inadequadas\n3. **Monitorização**: Acompanhar resultados do tratamento\n\n## Recomendações práticas\n\n- Nunca dispensar antibióticos sem prescrição\n- Instruir sobre importância da adesão\n- Reportar reações adversas\n- Participar em programas de stewardship"
     },
     {
@@ -111,7 +111,7 @@
       },
       "date": "2026-04-08",
       "readTime": 11,
-      "image": "content/articles/saude-mental-medicamentos.png",
+      "image": "assets/content/articles/saude-mental-medicamentos.png",
       "content": "## Destigmatização da saúde mental\n\nA saúde mental é tão importante quanto a saúde física. Os medicamentos psiquiátricos são ferramentas válidas no tratamento.\n\n## Tipos de medicamentos psiquiátricos\n\n### Antidepressivos\nUsados no tratamento de depressão e ansiedade. Trabalham ajustando neurotransmissores no cérebro.\n\n### Antipsicóticos\nIndicados em condições como esquizofrenia e transtorno bipolar.\n\n### Ansiolíticos\nUsados para reduzir sintomas de ansiedade.\n\n## Importância do acompanhamento\n\n- Regularidade nas consultas com profissional\n- Comunicar efeitos colaterais\n- Nunca interromper medicação sem orientação\n- Complementar com terapia psicológica\n\n## Recomendações para farmacêuticos\n\n- Oferecer apoio empático\n- Garantir confidencialidade\n- Orientar sobre efeitos esperados e colaterais\n- Facilitar acesso a recursos de saúde mental"
     },
     {
@@ -130,7 +130,7 @@
       },
       "date": "2026-04-03",
       "readTime": 7,
-      "image": "content/articles/vitaminas-suplementos.png",
+      "image": "assets/content/articles/vitaminas-suplementos.png",
       "content": "## O mito das megadoses\n\nMuitas pessoas acreditam que quanto mais vitaminas tomam, melhor. Isso não é verdade — e pode ser prejudicial.\n\n## Quando as vitaminas são necessárias?\n\n### Deficiências comprovadas\nSe tem carência de uma vitamina específica, suplementação é importante.\n\n### Populações em risco\n- Grávidas (ácido fólico)\n- Vegetarianos (vitamina B12)\n- Maiores de 60 anos (vitamina D e B12)\n\n## Riscos do excesso\n\n- **Vitamina A**: Toxicidade em doses altas\n- **Vitamina D**: Hipercalcemia\n- **Ferro**: Sobrecarga e danos hepáticos\n- **Vitamina E**: Aumento do risco de hemorragia\n\n## Recomendação final\n\nUma alimentação equilibrada é geralmente suficiente. Suplementação deve ser recomendada por profissional apenas quando necessário."
     },
     {
@@ -149,7 +149,7 @@
       },
       "date": "2026-03-28",
       "readTime": 10,
-      "image": "content/articles/idosos-medicamento.png",
+      "image": "assets/content/articles/idosos-medicamento.png",
       "content": "## Mudanças fisiológicas nos idosos\n\nO envelhecimento altera como o corpo processa medicamentos. Absorção, distribuição e eliminação são diferentes.\n\n## Polimedicação\n\nIdosos frequentemente tomam múltiplos medicamentos, aumentando o risco de interações.\n\n## Estratégias de segurança\n\n### Revisão regular\nRevisar todos os medicamentos periodicamente.\n\n### Simplificação\nReduzir número de medicamentos quando possível.\n\n### Monitorização\nAcompanhar reações adversas com cuidado.\n\n## Papel do farmacêutico\n\n- Avaliar apropriabilidade dos medicamentos\n- Orientar sobre horários simples de administração\n- Verificar adesão\n- Detectar polifarmácia inadequada"
     },
     {
@@ -168,7 +168,7 @@
       },
       "date": "2026-03-25",
       "readTime": 8,
-      "image": "content/articles/tecnologia-farmacia.png",
+      "image": "assets/content/articles/tecnologia-farmacia.png",
       "content": "## Inteligência Artificial na Detecção\n\nA IA já ajuda a identificar interações medicamentosas complexas que o ser humano pode perder.\n\n## Sistemas de Dispensação Automática\n\nRobôs garantem precisão na preparação de medicamentos, reduzindo erros.\n\n## Telemedicina e Farmácia Online\n\nConsulta remota e dispensação domiciliar expandem o acesso.\n\n## Blockchain para Rastreabilidade\n\nTecnologia permite rastrear medicamentos desde a produção até o doente, combatendo falsificações.\n\n## O Futuro\n\nA tecnologia complementa — não substitui — o profissional farmacêutico. O elemento humano e a empatia continuam essenciais."
     }
   ]
