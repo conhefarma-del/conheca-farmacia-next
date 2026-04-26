@@ -19,7 +19,7 @@
         "role": "Farmacêutico · Palestrante",
         "organization": "UNILA"
       },
-      "image": "assets/content/events/workshop_farmacologia_capa.png",
+      "image": "/content/events/workshop_farmacologia_capa.png",
       "registrationLink": "#"
     },
     {
@@ -41,7 +41,7 @@
         "role": "Estudante · Colaboradora",
         "organization": "Conheça Farmácia"
       },
-      "image": "assets/content/events/palestra_uso_racional_capa.png",
+      "image": "/content/events/palestra_uso_racional_capa.png",
       "registrationLink": "#"
     },
     {
@@ -63,7 +63,7 @@
         "role": "Farmacêutica · Autora",
         "organization": "OAFAR"
       },
-      "image": "assets/content/events/congresso-excelencia.png",
+      "image": "/content/events/congresso-excelencia.png",
       "registrationLink": "#"
     },
     {
@@ -85,7 +85,7 @@
         "role": "Farmacêutico · Palestrante",
         "organization": "Conheça Farmácia"
       },
-      "image": "assets/content/articles/live_valorizacao_carreira.png",
+      "image": "/content/articles/live_valorizacao_carreira.png",
       "registrationLink": "#"
     },
     {
@@ -107,7 +107,7 @@
         "role": "Estudante · Colaboradora",
         "organization": "Conheça Farmácia"
       },
-      "image": "assets/content/articles/Saúde-e-Informação---Carrossel_01.png",
+      "image": "/content/articles/Saúde-e-Informação---Carrossel_01.png",
       "registrationLink": "#"
     },
     {
@@ -129,7 +129,7 @@
         "role": "Farmacêutica · Autora",
         "organization": "UNILA"
       },
-      "image": "assets/content/events/workshop_farmacologia_capa.png",
+      "image": "/content/events/workshop_farmacologia_capa.png",
       "registrationLink": "#"
     },
     {
@@ -151,7 +151,7 @@
         "role": "Farmacêutico · Palestrante",
         "organization": "Ministério da Saúde"
       },
-      "image": "assets/content/articles/Para-Profissionais.png",
+      "image": "/content/articles/Para-Profissionais.png",
       "registrationLink": "#"
     },
     {
@@ -173,7 +173,7 @@
         "role": "Estudante · Colaboradora",
         "organization": "Conheça Farmácia"
       },
-      "image": "assets/content/articles/Curiosidade-Farmacêutica.png",
+      "image": "/content/articles/Curiosidade-Farmacêutica.png",
       "registrationLink": "#"
     },
     {
@@ -195,7 +195,7 @@
         "role": "Farmacêutica · Autora",
         "organization": "OAFAR"
       },
-      "image": "assets/content/articles/Para-Profissionais---Carrossel_01.png",
+      "image": "/content/articles/Para-Profissionais---Carrossel_01.png",
       "registrationLink": "#"
     },
     {
@@ -217,7 +217,7 @@
         "role": "Farmacêutico · Palestrante",
         "organization": "UNILA"
       },
-      "image": "assets/content/articles/Saúde-e-Informação---Carrossel_01.png",
+      "image": "/content/articles/Saúde-e-Informação---Carrossel_01.png",
       "registrationLink": "#"
     }
   ]
