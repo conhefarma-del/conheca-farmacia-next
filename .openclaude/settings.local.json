@@ -21,7 +21,13 @@
       "Bash(curl -s -X GET \"https://tbqsazriorqzexjwhekw.supabase.co/rest/v1/\" -H \"apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRicXNhenJpb3JxemV4andoZWt3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTQ0MjgsImV4cCI6MjA5MjA5MDQyOH0.r3dpXNtYtoezSDSk4DJOYIXrLbGgq6P9MK1f8lIR3IE\" -H \"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRicXNhenJpb3JxemV4andoZWt3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTQ0MjgsImV4cCI6MjA5MjA5MDQyOH0.r3dpXNtYtoezSDSk4DJOYIXrLbGgq6P9MK1f8lIR3IE\")",
       "Bash(curl:*)",
       "Bash(cd:*)",
-      "Bash(npx -y @supabase/mcp@latest --help)"
+      "Bash(npx -y @supabase/mcp@latest --help)",
+      "Bash(ls -la dist/assets/*.png dist/assets/*.jpg)",
+      "Bash(cp -r assets/content/articles/* public/content/articles/)",
+      "Bash(cp -r assets/content/events/* public/content/events/)",
+      "Bash(cp -r assets/icons/* public/assets/icons/)",
+      "Bash(cp -r assets/images/* public/assets/images/)",
+      "Bash(cp -r assets/logo public/)"
     ]
   }
 }
