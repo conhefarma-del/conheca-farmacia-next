@@ -27,7 +27,18 @@
       "Bash(cp -r assets/content/events/* public/content/events/)",
       "Bash(cp -r assets/icons/* public/assets/icons/)",
       "Bash(cp -r assets/images/* public/assets/images/)",
-      "Bash(cp -r assets/logo public/)"
+      "Bash(cp -r assets/logo public/)",
+      "Bash(sed -i 's/<button class=\"\"filter-btn\"\" data-category=\"\"live\"\">Live<\\\\/button>//' \"C:/Users/bapti/Documents/Criação de WebSites/Conheça Farmácia/eventos.html\")",
+      "Bash(sed -i 's/<button class=\"\"filter-btn\"\" data-category=\"\"webinar\"\">Webinar<\\\\/button>//' \"C:/Users/bapti/Documents/Criação de WebSites/Conheça Farmácia/eventos.html\")",
+      "Bash(sed -i \"s/live: ''#006171'',//g\" \"C:/Users/bapti/Documents/Criação de WebSites/Conheça Farmácia/src/event-detail.js\")",
+      "Bash(sed -i \"s/webinar: ''#7c3aed''//g\" \"C:/Users/bapti/Documents/Criação de WebSites/Conheça Farmácia/src/event-detail.js\")",
+      "Bash(sed -i \"s/live: ''#006171'',//g\" \"C:/Users/bapti/Documents/Criação de WebSites/Conheça Farmácia/src/home-events-logic.js\")",
+      "Bash(sed -i \"s/webinar: ''#7c3aed''//g\" \"C:/Users/bapti/Documents/Criação de WebSites/Conheça Farmácia/src/home-events-logic.js\")",
+      "Bash(sed -i 's/congresso: ''''#002a32'''',/congresso: ''''#002a32''''/' \"C:/Users/bapti/Documents/Criação de WebSites/Conheça Farmácia/src/home-events-logic.js\")",
+      "Bash(dir:*)",
+      "Bash(Select-String \".html$\")",
+      "Bash(powershell -Command \"Get-ChildItem 'C:\\\\Users\\\\bapti\\\\Documents\\\\Criação de WebSites\\\\Conheça Farmácia' -Filter '*.html' | Select-Object -ExpandProperty Name\")",
+      "Bash(ls:*)"
     ]
   }
 }
