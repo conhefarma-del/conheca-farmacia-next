@@ -958,3 +958,4 @@
     @apply font-semibold;
   }
 }
+.capacity-status { @apply flex items-center gap-2 text-xs text-brand-deep/60 mt-2; } .status-dot { @apply w-2 h-2 rounded-full bg-green-500 transition-colors duration-300; animation: pulse 2s infinite; } .status-dot.updating { @apply bg-yellow-500; } .status-dot.error { @apply bg-red-500; } .status-dot.valid { @apply bg-green-500; } .status-text { @apply text-xs; } @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }

@@ -1,6 +1,8 @@
 // Importar configurações do Supabase
 import { supabaseClient, SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
 import eventsData from './content/events-catalog.json';
+import { createPolling } from './lib/polling.js';
+import { getCachedCapacity, setCapacityCache } from './lib/capacity-cache.js';
 
 function formatDate(dateStr) {
   const date = new Date(dateStr + 'T00:00:00');
@@ -291,55 +293,118 @@ document.addEventListener('DOMContentLoaded', async () => {
   // ==========================================
   // REFRESH CAPACITY: Atualizar vagas periodicamente
   // ==========================================
+  let pollingInstance = null;
+
   async function refreshCapacity() {
     console.log('🔄 Atualizando contagem de vagas...');
+    updateCapacityStatus('updating');
+
+    // Tentar obter do cache primeiro
+    const cached = await getCachedCapacity(event.slug);
+    if (cached) {
+      updateCapacityUI(cached);
+      updateCapacityStatus('valid');
+      console.log('✅ Dados do cache utilizados');
+      return;
+    }
+
+    // Cache inválido ou expirado - buscar dados frescos
     const realCount = await getInscriptionCount(event.slug);
 
     if (realCount !== null && realCount !== undefined) {
       const spotsLeft = event.capacity - realCount;
       const capacityPercent = Math.round((realCount / event.capacity) * 100);
 
-      // Atualizar barra de capacidade
-      const capacityFilled = document.getElementById('event-capacity-filled');
-      if (capacityFilled) {
-        capacityFilled.style.width = capacityPercent + '%';
-        capacityFilled.style.backgroundColor = capacityPercent >= 100 ? '#dc2626' : categoryColor;
-      }
+      const capacityData = { spotsLeft, capacityPercent, realCount };
 
-      // Atualizar texto de vagas
-      const capacityText = document.getElementById('event-capacity-text');
-      if (capacityText) {
-        if (spotsLeft > 0) {
-          capacityText.textContent = `${spotsLeft} vagas disponíveis de ${event.capacity}`;
-          capacityText.style.color = '#1f2937';
-        } else {
-          capacityText.textContent = 'Evento completo - Sem vagas disponíveis';
-          capacityText.style.color = '#dc2626';
-        }
-      }
+      // Guardar no cache
+      await setCapacityCache(event.slug, capacityData);
 
-      // Atualizar botão de inscrição
-      const registrationBtn = document.getElementById('event-registration-btn');
-      if (registrationBtn) {
-        if (spotsLeft <= 0) {
-          registrationBtn.textContent = 'Evento Completo';
-          registrationBtn.disabled = true;
-          registrationBtn.classList.add('btn-disabled');
-        }
-      }
-
+      updateCapacityUI(capacityData);
+      updateCapacityStatus('valid');
       console.log(`✅ Vagas atualizadas: ${spotsLeft} disponíveis`);
+    } else {
+      updateCapacityStatus('error');
     }
   }
 
-  // Polling a cada 30 segundos
-  const refreshInterval = setInterval(refreshCapacity, 30000);
+  function updateCapacityUI(data) {
+    const { spotsLeft, capacityPercent, realCount } = data;
 
-  // Refresh on focus (quando voltar à aba)
-  window.addEventListener('focus', () => {
-    console.log('👁️ Janela em foco, atualizando vagas...');
-    refreshCapacity();
-  });
+    // Atualizar barra de capacidade
+    const capacityFilled = document.getElementById('event-capacity-filled');
+    if (capacityFilled) {
+      capacityFilled.style.width = capacityPercent + '%';
+      capacityFilled.style.backgroundColor = capacityPercent >= 100 ? '#dc2626' : categoryColor;
+    }
+
+    // Atualizar texto de vagas
+    const capacityText = document.getElementById('event-capacity-text');
+    if (capacityText) {
+      if (spotsLeft > 0) {
+        capacityText.textContent = `${spotsLeft} vagas disponíveis de ${event.capacity}`;
+        capacityText.style.color = '#1f2937';
+      } else {
+        capacityText.textContent = 'Evento completo - Sem vagas disponíveis';
+        capacityText.style.color = '#dc2626';
+      }
+    }
+
+    // Atualizar botão de inscrição
+    const registrationBtn = document.getElementById('event-registration-btn');
+    if (registrationBtn) {
+      if (spotsLeft <= 0) {
+        registrationBtn.textContent = 'Evento Completo';
+        registrationBtn.disabled = true;
+        registrationBtn.classList.add('btn-disabled');
+      }
+    }
+  }
+
+  // Indicador visual de status
+  function updateCapacityStatus(status, message) {
+    const statusEl = document.getElementById('capacity-status');
+    if (!statusEl) return;
+
+    const dot = statusEl.querySelector('.status-dot');
+    const text = statusEl.querySelector('.status-text');
+    if (!dot || !text) return;
+
+    dot.classList.remove('updating', 'error', 'valid');
+
+    switch (status) {
+      case 'updating':
+        dot.classList.add('updating');
+        text.textContent = 'A atualizar...';
+        break;
+      case 'error':
+        dot.classList.add('error');
+        text.textContent = message || 'Erro na atualização';
+        break;
+      case 'valid':
+        dot.classList.add('valid');
+        text.textContent = 'Vagas atualizadas';
+        break;
+      default:
+        text.textContent = 'Vagas atualizadas agora';
+    }
+  }
+
+  // Iniciar polling com cleanup e visibility detection
+  function startCapacityPolling() {
+    pollingInstance = createPolling(refreshCapacity, {
+      initialInterval: 30000, // 30s em primeiro plano
+      maxInterval: 120000, // 2min máximo com backoff
+      maxRetries: 5,
+      useBackoff: true
+    });
+
+    // Setup cleanup quando elemento for removido
+    const eventContainer = document.getElementById('event-capacity-container');
+    pollingInstance.setupCleanup(eventContainer);
+  }
+
+  startCapacityPolling();
 
   // Verificar se há parâmetro refresh=true na URL
   const urlParams = new URLSearchParams(window.location.search);
