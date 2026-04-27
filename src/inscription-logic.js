@@ -1,4 +1,5 @@
 import { supabaseClient, SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
+import { initInlineValidation } from './inscription-validation.js';
 
 // Inicializar Supabase na janela global para compatibilidade
 window.supabase = supabaseClient;
@@ -510,6 +511,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   // Initialize on page load
-  initializeForm();
+  initInlineValidation(); initializeForm();
   console.log('✓ Sistema de inscrição pronto');
 });

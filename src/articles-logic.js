@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const card = document.createElement('article');
         card.className = 'article-card article-card-anim';
         card.innerHTML = `
-          <img src="${article.image}" alt="${article.title}" class="article-card-img">
+          <img src="${article.image}" alt="${article.title}" class="article-card-img" loading="lazy" decoding="async">
           <div class="article-card-content">
             <span class="article-tag tag-${article.category}">${article.categoryLabel}</span>
             <h3 class="article-card-title">${article.title}</h3>

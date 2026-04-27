@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   <div class="day">${day}</div>
   <div class="month">${month}</div>
  </div>
- <img src="${live.imagem}" alt="${live.titulo}" class="event-card-image">
+ <img src="${live.imagem}" alt="${live.titulo}" class="event-card-image" loading="lazy" decoding="async">
 </div>
 
 <div class="event-card-content">
