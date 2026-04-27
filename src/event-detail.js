@@ -159,9 +159,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       const colors = {
         workshop: '#ff6c23',
         palestra: '#0a844f',
-        congresso: '#002a32',
-        live: '#006171',
-        webinar: '#7c3aed'
+        congresso: '#002a32'
+        
+        
       };
       return colors[category] || '#00493a';
     }
@@ -390,8 +390,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         workshop: '#ff6c23',
         palestra: '#0a844f',
         congresso: '#002a32',
-        live: '#006171',
-        webinar: '#7c3aed'
+        
+        
       };
       return colors[category] || '#00493a';
     }

@@ -3,14 +3,10 @@
 <head>
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>Artigo - Conheça Farmácia</title>
+ <title>Lives e Webinars - Conheça Farmácia</title>
  <link rel="preconnect" href="https://fonts.googleapis.com">
  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
- <!-- Markdown Parser -->
- <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
- <!-- Security: DOMPurify for XSS Protection -->
- <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
 </head>
 <body class="antialiased text-brand-deep bg-brand-bg">
 
@@ -41,77 +37,81 @@
 </header>
 
  <main>
- <!-- Article Hero Section -->
- <section id="article-hero" class="article-hero">
+ <!-- Hero Section -->
+ <section class="events-hero">
  <div class="container-center">
- <!-- Category Badge -->
- <div class="mb-6">
- <span id="article-category" class="article-tag"></span>
+ <div class="text-center py-12 md:py-16">
+ <h1 class="text-5xl md:text-7xl font-bold text-brand-deep mb-6">Lives e Webinars</h1>
+ <p class="hero-subtitle">Transmissões ao vivo e webinars exclusivos com conteúdo especializado para farmacêuticos.</p>
+ </div>
+ </div>
+ </section>
+
+ <!-- Filters Section -->
+ <section class="events-filter-section">
+ <div class="container-center">
+ <div class="max-w-5xl mx-auto">
+ <!-- Temporal Filter (Toggle) -->
+ <div class="temporal-filter mb-12">
+ <div class="flex justify-center gap-4 flex-wrap">
+ <button class="temporal-btn temporal-btn-active" data-status="upcoming">
+ Próximas Lives
+ </button>
+ <button class="temporal-btn" data-status="past">
+ Lives Passadas
+ </button>
+ </div>
  </div>
 
- <!-- Title -->
- <h1 id="article-title" class="article-hero-title mb-10"></h1>
-
- <!-- Featured Image -->
- <div class="article-hero-image-wrapper mb-12">
- <img id="article-featured-image" src="" alt="" class="article-featured-image">
+ <!-- Category Filter (Multi-select) -->
+ <div class="category-filter">
+ <div class="flex justify-center gap-3 flex-wrap">
+ <button class="filter-btn filter-btn-active" data-category="all">Todas</button>
+ <button class="filter-btn" data-category="live">Live</button>
+ <button class="filter-btn" data-category="webinar">Webinar</button>
  </div>
-
- <!-- Meta Information -->
- <div class="article-meta-bar">
- <div class="flex items-center gap-6 flex-wrap">
- <div class="flex items-center gap-3">
- <div id="article-author-avatar" class="article-author-avatar"></div>
- <div>
- <div id="article-author-name" class="font-semibold text-sm"></div>
- <div id="article-author-role" class="text-xs text-brand-deep/60"></div>
- </div>
- </div>
- <span class="text-sm text-brand-deep/60">·</span>
- <div id="article-date" class="text-sm text-brand-deep/60"></div>
- <span class="text-sm text-brand-deep/60">·</span>
- <div id="article-readtime" class="text-sm text-brand-deep/60"></div>
  </div>
  </div>
  </div>
  </section>
 
- <!-- Article Content -->
- <section class="article-content-section">
+ <!-- Lives Grid -->
+ <section class="events-grid-section">
  <div class="container-center">
- <div class="article-grid">
- <!-- Main Content -->
- <div class="article-body-wrapper">
- <div id="article-body" class="article-body"></div>
+ <div id="lives-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+ <!-- Lives will be rendered here by JS -->
  </div>
 
- <!-- Sidebar: Author Card -->
- <aside class="article-sidebar">
- <div class="author-card-detailed">
- <div id="sidebar-author-avatar" class="author-card-avatar-lg"></div>
- <div id="sidebar-author-role" class="author-card-role"></div>
- <h3 id="sidebar-author-name" class="author-card-name-lg"></h3>
- <p id="sidebar-author-bio" class="author-card-bio"></p>
- </div>
- </aside>
+ <!-- No Results State -->
+ <div id="no-results" class="hidden text-center py-20">
+ <div class="text-6xl mb-4">🔍</div>
+ <h3 class="text-xl font-bold text-brand-deep">Nenhuma live encontrada</h3>
+ <p class="text-brand-deep/60">Tente mudar os filtros ou volte em breve para novas lives!</p>
  </div>
  </div>
  </section>
 
- <!-- Related Articles -->
- <section class="article-related-section">
+ <!-- Newsletter Signup Section -->
+ <section class="newsletter-section">
  <div class="container-center">
- <h2 class="section-title mb-12">Artigos Relacionados</h2>
- <div id="related-articles-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
- <!-- Related articles will be rendered here -->
- </div>
- </div>
- </section>
+ <div class="max-w-2xl mx-auto text-center">
+ <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Fique Atualizado</h2>
+ <p class="text-white/80 mb-8">Receba notificações sobre novas lives e webinars diretamente na sua caixa de entrada.</p>
 
- <!-- Back to Articles CTA -->
- <section class="py-16 bg-brand-bg-alt">
- <div class="container-center text-center">
- <a href="artigos.html" class="btn btn-primary">← Voltar para Artigos</a>
+ <form id="newsletter-form" class="flex flex-col md:flex-row gap-3 items-center justify-center">
+ <input
+ type="email"
+ id="newsletter-email"
+ placeholder="Seu email"
+ class="flex-1 min-w-[250px] px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50"
+ required
+ >
+ <button type="submit" class="btn btn-primary whitespace-nowrap">
+ Notifique-me
+ </button>
+ </form>
+ <p class="text-white/60 text-sm mt-4">Respeitamos sua privacidade. Sem spam, prometemos!</p>
+ </div>
  </div>
  </section>
  </main>
@@ -169,6 +169,6 @@
  </footer>
 
 <script type="module" src="/main.js"></script>
-<script type="module" src="/src/article-detail.js"></script>
+<script type="module" src="/src/lives-logic.js"></script>
 </body>
 </html>

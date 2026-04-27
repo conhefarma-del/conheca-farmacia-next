@@ -9,10 +9,10 @@
  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
  <!--
-  ⚠️ IMPORTANTE: Este ficheiro requer o servidor Vite para carregar o CSS!
-  Para desenvolvimento, execute: npm run dev
-  Para produção, execute: npm run build && npm run preview
-  → Verifique DESENVOLVIMENTO.md para mais informações
+ ⚠️ IMPORTANTE: Este ficheiro requer o servidor Vite para carregar o CSS!
+ Para desenvolvimento, execute: npm run dev
+ Para produção, execute: npm run build && npm run preview
+ → Verifique DESENVOLVIMENTO.md para mais informações
  -->
 </head>
 <body class="antialiased text-brand-deep bg-brand-bg">
@@ -31,6 +31,7 @@
  <li><a href="index.html#inicio">Início</a></li>
  <li><a href="artigos.html">Artigos</a></li>
  <li><a href="eventos.html">Eventos</a></li>
+ <li><a href="lives-list.html">Lives</a></li>
  <li><a href="sobre.html">Sobre Nós</a></li>
  </ul>
  <button class="hamburger" aria-label="Menu">
@@ -89,8 +90,8 @@
  <article class="article-card">
  <img src="/content/articles/genericos-similares.png" alt="Genéricos vs Referência" class="article-card-img">
  <div class="article-card-content">
-  <h3 class="article-card-title">A diferença entre Genéricos e Similares</h3>
-  <a href="artigo.html?id=001-genericos-similares" class="article-card-link">Ler mais <span>→</span></a>
+ <h3 class="article-card-title">A diferença entre Genéricos e Similares</h3>
+ <a href="artigo.html?id=001-genericos-similares" class="article-card-link">Ler mais <span>→</span></a>
  </div>
  </article>
 
@@ -98,8 +99,8 @@
  <article class="article-card">
  <img src="/content/articles/3-praticas-clinicas.png" alt="Boas Práticas" class="article-card-img">
  <div class="article-card-content">
-  <h3 class="article-card-title">3 Práticas Clínicas Essenciais para Farmacêuticos</h3>
-  <a href="artigo.html?id=002-praticas-clinicas" class="article-card-link">Ler mais <span>→</span></a>
+ <h3 class="article-card-title">3 Práticas Clínicas Essenciais para Farmacêuticos</h3>
+ <a href="artigo.html?id=002-praticas-clinicas" class="article-card-link">Ler mais <span>→</span></a>
  </div>
  </article>
 
@@ -107,8 +108,8 @@
  <article class="article-card">
  <img src="/content/articles/bula-corretamente.png" alt="Boas Práticas" class="article-card-img">
  <div class="article-card-content">
-  <h3 class="article-card-title">Como ler uma bula corretamente</h3>
-  <a href="artigo.html?id=003-bula-corretamente" class="article-card-link">Ler mais <span>→</span></a>
+ <h3 class="article-card-title">Como ler uma bula corretamente</h3>
+ <a href="artigo.html?id=003-bula-corretamente" class="article-card-link">Ler mais <span>→</span></a>
  </div>
  </article>
 
@@ -116,47 +117,27 @@
  </div>
  </section>
 
- <!-- 2. Eventos em Destaque-->
+ <!-- 2. Eventos em Destaque -->
  <section id="eventos" class="section-padding bg-brand-bg">
  <div class="container-center">
  <h2 class="section-title">Eventos em Destaque</h2>
- <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-
- <!-- Evento 1 -->
- <div class="event-card">
- <div class="event-card-header">
- <img src="/content/articles/Banner-WorkShop.png" alt="Workshop: Farmacologia Aplicada a Grupos de Riscos" class="event-card-image">
-  </div>
- <div class="event-card-content">
- <div class="event-date">
-  13 de Abril, 2024
- </div>
- <h3 class="event-card-title">Workshop: Farmacologia Aplicada a Grupos de Riscos</h3>
- <p class="event-card-desc">Se capacita como profissional de saúde com conhecimentos e habilidades necessárias para uma prática clínica segura e eficaz.</p>
- <a href="evento.html?id=007-workshop-farmacologia-aplicada-grupos-riscos" class="btn btn-primary btn-small w-full btn-inscrever">Mais Informações</a>
- </div>
- </div>
-
- <!-- Evento 2 -->
- <div class="event-card">
- <div class="event-card-header">
- <img src="/content/events/IMG_5615.jpg" alt="Atualização" class="event-card-image">
-  </div>
- <div class="event-card-content">
- <div class="event-date">
-  05 de Junho, 2026
- </div>
- <h3 class="event-card-title">Atualização Normativa: Dispensação de Psicotrópicos</h3>
- <p class="event-card-desc">Análise detalhada das novas portarias sobre a prescrição e controlo de substâncias psicotrópicas.</p>
- <button data-event-slug="atualizacao-normativa-psicotropicos" class="btn btn-primary btn-small w-full btn-inscrever">Mais Informações</button>
- </div>
- </div>
-
+ <div id="home-events-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+ <!-- Eventos serão renderizados via JavaScript -->
  </div>
  </div>
  </section>
 
- <!-- 3. Impacto e Números -->
+<!-- 3. Lives e Webinars em Destaque -->
+ <section id="lives" class="section-padding bg-brand-bg-alt">
+ <div class="container-center">
+ <h2 class="section-title">Lives e Webinars</h2>
+ <div id="home-lives-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+ <!-- Lives serão renderizados via JavaScript -->
+ </div>
+ </div>
+ </section>
+
+ <!-- 4. Impacto e Números -->
  <section class="stats-section">
  <div class="container-center">
  <div class="stats-grid">
@@ -180,7 +161,7 @@
  </div>
  </section>
 
- <!-- 4. Footer -->
+ <!-- 5. Footer -->
  <footer class="footer">
  <div class="container-center">
  <div class="footer-grid">
@@ -197,6 +178,7 @@
  <li><a href="index.html#inicio">Início</a></li>
  <li><a href="artigos.html">Artigos</a></li>
  <li><a href="eventos.html">Eventos</a></li>
+ <li><a href="lives-list.html">Lives</a></li>
  <li><a href="sobre.html">Sobre Nós</a></li>
  </ul>
  </div>
@@ -235,5 +217,6 @@
 
 <!-- Vite: This is where Vite injects CSS/JS during development -->
 <script type="module" src="/main.js"></script>
+<script type="module" src="/src/home-events-logic.js"></script>
 </body>
 </html>
