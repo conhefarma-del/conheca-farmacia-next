@@ -20,6 +20,8 @@ export default defineConfig({
         evento: resolve(__dirname, 'evento.html'),
         inscricao: resolve(__dirname, 'inscricao.html'),
         sobre: resolve(__dirname, 'sobre.html'),
+        lives: resolve(__dirname, 'lives.html'),
+        livesList: resolve(__dirname, 'lives-list.html'),
       },
     },
   },
