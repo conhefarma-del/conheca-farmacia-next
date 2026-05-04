@@ -16,6 +16,27 @@
   --shadow-soft: 0 4px 20px rgba(0, 42, 50, 0.05);
   --shadow-md-soft: 0 10px 30px rgba(0, 42, 50, 0.08);
 }
+/* Dark Mode Theme Overrides */
+html.dark {
+  --color-brand-bg: #0a0f0d;
+  --color-brand-bg-alt: #111816;
+  --color-brand-divider: #1f2927;
+  --color-brand-deep: #e5e7eb;
+  --color-brand-primary: #005c4a;
+  --color-brand-accent: #0d995f;
+}
+
+/* Dark mode body background */
+html.dark body {
+  background-color: var(--color-brand-bg);
+  color: var(--color-brand-deep);
+}
+
+/* Ensure smooth transitions */
+* {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
 
 /* Custom Components & Utilities */
 @layer components {
@@ -959,3 +980,42 @@
   }
 }
 .capacity-status { @apply flex items-center gap-2 text-xs text-brand-deep/60 mt-2; } .status-dot { @apply w-2 h-2 rounded-full bg-green-500 transition-colors duration-300; animation: pulse 2s infinite; } .status-dot.updating { @apply bg-yellow-500; } .status-dot.error { @apply bg-red-500; } .status-dot.valid { @apply bg-green-500; } .status-text { @apply text-xs; } @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+
+/* Theme Toggle Button */
+.theme-toggle {
+  @apply p-2 rounded-full hover:bg-brand-primary/10 transition-colors duration-200;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-toggle svg {
+  @apply w-5 h-5;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Sun icon (shown in dark mode) */
+.theme-toggle .sun-icon {
+  @apply hidden;
+}
+
+/* Moon icon (shown in light mode) */
+.theme-toggle .moon-icon {
+  @apply block;
+}
+
+html.dark .theme-toggle .sun-icon {
+  @apply block;
+}
+
+html.dark .theme-toggle .moon-icon {
+  @apply hidden;
+}
