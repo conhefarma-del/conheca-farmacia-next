@@ -32,6 +32,38 @@ html.dark body {
   color: var(--color-brand-deep);
 }
 
+/* Dark mode form inputs */
+html.dark .form-input {
+  background-color: var(--color-brand-bg-alt);
+  border-color: var(--color-brand-divider);
+  color: var(--color-brand-deep);
+}
+
+html.dark .form-input::placeholder {
+  color: var(--color-brand-deep);
+  opacity: 0.5;
+}
+
+html.dark .form-input:focus {
+  border-color: var(--color-brand-accent);
+}
+
+html.dark .form-select {
+  background-color: var(--color-brand-bg-alt);
+  border-color: var(--color-brand-divider);
+  color: var(--color-brand-deep);
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e5e7eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+}
+
+html.dark .form-label {
+  color: var(--color-brand-deep);
+}
+
+html.dark .form-note {
+  color: var(--color-brand-deep);
+  opacity: 0.6;
+}
+
 /* Ensure smooth transitions */
 * {
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
