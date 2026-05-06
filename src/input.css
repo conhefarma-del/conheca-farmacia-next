@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 @theme {
   /* Core Brand Colors */
@@ -268,7 +268,7 @@ html.dark .form-note {
     @apply w-full h-full object-cover;
   }
 
-  /* Removido o absolute daqui para não flutuar sobre a imagem */
+  /* Removido o absolute daqui para nÃ£o flutuar sobre a imagem */
   .event-badge {
     @apply text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider;
   }
@@ -278,11 +278,11 @@ html.dark .form-note {
   }
 
   .event-card-title {
-    /* Reduzi um pouco a margem superior já que os badges agora estão acima */
+    /* Reduzi um pouco a margem superior jÃ¡ que os badges agora estÃ£o acima */
     @apply text-lg font-bold text-brand-deep mb-3 leading-tight;
   }
 
-  /* Meta itens com melhor espaçamento */
+  /* Meta itens com melhor espaÃ§amento */
   .event-meta-item {
     @apply flex items-center gap-2 text-sm text-brand-deep/70 mb-1;
   }
@@ -1079,6 +1079,7 @@ html.dark .checkmark {
   }
 }
 
+/* Theme Toggle Wrapper - inside nav-links */.theme-toggle-wrapper {  display: flex;  align-items: center;}
 /* Theme Toggle Button */
 .theme-toggle {
   @apply p-2 rounded-full hover:bg-brand-primary/10 transition-colors duration-200;
