@@ -637,6 +637,24 @@ html.dark .form-note {
     border-top-color: var(--color-brand-divider);
   }
 
+/* Dark mode article card */
+html.dark .article-card { background-color: var(--color-brand-bg-alt); border-color: var(--color-brand-divider) !important; border-width: 1px !important; }
+html.dark .article-card-title { color: var(--color-brand-deep); }
+html.dark .article-card-excerpt { color: var(--color-brand-deep); }
+html.dark .article-card-link { color: var(--color-brand-accent); }
+/* Dark mode floating card */
+html.dark .floating-card {
+  background-color: var(--color-brand-bg-alt);
+  border: 1px solid var(--color-brand-divider);
+}
+html.dark .card-item {
+  color: var(--color-brand-deep);
+}
+html.dark .checkmark {
+  color: var(--color-brand-accent);
+}
+
+
   .event-card-header {
     @apply relative w-full h-48 overflow-hidden;
   }
