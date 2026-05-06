@@ -1117,3 +1117,19 @@ html.dark .theme-toggle .sun-icon {
 html.dark .theme-toggle .moon-icon {
   @apply hidden;
 }
+
+/* Theme Toggle Wrapper - desktop: centralize and align with menu items */
+.theme-toggle-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mobile: make toggle wrapper look like a menu item */
+@media (max-width: 768px) {
+  .theme-toggle-wrapper {
+    padding: 0.5rem 0;
+    width: 100%;
+    justify-content: center;
+  }
+}
