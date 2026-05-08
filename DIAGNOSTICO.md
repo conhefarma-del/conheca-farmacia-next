@@ -13,6 +13,7 @@
 ### Erro: "Tabela 'inscricoes' não encontrada"
 
 **Solução:**
+
 1. Aceda a [Supabase Dashboard](https://app.supabase.com/project/tbqsazriorqzexjwhekw)
 2. Vá para **SQL Editor**
 3. Copie todo o conteúdo de `SUPABASE_MIGRATION.sql`
@@ -35,6 +36,7 @@ O script SQL já cria as políticas corretas, mas verifique:
    - ✅ **SELECT** - "Permitir leitura para autenticados"
 
 Se não estiverem, execute:
+
 ```sql
 -- Recrear políticas
 DROP POLICY IF EXISTS "Permitir inscrições de qualquer um" ON inscricoes;
@@ -56,16 +58,18 @@ CREATE POLICY "Permitir leitura para autenticados" ON inscricoes
 **Solução:**
 
 1. Verifique o arquivo `.env`:
+
    ```
    SUPABASE_URL=https://tbqsazriorqzexjwhekw.supabase.co
    SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
    ```
 
 2. Compare com `config.js`:
+
    ```javascript
    const SUPABASE_CONFIG = {
-       url: 'https://tbqsazriorqzexjwhekw.supabase.co',
-       anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+     url: "https://tbqsazriorqzexjwhekw.supabase.co",
+     anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
    };
    ```
 
@@ -144,12 +148,12 @@ Abra **F12** (Developer Tools) e vá para **Console** para ver:
 
 ## 💡 Troubleshooting Rápido
 
-| Sintoma | Causa | Solução |
-|---------|-------|---------|
-| "Cannot read property 'from'" | Supabase não carregou | Aguarde 2-3 segundos |
-| "Policy violation" | RLS incorreto | Recrie políticas |
-| Inscrição salva mas sem dados | Formulário vazio | Valide campos required |
-| Erro CORS | Problema de origem | Use HTTPS ou servidor |
+| Sintoma                       | Causa                 | Solução                |
+| ----------------------------- | --------------------- | ---------------------- |
+| "Cannot read property 'from'" | Supabase não carregou | Aguarde 2-3 segundos   |
+| "Policy violation"            | RLS incorreto         | Recrie políticas       |
+| Inscrição salva mas sem dados | Formulário vazio      | Valide campos required |
+| Erro CORS                     | Problema de origem    | Use HTTPS ou servidor  |
 
 ---
 

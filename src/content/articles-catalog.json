@@ -17,7 +17,12 @@
       "date": "2026-04-15",
       "readTime": 8,
       "image": "/content/articles/genericos-similares.png",
-      "content": "## O que são medicamentos genéricos?\n\nMedicamentos genéricos são cópias exatas de medicamentos de marca já existentes, fabricados depois de expirado o período de patente. Contêm o mesmo ingrediente ativo, na mesma dosagem, forma farmacêutica e via de administração que o original.\n\nOs genéricos devem cumprir com rigorosos padrões de qualidade e eficácia estabelecidos pelas autoridades regulatórias, como a Agência Europeia de Medicamentos (EMA) e órgãos similares internacionais.\n\n## O que são medicamentos similares?\n\nMedicamentos similares são aqueles que contêm os mesmos princípios ativos, concentração, forma farmacêutica e via de administração que o medicamento de referência, mas **não são comparados bioquimicamente** com o original.\n\nIsso significa que, embora tenham a mesma composição, não há garantia de bioequivalência absoluta — ou seja, o corpo pode absorver e processar o medicamento de forma ligeiramente diferente.\n\n## Principais diferenças\n\n### Qualidade e Segurança\n- **Genéricos**: Aprovados através de estudos de bioequivalência. Devem ter a mesma eficácia que o original.\n- **Similares**: Aprovados com base em dados clínicos e não-clínicos, mas sem comprovação direta de bioequivalência.\n\n### Preço\n- **Genéricos**: Significativamente mais baratos (podem custar 50-80% menos).\n- **Similares**: Geralmente mais baratos que o original, mas mais caros que os genéricos.\n\n### Eficácia\n- **Genéricos**: Garantida como bioequivalente ao medicamento original.\n- **Similares**: Presumível eficácia similar, mas sem total garantia.\n\n## Impacto na adesão ao tratamento\n\nA grande vantagem dos genéricos e similares é o **custo reduzido**, que pode facilitar a adesão do doente ao tratamento.\n\n## Conclusão\n\nTanto genéricos quanto similares são opções válidas para reduzir custos farmacêuticos. No entanto, os genéricos oferecem maior garantia de eficácia equivalente ao original."
+      "content": "## O que são medicamentos genéricos?\n\nMedicamentos genéricos são cópias exatas de medicamentos de marca já existentes, fabricados depois de expirado o período de patente. Contêm o mesmo ingrediente ativo, na mesma dosagem, forma farmacêutica e via de administração que o original.\n\nOs genéricos devem cumprir com rigorosos padrões de qualidade e eficácia estabelecidos pelas autoridades regulatórias, como a Agência Europeia de Medicamentos (EMA) e órgãos similares internacionais.\n\n## O que são medicamentos similares?\n\nMedicamentos similares são aqueles que contêm os mesmos princípios ativos, concentração, forma farmacêutica e via de administração que o medicamento de referência, mas **não são comparados bioquimicamente** com o original.\n\nIsso significa que, embora tenham a mesma composição, não há garantia de bioequivalência absoluta — ou seja, o corpo pode absorver e processar o medicamento de forma ligeiramente diferente.\n\n## Principais diferenças\n\n### Qualidade e Segurança\n- **Genéricos**: Aprovados através de estudos de bioequivalência. Devem ter a mesma eficácia que o original.\n- **Similares**: Aprovados com base em dados clínicos e não-clínicos, mas sem comprovação direta de bioequivalência.\n\n### Preço\n- **Genéricos**: Significativamente mais baratos (podem custar 50-80% menos).\n- **Similares**: Geralmente mais baratos que o original, mas mais caros que os genéricos.\n\n### Eficácia\n- **Genéricos**: Garantida como bioequivalente ao medicamento original.\n- **Similares**: Presumível eficácia similar, mas sem total garantia.\n\n## Impacto na adesão ao tratamento\n\nA grande vantagem dos genéricos e similares é o **custo reduzido**, que pode facilitar a adesão do doente ao tratamento.\n\n## Conclusão\n\nTanto genéricos quanto similares são opções válidas para reduzir custos farmacêuticos. No entanto, os genéricos oferecem maior garantia de eficácia equivalente ao original.",
+      "references": [
+        "Agência Europeia de Medicamentos (EMA). Generic medicine. 2025. Disponível em: https://www.ema.europa.eu/en/generic-medicine",
+        "World Health Organization. Generic drugs. 2024. Disponível em: https://www.who.int/health-topics/generic-drugs",
+        "ANVISA. Medicamentos Genéricos e Similares: Guia Orientativo. Brasília, 2023."
+      ]
     },
     {
       "id": "002-praticas-clinicas",
@@ -170,8 +175,63 @@
       "readTime": 8,
       "image": "/content/articles/tecnologia-farmacia.png",
       "content": "## Inteligência Artificial na Detecção\n\nA IA já ajuda a identificar interações medicamentosas complexas que o ser humano pode perder.\n\n## Sistemas de Dispensação Automática\n\nRobôs garantem precisão na preparação de medicamentos, reduzindo erros.\n\n## Telemedicina e Farmácia Online\n\nConsulta remota e dispensação domiciliar expandem o acesso.\n\n## Blockchain para Rastreabilidade\n\nTecnologia permite rastrear medicamentos desde a produção até o doente, combatendo falsificações.\n\n## O Futuro\n\nA tecnologia complementa — não substitui — o profissional farmacêutico. O elemento humano e a empatia continuam essenciais."
+    },
+    {
+      "id": "010-gestao-stock-farmacia",
+      "slug": "010-gestao-stock-farmacia",
+      "title": "Gestão de Stock na Farmácia: Boas Práticas",
+      "excerpt": "Aprenda técnicas eficazes de gestão de inventário que reduzem perdas e garantem disponibilidade de medicamentos.",
+      "category": "profissionais",
+      "categoryLabel": "Para Profissionais",
+      "author": {
+        "name": "João Pedro",
+        "role": "Farmacêutico · Palestrante",
+        "bio": "Docente universitário e investigador na área de saúde pública e uso racional de medicamentos.",
+        "avatar": "JP",
+        "avatarBg": "#006171"
+      },
+      "date": "2026-04-20",
+      "readTime": 11,
+      "image": "/content/articles/gestao-stock-farmacia.png",
+      "content": "## Introdução à gestão de stock\n\nUma farmácia bem gerida precisa equilibrar disponibilidade de produtos com controlo de validade e custos de armazenagem.\n\n## Método PEPS\n\nO método PEPS (FIFO) é essencial para medicamentos.\n\n## Controlo de inventário\n\n### Inventário rotativo\nRealizar contagem cíclica de diferentes secções a cada semana.\n\n### Ponto de pedido\nEstabelecer stock mínimo para cada produto crítico."
+    },
+    {
+      "id": "011-interacoes-medicamentosas",
+      "slug": "011-interacoes-medicamentosas",
+      "title": "Interações Medicamentosas: Guia Prático",
+      "excerpt": "Identifique e previna interações perigosas. Um guia essencial para farmacêuticos e estudantes da área.",
+      "category": "profissionais",
+      "categoryLabel": "Para Profissionais",
+      "author": {
+        "name": "Maria Lima",
+        "role": "Farmacêutica · Autora",
+        "bio": "Especialista em farmacologia clínica com 10 anos de experiência em contexto hospitalar em Angola.",
+        "avatar": "ML",
+        "avatarBg": "#00493a"
+      },
+      "date": "2026-04-22",
+      "readTime": 14,
+      "image": "/content/articles/interacoes-medicamentosas.png",
+      "content": "## O que são interações medicamentosas?\n\nOcorrem quando um medicamento afeta a ação de outro, podendo aumentar ou diminuir sua eficácia, ou causar efeitos adversos.\n\n## Tipos de interações\n\n### Farmacocinéticas\nAlteram absorção, distribuição, metabolismo ou excreção.\n\n### Farmacodinâmicas\nDois medicamentos atuam no mesmo receptor ou via fisiológica."
+    },
+    {
+      "id": "012-farmacogenetica",
+      "slug": "012-farmacogenetica",
+      "title": "Farmacogenética: O Futuro da Medicina Personalizada",
+      "excerpt": "Entenda como a genética influencia a resposta aos medicamentos e o impacto na prática farmacêutica.",
+      "category": "profissionais",
+      "categoryLabel": "Para Profissionais",
+      "author": {
+        "name": "João Pedro",
+        "role": "Farmacêutico · Palestrante",
+        "bio": "Docente universitário e investigador na área de saúde pública e uso racional de medicamentos.",
+        "avatar": "JP",
+        "avatarBg": "#006171"
+      },
+      "date": "2026-04-25",
+      "readTime": 13,
+      "image": "/content/articles/farmacogenetica.png",
+      "content": "## O que é farmacogenética?\n\nEstuda como variações genéticas individuais afetam a resposta a medicamentos.\n\n## Metabolizadores e suas classificações\n\n### Metabolizador Rápido\nMetaboliza medicamentos muito rapidamente.\n\n### Metabolizador Lento\nMetaboliza muito lentamente. Risco de toxicidade."
     }
   ]
 }
-
-

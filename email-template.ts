@@ -8,12 +8,12 @@ export function getInscriptionEmailTemplate(
   nomeEvento: string,
   dataInscricao: string
 ): string {
-  const dataFormatada = new Date(dataInscricao).toLocaleDateString('pt-PT', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
+  const dataFormatada = new Date(dataInscricao).toLocaleDateString("pt-PT", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 
   return `<!DOCTYPE html>

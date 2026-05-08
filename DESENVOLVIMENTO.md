@@ -38,6 +38,7 @@ Isto compila o site para a pasta `dist/` e serve a versão de produção.
 ## Porquê que o CSS não carrega?
 
 O Vite usa **módulos ES6** para carregar CSS/JS. Quando abres o ficheiro HTML diretamente:
+
 - O browser não consegue carregar módulos ES6 sem servidor (CORS)
 - O CSS é injetado via JavaScript
 - Os paths dos assets são relativos à raiz do servidor

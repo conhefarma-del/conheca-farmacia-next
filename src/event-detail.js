@@ -162,8 +162,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         workshop: '#ff6c23',
         palestra: '#0a844f',
         congresso: '#002a32'
-        
-        
       };
       return colors[category] || '#00493a';
     }
@@ -257,21 +255,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       registrationBtn.disabled = false;
     }
 
-    // Host/Presenter Card
-    const hostInitials = event.host.name
-      .split(' ')
-      .map(word => word[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-
-    const hostAvatar = document.getElementById('host-avatar');
-    hostAvatar.textContent = hostInitials;
-    hostAvatar.style.backgroundColor = categoryColor;
-
-    document.getElementById('host-role').textContent = event.host.role;
-    document.getElementById('host-name').textContent = event.host.name;
-    document.getElementById('host-organization').textContent = event.host.organization;
+ // Speakers Section (below Inscrever-me)
+ renderSpeakers(event.hosts || [event.host], categoryColor);
 
     // Update Page Title
     document.title = `${event.title} - Conheça Farmácia`;
@@ -294,6 +279,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // REFRESH CAPACITY: Atualizar vagas periodicamente
   // ==========================================
   let pollingInstance = null;
+  let event = null; // Reference to current event for capacity updates
 
   async function refreshCapacity() {
     console.log('🔄 Atualizando contagem de vagas...');
@@ -455,8 +441,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         workshop: '#ff6c23',
         palestra: '#0a844f',
         congresso: '#002a32',
-        
-        
       };
       return colors[category] || '#00493a';
     }
@@ -505,13 +489,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       <span>${event.location}</span>
     </div>
     ${spotsLeft > 0 ? `
-    <div class="event-meta-item">
-      <span>${spotsLeft} vagas disponíveis</span>
-    </div>
+      <div class="event-meta-item">
+        <span>${spotsLeft} vagas disponíveis</span>
+      </div>
     ` : `
-    <div class="event-meta-item">
-      <span>Evento completo</span>
-    </div>
+      <div class="event-meta-item">
+        <span>Evento completo</span>
+      </div>
     `}
   </div>
 
@@ -523,4 +507,37 @@ document.addEventListener('DOMContentLoaded', async () => {
       grid.appendChild(card);
     });
   }
+
+
+/**
+* Render speaker cards in the speakers section (below Inscrever-me)
+*/
+function renderSpeakers(hosts, categoryColor) {
+  const container = document.getElementById('speakers-container');
+  const section = document.getElementById('speakers-section');
+  if (!container || !section) return;
+
+  // Hide section if no hosts
+  if (!hosts || hosts.length === 0) {
+    section.classList.add('hidden');
+    return;
+  }
+  section.classList.remove('hidden');
+
+  container.innerHTML = '';
+  hosts.forEach((host) => {
+    const card = document.createElement('div');
+    card.className = 'speaker-card';
+
+    const initials = host.name ? host.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : '?';
+    const color = categoryColor || '#0a844f';
+
+    card.innerHTML = '<div class="speaker-card-avatar" style="background-color:' + color + '">' + initials + '</div>' +
+      '<div class="speaker-card-name">' + (host.name || '') + '</div>' +
+      (host.role ? '<div class="speaker-card-role">' + host.role + '</div>' : '') +
+      (host.organization ? '<div class="speaker-card-organization">' + host.organization + '</div>' : '');
+
+    container.appendChild(card);
+  });
+}
 });

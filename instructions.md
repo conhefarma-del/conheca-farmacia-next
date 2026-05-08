@@ -5,6 +5,7 @@
 ### Variáveis de Ambiente
 
 Adicione ao arquivo `.env`:
+
 ```
 SUPABASE_URL=sua_url_aqui
 SUPABASE_ANON_KEY=sua_chave_aqui
@@ -16,23 +17,23 @@ SUPABASE_ANON_KEY=sua_chave_aqui
 
 O formulário de inscrição deve conter os seguintes campos para a tabela `inscricoes`:
 
-| Campo | Tipo | Descrição |
-|-------|------|-----------|
-| `nome` | text | Nome completo do inscrito |
-| `email` | email | Endereço de email válido |
-| `telefone` | text | Número de telefone com DDD |
-| `profissao` | text | Profissão ou área de atuação |
-| `origem_evento` | text | Como conheceu o evento (fonte/origem) |
-| `evento_slug` | text | Slug único do evento (referência) |
-| `honeypot` | text (oculto) | Campo anti-spam (não deve ter valor) |
+| Campo           | Tipo          | Descrição                             |
+| --------------- | ------------- | ------------------------------------- |
+| `nome`          | text          | Nome completo do inscrito             |
+| `email`         | email         | Endereço de email válido              |
+| `telefone`      | text          | Número de telefone com DDD            |
+| `profissao`     | text          | Profissão ou área de atuação          |
+| `origem_evento` | text          | Como conheceu o evento (fonte/origem) |
+| `evento_slug`   | text          | Slug único do evento (referência)     |
+| `honeypot`      | text (oculto) | Campo anti-spam (não deve ter valor)  |
 
 ### Estrutura HTML Recomendada
 
 ```html
 <form id="registration-form">
-  <input type="text" name="nome" placeholder="Seu nome" required>
-  <input type="email" name="email" placeholder="Seu email" required>
-  <input type="tel" name="telefone" placeholder="Seu telefone" required>
+  <input type="text" name="nome" placeholder="Seu nome" required />
+  <input type="email" name="email" placeholder="Seu email" required />
+  <input type="tel" name="telefone" placeholder="Seu telefone" required />
   <select name="profissao" required>
     <option value="">Selecione sua profissão</option>
     <option value="farmaceutico">Farmacêutico</option>
@@ -46,12 +47,12 @@ O formulário de inscrição deve conter os seguintes campos para a tabela `insc
     <option value="recomendacao">Recomendação</option>
     <option value="outro">Outro</option>
   </select>
-  
+
   <!-- Campo anti-spam (oculto) -->
-  <input type="hidden" name="honeypot" value="">
-  
-  <input type="hidden" name="evento_slug" value="evento-slug-aqui">
-  
+  <input type="hidden" name="honeypot" value="" />
+
+  <input type="hidden" name="evento_slug" value="evento-slug-aqui" />
+
   <button type="submit">Inscrever-me</button>
 </form>
 ```
@@ -75,18 +76,16 @@ async function submitForm(formData) {
     // Verificar honeypot
     if (formData.honeypot) return false;
 
-    const { data, error } = await supabase
-      .from("inscricoes")
-      .insert([
-        {
-          nome: formData.nome,
-          email: formData.email,
-          telefone: formData.telefone,
-          profissao: formData.profissao,
-          origem_evento: formData.origem_evento,
-          evento_slug: formData.evento_slug,
-        },
-      ]);
+    const { data, error } = await supabase.from("inscricoes").insert([
+      {
+        nome: formData.nome,
+        email: formData.email,
+        telefone: formData.telefone,
+        profissao: formData.profissao,
+        origem_evento: formData.origem_evento,
+        evento_slug: formData.evento_slug,
+      },
+    ]);
 
     if (error) throw error;
     console.log("✅ Inscrição realizada com sucesso!");

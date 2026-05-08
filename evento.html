@@ -1,241 +1,358 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>Evento - Conheça Farmácia</title>
- <link rel="preconnect" href="https://fonts.googleapis.com">
- <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
- <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-</head>
-<body class="antialiased text-brand-deep bg-brand-bg">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Evento - Conheça Farmácia</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="antialiased text-brand-deep bg-brand-bg">
+    <!-- Header -->
+    <header class="header">
+      <nav class="nav-container">
+        <div class="logo">
+          <a href="index.html">
+            <img
+              src="assets/logo/logo-principal-verde.svg"
+              alt="Conheça Farmácia Logo"
+            />
+          </a>
+        </div>
 
- <!-- Header -->
-<header class="header">
-<nav class="nav-container">
-<div class="logo">
-<a href="index.html">
-<img src="assets/logo/logo-principal-verde.svg" alt="Conheça Farmácia Logo">
-</a>
-</div>
+        <div class="header-right">
+    <!-- Mobile Menu Overlay -->
+    <div class="nav-overlay"></div>
 
-<div class="header-right">
-<ul class="nav-links">
-<li><a href="index.html#inicio">Início</a></li>
-<li><a href="artigos.html">Artigos</a></li>
-<li><a href="eventos.html">Eventos</a></li>
-<li><a href="lives-list.html">Lives</a></li>
-<li><a href="sobre.html">Sobre Nós</a></li>
-</ul>
-<!-- Theme Toggle Button -->
-<button class="theme-toggle" aria-label="Alternar modo escuro" onclick="toggleTheme()">
-<!-- Sun icon (visible in dark mode) -->
-<svg class="sun-icon" viewBox="0 0 24 24">
-<circle cx="12" cy="12" r="5"></circle>
-<line x1="12" y1="1" x2="12" y2="3"></line>
-<line x1="12" y1="21" x2="12" y2="23"></line>
-<line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-<line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-<line x1="1" y1="12" x2="3" y2="12"></line>
-<line x1="21" y1="12" x2="23" y2="12"></line>
-<line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-<line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-</svg>
-<!-- Moon icon (visible in light mode) -->
-<svg class="moon-icon" viewBox="0 0 24 24">
-<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-</svg>
-</button>
-<button class="hamburger" aria-label="Menu">
-<span></span>
-<span></span>
-<span></span>
-</button>
-</div>
-</nav>
-</header>
 
- <main>
- <!-- Event Hero Section -->
- <section class="event-hero">
- <div class="container-center">
- <div class="event-hero-content">
- <!-- Category Badge -->
- <span id="event-category" class="event-category-badge"></span>
+          <ul class="nav-links">
+            <li><a href="index.html#inicio">Início</a></li>
+            <li><a href="artigos.html">Artigos</a></li>
+            <li><a href="eventos.html">Eventos</a></li>
+            <li><a href="lives-list.html">Lives</a></li>
+            <li><a href="sobre.html">Sobre Nós</a></li>
+          </ul>
+          <!-- Theme Toggle Button -->
+          <button
+            class="theme-toggle"
+            aria-label="Alternar modo escuro"
+            onclick="toggleTheme()"
+          >
+            <!-- Sun icon (visible in dark mode) -->
+            <svg class="sun-icon" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <!-- Moon icon (visible in light mode) -->
+            <svg class="moon-icon" viewBox="0 0 24 24">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+          <button class="hamburger" aria-label="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+      </nav>
+    </header>
 
- <!-- Event Title -->
- <h1 id="event-title" class="event-hero-title"></h1>
+    <main>
+      <!-- Event Hero Section -->
+      <section class="event-hero">
+        <div class="container-center">
+          <div class="event-hero-content">
+            <!-- Category Badge -->
+            <span id="event-category" class="event-category-badge"></span>
 
- <!-- Featured Image -->
- <div class="event-hero-image-wrapper">
- <img id="event-featured-image" src="" alt="" class="event-featured-image">
- </div>
+            <!-- Event Title -->
+            <h1 id="event-title" class="event-hero-title"></h1>
 
- <!-- Event Meta Bar -->
- <div class="event-meta-bar">
- <div class="event-meta-group">
- <span id="event-type-meta" class="event-meta-badge"></span>
- <span id="event-date-meta" class="text-sm font-semibold text-brand-deep/70"></span>
- </div>
- <div class="event-meta-group">
- <span id="event-location-meta" class="text-sm text-brand-deep/70"></span>
- </div>
- <div class="event-meta-group">
- <span id="event-time-meta" class="text-sm text-brand-deep/70"></span>
- </div>
- </div>
- </div>
- </div>
- </section>
+            <!-- Featured Image -->
+            <div class="event-hero-image-wrapper">
+              <img
+                id="event-featured-image"
+                src=""
+                alt=""
+                class="event-featured-image"
+              />
+            </div>
 
- <!-- Event Content Section -->
- <section class="event-content-section">
- <div class="container-center">
- <div class="event-grid">
- <!-- Main Content Column -->
- <div class="event-body-wrapper">
- <!-- Event Description/Excerpt -->
- <div id="event-description" class="event-body mb-12"></div>
+            <!-- Event Meta Bar -->
+            <div class="event-meta-bar">
+              <div class="event-meta-group">
+                <span id="event-type-meta" class="event-meta-badge"></span>
+                <span
+                  id="event-date-meta"
+                  class="text-sm font-semibold text-brand-deep/70"
+                ></span>
+              </div>
+              <div class="event-meta-group">
+                <span
+                  id="event-location-meta"
+                  class="text-sm text-brand-deep/70"
+                ></span>
+              </div>
+              <div class="event-meta-group">
+                <span
+                  id="event-time-meta"
+                  class="text-sm text-brand-deep/70"
+                ></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
- <!-- Event Details -->
- <div class="event-details-card">
- <h2 class="text-2xl font-bold text-brand-deep mb-6">Detalhes do Evento</h2>
+      <!-- Event Content Section -->
+      <section class="event-content-section">
+        <div class="container-center">
+          <div class="event-body-full">
+            <!-- Main Content Column -->
+            <div class="event-body-wrapper">
+              <!-- Event Description/Excerpt -->
+              <div id="event-description" class="event-body mb-12"></div>
 
- <div class="event-details-grid">
- <div class="event-detail-item">
- <h3 class="text-sm font-bold uppercase tracking-wider text-brand-deep/60 mb-2">Tipo de Evento</h3>
- <p id="event-type-detail" class="text-base text-brand-deep font-medium"></p>
- </div>
+              <!-- Event Details -->
+              <div class="event-details-card">
+                <h2 class="text-2xl font-bold text-brand-deep mb-6">
+                  Detalhes do Evento
+                </h2>
 
- <div class="event-detail-item">
- <h3 class="text-sm font-bold uppercase tracking-wider text-brand-deep/60 mb-2">Data</h3>
- <p id="event-date-detail" class="text-base text-brand-deep font-medium"></p>
- </div>
+                <div class="event-details-grid">
+                  <div class="event-detail-item">
+                    <h3
+                      class="text-sm font-bold uppercase tracking-wider text-brand-deep/60 mb-2"
+                    >
+                      Tipo de Evento
+                    </h3>
+                    <p
+                      id="event-type-detail"
+                      class="text-base text-brand-deep font-medium"
+                    ></p>
+                  </div>
 
- <div class="event-detail-item">
- <h3 class="text-sm font-bold uppercase tracking-wider text-brand-deep/60 mb-2">Horário</h3>
- <p id="event-time-detail" class="text-base text-brand-deep font-medium"></p>
- </div>
+                  <div class="event-detail-item">
+                    <h3
+                      class="text-sm font-bold uppercase tracking-wider text-brand-deep/60 mb-2"
+                    >
+                      Data
+                    </h3>
+                    <p
+                      id="event-date-detail"
+                      class="text-base text-brand-deep font-medium"
+                    ></p>
+                  </div>
 
- <div class="event-detail-item">
- <h3 class="text-sm font-bold uppercase tracking-wider text-brand-deep/60 mb-2">Localização</h3>
- <p id="event-location-detail" class="text-base text-brand-deep font-medium"></p>
- </div>
- </div>
- </div>
+                  <div class="event-detail-item">
+                    <h3
+                      class="text-sm font-bold uppercase tracking-wider text-brand-deep/60 mb-2"
+                    >
+                      Horário
+                    </h3>
+                    <p
+                      id="event-time-detail"
+                      class="text-base text-brand-deep font-medium"
+                    ></p>
+                  </div>
 
- <!-- Capacity Information -->
- <div class="event-capacity-section mt-12">
- <h3 class="text-lg font-bold text-brand-deep mb-4">Vagas Disponíveis</h3>
- <div class="event-capacity-bar-wrapper">
- <div class="event-capacity-bar">
- <div id="event-capacity-filled" class="event-capacity-filled"></div>
- </div>
- <p id="event-capacity-text" class="text-sm text-brand-deep/70 mt-3"></p>
- </div>
-<!-- Capacity Status Indicator -->
-<div class="capacity-status" id="capacity-status">
-<span class="status-dot"></span>
-<span class="status-text">Vagas atualizadas agora</span>
-</div>
- </div>
+                  <div class="event-detail-item">
+                    <h3
+                      class="text-sm font-bold uppercase tracking-wider text-brand-deep/60 mb-2"
+                    >
+                      Localização
+                    </h3>
+                    <p
+                      id="event-location-detail"
+                      class="text-base text-brand-deep font-medium"
+                    ></p>
+                  </div>
+                </div>
+              </div>
 
- <!-- Registration CTA -->
- <div class="mt-12">
- <button id="event-registration-btn" data-event-slug="" class="btn btn-primary btn-lg btn-inscrever">
- Inscrever-me
- </button>
- </div>
- </div>
+              <!-- Capacity Information -->
+              <div class="event-capacity-section mt-12">
+                <h3 class="text-lg font-bold text-brand-deep mb-4">
+                  Vagas Disponíveis
+                </h3>
+                <div class="event-capacity-bar-wrapper">
+                  <div class="event-capacity-bar">
+                    <div
+                      id="event-capacity-filled"
+                      class="event-capacity-filled"
+                    ></div>
+                  </div>
+                  <p
+                    id="event-capacity-text"
+                    class="text-sm text-brand-deep/70 mt-3"
+                  ></p>
+                </div>
+                <!-- Capacity Status Indicator -->
+                <div class="capacity-status" id="capacity-status">
+                  <span class="status-dot"></span>
+                  <span class="status-text">Vagas atualizadas agora</span>
+                </div>
+              </div>
 
- <!-- Sidebar - Host Card -->
- <div class="event-sidebar">
- <div class="host-card-event">
- <div id="host-avatar" class="host-card-avatar"></div>
- <div id="host-role" class="host-card-role"></div>
- <div id="host-name" class="host-card-name"></div>
- <div id="host-organization" class="host-card-organization"></div>
- </div>
- </div>
- </div>
- </div>
- </section>
+              <!-- Registration CTA -->
+              <div class="mt-12">
+                <button
+                  id="event-registration-btn"
+                  data-event-slug=""
+                  class="btn btn-primary btn-lg btn-inscrever"
+                >
+                  Inscrever-me
+                </button>
+              </div>
+  
+            </div>
 
- <!-- Similar Events Section -->
- <section id="similar-events-section" class="event-related-section hidden">
- <div class="container-center">
- <h2 class="section-title">Eventos Relacionados</h2>
- <div id="similar-events-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
- <!-- Similar events will be rendered here -->
- </div>
- </div>
- </section>
+  <!-- Speakers Section (full-width, below Inscrever-me) -->
+  <div class="speakers-section mt-16" id="speakers-section">
+    <h3 class="speakers-title">Conheça os Palestrantes</h3>
+    <div id="speakers-container" class="speakers-grid">
+      <!-- Speaker cards will be inserted here by event-detail.js -->
+    </div>
+  </div>
+          </div>
+        </div>
+      </section>
 
- <!-- Error State -->
- <section id="event-not-found" class="hidden py-20">
- <div class="container-center text-center">
- <h2 class="text-3xl font-bold text-brand-deep mb-4">Evento não encontrado</h2>
- <p class="text-brand-deep/70 mb-8">Desculpe, não conseguimos encontrar o evento que procura.</p>
- <a href="eventos.html" class="btn btn-primary">Voltar aos Eventos</a>
- </div>
- </section>
- </main>
+      <!-- Similar Events Section -->
+      <section id="similar-events-section" class="event-related-section hidden">
+        <div class="container-center">
+          <h2 class="section-title">Eventos Relacionados</h2>
+          <div
+            id="similar-events-grid"
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          >
+            <!-- Similar events will be rendered here -->
+          </div>
+        </div>
+      </section>
 
- <!-- Footer -->
- <footer class="footer">
- <div class="container-center">
- <div class="footer-grid">
- <!-- Brand Info -->
- <div class="footer-logo">
- <img src="assets/logo/logo-principal-branco.svg" alt="Conheça Farmácia Logo">
- <p class="text-white/70 text-sm mt-4">Conhecimento que conecta. Formação que transforma. Saúde que evolui.</p>
- </div>
+      <!-- Error State -->
+      <section id="event-not-found" class="hidden py-20">
+        <div class="container-center text-center">
+          <h2 class="text-3xl font-bold text-brand-deep mb-4">
+            Evento não encontrado
+          </h2>
+          <p class="text-brand-deep/70 mb-8">
+            Desculpe, não conseguimos encontrar o evento que procura.
+          </p>
+          <a href="eventos.html" class="btn btn-primary">Voltar aos Eventos</a>
+        </div>
+      </section>
+    </main>
 
- <!-- Quick Links -->
- <div class="footer-links">
- <h4>Navegação</h4>
- <ul>
- <li><a href="index.html#inicio">Início</a></li>
- <li><a href="artigos.html">Artigos</a></li>
- <li><a href="eventos.html">Eventos</a></li>
- <li><a href="lives-list.html">Lives</a></li>
- <li><a href="sobre.html">Sobre Nós</a></li>
- </ul>
- </div>
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container-center">
+        <div class="footer-grid">
+          <!-- Brand Info -->
+          <div class="footer-logo">
+            <img
+              src="assets/logo/logo-principal-branco.svg"
+              alt="Conheça Farmácia Logo"
+            />
+            <p class="text-white/70 text-sm mt-4">
+              Conhecimento que conecta. Formação que transforma. Saúde que
+              evolui.
+            </p>
+          </div>
 
- <!-- Contact -->
- <div class="footer-links">
- <h4>Contato</h4>
- <ul class="text-sm text-white/70">
- <li>Luanda, Angola</li>
- <li><a href="mailto:conhecerfarmacia@gmail.com" class="text-white/70 hover:text-brand-accent">conhecerfarmacia@gmail.com</a></li>
- <li><a href="https://wa.me/244925696002" class="text-white/70 hover:text-brand-accent">+244 925 696 002</a></li>
- </ul>
- </div>
+          <!-- Quick Links -->
+          <div class="footer-links">
+            <h4>Navegação</h4>
+            <ul>
+              <li><a href="index.html#inicio">Início</a></li>
+              <li><a href="artigos.html">Artigos</a></li>
+              <li><a href="eventos.html">Eventos</a></li>
+              <li><a href="lives-list.html">Lives</a></li>
+              <li><a href="sobre.html">Sobre Nós</a></li>
+            </ul>
+          </div>
 
- <!-- Social Media -->
- <div class="footer-links">
- <h4>Redes Sociais</h4>
- <ul class="text-sm">
- <li><a href="https://www.facebook.com/conhecafarmacia" target="_blank">Facebook</a></li>
- <li><a href="https://www.instagram.com/conhecafarmacia" target="_blank">Instagram</a></li>
- <li><a href="https://www.tiktok.com/conhecafarmaciaofficial" target="_blank">TikTok</a></li>
- <li><a href="https://www.linkedin.com/company/conhecafarmacia" target="_blank">LinkedIn</a></li>
- </ul>
- </div>
- </div>
+          <!-- Contact -->
+          <div class="footer-links">
+            <h4>Contato</h4>
+            <ul class="text-sm text-white/70">
+              <li>Luanda, Angola</li>
+              <li>
+                <a
+                  href="mailto:conhecerfarmacia@gmail.com"
+                  class="text-white/70 hover:text-brand-accent"
+                  >conhecerfarmacia@gmail.com</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://wa.me/244925696002"
+                  class="text-white/70 hover:text-brand-accent"
+                  >+244 925 696 002</a
+                >
+              </li>
+            </ul>
+          </div>
 
- <div class="footer-divider"></div>
+          <!-- Social Media -->
+          <div class="footer-links">
+            <h4>Redes Sociais</h4>
+            <ul class="text-sm">
+              <li>
+                <a
+                  href="https://www.facebook.com/conhecafarmacia"
+                  target="_blank"
+                  >Facebook</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://www.instagram.com/conhecafarmacia"
+                  target="_blank"
+                  >Instagram</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://www.tiktok.com/conhecafarmaciaofficial"
+                  target="_blank"
+                  >TikTok</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://www.linkedin.com/company/conhecafarmacia"
+                  target="_blank"
+                  >LinkedIn</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
 
- <div class="footer-bottom">
- <p>&copy; 2026 Conheça Farmácia. Todos os direitos reservados.</p>
- </div>
- </div>
- </footer>
+        <div class="footer-divider"></div>
 
-<script type="module" src="/main.js"></script>
-<script type="module" src="/src/config.js"></script>
-<script type="module" src="/src/event-detail.js"></script>
-<script type="module" src="/src/inscription-handler.js"></script>
-</body>
+        <div class="footer-bottom">
+          <p>&copy; 2026 Conheça Farmácia. Todos os direitos reservados.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script type="module" src="/main.js"></script>
+    <script type="module" src="/src/config.js"></script>
+    <script type="module" src="/src/event-detail.js"></script>
+    <script type="module" src="/src/inscription-handler.js"></script>
+  </body>
 </html>

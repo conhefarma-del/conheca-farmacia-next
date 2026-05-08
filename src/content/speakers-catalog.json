@@ -7,7 +7,11 @@
       "title": "Especialista em Farmacologia Clínica",
       "organization": "UNILA",
       "bio": "Com mais de 10 anos de experiência em farmacologia clínica e acompanhamento em contexto hospitalar. Dedicado ao ensino e formação de profissionais de saúde.",
-      "expertise": ["Farmacologia Clínica", "Acompanhamento Hospitalar", "Educação"]
+      "expertise": [
+        "Farmacologia Clínica",
+        "Acompanhamento Hospitalar",
+        "Educação"
+      ]
     },
     {
       "id": 2,
@@ -16,7 +20,11 @@
       "title": "Especialista em Comunicação em Saúde",
       "organization": "Conheça Farmácia",
       "bio": "Apaixonada por comunicação clara sobre medicamentos e saúde. Colaboradora ativa no projeto Conheça Farmácia com foco em conteúdo educativo.",
-      "expertise": ["Comunicação em Saúde", "Educação Comunitária", "Conteúdo Digital"]
+      "expertise": [
+        "Comunicação em Saúde",
+        "Educação Comunitária",
+        "Conteúdo Digital"
+      ]
     },
     {
       "id": 3,
@@ -34,7 +42,11 @@
       "title": "Especialista em Interações Medicamentosas",
       "organization": "Hospital Universitário",
       "bio": "Especialista em detecção e prevenção de interações medicamentosas. Docente em cursos de pós-graduação e consultor de farmácias.",
-      "expertise": ["Interações Medicamentosas", "Farmacodeixis", "Educação Médica"]
+      "expertise": [
+        "Interações Medicamentosas",
+        "Farmacodeixis",
+        "Educação Médica"
+      ]
     },
     {
       "id": 5,
@@ -52,7 +64,11 @@
       "title": "Especialista em Adesão Terapêutica",
       "organization": "Clínica Integrada de Saúde",
       "bio": "Especialista em comportamento do paciente e estratégias para aumentar adesão terapêutica. Consultor em saúde comunitária com foco em educação do paciente.",
-      "expertise": ["Adesão Terapêutica", "Psicologia do Paciente", "Saúde Comunitária"]
+      "expertise": [
+        "Adesão Terapêutica",
+        "Psicologia do Paciente",
+        "Saúde Comunitária"
+      ]
     },
     {
       "id": 7,

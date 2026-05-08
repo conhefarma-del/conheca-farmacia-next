@@ -1,64 +1,78 @@
-import livesData from './content/lives-catalog.json';
+import livesData from "./content/lives-catalog.json";
 
 let lives = [];
-let currentStatus = 'upcoming';
-let currentCategory = 'all';
+let currentStatus = "upcoming";
+let currentCategory = "all";
 
-document.addEventListener('DOMContentLoaded', async () => {
- const grid = document.getElementById('lives-grid');
- const noResults = document.getElementById('no-results');
- const temporalBtns = document.querySelectorAll('.temporal-btn');
- const categoryBtns = document.querySelectorAll('.filter-btn');
- const newsletterForm = document.getElementById('newsletter-form');
+document.addEventListener("DOMContentLoaded", async () => {
+  const grid = document.getElementById("lives-grid");
+  const noResults = document.getElementById("no-results");
+  const temporalBtns = document.querySelectorAll(".temporal-btn");
+  const categoryBtns = document.querySelectorAll(".filter-btn");
+  const newsletterForm = document.getElementById("newsletter-form");
 
- function getTodayDate() {
-  return new Date().toISOString().split('T')[0];
- }
+  function getTodayDate() {
+    return new Date().toISOString().split("T")[0];
+  }
 
- function calculateStatus(eventDate) {
-  const today = getTodayDate();
-  return eventDate >= today ? 'upcoming' : 'past';
- }
+  function calculateStatus(eventDate) {
+    const today = getTodayDate();
+    return eventDate >= today ? "upcoming" : "past";
+  }
 
- function formatDate(dateStr) {
-  const date = new Date(dateStr + 'T00:00:00');
-  const options = { day: 'numeric', month: 'short', year: 'numeric' };
-  return date.toLocaleDateString('pt-PT', options).toUpperCase();
- }
+  function formatDate(dateStr) {
+    const date = new Date(dateStr + "T00:00:00");
+    const options = { day: "numeric", month: "short", year: "numeric" };
+    return date.toLocaleDateString("pt-PT", options).toUpperCase();
+  }
 
- function getCategoryColor(category) {
-  const colors = {
-   live: '#006171',
-   webinar: '#7c3aed'
-  };
-  return colors[category] || '#00493a';
- }
+  function getCategoryColor(category) {
+    const colors = {
+      live: "#006171",
+      webinar: "#7c3aed",
+    };
+    return colors[category] || "#00493a";
+  }
 
- async function renderLives() {
-  const filtered = lives.filter(live => {
-   const matchesStatus = live.status === currentStatus;
-   const matchesCategory = currentCategory === 'all' || live.categoria === currentCategory;
-   return matchesStatus && matchesCategory;
-  });
+  async function renderLives() {
+    const filtered = lives.filter((live) => {
+      const matchesStatus = live.status === currentStatus;
+      const matchesCategory =
+        currentCategory === "all" || live.categoria === currentCategory;
+      return matchesStatus && matchesCategory;
+    });
 
-  if (!grid) return;
-  grid.innerHTML = '';
+    if (!grid) return;
+    grid.innerHTML = "";
 
-  if (filtered.length === 0) {
-   noResults?.classList.remove('hidden');
-  } else {
-   noResults?.classList.add('hidden');
+    if (filtered.length === 0) {
+      noResults?.classList.remove("hidden");
+    } else {
+      noResults?.classList.add("hidden");
 
-   for (const live of filtered) {
-    const card = document.createElement('article');
-    card.className = 'event-card';
+      for (const live of filtered) {
+        const card = document.createElement("article");
+        card.className = "event-card";
 
-    const categoryColor = getCategoryColor(live.categoria);
-    const dateObj = new Date(live.data + 'T00:00:00');
-    const day = String(dateObj.getDate()).padStart(2, '0');
-    const month = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'][dateObj.getMonth()];
+        const categoryColor = getCategoryColor(live.categoria);
+        const dateObj = new Date(live.data + "T00:00:00");
+        const day = String(dateObj.getDate()).padStart(2, "0");
+        const month = [
+          "JAN",
+          "FEV",
+          "MAR",
+          "ABR",
+          "MAI",
+          "JUN",
+          "JUL",
+          "AGO",
+          "SET",
+          "OUT",
+          "NOV",
+          "DEZ",
+        ][dateObj.getMonth()];
 
-    card.innerHTML = `
+        card.innerHTML = `
 <div class="event-card-header relative">
  <div class="event-card-date-box" style="background-color: ${categoryColor}">
   <div class="day">${day}</div>
@@ -95,53 +109,53 @@ document.addEventListener('DOMContentLoaded', async () => {
    Mais Informações
   </a>
   <a href="${live.link_acesso}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-small" style="background-color: ${categoryColor}; border-color: ${categoryColor}">
-   ${live.status === 'upcoming' ? 'Aceder Live' : 'Ver Gravação'}
+   ${live.status === "upcoming" ? "Aceder Live" : "Ver Gravação"}
   </a>
  </div>
 </div>
 `;
-    grid.appendChild(card);
-   }
+        grid.appendChild(card);
+      }
+    }
   }
- }
 
- temporalBtns.forEach(btn => {
-  btn.addEventListener('click', async () => {
-   temporalBtns.forEach(b => b.classList.remove('temporal-btn-active'));
-   btn.classList.add('temporal-btn-active');
-   currentStatus = btn.dataset.status;
-   await renderLives();
+  temporalBtns.forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      temporalBtns.forEach((b) => b.classList.remove("temporal-btn-active"));
+      btn.classList.add("temporal-btn-active");
+      currentStatus = btn.dataset.status;
+      await renderLives();
+    });
   });
- });
 
- categoryBtns.forEach(btn => {
-  btn.addEventListener('click', async () => {
-   categoryBtns.forEach(b => b.classList.remove('filter-btn-active'));
-   btn.classList.add('filter-btn-active');
-   currentCategory = btn.dataset.category;
-   await renderLives();
+  categoryBtns.forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      categoryBtns.forEach((b) => b.classList.remove("filter-btn-active"));
+      btn.classList.add("filter-btn-active");
+      currentCategory = btn.dataset.category;
+      await renderLives();
+    });
   });
- });
 
- if (newsletterForm) {
-  newsletterForm.addEventListener('submit', (e) => {
-   e.preventDefault();
-   newsletterForm.reset();
-   alert('Obrigado por se inscrever!');
+  if (newsletterForm) {
+    newsletterForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      newsletterForm.reset();
+      alert("Obrigado por se inscrever!");
+    });
+  }
+
+  // Refresh on focus
+  window.addEventListener("focus", async () => {
+    console.log("👁️ Janela em foco, atualizando lista de lives...");
+    await renderLives();
   });
- }
 
- // Refresh on focus
- window.addEventListener('focus', async () => {
-  console.log('👁️ Janela em foco, atualizando lista de lives...');
+  // Inicialização
+  lives = livesData.events.map((live) => ({
+    ...live,
+    status: calculateStatus(live.data),
+  }));
+
   await renderLives();
- });
-
- // Inicialização
- lives = livesData.events.map(live => ({
-  ...live,
-  status: calculateStatus(live.data)
- }));
-
- await renderLives();
 });

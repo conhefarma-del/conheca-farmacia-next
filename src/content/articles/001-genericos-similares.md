@@ -22,14 +22,17 @@ Isso significa que, embora tenham a mesma composição, não há garantia de bio
 ## Principais diferenças
 
 ### Qualidade e Segurança
+
 - **Genéricos**: Aprovados através de estudos de bioequivalência. Devem ter e mesma eficácia que o original.
 - **Similares**: Aprovados com base em dados clínicos e não-clínicos, mas sem comprovação direta de bioequivalência.
 
 ### Preço
+
 - **Genéricos**: Significativamente mais baratos (podem custar 50-80% menos).
 - **Similares**: Geralmente mais baratos que o original, mas mais caros que os genéricos.
 
 ### Eficácia
+
 - **Genéricos**: Garantida como bioequivalente ao medicamento original.
 - **Similares**: Presumível eficácia similar, mas sem total garantia.
 

@@ -9,19 +9,23 @@ Abra `email-template.html` no navegador para ver uma pré-visualização do emai
 ## 🎨 Características do Template
 
 ✅ **Design Responsivo**
+
 - Funciona em desktop, tablet e mobile
 - Testado em Gmail, Outlook, Apple Mail
 
 ✅ **Estilos Inline**
+
 - Sem dependência de CSS externo
 - 100% compatível com clientes de email
 
 ✅ **Elementos Dinâmicos**
+
 - Nome do participante
 - Nome do evento
 - Data/hora da inscrição (formatada em português)
 
 ✅ **Estrutura Profissional**
+
 - Header com branding
 - Conteúdo principal claro
 - Secção de próximos passos
@@ -33,11 +37,11 @@ Abra `email-template.html` no navegador para ver uma pré-visualização do emai
 
 Use estas variáveis no template:
 
-| Variável | Descrição | Exemplo |
-|----------|-----------|---------|
-| `${nomeParticipante}` | Nome completo do inscrito | "João Silva" |
-| `${nomeEvento}` | Nome do evento | "Workshop: Farmacologia Clínica Aplicada — Módulo III" |
-| `${dataFormatada}` | Data/hora da inscrição | "18 de abril de 2026, 16:47" |
+| Variável              | Descrição                 | Exemplo                                                |
+| --------------------- | ------------------------- | ------------------------------------------------------ |
+| `${nomeParticipante}` | Nome completo do inscrito | "João Silva"                                           |
+| `${nomeEvento}`       | Nome do evento            | "Workshop: Farmacologia Clínica Aplicada — Módulo III" |
+| `${dataFormatada}`    | Data/hora da inscrição    | "18 de abril de 2026, 16:47"                           |
 
 ---
 
@@ -46,16 +50,16 @@ Use estas variáveis no template:
 ### 1. Importar o Template
 
 ```typescript
-import { getInscriptionEmailTemplate } from './email-template.ts';
+import { getInscriptionEmailTemplate } from "./email-template.ts";
 ```
 
 ### 2. Gerar o HTML
 
 ```typescript
 const htmlContent = getInscriptionEmailTemplate(
-  'João Silva',           // Nome do participante
-  'Workshop: Farmacologia Clínica', // Nome do evento
-  '2026-04-18T16:47:00Z'  // Data da inscrição (ISO 8601)
+  "João Silva", // Nome do participante
+  "Workshop: Farmacologia Clínica", // Nome do evento
+  "2026-04-18T16:47:00Z" // Data da inscrição (ISO 8601)
 );
 ```
 
@@ -63,9 +67,9 @@ const htmlContent = getInscriptionEmailTemplate(
 
 ```typescript
 const response = await resend.emails.send({
-  from: 'Conheça Farmácia <noreply@conhecafarmacia.com>',
+  from: "Conheça Farmácia <noreply@conhecafarmacia.com>",
   to: email_participante,
-  subject: 'Confirmação de Inscrição - Conheça Farmácia',
+  subject: "Confirmação de Inscrição - Conheça Farmácia",
   html: htmlContent,
 });
 ```
@@ -101,6 +105,7 @@ const response = await resend.emails.send({
 - ✅ Telefones (iOS, Android)
 
 **Não usa:**
+
 - Tailwind CSS
 - Classes externas
 - Media queries (apenas viewport meta)

@@ -33,7 +33,7 @@ export function createPolling(fn, options = {}) {
     }
   };
 
-  document.addEventListener('visibilitychange', handleVisibilityChange);
+  document.addEventListener("visibilitychange", handleVisibilityChange);
 
   const execute = async () => {
     if (isPaused) return;
@@ -46,7 +46,7 @@ export function createPolling(fn, options = {}) {
       retryCount++;
       if (retryCount >= maxRetries) {
         stop();
-        console.error('Máximo de tentativas atingido. Polling encerrado.');
+        console.error("Máximo de tentativas atingido. Polling encerrado.");
         return;
       }
 
@@ -66,7 +66,7 @@ export function createPolling(fn, options = {}) {
       clearInterval(intervalId);
       intervalId = null;
     }
-    document.removeEventListener('visibilitychange', handleVisibilityChange);
+    document.removeEventListener("visibilitychange", handleVisibilityChange);
   };
 
   // Cleanup automático quando elemento for removido

@@ -1,327 +1,456 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-PT">
-<head>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>Inscrição em Evento - Conheça Farmácia</title>
- <link rel="preconnect" href="https://fonts.googleapis.com">
- <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
- <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
- <!-- Security: DOMPurify for XSS Protection -->
- <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
- <!-- Security: Enhanced Honeypot CSS -->
- <style>
- #honeypot {
- position: absolute;
- left: -9999px;
- top: -9999px;
- width: 1px;
- height: 1px;
- opacity: 0;
- pointer-events: none;
- visibility: hidden;
- }
- /* Honeypot bait - invisible to humans, visible to bots checking CSS */
- #honeypot:not([style*="display: none"]) {
- z-index: -9999;
- }
- </style>
-</head>
-<body class="antialiased text-brand-deep bg-brand-bg">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inscrição em Evento - Conheça Farmácia</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Security: DOMPurify for XSS Protection -->
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+    <!-- Security: Enhanced Honeypot CSS -->
+    <style>
+      #honeypot {
+        position: absolute;
+        left: -9999px;
+        top: -9999px;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+        visibility: hidden;
+      }
+      /* Honeypot bait - invisible to humans, visible to bots checking CSS */
+      #honeypot:not([style*="display: none"]) {
+        z-index: -9999;
+      }
+    </style>
+  </head>
+  <body class="antialiased text-brand-deep bg-brand-bg">
+    <!-- Header -->
+    <header class="header">
+      <nav class="nav-container">
+        <div class="logo">
+          <a href="index.html">
+            <img
+              src="assets/logo/logo-principal-verde.svg"
+              alt="Conheça Farmácia Logo"
+            />
+          </a>
+        </div>
 
- <!-- Header -->
-<header class="header">
-<nav class="nav-container">
-<div class="logo">
-<a href="index.html">
-<img src="assets/logo/logo-principal-verde.svg" alt="Conheça Farmácia Logo">
-</a>
-</div>
+        <div class="header-right">
+    <!-- Mobile Menu Overlay -->
+    <div class="nav-overlay"></div>
 
-<div class="header-right">
-<ul class="nav-links">
-<li><a href="index.html#inicio">Início</a></li>
-<li><a href="artigos.html">Artigos</a></li>
-<li><a href="eventos.html">Eventos</a></li>
-<li><a href="lives-list.html">Lives</a></li>
-<li><a href="sobre.html">Sobre Nós</a></li>
-</ul>
-<!-- Theme Toggle Button -->
-<button class="theme-toggle" aria-label="Alternar modo escuro" onclick="toggleTheme()">
-<!-- Sun icon (visible in dark mode) -->
-<svg class="sun-icon" viewBox="0 0 24 24">
-<circle cx="12" cy="12" r="5"></circle>
-<line x1="12" y1="1" x2="12" y2="3"></line>
-<line x1="12" y1="21" x2="12" y2="23"></line>
-<line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-<line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-<line x1="1" y1="12" x2="3" y2="12"></line>
-<line x1="21" y1="12" x2="23" y2="12"></line>
-<line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-<line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-</svg>
-<!-- Moon icon (visible in light mode) -->
-<svg class="moon-icon" viewBox="0 0 24 24">
-<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-</svg>
-</button>
-<button class="hamburger" aria-label="Menu">
-<span></span>
-<span></span>
-<span></span>
-</button>
-</div>
-</nav>
-</header>
 
- <main>
- <!-- Inscription Section -->
- <section class="inscription-section">
- <div class="container-center">
- <div class="inscription-container">
- <!-- Form Container -->
- <div id="form-container" class="inscription-form-wrapper">
- <div class="inscription-header mb-12">
- <h1 class="inscription-title">Inscrição em Evento</h1>
- <p class="inscription-subtitle">Preencha o formulário abaixo para confirmar sua participação</p>
- </div>
+          <ul class="nav-links">
+            <li><a href="index.html#inicio">Início</a></li>
+            <li><a href="artigos.html">Artigos</a></li>
+            <li><a href="eventos.html">Eventos</a></li>
+            <li><a href="lives-list.html">Lives</a></li>
+            <li><a href="sobre.html">Sobre Nós</a></li>
+          </ul>
+          <!-- Theme Toggle Button -->
+          <button
+            class="theme-toggle"
+            aria-label="Alternar modo escuro"
+            onclick="toggleTheme()"
+          >
+            <!-- Sun icon (visible in dark mode) -->
+            <svg class="sun-icon" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <!-- Moon icon (visible in light mode) -->
+            <svg class="moon-icon" viewBox="0 0 24 24">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+          <button class="hamburger" aria-label="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+      </nav>
+    </header>
 
- <form id="inscription-form" class="inscription-form">
- <!-- Event Info (Hidden) -->
- <input type="hidden" id="evento_slug" name="evento_slug" value="">
+    <main>
+      <!-- Inscription Section -->
+      <section class="inscription-section bg-brand-bg-alt">
+        <div class="container-center">
+          <div class="inscription-container">
+            <!-- Form Container -->
+            <div id="form-container" class="inscription-form-wrapper">
+              <div class="inscription-header mb-12">
+                <h1 class="inscription-title">Inscrição em Evento</h1>
+                <p class="inscription-subtitle">
+                  Preencha o formulário abaixo para confirmar sua participação
+                </p>
+              </div>
 
- <!-- ======================== -->
- <!-- SECÇÃO: Identidade       -->
- <!-- ======================== -->
- <div class="form-section-label">Identidade</div>
+              <form id="inscription-form" class="inscription-form">
+                <!-- Event Info (Hidden) -->
+                <input
+                  type="hidden"
+                  id="evento_slug"
+                  name="evento_slug"
+                  value=""
+                />
 
- <!-- Nome Completo -->
- <div class="form-group">
- <label for="nome" class="form-label">Nome Completo *</label>
- <input
- type="text"
- id="nome" data-validate="true"
- name="nome"
- placeholder="Seu nome completo"
- class="form-input"
- maxlength="255"
- minlength="3"
- required
- >
- </div>
+                <!-- ======================== -->
+                <!-- SECÇÃO: Identidade       -->
+                <!-- ======================== -->
+                <div class="form-section-label">Identidade</div>
 
- <!-- Género -->
- <div class="form-group">
- <label for="genero" class="form-label">Género</label>
- <select id="genero" name="genero" class="form-input form-select">
- <option value="">Selecione o seu género</option>
- <option value="masculino">Masculino</option>
- <option value="feminino">Feminino</option>
- </select>
- </div>
+                <!-- Nome Completo -->
+                <div class="form-group">
+                  <label for="nome" class="form-label">Nome Completo *</label>
+                  <input
+                    type="text"
+                    id="nome"
+                    data-validate="true"
+                    name="nome"
+                    placeholder="Seu nome completo"
+                    class="form-input"
+                    maxlength="255"
+                    minlength="3"
+                    required
+                  />
+                </div>
 
- <!-- Faixa Etária -->
- <div class="form-group">
- <label for="faixa_etaria" class="form-label">Faixa Etária</label>
- <select id="faixa_etaria" name="faixa_etaria" class="form-input form-select">
- <option value="">Selecione a sua faixa etária</option>
- <option value="18-24">18 – 24 anos</option>
- <option value="25-34">25 – 34 anos</option>
- <option value="35-44">35 – 44 anos</option>
- <option value="45-54">45 – 54 anos</option>
- <option value="55+">55+ anos</option>
- </select>
- </div>
+                <!-- Género -->
+                <div class="form-group">
+                  <label for="genero" class="form-label">Género</label>
+                  <select
+                    id="genero"
+                    name="genero"
+                    class="form-input form-select"
+                  >
+                    <option value="">Selecione o seu género</option>
+                    <option value="masculino">Masculino</option>
+                    <option value="feminino">Feminino</option>
+                  </select>
+                </div>
 
- <!-- ======================== -->
- <!-- SECÇÃO: Contacto         -->
- <!-- ======================== -->
- <div class="form-section-label">Contacto</div>
+                <!-- Faixa Etária -->
+                <div class="form-group">
+                  <label for="faixa_etaria" class="form-label"
+                    >Faixa Etária</label
+                  >
+                  <select
+                    id="faixa_etaria"
+                    name="faixa_etaria"
+                    class="form-input form-select"
+                  >
+                    <option value="">Selecione a sua faixa etária</option>
+                    <option value="18-24">18 – 24 anos</option>
+                    <option value="25-34">25 – 34 anos</option>
+                    <option value="35-44">35 – 44 anos</option>
+                    <option value="45-54">45 – 54 anos</option>
+                    <option value="55+">55+ anos</option>
+                  </select>
+                </div>
 
- <!-- Email -->
- <div class="form-group">
- <label for="email" class="form-label">Email *</label>
- <input
- type="email"
- id="email" data-validate="true"
- name="email"
- placeholder="seu.email@exemplo.com"
- class="form-input"
- maxlength="255"
- required
- >
- </div>
+                <!-- ======================== -->
+                <!-- SECÇÃO: Contacto         -->
+                <!-- ======================== -->
+                <div class="form-section-label">Contacto</div>
 
- <!-- Telefone -->
- <div class="form-group">
- <label for="telefone" class="form-label">Telefone *</label>
- <input
- type="tel"
- id="telefone" data-validate="true"
- name="telefone"
- placeholder="+244 925 696 002"
- class="form-input"
- maxlength="20"
- pattern="[+\d\s]{10,20}"
- required
- >
- </div>
+                <!-- Email -->
+                <div class="form-group">
+                  <label for="email" class="form-label">Email *</label>
+                  <input
+                    type="email"
+                    id="email"
+                    data-validate="true"
+                    name="email"
+                    placeholder="seu.email@exemplo.com"
+                    class="form-input"
+                    maxlength="255"
+                    required
+                  />
+                </div>
 
- <!-- ======================== -->
- <!-- SECÇÃO: Qualificação     -->
- <!-- ======================== -->
- <div class="form-section-label">Qualificação Profissional</div>
+                <!-- Telefone -->
+                <div class="form-group">
+                  <label for="telefone" class="form-label">Telefone *</label>
+                  <input
+                    type="tel"
+                    id="telefone"
+                    data-validate="true"
+                    name="telefone"
+                    placeholder="+244 925 696 002"
+                    class="form-input"
+                    maxlength="20"
+                    pattern="[+\d\s]{10,20}"
+                    required
+                  />
+                </div>
 
- <!-- Profissão -->
- <div class="form-group">
- <label for="profissao" class="form-label">Profissão *</label>
- <select id="profissao" name="profissao" class="form-input form-select" required>
- <option value="">Selecione a sua profissão</option>
- <option value="enfermeiro">Enfermeiro(a)</option>
- <option value="medico">Médico(a)</option>
- <option value="farmaceutico">Farmacêutico(a)</option>
- <option value="estudante-saude">Estudante (Saúde)</option>
- <option value="tecnico-medio-saude">Técnico Médio de Saúde</option>
- <option value="tecnico-radiologia">Técnico de Radiologia</option>
- <option value="tecnico-analises-clinicas">Técnico de Análises Clínicas</option>
- <option value="medico-dentista">Médico(a) Dentista</option>
- <option value="biologo-analista">Biólogo(a) / Analista Clínico</option>
- <option value="psicologo">Psicólogo(a)</option>
- <option value="nutricionista">Nutricionista</option>
- <option value="fisioterapeuta">Fisioterapeuta</option>
- <option value="outro">Outro</option>
- </select>
- </div>
+                <!-- ======================== -->
+                <!-- SECÇÃO: Qualificação     -->
+                <!-- ======================== -->
+                <div class="form-section-label">Qualificação Profissional</div>
 
- <!-- Nível de Escolaridade -->
- <div class="form-group">
- <label for="nivel_escolaridade" class="form-label">Nível de Escolaridade</label>
- <select id="nivel_escolaridade" name="nivel_escolaridade" class="form-input form-select">
- <option value="">Selecione o seu nível de escolaridade</option>
- <option value="tecnico-profissional">Técnico Profissional</option>
- <option value="licenciatura">Licenciatura</option>
- <option value="pos-graduacao-mestrado">Pós-graduação / Mestrado</option>
- <option value="doutoramento">Doutoramento</option>
- </select>
- </div>
+                <!-- Profissão -->
+                <div class="form-group">
+                  <label for="profissao" class="form-label">Profissão *</label>
+                  <select
+                    id="profissao"
+                    name="profissao"
+                    class="form-input form-select"
+                    required
+                  >
+                    <option value="">Selecione a sua profissão</option>
+                    <option value="enfermeiro">Enfermeiro(a)</option>
+                    <option value="medico">Médico(a)</option>
+                    <option value="farmaceutico">Farmacêutico(a)</option>
+                    <option value="estudante-saude">Estudante (Saúde)</option>
+                    <option value="tecnico-medio-saude">
+                      Técnico Médio de Saúde
+                    </option>
+                    <option value="tecnico-radiologia">
+                      Técnico de Radiologia
+                    </option>
+                    <option value="tecnico-analises-clinicas">
+                      Técnico de Análises Clínicas
+                    </option>
+                    <option value="medico-dentista">Médico(a) Dentista</option>
+                    <option value="biologo-analista">
+                      Biólogo(a) / Analista Clínico
+                    </option>
+                    <option value="psicologo">Psicólogo(a)</option>
+                    <option value="nutricionista">Nutricionista</option>
+                    <option value="fisioterapeuta">Fisioterapeuta</option>
+                    <option value="outro">Outro</option>
+                  </select>
+                </div>
 
- <!-- ======================== -->
- <!-- SECÇÃO: Marketing        -->
- <!-- ======================== -->
- <div class="form-section-label">Contexto e Marketing</div>
+                <!-- Nível de Escolaridade -->
+                <div class="form-group">
+                  <label for="nivel_escolaridade" class="form-label"
+                    >Nível de Escolaridade</label
+                  >
+                  <select
+                    id="nivel_escolaridade"
+                    name="nivel_escolaridade"
+                    class="form-input form-select"
+                  >
+                    <option value="">
+                      Selecione o seu nível de escolaridade
+                    </option>
+                    <option value="tecnico-profissional">
+                      Técnico Profissional
+                    </option>
+                    <option value="licenciatura">Licenciatura</option>
+                    <option value="pos-graduacao-mestrado">
+                      Pós-graduação / Mestrado
+                    </option>
+                    <option value="doutoramento">Doutoramento</option>
+                  </select>
+                </div>
 
- <!-- Como ouviu sobre o evento -->
- <div class="form-group">
- <label for="origem_evento" class="form-label">Como ouviu falar do evento? *</label>
- <select id="origem_evento" name="origem_evento" class="form-input form-select" required>
- <option value="">Selecione uma opção</option>
- <option value="instagram">Instagram</option>
- <option value="whatsapp">WhatsApp</option>
- <option value="facebook">Facebook</option>
- <option value="tiktok">TikTok</option>
- <option value="linkedin">LinkedIn</option>
- <option value="amigo-indicacao">Amigo / Indicação</option>
- <option value="outro">Outro</option>
- </select>
- </div>
+                <!-- ======================== -->
+                <!-- SECÇÃO: Marketing        -->
+                <!-- ======================== -->
+                <div class="form-section-label">Contexto e Marketing</div>
 
- <!-- Honeypot (Anti-spam) - Invisible to humans but captivating to bots -->
- <input type="text" id="honeypot" name="honeypot" value="" aria-hidden="true" tabindex="-1" autocomplete="off">
+                <!-- Como ouviu sobre o evento -->
+                <div class="form-group">
+                  <label for="origem_evento" class="form-label"
+                    >Como ouviu falar do evento? *</label
+                  >
+                  <select
+                    id="origem_evento"
+                    name="origem_evento"
+                    class="form-input form-select"
+                    required
+                  >
+                    <option value="">Selecione uma opção</option>
+                    <option value="instagram">Instagram</option>
+                    <option value="whatsapp">WhatsApp</option>
+                    <option value="facebook">Facebook</option>
+                    <option value="tiktok">TikTok</option>
+                    <option value="linkedin">LinkedIn</option>
+                    <option value="amigo-indicacao">Amigo / Indicação</option>
+                    <option value="outro">Outro</option>
+                  </select>
+                </div>
 
- <!-- Submit Button -->
- <button type="submit" id="submit-btn" class="btn btn-primary inscription-btn w-full">
- <span id="btn-text">Confirmar Inscrição</span>
- </button>
+                <!-- Honeypot (Anti-spam) - Invisible to humans but captivating to bots -->
+                <input
+                  type="text"
+                  id="honeypot"
+                  name="honeypot"
+                  value=""
+                  aria-hidden="true"
+                  tabindex="-1"
+                  autocomplete="off"
+                />
 
- <p class="form-note">* Campos obrigatórios</p>
- </form>
- </div>
+                <!-- Submit Button -->
+                <button
+                  type="submit"
+                  id="submit-btn"
+                  class="btn btn-primary inscription-btn w-full"
+                >
+                  <span id="btn-text">Confirmar Inscrição</span>
+                </button>
 
- <!-- Success Message -->
- <div id="success-container" class="inscription-success hidden">
- <div class="success-icon">✓</div>
- <h2 class="success-title">Inscrição Confirmada!</h2>
- <p class="success-message">
- Obrigado pela sua inscrição. Entraremos em contacto brevemente com todos os detalhes do evento.
- </p>
- <div class="success-details">
- <p>Um email de confirmação foi enviado para o seu endereço de email.</p>
- </div>
- <a href="eventos.html" class="btn btn-primary inscription-btn mt-8">
- Voltar para Eventos
- </a>
- </div>
+                <p class="form-note">* Campos obrigatórios</p>
+              </form>
+            </div>
 
- <!-- Error Message -->
- <div id="error-container" class="inscription-error hidden">
- <div class="error-icon">⚠</div>
- <h2 class="error-title">Erro na Inscrição</h2>
- <p id="error-message" class="error-message">
- Ocorreu um erro. Por favor, tente novamente.
- </p>
- <button onclick="location.reload()" class="btn btn-primary inscription-btn mt-6">
- Tentar Novamente
- </button>
- </div>
- </div>
- </div>
- </section>
- </main>
+            <!-- Success Message -->
+            <div id="success-container" class="inscription-success hidden">
+              <div class="success-icon">✓</div>
+              <h2 class="success-title">Inscrição Confirmada!</h2>
+              <p class="success-message">
+                Obrigado pela sua inscrição. Entraremos em contacto brevemente
+                com todos os detalhes do evento.
+              </p>
+              <div class="success-details">
+                <p>
+                  Um email de confirmação foi enviado para o seu endereço de
+                  email.
+                </p>
+              </div>
+              <a
+                href="eventos.html"
+                class="btn btn-primary inscription-btn mt-8"
+              >
+                Voltar para Eventos
+              </a>
+            </div>
 
- <!-- Footer -->
- <footer class="footer">
- <div class="container-center">
- <div class="footer-grid">
- <!-- Brand Info -->
- <div class="footer-logo">
- <img src="assets/logo/logo-principal-branco.svg" alt="Conheça Farmácia Logo">
- <p class="text-white/70 text-sm mt-4">Conhecimento que conecta. Formação que transforma. Saúde que evolui.</p>
- </div>
+            <!-- Error Message -->
+            <div id="error-container" class="inscription-error hidden">
+              <div class="error-icon">⚠</div>
+              <h2 class="error-title">Erro na Inscrição</h2>
+              <p id="error-message" class="error-message">
+                Ocorreu um erro. Por favor, tente novamente.
+              </p>
+              <button
+                onclick="location.reload()"
+                class="btn btn-primary inscription-btn mt-6"
+              >
+                Tentar Novamente
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
 
- <!-- Quick Links -->
- <div class="footer-links">
- <h4>Navegação</h4>
- <ul>
- <li><a href="index.html#inicio">Início</a></li>
- <li><a href="artigos.html">Artigos</a></li>
- <li><a href="eventos.html">Eventos</a></li>
- <li><a href="lives-list.html">Lives</a></li>
- <li><a href="sobre.html">Sobre Nós</a></li>
- </ul>
- </div>
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container-center">
+        <div class="footer-grid">
+          <!-- Brand Info -->
+          <div class="footer-logo">
+            <img
+              src="assets/logo/logo-principal-branco.svg"
+              alt="Conheça Farmácia Logo"
+            />
+            <p class="text-white/70 text-sm mt-4">
+              Conhecimento que conecta. Formação que transforma. Saúde que
+              evolui.
+            </p>
+          </div>
 
- <!-- Contact -->
- <div class="footer-links">
- <h4>Contato</h4>
- <ul class="text-sm text-white/70">
- <li>Luanda, Angola</li>
- <li><a href="mailto:conhecerfarmacia@gmail.com" class="text-white/70 hover:text-brand-accent">conhecerfarmacia@gmail.com</a></li>
- <li><a href="https://wa.me/244925696002" class="text-white/70 hover:text-brand-accent">+244 925 696 002</a></li>
- </ul>
- </div>
+          <!-- Quick Links -->
+          <div class="footer-links">
+            <h4>Navegação</h4>
+            <ul>
+              <li><a href="index.html#inicio">Início</a></li>
+              <li><a href="artigos.html">Artigos</a></li>
+              <li><a href="eventos.html">Eventos</a></li>
+              <li><a href="lives-list.html">Lives</a></li>
+              <li><a href="sobre.html">Sobre Nós</a></li>
+            </ul>
+          </div>
 
- <!-- Social Media -->
- <div class="footer-links">
- <h4>Redes Sociais</h4>
- <ul class="text-sm">
- <li><a href="https://www.facebook.com/conhecafarmacia" target="_blank">Facebook</a></li>
- <li><a href="https://www.instagram.com/conhecafarmacia" target="_blank">Instagram</a></li>
- <li><a href="https://www.tiktok.com/conhecafarmaciaofficial" target="_blank">TikTok</a></li>
- <li><a href="https://www.linkedin.com/company/conhecafarmacia" target="_blank">LinkedIn</a></li>
- </ul>
- </div>
- </div>
+          <!-- Contact -->
+          <div class="footer-links">
+            <h4>Contato</h4>
+            <ul class="text-sm text-white/70">
+              <li>Luanda, Angola</li>
+              <li>
+                <a
+                  href="mailto:conhecerfarmacia@gmail.com"
+                  class="text-white/70 hover:text-brand-accent"
+                  >conhecerfarmacia@gmail.com</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://wa.me/244925696002"
+                  class="text-white/70 hover:text-brand-accent"
+                  >+244 925 696 002</a
+                >
+              </li>
+            </ul>
+          </div>
 
- <div class="footer-divider"></div>
+          <!-- Social Media -->
+          <div class="footer-links">
+            <h4>Redes Sociais</h4>
+            <ul class="text-sm">
+              <li>
+                <a
+                  href="https://www.facebook.com/conhecafarmacia"
+                  target="_blank"
+                  >Facebook</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://www.instagram.com/conhecafarmacia"
+                  target="_blank"
+                  >Instagram</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://www.tiktok.com/conhecafarmaciaofficial"
+                  target="_blank"
+                  >TikTok</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://www.linkedin.com/company/conhecafarmacia"
+                  target="_blank"
+                  >LinkedIn</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
 
- <div class="footer-bottom">
- <p>&copy; 2026 Conheça Farmácia. Todos os direitos reservados.</p>
- </div>
- </div>
- </footer>
+        <div class="footer-divider"></div>
 
-<script type="module" src="/main.js"></script>
-<script type="module" src="/src/config.js"></script>
-<script type="module" src="/src/inscription-logic.js"></script>
-</body>
+        <div class="footer-bottom">
+          <p>&copy; 2026 Conheça Farmácia. Todos os direitos reservados.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script type="module" src="/main.js"></script>
+    <script type="module" src="/src/config.js"></script>
+    <script type="module" src="/src/inscription-logic.js"></script>
+  </body>
 </html>

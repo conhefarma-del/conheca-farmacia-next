@@ -9,9 +9,7 @@
       "link_acesso": "https://youtube.com/live/exemplo",
       "id_reuniao": "",
       "senha": "",
-      "materiais_apoio": [
-        "https://exemplo.com/material-covid.pdf"
-      ],
+      "materiais_apoio": ["https://exemplo.com/material-covid.pdf"],
       "categoria": "live",
       "categoriaLabel": "Live",
       "imagem": "/content/articles/live_valorizacao_carreira.png",
@@ -74,9 +72,7 @@
       "link_acesso": "https://zoom.us/j/exemplo-adesao",
       "id_reuniao": "987 654 3210",
       "senha": "xyz789",
-      "materiais_apoio": [
-        "https://exemplo.com/material-adesao.pdf"
-      ],
+      "materiais_apoio": ["https://exemplo.com/material-adesao.pdf"],
       "categoria": "webinar",
       "categoriaLabel": "Webinar",
       "imagem": "/content/articles/Saúde-e-Informação---Carrossel_01.png",

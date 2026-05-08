@@ -46,14 +46,14 @@ Este WebApp foi construído sob o paradigma **"Security-First"**, garantindo que
 
 ## 🛠️ Stack Tecnológica
 
-| Componente | Tecnologia | Propósito |
-|-----------|-----------|----------|
-| **Frontend** | HTML5, TailwindCSS, JavaScript (ES6+) | Interface e lógica de cliente |
-| **Bundler** | Vite.js | Performance otimizada e HMR |
-| **Backend** | Supabase (PostgreSQL, Auth, Edge Functions) | Banco de dados e API serverless |
-| **Segurança** | DOMPurify | Sanitização de XSS |
-| **Email** | Resend | Transações de email |
-| **Deployment** | Netlify | Hospedagem estática e CI/CD |
+| Componente     | Tecnologia                                  | Propósito                       |
+| -------------- | ------------------------------------------- | ------------------------------- |
+| **Frontend**   | HTML5, TailwindCSS, JavaScript (ES6+)       | Interface e lógica de cliente   |
+| **Bundler**    | Vite.js                                     | Performance otimizada e HMR     |
+| **Backend**    | Supabase (PostgreSQL, Auth, Edge Functions) | Banco de dados e API serverless |
+| **Segurança**  | DOMPurify                                   | Sanitização de XSS              |
+| **Email**      | Resend                                      | Transações de email             |
+| **Deployment** | Netlify                                     | Hospedagem estática e CI/CD     |
 
 ---
 
@@ -62,29 +62,35 @@ Este WebApp foi construído sob o paradigma **"Security-First"**, garantindo que
 O projeto foi submetido a auditorias de segurança (Red Team) para implementar:
 
 ### 1. **Default Deny (RLS — Row Level Security)**
-Todas as tabelas no Supabase utilizam *Row Level Security*. Utilizadores anónimos têm permissão estrita apenas para `INSERT` em tabelas específicas:
+
+Todas as tabelas no Supabase utilizam _Row Level Security_. Utilizadores anónimos têm permissão estrita apenas para `INSERT` em tabelas específicas:
+
 ```sql
 -- Exemplo: Tabela inscricoes
-CREATE POLICY "allow_insert_inscricoes" 
-  ON inscricoes FOR INSERT 
+CREATE POLICY "allow_insert_inscricoes"
+  ON inscricoes FOR INSERT
   WITH CHECK (
-    length(nome) <= 255 AND 
-    length(email) <= 255 AND 
+    length(nome) <= 255 AND
+    length(email) <= 255 AND
     length(telefone) <= 20
   );
 ```
 
 ### 2. **Sanitização Universal**
-Implementação de `DOMPurify` para limpar qualquer conteúdo Markdown/HTML antes da renderização, prevenindo ataques de *Cross-Site Scripting* (XSS):
+
+Implementação de `DOMPurify` para limpar qualquer conteúdo Markdown/HTML antes da renderização, prevenindo ataques de _Cross-Site Scripting_ (XSS):
+
 ```javascript
 const htmlContent = DOMPurify.sanitize(markedParsed, {
-  ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'p', 'br', 'h1', 'h2', 'a', 'img'],
-  ALLOWED_ATTR: ['href', 'src', 'alt', 'title']
+  ALLOWED_TAGS: ["b", "i", "em", "strong", "p", "br", "h1", "h2", "a", "img"],
+  ALLOWED_ATTR: ["href", "src", "alt", "title"],
 });
 ```
 
 ### 3. **Isolamento de Segredos**
+
 Chaves de API e URLs sensíveis são geridas exclusivamente via variáveis de ambiente (`.env`), nunca expostas no código fonte:
+
 ```javascript
 // ❌ PROIBIDO
 const ANON_KEY = "eyJhbGc..."; // Hardcoded
@@ -95,21 +101,25 @@ if (!ANON_KEY) throw new Error("Configure .env");
 ```
 
 ### 4. **Anti-Spam & Rate Limiting**
+
 Proteção de formulários com múltiplas camadas:
+
 - **Honeypot invisível**: Campo oculto que bots tentam preencher
 - **Rate Limiting Frontend**: Máximo 1 inscrição a cada 5 segundos
 - **Rate Limiting Backend**: Edge Function limita a 5 requests/IP/minuto
 
 ### 5. **Validação em Duas Camadas**
 
-| Camada | Validação |
-|--------|-----------|
+| Camada       | Validação                                                          |
+| ------------ | ------------------------------------------------------------------ |
 | **Frontend** | Regex (email RFC 5322, telefone Angola/Intl), maxLength, whitelist |
-| **Backend** | Edge Function revalida tudo + rate limiting + honeypot check |
-| **Database** | RLS Policies + UNIQUE constraints |
+| **Backend**  | Edge Function revalida tudo + rate limiting + honeypot check       |
+| **Database** | RLS Policies + UNIQUE constraints                                  |
 
 ### 6. **Mensagens de Erro Seguras**
+
 Sem divulgação de informação técnica ao utilizador:
+
 ```javascript
 // ❌ PROIBIDO
 showError("Erro 23505: UNIQUE constraint violation");
@@ -181,28 +191,33 @@ showError("Já tem uma inscrição neste evento. Se tem dúvidas, contacte-nos."
 ## 🚀 Quick Start
 
 ### Pré-requisitos
+
 - Node.js 16+ e npm
 - Conta Supabase (https://supabase.com)
 - GitHub para deployments
 
 ### 1. Clonar Repositório
+
 ```bash
 git clone https://github.com/seu-user/conheca-farmacia.git
 cd conheca-farmacia
 ```
 
 ### 2. Instalar Dependências
+
 ```bash
 npm install
 ```
 
 ### 3. Configurar Variáveis de Ambiente
+
 ```bash
 cp .env.example .env.local
 # Editar .env.local com as credenciais do Supabase
 ```
 
 ### 4. Iniciar Servidor de Desenvolvimento
+
 ```bash
 npm run dev
 ```
@@ -214,7 +229,9 @@ Abrir http://localhost:5173
 ## 📊 Tabelas Supabase
 
 ### `inscricoes`
+
 Armazena inscrições em eventos. Campos:
+
 - `id` (UUID, PK)
 - `nome` (VARCHAR(255))
 - `email` (VARCHAR(255))
@@ -225,12 +242,14 @@ Armazena inscrições em eventos. Campos:
 - `created_at` (TIMESTAMP)
 
 **RLS Policies:**
+
 - ✅ `INSERT`: Permitido (com validação)
 - ❌ `SELECT`: Bloqueado para anónimos
 - ❌ `UPDATE`: Bloqueado para anónimos
 - ❌ `DELETE`: Bloqueado para anónimos
 
 ### `users` (Supabase Auth)
+
 Utilizadores autenticados (admin, editors).
 
 ---
@@ -240,6 +259,7 @@ Utilizadores autenticados (admin, editors).
 1. **Preparar imagem**: 900×600px (proporção 3:2)
 2. **Guardar em**: `src/assets/content/articles/seu-artigo.png`
 3. **Editar**: `src/content/articles-catalog.json`
+
 ```json
 {
   "id": 10,
@@ -248,13 +268,19 @@ Utilizadores autenticados (admin, editors).
   "excerpt": "Resumo breve",
   "category": "profissionais",
   "categoryLabel": "Para Profissionais",
-  "author": { "name": "Maria Lima", "role": "Farmacêutica", "avatar": "ML", "avatarBg": "#0a844f" },
+  "author": {
+    "name": "Maria Lima",
+    "role": "Farmacêutica",
+    "avatar": "ML",
+    "avatarBg": "#0a844f"
+  },
   "date": "2026-04-19",
   "readTime": 8,
   "image": "assets/content/articles/seu-artigo.png",
   "content": "## Conteúdo em Markdown aqui..."
 }
 ```
+
 4. **Testar**: Abrir `artigos.html` e verificar renderização
 
 📖 **Leia**: [content/ARTICLE_GUIDELINES.md](src/content/ARTICLE_GUIDELINES.md) para detalhes completos.
@@ -266,6 +292,7 @@ Utilizadores autenticados (admin, editors).
 1. **Preparar imagem**: 1280×720px (proporção 16:9)
 2. **Guardar em**: `src/assets/content/articles/seu-evento.png`
 3. **Editar**: `src/content/events-catalog.json`
+
 ```json
 {
   "id": 11,
@@ -281,11 +308,16 @@ Utilizadores autenticados (admin, editors).
   "type": "presencial",
   "capacity": 50,
   "registered": 0,
-  "host": { "name": "João Pedro", "role": "Farmacêutico", "organization": "UNILA" },
+  "host": {
+    "name": "João Pedro",
+    "role": "Farmacêutico",
+    "organization": "UNILA"
+  },
   "image": "assets/content/articles/seu-evento.png",
   "registrationLink": "#"
 }
 ```
+
 4. **Testar**: Abrir `eventos.html` e verificar sincronização de vagas
 
 📖 **Leia**: [content/EVENT_GUIDELINES.md](src/content/EVENT_GUIDELINES.md) para detalhes completos.
@@ -295,6 +327,7 @@ Utilizadores autenticados (admin, editors).
 ## 🧪 Testes de Segurança
 
 ### Validação do Formulário
+
 ```bash
 # Teste com dados malicioso (ex: <script>alert('XSS')</script>)
 # Sistema deve:
@@ -304,6 +337,7 @@ Utilizadores autenticados (admin, editors).
 ```
 
 ### Rate Limiting
+
 ```bash
 # Submeter 6 inscrições em rápida sucessão
 # Frontend: Bloqueia após 1 submissão (5s cooldown)
@@ -311,6 +345,7 @@ Utilizadores autenticados (admin, editors).
 ```
 
 ### Proteção contra Duplicatas
+
 ```bash
 # Inscrever-se 2x com o mesmo email no mesmo evento
 # Sistema deve: "Já tem uma inscrição neste evento"
@@ -321,6 +356,7 @@ Utilizadores autenticados (admin, editors).
 ## 🔍 Auditorias de Segurança
 
 ### Realizado
+
 - ✅ Análise de XSS em renderização Markdown
 - ✅ Validação de RLS Policies (Supabase)
 - ✅ Rate limiting (frontend + backend)
@@ -330,6 +366,7 @@ Utilizadores autenticados (admin, editors).
 - ✅ Sanitização com DOMPurify (whitelist de tags)
 
 ### Recomendações Futuras
+
 - 🔜 Implementar CAPTCHA para formulários públicos
 - 🔜 Audit logs para rastreabilidade de modificações
 - 🔜 Integração com WAF (Web Application Firewall)

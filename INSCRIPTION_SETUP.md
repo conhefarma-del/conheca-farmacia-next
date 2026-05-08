@@ -3,6 +3,7 @@
 ## 📋 O que foi implementado
 
 ### 1. **Página de Inscrição** (`inscricao.html`)
+
 - Layout limpo e focado com formulário centralizado
 - Formulário com campos:
   - Nome Completo (obrigatório)
@@ -14,9 +15,10 @@
 - Mensagens de sucesso e erro com animações smooth
 - Design moderno e responsivo
 
-### 2. **Scripts de Lógica** 
+### 2. **Scripts de Lógica**
 
 #### `inscription-logic.js`
+
 - Lê parâmetro `evento` da URL
 - Valida honeypot para proteção contra bots
 - Envia dados para Supabase tabela `inscricoes`
@@ -27,10 +29,12 @@
   - Em caso de erro, mostra mensagem específica
 
 #### Atualizações aos scripts existentes
+
 - **`events-logic.js`**: Botão "Inscrever-me" agora aponta para `inscricao.html?evento={slug}`
 - **`event-detail.js`**: Botão de inscrição na página de detalhe também redireciona corretamente
 
 ### 3. **Estilos CSS**
+
 - Formulário com validação visual (focus rings)
 - Animações smooth (opacity + transform para 60 FPS)
 - Botão de envio com estado "loading"
@@ -49,6 +53,7 @@
 5. Clique em **Run** para executar
 
 **Estrutura da tabela:**
+
 ```
 inscricoes
 ├── id (BIGSERIAL PRIMARY KEY)
@@ -65,6 +70,7 @@ inscricoes
 ### Passo 2: Configurar Políticas de Segurança (RLS)
 
 O script SQL já inclui:
+
 - ✅ Política para INSERT sem autenticação (público pode inscrever-se)
 - ✅ Política para SELECT apenas autenticados (admin pode ver inscrições)
 - ✅ Índices para performance
@@ -72,6 +78,7 @@ O script SQL já inclui:
 ### Passo 3: Verificar Credenciais do Supabase
 
 Confirme que o arquivo `.env` está preenchido:
+
 ```env
 SUPABASE_URL=https://seu-projeto.supabase.co
 SUPABASE_ANON_KEY=sua-chave-anonima
@@ -108,16 +115,19 @@ SUPABASE_ANON_KEY=sua-chave-anonima
 ## 🔐 Segurança
 
 ### Anti-spam
+
 - **Honeypot**: Campo oculto que bots preenchem automaticamente
 - Se honeypot tem valor → inscrição é rejeitada
 - Validação também no JavaScript
 
 ### Validação
+
 - Email validado pelo `type="email"` do HTML5
 - Telefone com `type="tel"`
 - Campos obrigatórios garantem dados completos
 
 ### RLS (Row Level Security)
+
 - Apenas anon key pode fazer INSERT
 - Apenas users autenticados (admin) podem SELECT
 - Nenhum user consegue DELETE ou UPDATE (seguro)
@@ -126,21 +136,22 @@ SUPABASE_ANON_KEY=sua-chave-anonima
 
 ## 📊 Dados Recolhidos
 
-| Campo | Tipo | Uso |
-|-------|------|-----|
-| `nome` | texto | Identificação |
-| `email` | email | Contacto direto |
-| `telefone` | texto | Contacto alternativo |
-| `profissao` | select | Segmentação de público |
-| `origem_evento` | select | Análise de marketing |
-| `evento_slug` | texto | Rastreamento de evento |
-| `created_at` | timestamp | Auditoria |
+| Campo           | Tipo      | Uso                    |
+| --------------- | --------- | ---------------------- |
+| `nome`          | texto     | Identificação          |
+| `email`         | email     | Contacto direto        |
+| `telefone`      | texto     | Contacto alternativo   |
+| `profissao`     | select    | Segmentação de público |
+| `origem_evento` | select    | Análise de marketing   |
+| `evento_slug`   | texto     | Rastreamento de evento |
+| `created_at`    | timestamp | Auditoria              |
 
 ---
 
 ## ✨ Animações e UX
 
 ### Estados do Botão:
+
 ```
 Normal: "Confirmar Inscrição"
   ↓ (ao clicar)
@@ -150,6 +161,7 @@ Mostrar mensagem animada
 ```
 
 ### Transições:
+
 - **Fade out do formulário**: 300ms
 - **Fade in da mensagem**: 600ms (com easing ease-out)
 - **Transform**: translateY (move 20px para cima)
@@ -159,13 +171,14 @@ Mostrar mensagem animada
 
 ## 📝 URLs de Referência
 
-| Página | URL | Parâmetro |
-|--------|-----|-----------|
-| Lista de Eventos | `/eventos.html` | — |
-| Detalhe Evento | `/evento.html?id=1` | `id` (número) |
-| Inscrição | `/inscricao.html?evento=slug` | `evento` (slug) |
+| Página           | URL                           | Parâmetro       |
+| ---------------- | ----------------------------- | --------------- |
+| Lista de Eventos | `/eventos.html`               | —               |
+| Detalhe Evento   | `/evento.html?id=1`           | `id` (número)   |
+| Inscrição        | `/inscricao.html?evento=slug` | `evento` (slug) |
 
 **Exemplo:**
+
 ```
 /inscricao.html?evento=001-farmacologia-clinica
 /inscricao.html?evento=002-uso-racional-medicamentos
@@ -176,16 +189,19 @@ Mostrar mensagem animada
 ## 🐛 Troubleshooting
 
 ### "Erro ao conectar Supabase"
+
 - Verifique `.env` tem URL e ANON_KEY corretos
 - Confirme que a tabela `inscricoes` foi criada
 - Verifique browser console para erro específico
 
 ### "Honeypot foi ativado"
+
 - Bots estão a preencher o formulário
 - Nenhuma ação é necessária (inscrição foi bloqueada)
 - Monitore frequência em logs
 
 ### "Inscrição não aparece no Supabase"
+
 - Verifique que RLS policies foram criadas corretamente
 - Confirme que ANON_KEY tem permissão de INSERT
 - Procure erros na coluna `created_at` (timestamp válido?)
@@ -195,11 +211,13 @@ Mostrar mensagem animada
 ## 📦 Ficheiros Criados/Modificados
 
 ### Novos Ficheiros:
+
 - ✅ `inscricao.html` — Página de inscrição
 - ✅ `inscription-logic.js` — Lógica de submissão
 - ✅ `SUPABASE_MIGRATION.sql` — Script de criação de tabela
 
 ### Modificados:
+
 - ✅ `events-logic.js` — Links de inscrição atualizados
 - ✅ `event-detail.js` — Botão de inscrição na página de detalhe
 - ✅ `src/input.css` — Estilos do formulário e animações

@@ -39,6 +39,11 @@ html.dark .form-input {
   color: var(--color-brand-deep);
 }
 
+/* Dark mode footer - mantém a cor original */
+html.dark .footer {
+  background-color: #002a32;
+}
+
 html.dark .form-input::placeholder {
   color: var(--color-brand-deep);
   opacity: 0.5;
@@ -371,7 +376,7 @@ html.dark .form-note {
   }
 
   .article-body-wrapper {
-    @apply lg:col-span-2;
+    @apply w-full;
   }
 
   .article-body {
@@ -443,11 +448,87 @@ html.dark .form-note {
   .author-card-bio {
     @apply text-sm text-brand-deep/70 leading-relaxed;
   }
+/* Article References Section */                                                                                                 .article-references-section {                             
+    @apply py-20 md:py-24 bg-brand-bg;
+  }
+
+  .article-references-list {
+    @apply space-y-4;
+  }
 
   .article-related-section {
     @apply py-20 md:py-24 bg-brand-bg-alt;
   }
 
+  /* Related Articles Carousel */
+ .related-carousel-wrapper {
+   @apply relative;
+ }
+
+ .related-carousel-container {
+   @apply flex overflow-x-auto scroll-smooth gap-6;
+   scroll-snap-type: x mandatory;
+   scrollbar-width: none; /* Firefox */
+ }
+
+ .related-carousel-container::-webkit-scrollbar {
+   display: none; /* Chrome/Safari */
+ }
+
+ .related-carousel-item {
+   @apply flex-shrink-0 w-full;
+   scroll-snap-align: start;
+ }
+
+ /* Mobile: 1 card + 1/3 visível */
+ @media (min-width: 330px) {
+   .related-carousel-item {
+     @apply w-[calc(80%-1rem)];
+   }
+ }
+
+ /* Tablet: 2 cards completos */
+ @media (min-width: 500px) {
+   .related-carousel-item {
+     @apply w-[calc(50%-0.75rem)];
+   }
+ }
+
+ /* Desktop: 2 completos + 3º parcial */
+ @media (min-width: 1024px) {
+   .related-carousel-item {
+     @apply w-[350px];
+   }
+ }
+
+ /* Navigation buttons */
+ .carousel-nav-btn {
+   @apply absolute top-1/2 -translate-y-1/2 w-12 h-12 rounded-full
+          bg-white border-2 border-brand-accent text-brand-accent
+          flex items-center justify-center
+          hover:bg-brand-accent hover:text-white
+          transition-all duration-300 z-10;
+ }
+
+ .carousel-nav-btn--left {
+   @apply left-4;
+ }
+
+ .carousel-nav-btn--right {
+   @apply right-4;
+ }
+
+ .carousel-nav-btn svg {
+   @apply w-6 h-6;
+ }
+
+ /* Esconder botões em mobile/tablet (swipe apenas) */
+  @media (max-width: 1023px) {
+    .carousel-nav-btn {
+      display: none;
+    }
+ }
+  
   /* Articles Page - Filter Buttons */
   .articles-filter-section {
     @apply bg-brand-bg py-16 md:py-20 border-b border-brand-divider/30;
@@ -507,21 +588,6 @@ html.dark .form-note {
 
   .article-tag {
     @apply text-xs font-bold uppercase tracking-wider inline-flex items-center justify-center px-2.5 py-1 rounded-full;
-  }
-  .tag-profissionais {
-    @apply bg-[#fdeee7] text-[#ff6c23];
-  }
-  .tag-voce-sabia {
-    @apply bg-[#e1f0eb] text-[#0a844f];
-  }
-  .tag-curiosidades {
-    @apply bg-[#e5e9ea] text-[#002a32];
-  }
-  .tag-saude-informacao {
-    @apply bg-[#e1ecee] text-[#006171];
-  }
-  .tag-legislacao {
-    @apply bg-[#ff4d4d1a] text-[#ff4d4d];
   }
 
   /* Events Page Styles */
@@ -613,7 +679,7 @@ html.dark .form-note {
   }
 
   .events-grid-section {
-    @apply bg-brand-bg py-20 md:py-24;
+    @apply py-20 md:py-24;
   }
 
   .event-card {
@@ -652,6 +718,15 @@ html.dark .card-item {
 }
 html.dark .checkmark {
   color: var(--color-brand-accent);
+}
+
+/* Dark mode audience cards */
+html.dark .audience-item {
+  background-color: var(--color-brand-bg-alt);
+  border: 1px solid var(--color-brand-divider);
+}
+html.dark .audience-label {
+  color: var(--color-brand-deep);
 }
 
 
@@ -764,9 +839,6 @@ html.dark .checkmark {
     @apply py-16 md:py-24 bg-brand-bg;
   }
 
-  .event-grid {
-    @apply grid grid-cols-1 lg:grid-cols-3 gap-12;
-  }
 
   .event-body-wrapper {
     @apply lg:col-span-2;
@@ -812,12 +884,12 @@ html.dark .checkmark {
     @apply inline-flex items-center justify-center px-4 py-2 rounded-lg font-semibold transition-all duration-300 border-2 border-brand-primary text-brand-primary hover:bg-brand-primary/10 active:scale-[0.98];
   }
 
-  .event-sidebar {
-    @apply lg:col-span-1;
-  }
 
+  /* =============================================
+  HOST CARD (used in lives.html sidebar)
+  ============================================= */
   .host-card-event {
-    @apply bg-brand-bg-alt rounded-2xl p-8 text-center sticky top-8;
+    @apply bg-brand-bg-alt rounded-2xl p-8 text-center;
   }
 
   .host-card-avatar {
@@ -834,6 +906,88 @@ html.dark .checkmark {
 
   .host-card-organization {
     @apply text-sm text-brand-deep/70;
+  }
+
+  html.dark .host-card-event {
+    background-color: var(--color-brand-bg-alt);
+    border: 1px solid var(--color-brand-divider);
+  }
+
+  html.dark .host-card-name {
+    color: var(--color-brand-deep);
+  }
+
+  html.dark .host-card-role {
+    color: var(--color-brand-deep);
+    opacity: 0.6;
+  }
+
+  html.dark .host-card-organization {
+    color: var(--color-brand-deep);
+    opacity: 0.7;
+  }
+
+
+  /* =============================================
+  SPEAKERS SECTION (below Inscrever-me button)
+  ============================================= */
+  .speakers-section {
+    @apply w-full;
+  }
+
+  .speakers-title {
+    @apply text-2xl font-bold text-brand-deep mb-8;
+  }
+
+  html.dark .speakers-title {
+    color: var(--color-brand-deep);
+  }
+
+  .speakers-grid {
+    @apply grid grid-cols-2 md:grid-cols-3 gap-8;
+  }
+
+  .speaker-card {
+    @apply bg-brand-bg-alt rounded-2xl p-8 text-center border border-brand-divider/10 transition-all duration-300;
+  }
+
+  .speaker-card:hover {
+    @apply shadow-lg -translate-y-1;
+  }
+
+  html.dark .speaker-card {
+    background-color: var(--color-brand-bg-alt);
+   border: 1px solid var(--color-brand-divider);
+  }
+
+  .speaker-card-avatar {
+    @apply w-20 h-20 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4;
+  }
+
+  .speaker-card-name {
+    @apply text-xl font-bold text-brand-deep mb-1;
+  }
+
+  html.dark .speaker-card-name {
+    color: var(--color-brand-deep);
+  }
+
+  .speaker-card-role {
+    @apply text-base text-brand-deep/60 mb-1;
+  }
+
+  html.dark .speaker-card-role {
+    color: var(--color-brand-deep);
+   opacity: 0.6;
+  }
+
+  .speaker-card-organization {
+    @apply text-sm text-brand-deep/50;
+  }
+
+  html.dark .speaker-card-organization {
+    color: var(--color-brand-deep);
+   opacity: 0.5;
   }
 
   .event-related-section {
@@ -1213,6 +1367,4 @@ html.dark .theme-toggle .sun-icon {
 html.dark .theme-toggle .moon-icon {
   @apply hidden;
 }
-
-
 

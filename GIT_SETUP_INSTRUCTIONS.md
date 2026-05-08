@@ -43,6 +43,7 @@
 5. **⚠️ COPIE O TOKEN IMEDIATAMENTE** (aparece só uma vez!)
 
 Exemplo do token (você verá algo assim):
+
 ```
 ghp_1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q
 ```
@@ -70,6 +71,7 @@ git push -u origin main
 ```
 
 **O Git vai pedir:**
+
 - **Username:** Deixe vazio (já configurado) ou digite `bjaysh`
 - **Password:** Cole o token que você copiou no PASSO 2
 
@@ -99,15 +101,19 @@ $ git push -u origin main
 ## 🆘 Troubleshooting
 
 ### "fatal: repository not found"
+
 ❌ Repositório não foi criado no GitHub  
 ✅ Solução: Crie em https://github.com/new (PASSO 1)
 
 ### "fatal: Authentication failed"
+
 ❌ Token inválido ou expirado  
 ✅ Solução: Gere novo token em https://github.com/settings/tokens (PASSO 2)
 
 ### "remote already exists"
+
 ✅ Normal! Remote já está configurado:
+
 ```powershell
 git remote -v
 # origin  https://github.com/bjaysh/conheca-farmacia.git (fetch)
@@ -115,6 +121,7 @@ git remote -v
 ```
 
 ### "timeout ou demora muito"
+
 ⚠️ Com 166 ficheiros, pode levar alguns minutos  
 ✅ Deixe processar sem interromper
 
@@ -129,6 +136,7 @@ Branch 'main' set up to track remote branch 'main' from 'origin'.
 ```
 
 Então pode verificar em:
+
 - 🌐 https://github.com/bjaysh/conheca-farmacia
 - Todos os 166 ficheiros estarão no GitHub
 - README.md estará visível na homepage do repositório

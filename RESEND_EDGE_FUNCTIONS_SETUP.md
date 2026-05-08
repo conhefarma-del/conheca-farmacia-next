@@ -49,6 +49,7 @@ Para usar domínio customizado (ex: noreply@conhecafarmacia.com):
 5. Aguarde confirmação (~24h)
 
 **Para testes, use email padrão do Resend:**
+
 ```
 from: 'noreply@resend.dev'
 // ou
@@ -78,6 +79,7 @@ supabase functions new send-inscription-email
 ```
 
 Isto cria:
+
 ```
 supabase/functions/send-inscription-email/index.ts
 ```
@@ -87,49 +89,54 @@ supabase/functions/send-inscription-email/index.ts
 Copie este código em `supabase/functions/send-inscription-email/index.ts`:
 
 ```typescript
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { getInscriptionEmailTemplate } from "../../../email-template.ts"
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { getInscriptionEmailTemplate } from "../../../email-template.ts";
 
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY")
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
 interface InscriptionPayload {
   record: {
-    id: number
-    nome: string
-    email: string
-    telefone: string
-    profissao: string
-    origem_evento: string
-    evento_slug: string
-    created_at: string
-  }
+    id: number;
+    nome: string;
+    email: string;
+    telefone: string;
+    profissao: string;
+    origem_evento: string;
+    evento_slug: string;
+    created_at: string;
+  };
 }
 
 serve(async (req) => {
   // Apenas aceitar POST
   if (req.method !== "POST") {
-    return new Response("Method not allowed", { status: 405 })
+    return new Response("Method not allowed", { status: 405 });
   }
 
   try {
-    const payload = await req.json() as InscriptionPayload
-    const { record } = payload
+    const payload = (await req.json()) as InscriptionPayload;
+    const { record } = payload;
 
-    console.log("📧 Enviando email para:", record.email)
-    console.log("Evento:", record.evento_slug)
+    console.log("📧 Enviando email para:", record.email);
+    console.log("Evento:", record.evento_slug);
 
     // Buscar nome do evento (você precisará adaptar isto)
-    let nomeEvento = record.evento_slug
+    let nomeEvento = record.evento_slug;
     const eventos: Record<string, string> = {
-      "001-farmacologia-clinica": "Workshop: Farmacologia Clínica Aplicada — Módulo III",
-      "002-uso-racional-medicamentos": "Palestra: Uso Racional de Medicamentos para a Comunidade",
-      "003-congresso-farmacia": "Congresso: Excelência em Cuidado Farmacêutico 2026",
-      "004-live-covid-tratamento": "Live: COVID-19 e Novos Tratamentos — O que Mudou?",
-      "005-webinar-interacoes-medicamentosas": "Webinar: Detecção e Prevenção de Interações Medicamentosas",
-    }
+      "001-farmacologia-clinica":
+        "Workshop: Farmacologia Clínica Aplicada — Módulo III",
+      "002-uso-racional-medicamentos":
+        "Palestra: Uso Racional de Medicamentos para a Comunidade",
+      "003-congresso-farmacia":
+        "Congresso: Excelência em Cuidado Farmacêutico 2026",
+      "004-live-covid-tratamento":
+        "Live: COVID-19 e Novos Tratamentos — O que Mudou?",
+      "005-webinar-interacoes-medicamentosas":
+        "Webinar: Detecção e Prevenção de Interações Medicamentosas",
+    };
 
     if (eventos[record.evento_slug]) {
-      nomeEvento = eventos[record.evento_slug]
+      nomeEvento = eventos[record.evento_slug];
     }
 
     // Gerar template de email
@@ -137,7 +144,7 @@ serve(async (req) => {
       record.nome,
       nomeEvento,
       record.created_at
-    )
+    );
 
     // Enviar com Resend
     const resendResponse = await fetch("https://api.resend.com/emails", {
@@ -153,19 +160,18 @@ serve(async (req) => {
         html: htmlContent,
         reply_to: "conhecerfarmacia@gmail.com",
       }),
-    })
+    });
 
-    const resendData = await resendResponse.json()
+    const resendData = await resendResponse.json();
 
     if (!resendResponse.ok) {
-      console.error("❌ Erro ao enviar email:", resendData)
-      return new Response(
-        JSON.stringify({ error: resendData.message }),
-        { status: resendResponse.status }
-      )
+      console.error("❌ Erro ao enviar email:", resendData);
+      return new Response(JSON.stringify({ error: resendData.message }), {
+        status: resendResponse.status,
+      });
     }
 
-    console.log("✅ Email enviado com sucesso! ID:", resendData.id)
+    console.log("✅ Email enviado com sucesso! ID:", resendData.id);
 
     return new Response(
       JSON.stringify({
@@ -176,15 +182,14 @@ serve(async (req) => {
       {
         headers: { "Content-Type": "application/json" },
       }
-    )
+    );
   } catch (error) {
-    console.error("❌ Erro na Edge Function:", error)
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500 }
-    )
+    console.error("❌ Erro na Edge Function:", error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+    });
   }
-})
+});
 ```
 
 ### 2.5 Deploy da Function
@@ -237,6 +242,7 @@ EXECUTE FUNCTION trigger_send_inscription_email();
 ```
 
 ⚠️ **Importante:** Substitua `YOUR_SERVICE_ROLE_KEY` com a chave de serviço do Supabase:
+
 - Supabase Dashboard → Settings → API Keys → `service_role` key
 
 ---

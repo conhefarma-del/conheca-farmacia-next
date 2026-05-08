@@ -3,8 +3,11 @@
  * Handles theme toggling, localStorage persistence, and system preference detection
  */
 
-const THEME_KEY = 'theme';
-const DARK_CLASS = 'dark';
+const THEME_KEY = "theme";
+const DARK_CLASS = "dark";
+const LOGO_SELECTOR = '.logo img';
+const LOGO_LIGHT = 'assets/logo/logo-principal-verde.svg';
+const LOGO_DARK = 'assets/logo/logo-principal-branco.svg';
 
 /**
  * Get current theme preference
@@ -12,19 +15,22 @@ const DARK_CLASS = 'dark';
  */
 function getThemePreference() {
   // Check localStorage first
-  if (typeof window !== 'undefined' && window.localStorage) {
+  if (typeof window !== "undefined" && window.localStorage) {
     const stored = localStorage.getItem(THEME_KEY);
     if (stored) {
       return stored;
     }
 
     // Check system preference
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark';
+    if (
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+    ) {
+      return "dark";
     }
   }
 
-  return 'light';
+  return "light";
 }
 
 /**
@@ -32,11 +38,31 @@ function getThemePreference() {
  * @param {'dark' | 'light'} theme
  */
 function applyTheme(theme) {
-  if (typeof document !== 'undefined') {
-    if (theme === 'dark') {
+  if (typeof document !== "undefined") {
+    if (theme === "dark") {
       document.documentElement.classList.add(DARK_CLASS);
     } else {
       document.documentElement.classList.remove(DARK_CLASS);
+    }
+
+    // Update logo based on theme
+    updateLogo(theme);
+  }
+}
+
+/**
+ * Update logo based on theme
+ * @param {'dark' | 'light'} theme
+ */
+function updateLogo(theme) {
+  const logoImg = document.querySelector(LOGO_SELECTOR);
+  if (logoImg) {
+    const currentSrc = logoImg.getAttribute('src');
+    const newSrc = theme === "dark" ? LOGO_DARK : LOGO_LIGHT;
+
+    // Only update if different to avoid unnecessary DOM changes
+    if (currentSrc !== newSrc) {
+      logoImg.setAttribute('src', newSrc);
     }
   }
 }
@@ -46,7 +72,7 @@ function applyTheme(theme) {
  * @param {'dark' | 'light'} theme
  */
 function setTheme(theme) {
-  if (typeof window !== 'undefined' && window.localStorage) {
+  if (typeof window !== "undefined" && window.localStorage) {
     localStorage.setItem(THEME_KEY, theme);
   }
   applyTheme(theme);
@@ -57,7 +83,7 @@ function setTheme(theme) {
  */
 function toggleTheme() {
   const current = getThemePreference();
-  const next = current === 'dark' ? 'light' : 'dark';
+  const next = current === "dark" ? "light" : "dark";
   setTheme(next);
   return next;
 }
@@ -66,17 +92,27 @@ function toggleTheme() {
  * Initialize theme on page load
  */
 function initTheme() {
-  if (typeof document !== 'undefined') {
+  if (typeof document !== "undefined") {
     const theme = getThemePreference();
     applyTheme(theme);
   }
+}
+
+// Watch for theme changes and update logo accordingly
+if (typeof window !== "undefined" && window.matchMedia) {
+  window
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", (e) => {
+      const theme = e.matches ? "dark" : "light";
+      setTheme(theme);
+    });
 }
 
 // Initialize immediately to prevent FOUC (Flash of Unstyled Content)
 initTheme();
 
 // Expose toggleTheme to global scope for onclick handler
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   window.toggleTheme = toggleTheme;
 }
 

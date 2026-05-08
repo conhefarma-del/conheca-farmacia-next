@@ -9,6 +9,7 @@ Os eventos são armazenados em `content/events-catalog.json` e contêm todos os 
 ## 🔄 NOVO: Sistema de Sincronização de Vagas em Tempo Real
 
 **⚠️ IMPORTANTE:** A capacidade do evento é guardada em **2 locais**:
+
 1. **`events-catalog.json`** - Dados visuais (apenas para exibição)
 2. **Tabela `events` do Supabase** - Fonte de verdade para capacidade e validação
 
@@ -21,6 +22,7 @@ Os eventos são armazenados em `content/events-catalog.json` e contêm todos os 
 5. **Validação no servidor** → Edge Function verifica se evento está cheio antes de permitir inscrição
 
 ### Exemplo:
+
 ```
 Evento: Workshop (capacidade 40 em Supabase)
 Supabase inscricoes: 5 registos
@@ -43,6 +45,7 @@ O sistema **bloqueia automaticamente** tentativas de inscrição duplicada:
 ## 📸 Dimensões de Imagens
 
 ### Card de Evento (Página Eventos)
+
 - **Proporção**: 16:9 (largura : altura)
 - **Tamanho Recomendado**: **1280×720px**
 - **Alternativas**:
@@ -85,19 +88,20 @@ O sistema **bloqueia automaticamente** tentativas de inscrição duplicada:
 
 ## 🏷️ Categorias Disponíveis
 
-| ID | Categoria | Label | Cor |
-|----|-----------|-------|-----|
-| 1 | `workshop` | Workshop | 🟠 #ff6c23 |
-| 2 | `palestra` | Palestra | 🟢 #0a844f |
-| 3 | `congresso` | Congresso | ⬛ #002a32 |
-| 4 | `live` | Live | 🔵 #006171 |
-| 5 | `webinar` | Webinar | 🟣 #7c3aed |
+| ID  | Categoria   | Label     | Cor        |
+| --- | ----------- | --------- | ---------- |
+| 1   | `workshop`  | Workshop  | 🟠 #ff6c23 |
+| 2   | `palestra`  | Palestra  | 🟢 #0a844f |
+| 3   | `congresso` | Congresso | ⬛ #002a32 |
+| 4   | `live`      | Live      | 🔵 #006171 |
+| 5   | `webinar`   | Webinar   | 🟣 #7c3aed |
 
 ---
 
 ## 🔄 Status Automático
 
 O campo `status` é **calculado automaticamente** com base na data:
+
 - Se `date >= hoje` → `"upcoming"` (Próximos Eventos)
 - Se `date < hoje` → `"past"` (Eventos Passados)
 
@@ -107,23 +111,23 @@ O campo `status` é **calculado automaticamente** com base na data:
 
 ## 📝 Campos Obrigatórios
 
-| Campo | Tipo | Descrição |
-|-------|------|-----------|
-| `id` | texto | ID único (ex: `011-seu-evento`) |
-| `slug` | texto | URL-friendly identifier (ex: `011-seu-evento`) |
-| `title` | texto | Título do evento (máx 80 caracteres) |
-| `excerpt` | texto | Resumo breve (máx 150 caracteres) |
-| `category` | texto | Uma das categorias acima (minúscula) |
-| `categoryLabel` | texto | Label visual da categoria |
-| `date` | data | Formato `YYYY-MM-DD` |
-| `time` | hora | Formato `HH:MM` (24h) |
-| `endTime` | hora | Formato `HH:MM` (24h) |
-| `location` | texto | Localização ou "Online" |
-| `type` | texto | `"presencial"` ou `"online"` |
-| `capacity` | número | Número máximo de participantes |
-| `host` | objeto | { name, role, organization } |
-| `image` | caminho | Localização da imagem (proporção 16:9) |
-| `registrationLink` | URL | Link de inscrição (pode ser `"#"` por enquanto) |
+| Campo              | Tipo    | Descrição                                       |
+| ------------------ | ------- | ----------------------------------------------- |
+| `id`               | texto   | ID único (ex: `011-seu-evento`)                 |
+| `slug`             | texto   | URL-friendly identifier (ex: `011-seu-evento`)  |
+| `title`            | texto   | Título do evento (máx 80 caracteres)            |
+| `excerpt`          | texto   | Resumo breve (máx 150 caracteres)               |
+| `category`         | texto   | Uma das categorias acima (minúscula)            |
+| `categoryLabel`    | texto   | Label visual da categoria                       |
+| `date`             | data    | Formato `YYYY-MM-DD`                            |
+| `time`             | hora    | Formato `HH:MM` (24h)                           |
+| `endTime`          | hora    | Formato `HH:MM` (24h)                           |
+| `location`         | texto   | Localização ou "Online"                         |
+| `type`             | texto   | `"presencial"` ou `"online"`                    |
+| `capacity`         | número  | Número máximo de participantes                  |
+| `host`             | objeto  | { name, role, organization }                    |
+| `image`            | caminho | Localização da imagem (proporção 16:9)          |
+| `registrationLink` | URL     | Link de inscrição (pode ser `"#"` por enquanto) |
 
 **NOTA IMPORTANTE:** O campo `registered` foi **removido** do JSON. As vagas são consultadas do Supabase em tempo real.
 
@@ -148,12 +152,14 @@ O campo `status` é **calculado automaticamente** com base na data:
 ## 📄 Páginas Relacionadas
 
 ### **eventos.html** - Lista de Eventos
+
 - Mostra eventos com filtros (Temporal e Categoria)
 - Vagas sincronizadas em tempo real ✓
 - Botão bloqueado se completo ✓
 - Cada card mostra: "X vagas disponíveis" ou "Evento completo"
 
 ### **evento.html?id=X** - Detalhe de Evento (NOVO)
+
 - Página dedicada a cada evento
 - Card "Vagas Disponíveis" com barra de progresso
 - Informação do apresentador (host)
@@ -161,6 +167,7 @@ O campo `status` é **calculado automaticamente** com base na data:
 - Sincronização com Supabase ✓
 
 ### **inscricao.html?evento=XXX** - Formulário de Inscrição (NOVO)
+
 - Formulário com validação completa
 - Bloqueia duplicatas automaticamente
 - Email de confirmação enviado automaticamente
@@ -189,17 +196,21 @@ O campo `status` é **calculado automaticamente** com base na data:
 ## 🚀 Fluxo de Adição de Novo Evento
 
 ### Passo 1: Preparar Dados
+
 1. **Preparar imagem**: 1280×720px, proporção 16:9
 2. **Guardar imagem**: `assets/content/articles/seu-evento.png`
 
 ### Passo 2: Adicionar ao JSON
+
 3. **Editar arquivo**: `src/content/events-catalog.json`
 4. **Copiar estrutura acima** e preencher todos os campos
 5. **Verificar campos**: Todos os campos obrigatórios preenchidos
 
 ### Passo 3: Adicionar à Tabela `events` (Supabase)
+
 6. **Ir ao Supabase Dashboard** → SQL Editor
 7. **Executar query**:
+
 ```sql
 INSERT INTO events (slug, title, capacity) VALUES
 ('011-seu-evento', 'Seu Título Completo do Evento', 50);
@@ -208,6 +219,7 @@ INSERT INTO events (slug, title, capacity) VALUES
 **Importante:** O `slug` deve ser idêntico em ambos os locais (JSON e Supabase).
 
 ### Passo 4: Testar
+
 8. **Testar em eventos.html**:
    - Filtro temporal (Próximos/Passados)
    - Filtro por categoria
@@ -218,11 +230,12 @@ INSERT INTO events (slug, title, capacity) VALUES
    - Vagas mostram número real (não JSON)
    - Barra de progresso funciona
 10. **Testar inscrição**:
-   - Clique "Inscrever-me"
-   - Formulário abre em inscricao.html?evento=XXX
-   - Preencher com dados válidos
-   - Confirmação de inscrição exibida
-   - Email recebido com sucesso
+
+- Clique "Inscrever-me"
+- Formulário abre em inscricao.html?evento=XXX
+- Preencher com dados válidos
+- Confirmação de inscrição exibida
+- Email recebido com sucesso
 
 ---
 
@@ -234,10 +247,12 @@ INSERT INTO events (slug, title, capacity) VALUES
 2. **Tabela `events` no Supabase** - Capacidade do evento (fonte de verdade para bloqueio de inscrições)
 
 **Se esquecer um deles:**
+
 - ❌ JSON faltando → Evento não aparece no site
 - ❌ Supabase faltando → Vagas não sincronizam, bloqueio de capacidade não funciona, inscrições funcionam mas sem limite
 
 **Checklist obrigatório:**
+
 - ✔️ Campo `slug` é idêntico em ambos os locais?
 - ✔️ Campo `capacity` é idêntico em ambos os locais?
 - ✔️ Todos os outros dados (título, data, imagem, etc.) estão preenchidos no JSON?
@@ -271,21 +286,30 @@ Os eventos exibidos na seção "Próximos Eventos" da página inicial (`index.ht
 2. **Localize a seção**: `<section id="eventos">` (aproximadamente linha 119)
 3. **Dentro da div**: `<div class="grid grid-cols-1 md:grid-cols-2 gap-8">`
 4. **Cada card segue esta estrutura simplificada**:
+
 ```html
 <div class="event-card">
-<div class="event-card-header">
-<img src="PATH/TO/IMAGE.jpg" alt="TÍTULO DO EVENTO" class="event-card-img">
-</div>
-<div class="event-card-content">
-<div class="event-date">
-DATA DO EVENTO (sem emoji de calendário)
-</div>
-<h3 class="event-card-title">TÍTULO DO EVENTO</h3>
-<p class="event-card-desc">DESCRIÇÃO DO EVENTO</p>
-<button data-event-slug="seu-evento-slug" class="btn btn-primary btn-small w-full btn-inscrever">Mais Informações</button>
-</div>
+  <div class="event-card-header">
+    <img
+      src="PATH/TO/IMAGE.jpg"
+      alt="TÍTULO DO EVENTO"
+      class="event-card-img"
+    />
+  </div>
+  <div class="event-card-content">
+    <div class="event-date">DATA DO EVENTO (sem emoji de calendário)</div>
+    <h3 class="event-card-title">TÍTULO DO EVENTO</h3>
+    <p class="event-card-desc">DESCRIÇÃO DO EVENTO</p>
+    <button
+      data-event-slug="seu-evento-slug"
+      class="btn btn-primary btn-small w-full btn-inscrever"
+    >
+      Mais Informações
+    </button>
+  </div>
 </div>
 ```
+
 5. **Substitua**:
    - `PATH/TO/IMAGE.jpg`: caminho relativo da imagem (ex: `assets/content/events/nova-imagem.jpg`)
    - `TÍTULO DO EVENTO`: título que aparecerá no card
@@ -296,6 +320,7 @@ DATA DO EVENTO (sem emoji de calendário)
    - Mantenha o texto do botão como "Mais Informações" (conforme padrão da página inicial)
 
 ### ⚠️ Importante:
+
 - Estas alterações **não afetam** a página `eventos.html` ou o sistema dinâmico de eventos
 - Para que o card funcione como um link real para detalhes do evento, você precisará implementar a rota destino separadamente
 - As imagens devem seguir as mesmas diretrizes de tamanho (1280×720px, proporção 16:9)
@@ -307,51 +332,58 @@ DATA DO EVENTO (sem emoji de calendário)
 
 Total de eventos: **10**
 
-| ID | Título | Categoria | Data | Status |
-|----|--------|-----------|------|--------|
-| 1 | Workshop: Farmacologia Clínica Aplicada | Workshop | 2026-05-24 | upcoming |
-| 2 | Palestra: Uso Racional de Medicamentos | Palestra | 2026-06-08 | upcoming |
-| 3 | Congresso: Excelência em Cuidado Farmacêutico 2026 | Congresso | 2026-07-15 | upcoming |
-| 4 | Live: COVID-19 e Novos Tratamentos | Live | 2026-05-10 | upcoming |
-| 5 | Webinar: Detecção de Interações Medicamentosas | Webinar | 2026-05-30 | upcoming |
-| 6 | Workshop: Farmacocinética Aplicada na Prática | Workshop | 2026-06-20 | upcoming |
-| 7 | Palestra: Legislação de Medicamentos em Angola | Palestra | 2026-04-12 | past |
-| 8 | Live: Supportive Care em Oncologia | Live | 2026-04-05 | past |
-| 9 | Congresso: 2025 — Recap | Congresso | 2026-03-20 | past |
-| 10 | Webinar: Estratégias de Adesão | Webinar | 2026-03-15 | past |
+| ID  | Título                                             | Categoria | Data       | Status   |
+| --- | -------------------------------------------------- | --------- | ---------- | -------- |
+| 1   | Workshop: Farmacologia Clínica Aplicada            | Workshop  | 2026-05-24 | upcoming |
+| 2   | Palestra: Uso Racional de Medicamentos             | Palestra  | 2026-06-08 | upcoming |
+| 3   | Congresso: Excelência em Cuidado Farmacêutico 2026 | Congresso | 2026-07-15 | upcoming |
+| 4   | Live: COVID-19 e Novos Tratamentos                 | Live      | 2026-05-10 | upcoming |
+| 5   | Webinar: Detecção de Interações Medicamentosas     | Webinar   | 2026-05-30 | upcoming |
+| 6   | Workshop: Farmacocinética Aplicada na Prática      | Workshop  | 2026-06-20 | upcoming |
+| 7   | Palestra: Legislação de Medicamentos em Angola     | Palestra  | 2026-04-12 | past     |
+| 8   | Live: Supportive Care em Oncologia                 | Live      | 2026-04-05 | past     |
+| 9   | Congresso: 2025 — Recap                            | Congresso | 2026-03-20 | past     |
+| 10  | Webinar: Estratégias de Adesão                     | Webinar   | 2026-03-15 | past     |
 
 ---
 
 ## 💡 Dicas & Boas Práticas
 
 ### Sincronização de Vagas (NOVO)
+
 - O JavaScript consulta Supabase quando a página carrega
 - Número no JSON é apenas para fallback
 - Se Supabase falhar, usa JSON como backup
 - Vagas são atualizadas em TEMPO REAL ✓
 
 ### Bloqueio de Capacidade (NOVO)
+
 - Se `vagas disponíveis <= 0` → Botão "Evento Completo" (desabilido)
 - Se alguém conseguir duplicar inscrição → Erro 23505 (UNIQUE constraint)
 - Mensagem clara: "Já está registado neste evento"
 
 ### URL-Friendly Slugs
+
 - Use hífens para separar palavras
 - Comece com ID em 3 dígitos: `001-`, `002-`, etc.
 - Exemplo: `005-webinar-interacoes-medicamentosas`
 
 ### Datas Futuras
+
 - Sempre use datas no futuro para "upcoming"
 - Para eventos passados, use datas anteriores a hoje
 - Hoje é 2026-04-19
 
 ### Organização de Imagens
+
 - Use nomes descritivos: `farmacologia-clinica.png`
 - Mantenha em `assets/content/articles/` (reutiliza pasta de artigos)
 - Comprima imagens (máx 200KB por imagem)
 
 ### Teste Completo
+
 Quando adicionar novo evento, teste:
+
 ```
 eventos.html → Filtros funcionam?
 evento.html?id=X → Vagas sincronizadas?
@@ -393,6 +425,7 @@ if (alreadyRegistered) {
 O sistema de inscrição de eventos inclui múltiplas camadas de segurança:
 
 #### 1️⃣ **Proteção contra Duplicatas**
+
 ```
 Base de Dados: Constraint UNIQUE em (email, evento_slug)
 Resultado: Mesma pessoa NÃO pode inscrever-se 2x no mesmo evento
@@ -400,6 +433,7 @@ Mensagem ao utilizador: "Já tem uma inscrição neste evento com este endereço
 ```
 
 #### 2️⃣ **Proteção contra Bots (Honeypot)**
+
 ```
 Sistema: Campo oculto que bots tentam preencher
 Frontend: Valida se campo está vazio (invisível para humanos)
@@ -409,13 +443,14 @@ Resultado: Bots são bloqueados automaticamente
 
 #### 3️⃣ **Validação em Duas Camadas**
 
-| Camada | Validação |
-|--------|-----------|
+| Camada       | Validação                                                         |
+| ------------ | ----------------------------------------------------------------- |
 | **Frontend** | Verificação de campos vazios, email, telefone, comprimento máximo |
-| **Backend** | Edge Function valida NOVAMENTE todos os dados + rate limiting |
-| **Database** | RLS Policies bloqueiam acesso não autorizado |
+| **Backend**  | Edge Function valida NOVAMENTE todos os dados + rate limiting     |
+| **Database** | RLS Policies bloqueiam acesso não autorizado                      |
 
 #### 4️⃣ **Rate Limiting (Proteção contra Spam)**
+
 ```
 Frontend: Máximo 1 inscrição a cada 5 segundos por utilizador
 Backend: Máximo 5 pedidos por IP a cada 60 segundos
@@ -423,6 +458,7 @@ Resultado: Spam e DoS são prevenidos
 ```
 
 #### 5️⃣ **Sanitização de Dados**
+
 ```
 Nome: Máximo 255 caracteres, caracteres perigosos removidos
 Email: Validação RFC 5322 + máximo 255 caracteres
@@ -435,14 +471,14 @@ Origem: Limitada a valores pré-aprovados
 
 Quando um utilizador se inscreve, os dados guardados são:
 
-| Campo | Tipo | Validação |
-|-------|------|-----------|
-| `nome` | Texto | 3-255 caracteres, sem scripts |
-| `email` | Email | RFC 5322, máximo 255 caracteres |
-| `telefone` | Telefone | Angola/Internacional, máximo 20 caracteres |
-| `profissao` | Select | Whitelist: 15 valores pré-aprovados |
-| `origem_evento` | Select | Whitelist: 8 valores pré-aprovados |
-| `evento_slug` | Texto | Validado contra eventos-catalog.json |
+| Campo           | Tipo     | Validação                                  |
+| --------------- | -------- | ------------------------------------------ |
+| `nome`          | Texto    | 3-255 caracteres, sem scripts              |
+| `email`         | Email    | RFC 5322, máximo 255 caracteres            |
+| `telefone`      | Telefone | Angola/Internacional, máximo 20 caracteres |
+| `profissao`     | Select   | Whitelist: 15 valores pré-aprovados        |
+| `origem_evento` | Select   | Whitelist: 8 valores pré-aprovados         |
+| `evento_slug`   | Texto    | Validado contra eventos-catalog.json       |
 
 ### 🚫 Dados NÃO Recolhidos
 
@@ -520,7 +556,7 @@ spotsLeft = event.capacity - realCount; // Vagas recalculadas
 // Edge Function valida:
 if (existingInscription(email, evento_slug)) {
   // Retorna 400 Bad Request
-  return { error: 'Já registado' };
+  return { error: "Já registado" };
 }
 ```
 

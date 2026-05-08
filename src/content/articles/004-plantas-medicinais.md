@@ -14,16 +14,19 @@ As plantas medicinais têm sido usadas há milhares de anos por várias culturas
 ## Factos: Plantas com Benefícios Comprovados
 
 ### Gengibre
+
 - **Uso tradicional**: Náuseas e problemas digestivos
 - **Evidência científica**: Sim, reduz náuseas em ~25-30% em estudos clínicos
 - **Precaução**: Pode aumentar risco de sangramento se combinado com anticoagulantes
 
 ### Camomila
+
 - **Uso tradicional**: Relaxante e insónia
 - **Evidência científica**: Moderada. Ajuda alguns doentes, mas não é uma "bala de prata"
 - **Segurança**: Bem tolerada, raramente causa efeitos colaterais
 
 ### Valeriana
+
 - **Uso tradicional**: Distúrbios do sono
 - **Evidência científica**: Apoio moderado, melhor em uso contínuo que pontual
 - **Nota**: Sabor desagradável, mas efetiva em alguns
@@ -31,27 +34,34 @@ As plantas medicinais têm sido usadas há milhares de anos por várias culturas
 ## Mitos: O que NÃO tem comprovação
 
 ### "Natural = Seguro"
+
 **Mito.** Muitas plantas são tóxicas. A cicuta é natural, mas letal. Dose importa. Concentração importa. Interações importam.
 
 ### "Plantas não têm efeitos colaterais"
+
 **Mito.** Plantas contêm moléculas biologicamente ativas que podem causar:
+
 - Alergias
 - Interações medicamentosas
 - Toxicidade hepática (ex: comfrey, kava-kava)
 - Problemas gastrointestinais
 
 ### "Se o médico não a proibiu, é seguro tomar"
+
 **Mito.** Muitos médicos desconhecem plantas medicinais. Sempre informar seu farmacêutico ou médico sobre qualquer suplemento que está a tomar.
 
 ## Plantas que requerem cautela
 
 ### Alho (em doses elevadas)
+
 Pode potenciar anticoagulantes. Aumenta risco de sangramento.
 
 ### Hipericão (erva de São João)
+
 Interage com vários medicamentos, incluindo anticoncepcionais e antidepressivos.
 
 ### Ginseng
+
 Pode elevar pressão arterial. Cuidado se hipertenso.
 
 ## Como usar plantas medicinais com segurança
