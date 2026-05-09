@@ -55,14 +55,23 @@ function applyTheme(theme) {
  * @param {'dark' | 'light'} theme
  */
 function updateLogo(theme) {
-  const logoImg = document.querySelector(LOGO_SELECTOR);
-  if (logoImg) {
-    const currentSrc = logoImg.getAttribute('src');
-    const newSrc = theme === "dark" ? LOGO_DARK : LOGO_LIGHT;
+  const newSrc = theme === "dark" ? LOGO_DARK : LOGO_LIGHT;
 
-    // Only update if different to avoid unnecessary DOM changes
+  // Header logo
+  const headerLogo = document.querySelector(LOGO_SELECTOR);
+  if (headerLogo) {
+    const currentSrc = headerLogo.getAttribute('src');
     if (currentSrc !== newSrc) {
-      logoImg.setAttribute('src', newSrc);
+      headerLogo.setAttribute('src', newSrc);
+    }
+  }
+
+  // Drawer logo
+  const drawerLogoImg = document.querySelector('.drawer-logo img');
+  if (drawerLogoImg) {
+    const currentSrc = drawerLogoImg.getAttribute('src');
+    if (currentSrc !== newSrc) {
+      drawerLogoImg.setAttribute('src', newSrc);
     }
   }
 }

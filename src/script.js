@@ -1,69 +1,115 @@
-// Navigation and mobile menu functionality
-// Note: No need for DOMContentLoaded - ES modules are deferred by default
-
+// Floating Drawer Mobile Menu
 const hamburger = document.querySelector(".hamburger");
-const navLinks = document.querySelector(".nav-links");
-const navOverlay = document.querySelector(".nav-overlay");
-const header = document.querySelector(".header");
+const drawer = document.getElementById("mobile-drawer");
+const drawerOverlay = document.getElementById("drawer-overlay");
+const drawerClose = document.getElementById("drawer-close");
+const drawerLinks = document.getElementById("drawer-links");
 
-// Toggle mobile menu function
-function toggleMenu() {
-  if (navLinks && hamburger) {
-    navLinks.classList.toggle("mobile-active");
-    hamburger.classList.toggle("is-active");
-
-    // Toggle overlay
-    if (navOverlay) {
-      navOverlay.classList.toggle("active");
+// Active page detection
+function setActiveDrawerLink() {
+  if (!drawerLinks) return;
+  const currentPath = window.location.pathname;
+  const links = drawerLinks.querySelectorAll("a");
+  links.forEach((link) => {
+    const linkHref = link.getAttribute("href");
+    // Normalize: strip leading slash and hash for comparison
+    const normalizedLink = linkHref.replace(/^\//, "").replace(/#.*$/, "");
+    const normalizedPath = currentPath.replace(/^\//, "").replace(/#.*$/, "");
+    // Match if path ends with link href, or if both are root
+    const isMatch =
+      normalizedPath === normalizedLink ||
+      normalizedPath.endsWith(normalizedLink) ||
+      (normalizedLink === "index.html" &&
+        (normalizedPath === "" || normalizedPath === "index.html"));
+    if (isMatch) {
+      link.classList.add("drawer-link-active");
+    } else {
+      link.classList.remove("drawer-link-active");
     }
-  }
-}
-
-// Close mobile menu function
-function closeMenu() {
-  if (navLinks && hamburger) {
-    navLinks.classList.remove("mobile-active");
-    hamburger.classList.remove("is-active");
-
-    // Hide overlay
-    if (navOverlay) {
-      navOverlay.classList.remove("active");
-    }
-  }
-}
-
-if (hamburger && navLinks) {
-  // Open/close menu on hamburger click
-  hamburger.addEventListener("click", (e) => {
-    e.stopPropagation(); // Prevent event bubbling
-    toggleMenu();
   });
+}
 
-  // Close menu when clicking on overlay
-  if (navOverlay) {
-    navOverlay.addEventListener("click", () => {
-      closeMenu();
-    });
-  }
+// Open drawer
+function openDrawer() {
+  if (!drawer) return;
+  drawer.classList.add("open");
+  if (drawerOverlay) drawerOverlay.classList.add("active");
+  document.body.classList.add("drawer-open");
+}
 
-  // Close menu when a link is clicked (important for single-page navigation)
-  const links = document.querySelectorAll(".nav-links a");
+// Close drawer
+function closeDrawer() {
+  if (!drawer) return;
+  drawer.classList.remove("open");
+  if (drawerOverlay) drawerOverlay.classList.remove("active");
+  document.body.classList.remove("drawer-open");
+}
+
+// Hamburger: only opens
+if (hamburger) {
+  hamburger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    openDrawer();
+  });
+}
+
+// Close button
+if (drawerClose) {
+  drawerClose.addEventListener("click", () => {
+    closeDrawer();
+  });
+}
+
+// Overlay click closes drawer
+if (drawerOverlay) {
+  drawerOverlay.addEventListener("click", () => {
+    closeDrawer();
+  });
+}
+
+// Link click closes drawer
+if (drawerLinks) {
+  const links = drawerLinks.querySelectorAll("a");
   links.forEach((link) => {
     link.addEventListener("click", () => {
-      closeMenu();
+      closeDrawer();
     });
   });
 }
 
-// Prevent clicks inside nav-links from closing the menu
-if (navLinks) {
-  navLinks.addEventListener("click", (e) => {
+// Escape key closes drawer
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    closeDrawer();
+  }
+});
+
+// Resize to desktop closes drawer
+window.addEventListener("resize", () => {
+  if (window.innerWidth > 768) {
+    closeDrawer();
+  }
+});
+
+// Prevent clicks inside drawer from closing it
+if (drawer) {
+  drawer.addEventListener("click", (e) => {
     e.stopPropagation();
   });
 }
 
+// Set active link on load
+setActiveDrawerLink();
+
 // Export for use in other modules if needed
 export function initNavigation() {
-  // Navigation already initialized above
-  return { hamburger, navLinks, header, navOverlay, toggleMenu, closeMenu };
+  return {
+    hamburger,
+    drawer,
+    drawerOverlay,
+    drawerClose,
+    drawerLinks,
+    openDrawer,
+    closeDrawer,
+  };
 }
