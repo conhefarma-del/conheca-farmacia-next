@@ -6,8 +6,8 @@
 const THEME_KEY = "theme";
 const DARK_CLASS = "dark";
 const LOGO_SELECTOR = '.logo img';
-const LOGO_LIGHT = 'assets/logo/logo-principal-verde.svg';
-const LOGO_DARK = 'assets/logo/logo-principal-branco.svg';
+const LOGO_LIGHT = '/logo/logo-principal-verde.svg';
+const LOGO_DARK = '/logo/logo-principal-branco.svg';
 
 /**
  * Get current theme preference
