@@ -5,28 +5,66 @@ const drawerOverlay = document.getElementById("drawer-overlay");
 const drawerClose = document.getElementById("drawer-close");
 const drawerLinks = document.getElementById("drawer-links");
 
-// Active page detection
-function setActiveDrawerLink() {
-  if (!drawerLinks) return;
+// Map page paths (both with and without .html) to their parent section link href
+// Netlify serves clean URLs (e.g. /artigos instead of /artigos.html)
+const PAGE_SECTION_MAP = {
+  "index.html": "index.html",
+  "": "index.html",
+  "artigos.html": "artigos.html",
+  "artigos": "artigos.html",
+  "artigo.html": "artigos.html",
+  "artigo": "artigos.html",
+  "eventos.html": "eventos.html",
+  "eventos": "eventos.html",
+  "evento.html": "eventos.html",
+  "evento": "eventos.html",
+  "inscricao.html": "eventos.html",
+  "inscricao": "eventos.html",
+  "lives-list.html": "lives-list.html",
+  "lives-list": "lives-list.html",
+  "lives.html": "lives-list.html",
+  "lives": "lives-list.html",
+  "sobre.html": "sobre.html",
+  "sobre": "sobre.html",
+};
+
+// Active page detection for drawer + desktop nav-links
+function setActiveNavLink() {
   const currentPath = window.location.pathname;
-  const links = drawerLinks.querySelectorAll("a");
-  links.forEach((link) => {
-    const linkHref = link.getAttribute("href");
-    // Normalize: strip leading slash and hash for comparison
-    const normalizedLink = linkHref.replace(/^\//, "").replace(/#.*$/, "");
-    const normalizedPath = currentPath.replace(/^\//, "").replace(/#.*$/, "");
-    // Match if path ends with link href, or if both are root
-    const isMatch =
-      normalizedPath === normalizedLink ||
-      normalizedPath.endsWith(normalizedLink) ||
-      (normalizedLink === "index.html" &&
-        (normalizedPath === "" || normalizedPath === "index.html"));
-    if (isMatch) {
-      link.classList.add("drawer-link-active");
-    } else {
-      link.classList.remove("drawer-link-active");
-    }
-  });
+  const normalizedPath = currentPath.replace(/^\//, "").replace(/#.*$/, "");
+  const activeHref = PAGE_SECTION_MAP[normalizedPath] || null;
+
+  // Drawer links
+  const drawerLinksEl = document.getElementById("drawer-links");
+  if (drawerLinksEl) {
+    drawerLinksEl.querySelectorAll("a").forEach((link) => {
+      const linkHref = link
+        .getAttribute("href")
+        .replace(/^\//, "")
+        .replace(/#.*$/, "");
+      if (activeHref && linkHref === activeHref) {
+        link.classList.add("drawer-link-active");
+      } else {
+        link.classList.remove("drawer-link-active");
+      }
+    });
+  }
+
+  // Desktop nav links
+  const navLinksEl = document.querySelector(".nav-links");
+  if (navLinksEl) {
+    navLinksEl.querySelectorAll("a").forEach((link) => {
+      const linkHref = link
+        .getAttribute("href")
+        .replace(/^\//, "")
+        .replace(/#.*$/, "");
+      if (activeHref && linkHref === activeHref) {
+        link.classList.add("nav-link-active");
+      } else {
+        link.classList.remove("nav-link-active");
+      }
+    });
+  }
 }
 
 // Open drawer
@@ -99,7 +137,7 @@ if (drawer) {
 }
 
 // Set active link on load
-setActiveDrawerLink();
+setActiveNavLink();
 
 // Export for use in other modules if needed
 export function initNavigation() {

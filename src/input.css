@@ -176,12 +176,46 @@ html.dark .form-note {
  }
  .nav-links a {
  @apply text-brand-deep font-medium transition-colors duration-300 hover:text-brand-accent;
+ padding: 5px 10px;
  }
  html.dark .nav-links a {
  color: var(--color-brand-deep);
+ padding: 5px 10px;
  }
 
- /* ========================================
+/* Desktop nav-links hover */
+.nav-links a:hover {
+  background: rgba(0, 73, 58, 0.06);
+  border-radius: 10px;
+  padding: 5px 10px;
+}
+
+/* Desktop nav-links active state (pill style) */
+.nav-links a.nav-link-active {
+  background: rgba(0, 73, 58, 0.12);
+  color: var(--color-brand-primary);
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 5px 10px;
+}
+
+/* Dark mode nav-links active/hover */
+html.dark .nav-links a:hover {
+  background: rgba(0, 73, 58, 0.08);
+}
+
+html.dark .nav-links a.nav-link-active {
+  background: rgba(0, 73, 58, 0.4);
+  color: var(--color-brand-deep);
+}
+
+/* Drawer link active dark mode */
+html.dark .drawer-links li a.drawer-link-active {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--color-brand-deep);
+}
+
+/* ========================================
     FLOATING DRAWER MOBILE MENU
     ======================================== */
 
@@ -297,11 +331,11 @@ html.dark .form-note {
  }
 
  .drawer-links li a:hover {
- background: rgba(0, 73, 58, 0.06);
+ background: rgba(0, 73, 58, 0.05);
  }
 
  .drawer-links li a.drawer-link-active {
- background: rgba(0, 73, 58, 0.12);
+ background: rgba(0, 73, 58, 0.5);
  color: var(--color-brand-primary);
  font-weight: 600;
  }
