@@ -5,25 +5,38 @@ const drawerOverlay = document.getElementById("drawer-overlay");
 const drawerClose = document.getElementById("drawer-close");
 const drawerLinks = document.getElementById("drawer-links");
 
-// Map page paths (both with and without .html) to their parent section link href
-// Netlify serves clean URLs (e.g. /artigos instead of /artigos.html)
+// Normalize hrefs/paths to section keys — handles Netlify Post Processing which
+// rewrites href="artigos.html" → href='/artigos' at deploy time
+function normalizeToSection(href) {
+  return href
+    .replace(/^\//, "")
+    .replace(/[?#].*$/, "")
+    .replace(/\.html$/, "");
+}
+
 const PAGE_SECTION_MAP = {
+  // Homepage
   "index.html": "index.html",
+  "index": "index.html",
   "": "index.html",
+  // Artigos section
   "artigos.html": "artigos.html",
   "artigos": "artigos.html",
   "artigo.html": "artigos.html",
   "artigo": "artigos.html",
+  // Eventos section
   "eventos.html": "eventos.html",
   "eventos": "eventos.html",
   "evento.html": "eventos.html",
   "evento": "eventos.html",
   "inscricao.html": "eventos.html",
   "inscricao": "eventos.html",
+  // Lives section
   "lives-list.html": "lives-list.html",
   "lives-list": "lives-list.html",
   "lives.html": "lives-list.html",
   "lives": "lives-list.html",
+  // Sobre section
   "sobre.html": "sobre.html",
   "sobre": "sobre.html",
 };
@@ -31,18 +44,16 @@ const PAGE_SECTION_MAP = {
 // Active page detection for drawer + desktop nav-links
 function setActiveNavLink() {
   const currentPath = window.location.pathname;
-  const normalizedPath = currentPath.replace(/^\//, "").replace(/#.*$/, "");
+  const normalizedPath = normalizeToSection(currentPath);
   const activeHref = PAGE_SECTION_MAP[normalizedPath] || null;
 
   // Drawer links
   const drawerLinksEl = document.getElementById("drawer-links");
   if (drawerLinksEl) {
     drawerLinksEl.querySelectorAll("a").forEach((link) => {
-      const linkHref = link
-        .getAttribute("href")
-        .replace(/^\//, "")
-        .replace(/#.*$/, "");
-      if (activeHref && linkHref === activeHref) {
+      const linkHref = normalizeToSection(link.getAttribute("href"));
+      const linkSection = PAGE_SECTION_MAP[linkHref] || linkHref;
+      if (activeHref && linkSection === activeHref) {
         link.classList.add("drawer-link-active");
       } else {
         link.classList.remove("drawer-link-active");
@@ -54,11 +65,9 @@ function setActiveNavLink() {
   const navLinksEl = document.querySelector(".nav-links");
   if (navLinksEl) {
     navLinksEl.querySelectorAll("a").forEach((link) => {
-      const linkHref = link
-        .getAttribute("href")
-        .replace(/^\//, "")
-        .replace(/#.*$/, "");
-      if (activeHref && linkHref === activeHref) {
+      const linkHref = normalizeToSection(link.getAttribute("href"));
+      const linkSection = PAGE_SECTION_MAP[linkHref] || linkHref;
+      if (activeHref && linkSection === activeHref) {
         link.classList.add("nav-link-active");
       } else {
         link.classList.remove("nav-link-active");
