@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Dashboard - Admin</title>
+ <link rel="stylesheet" href="/src/admin/styles/admin.css">
+</head>
+<body class="admin-dashboard">
+ <header class="admin-header">
+ <div class="admin-logo">
+ <h1>Admin Dashboard</h1>
+ </div>
+ <nav class="admin-nav">
+ <a href="/src/admin/artigos/index.html">Artigos</a>
+ <a href="/src/admin/eventos/index.html">Eventos</a>
+ <a href="/src/admin/lives/index.html">Lives</a>
+ <a href="#" id="logout-btn">Sair</a>
+ </nav>
+ </header>
+
+ <main class="admin-content">
+ <div class="admin-stats-grid">
+ <div class="admin-card admin-stat-card">
+ <h3>Artigos</h3>
+ <div class="admin-stat-number" id="stat-articles">-</div>
+ <div class="admin-stat-label">Publicados</div>
+ </div>
+ <div class="admin-card admin-stat-card">
+ <h3>Eventos</h3>
+ <div class="admin-stat-number" id="stat-events">-</div>
+ <div class="admin-stat-label">Publicados</div>
+ </div>
+ <div class="admin-card admin-stat-card">
+ <h3>Lives</h3>
+ <div class="admin-stat-number" id="stat-lives">-</div>
+ <div class="admin-stat-label">Publicadas</div>
+ </div>
+ </div>
+
+ <div class="admin-card">
+ <h2>Atividade Recente</h2>
+ <table class="admin-table">
+ <thead>
+ <tr>
+ <th>Utilizador</th>
+ <th>Ação</th>
+ <th>Tabela</th>
+ <th>Data</th>
+ </tr>
+ </thead>
+ <tbody id="recent-activity">
+ <tr>
+ <td colspan="4">Carregando...</td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ </main>
+
+ <script type="module">
+ import { checkAuth, logout } from './lib/auth.js';
+
+ // Check authentication
+ const session = await checkAuth();
+
+ // Logout handler
+ document.getElementById('logout-btn')?.addEventListener('click', (e) => {
+ e.preventDefault();
+ logout();
+ });
+
+ // Load stats
+ async function loadStats() {
+ const { supabaseClient } = await import('../config.js');
+
+ // Count published articles
+ const { count: articlesCount } = await supabaseClient
+ .from('articles')
+ .select('*', { count: 'exact', head: true })
+ .eq('status', 'published');
+
+ // Count published events
+ const { count: eventsCount } = await supabaseClient
+ .from('events')
+ .select('*', { count: 'exact', head: true })
+ .eq('status', 'published');
+
+ // Count published lives
+ const { count: livesCount } = await supabaseClient
+ .from('lives')
+ .select('*', { count: 'exact', head: true })
+ .eq('status', 'published');
+
+ document.getElementById('stat-articles').textContent = articlesCount || 0;
+ document.getElementById('stat-events').textContent = eventsCount || 0;
+ document.getElementById('stat-lives').textContent = livesCount || 0;
+ }
+
+ // Load recent activity
+ async function loadRecentActivity() {
+ const { supabaseClient } = await import('../config.js');
+ const { data: session } = await supabaseClient.auth.getSession();
+
+ const { data: logs } = await supabaseClient
+ .from('audit_logs')
+ .select('*')
+ .order('created_at', { ascending: false })
+ .limit(10);
+
+ const tbody = document.getElementById('recent-activity');
+ if (logs && logs.length > 0) {
+ tbody.innerHTML = logs.map(log => `
+ <tr>
+ <td>${log.user_email || 'Sistema'}</td>
+ <td>${log.action}</td>
+ <td>${log.table_name}</td>
+ <td>${new Date(log.created_at).toLocaleString('pt-PT')}</td>
+ </tr>
+ `).join('');
+ } else {
+ tbody.innerHTML = '<tr><td colspan="4">Sem atividade recente</td></tr>';
+ }
+ }
+
+ loadStats();
+ loadRecentActivity();
+ </script>
+</body>
+</html>
