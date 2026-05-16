@@ -1,45 +1,46 @@
 // Importar configurações do Supabase
-import { supabaseClient, SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
-import eventsData from './content/events-catalog.json';
-import { createPolling } from './lib/polling.js';
-import { getCachedCapacity, setCapacityCache } from './lib/capacity-cache.js';
+import { supabaseClient, SUPABASE_URL, SUPABASE_ANON_KEY } from "./config.js";
+import { getEvents, getEventBySlug } from './lib/api.js';
+import { renderBreadcrumb } from "./breadcrumb.js";
+import { createPolling } from "./lib/polling.js";
+import { getCachedCapacity, setCapacityCache } from "./lib/capacity-cache.js";
 
 function formatDate(dateStr) {
-  const date = new Date(dateStr + 'T00:00:00');
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
-  return date.toLocaleDateString('pt-PT', options);
+  const date = new Date(dateStr + "T00:00:00");
+  const options = { year: "numeric", month: "long", day: "numeric" };
+  return date.toLocaleDateString("pt-PT", options);
 }
 
 function formatDateSimple(dateStr) {
-  const date = new Date(dateStr + 'T00:00:00');
-  const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-  return date.toLocaleDateString('pt-PT', options);
+  const date = new Date(dateStr + "T00:00:00");
+  const options = { day: "2-digit", month: "2-digit", year: "numeric" };
+  return date.toLocaleDateString("pt-PT", options);
 }
 
 // ==========================================
 // DIAGNÓSTICO: Função exposta para debugging no console
 // ==========================================
-window.debugInscriptions = async function(slug) {
-  const s = slug || new URLSearchParams(window.location.search).get('id');
-  console.log('🔍 Debug: Contando inscrições para:', s);
+window.debugInscriptions = async function (slug) {
+  const s = slug || new URLSearchParams(window.location.search).get("id");
+  console.log("🔍 Debug: Contando inscrições para:", s);
 
   const { data, error, count } = await supabaseClient
-    .from('inscricoes')
-    .select('*', { count: 'exact', head: true })
-    .eq('evento_slug', s);
+    .from("inscricoes")
+    .select("*", { count: "exact", head: true })
+    .eq("evento_slug", s);
 
-  console.log('📊 Resultado:', { data, error, count });
-  console.log('📝 SQL: SELECT * FROM inscricoes WHERE evento_slug = ?', s);
+  console.log("📊 Resultado:", { data, error, count });
+  console.log("📝 SQL: SELECT * FROM inscricoes WHERE evento_slug = ?", s);
 
   if (error) {
-    console.error('❌ Erro:', error);
+    console.error("❌ Erro:", error);
   } else {
     console.log(`✅ ${count} inscrições encontradas`);
   }
   return { data, error, count };
 };
 
-console.log('💡 DICA: Execute debugInscriptions() no console para debug');
+console.log("💡 DICA: Execute debugInscriptions() no console para debug");
 
 // Função para contar inscrições reais do Supabase
 async function getInscriptionCount(eventoSlug) {
@@ -50,32 +51,37 @@ async function getInscriptionCount(eventoSlug) {
 
     // Verificar se Supabase está disponível
     if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      console.warn('⚠️ Supabase credentials não disponíveis');
+      console.warn("⚠️ Supabase credentials não disponíveis");
       return null;
     }
 
     // Método 1: Usar cliente Supabase (mais fiável que REST API direta)
-    console.log('📡 A usar cliente Supabase...');
+    console.log("📡 A usar cliente Supabase...");
     console.log(`📊 Tabela: inscricoes, Filtro: evento_slug = "${eventoSlug}"`);
 
     const query = supabaseClient
-      .from('inscricoes')
-      .select('*', { count: 'exact', head: true })
-      .eq('evento_slug', eventoSlug);
+      .from("inscricoes")
+      .select("*", { count: "exact", head: true })
+      .eq("evento_slug", eventoSlug);
 
-    console.log('📝 Query SQL equivalente: SELECT * FROM inscricoes WHERE evento_slug = ?', eventoSlug);
+    console.log(
+      "📝 Query SQL equivalente: SELECT * FROM inscricoes WHERE evento_slug = ?",
+      eventoSlug
+    );
 
     const { data, error, count } = await query;
 
     if (error) {
-      console.error('❌ Erro na query Supabase:', error.message);
-      console.error('Código:', error.code);
-      console.error('Detalhes:', error.details);
-      console.error('Hint:', error.hint);
+      console.error("❌ Erro na query Supabase:", error.message);
+      console.error("Código:", error.code);
+      console.error("Detalhes:", error.details);
+      console.error("Hint:", error.hint);
 
       // Erro RLS (42501) significa que a política bloqueia a acesso
-      if (error.code === '42501') {
-        console.error('🚫 ERRO RLS: Política de segurança bloqueia leitura. Verifique as políticas da tabela "inscricoes".');
+      if (error.code === "42501") {
+        console.error(
+          '🚫 ERRO RLS: Política de segurança bloqueia leitura. Verifique as políticas da tabela "inscricoes".'
+        );
       }
 
       return null;
@@ -85,21 +91,21 @@ async function getInscriptionCount(eventoSlug) {
     console.log(`📦 Dados retornados:`, data);
     return count || 0;
   } catch (error) {
-    console.error('❌ Erro ao conectar com Supabase:', error.message);
-    console.error('Stack:', error.stack);
+    console.error("❌ Erro ao conectar com Supabase:", error.message);
+    console.error("Stack:", error.stack);
 
     // Fallback: tentar REST API direta
-    console.log('🔄 A tentar REST API direta...');
+    console.log("🔄 A tentar REST API direta...");
     try {
       const url = `${SUPABASE_URL}/rest/v1/inscricoes?evento_slug=eq.${encodeURIComponent(eventoSlug)}&limit=1`;
       console.log(`🌐 URL REST: ${url.substring(0, 100)}...`);
 
       const response = await fetch(url, {
         headers: {
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-          'apikey': SUPABASE_ANON_KEY,
-          'Prefer': 'count=exact'
-        }
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          apikey: SUPABASE_ANON_KEY,
+          Prefer: "count=exact",
+        },
       });
 
       console.log(`📡 Status HTTP: ${response.status} ${response.statusText}`);
@@ -109,102 +115,120 @@ async function getInscriptionCount(eventoSlug) {
         return null;
       }
 
-      const contentRange = response.headers.get('content-range');
+      const contentRange = response.headers.get("content-range");
       console.log(`📦 Content-Range header: ${contentRange}`);
 
       if (!contentRange) return null;
 
-      const count = parseInt(contentRange.split('/')[1]);
+      const count = parseInt(contentRange.split("/")[1]);
       console.log(`✅ Inscrições encontradas (REST): ${count}`);
       return count;
     } catch (e) {
-      console.error('❌ REST API também falhou:', e.message);
+      console.error("❌ REST API também falhou:", e.message);
       return null;
     }
   }
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(window.location.search);
-  const eventId = params.get('id');
+  const eventId = params.get("id");
 
-  const eventNotFound = document.getElementById('event-not-found');
-  const similarEventsSection = document.getElementById('similar-events-section');
+  const eventNotFound = document.getElementById("event-not-found");
+  const similarEventsSection = document.getElementById(
+    "similar-events-section"
+  );
 
   if (!eventId) {
-    eventNotFound.classList.remove('hidden');
+    eventNotFound.classList.remove("hidden");
     return;
   }
 
   try {
-    console.log('Catálogo de eventos carregado via import:', eventsData);
+    // Load event from Supabase (with JSON fallback)
+ console.log("Carregando evento do Supabase:", eventId);
 
     // Find event by slug (URL parameter contains the slug, not numeric ID)
-    const event = eventsData.events.find(e => e.slug === eventId);
+    const event = await getEventBySlug(eventId);
 
     if (!event) {
       console.error(`Evento com ID/slug ${eventId} não encontrado`);
-      eventNotFound.classList.remove('hidden');
+      eventNotFound.classList.remove("hidden");
       return;
     }
 
-    console.log('Evento encontrado:', event);
+    console.log("Evento encontrado:", event);
+
+    // Breadcrumb
+    renderBreadcrumb([
+      { label: "Início", href: "/" },
+      { label: "Eventos", href: "/eventos.html" },
+      { label: event.title },
+    ]);
 
     // Calculate event status
     const today = new Date();
-    const todayFormatted = today.toISOString().split('T')[0];
+    const todayFormatted = today.toISOString().split("T")[0];
     const isUpcoming = event.date >= todayFormatted;
-    const eventStatus = isUpcoming ? 'upcoming' : 'past';
+    const eventStatus = isUpcoming ? "upcoming" : "past";
 
     // Get category color
     function getCategoryColor(category) {
       const colors = {
-        workshop: '#ff6c23',
-        palestra: '#0a844f',
-        congresso: '#002a32'
+        workshop: "#ff6c23",
+        palestra: "#0a844f",
+        congresso: "#002a32",
       };
-      return colors[category] || '#00493a';
+      return colors[category] || "#00493a";
     }
 
     const categoryColor = getCategoryColor(event.category);
 
     // Populate Hero Section
-    const categoryBadge = document.getElementById('event-category');
+    const categoryBadge = document.getElementById("event-category");
     categoryBadge.textContent = event.categoryLabel;
-    categoryBadge.style.backgroundColor = categoryColor + '20';
+    categoryBadge.style.backgroundColor = categoryColor + "20";
     categoryBadge.style.color = categoryColor;
 
-    document.getElementById('event-title').textContent = event.title;
+    document.getElementById("event-title").textContent = event.title;
 
-    const featuredImage = document.getElementById('event-featured-image');
+    const featuredImage = document.getElementById("event-featured-image");
     featuredImage.src = event.image;
     featuredImage.alt = event.title;
 
     // Event Meta Bar
-    const typeLabel = event.type === 'online' ? 'Online' : 'Presencial';
-    document.getElementById('event-type-meta').textContent = typeLabel;
-    document.getElementById('event-type-meta').style.backgroundColor = categoryColor + '20';
-    document.getElementById('event-type-meta').style.color = categoryColor;
+    const typeLabel = event.type === "online" ? "Online" : "Presencial";
+    document.getElementById("event-type-meta").textContent = typeLabel;
+    document.getElementById("event-type-meta").style.backgroundColor =
+      categoryColor + "20";
+    document.getElementById("event-type-meta").style.color = categoryColor;
 
-    document.getElementById('event-date-meta').textContent = formatDate(event.date);
-    document.getElementById('event-location-meta').textContent = event.location;
-    document.getElementById('event-time-meta').textContent = `${event.time} — ${event.endTime}`;
+    document.getElementById("event-date-meta").textContent = formatDate(
+      event.date
+    );
+    document.getElementById("event-location-meta").textContent = event.location;
+    document.getElementById("event-time-meta").textContent =
+      `${event.time} — ${event.endTime}`;
 
     // Populate Content Section
-    document.getElementById('event-description').textContent = event.excerpt;
+    document.getElementById("event-description").textContent = event.excerpt;
 
     // Event Details
-    document.getElementById('event-type-detail').textContent = typeLabel;
-    document.getElementById('event-date-detail').textContent = formatDate(event.date);
-    document.getElementById('event-time-detail').textContent = `${event.time} — ${event.endTime} (${calculateDuration(event.time, event.endTime)})`;
-    document.getElementById('event-location-detail').textContent = event.location;
+    document.getElementById("event-type-detail").textContent = typeLabel;
+    document.getElementById("event-date-detail").textContent = formatDate(
+      event.date
+    );
+    document.getElementById("event-time-detail").textContent =
+      `${event.time} — ${event.endTime} (${calculateDuration(event.time, event.endTime)})`;
+    document.getElementById("event-location-detail").textContent =
+      event.location;
 
     // SINCRONIZAR COM SUPABASE: Contar inscrições reais
-    let inscriptionCount = event.registered; // Valor padrão do JSON
+    let inscriptionCount = 0; // Default — registered count comes from Supabase inscriptions, not from event data
     console.log(`📊 Valor padrão (JSON): ${inscriptionCount}`);
     console.log(`📊 Slug do evento: ${event.slug}`);
 
-    console.log('⏳ A consultar Supabase...');
+    console.log("⏳ A consultar Supabase...");
     const realCount = await getInscriptionCount(event.slug);
 
     console.log(`🔍 Resultado da query: ${realCount}`);
@@ -213,66 +237,73 @@ document.addEventListener('DOMContentLoaded', async () => {
       inscriptionCount = realCount;
       console.log(`✅ Usando contagem real do Supabase: ${inscriptionCount}`);
     } else {
-      console.log(`⚠️ Falha na query Supabase (retornou ${realCount}), usando JSON: ${inscriptionCount}`);
+      console.log(
+        `⚠️ Falha na query Supabase (retornou ${realCount}), usando JSON: ${inscriptionCount}`
+      );
     }
 
     // Capacity Information - AGORA SINCRONIZADO
     const spotsLeft = event.capacity - inscriptionCount;
-    const capacityPercent = Math.round((inscriptionCount / event.capacity) * 100);
+    const capacityPercent = Math.round(
+      (inscriptionCount / event.capacity) * 100
+    );
 
-    console.log(`📈 Capacidade: ${event.capacity}, Inscrições: ${inscriptionCount}, Vagas: ${spotsLeft}, Percentual: ${capacityPercent}%`);
+    console.log(
+      `📈 Capacidade: ${event.capacity}, Inscrições: ${inscriptionCount}, Vagas: ${spotsLeft}, Percentual: ${capacityPercent}%`
+    );
 
-    const capacityFilled = document.getElementById('event-capacity-filled');
-    capacityFilled.style.width = capacityPercent + '%';
-    capacityFilled.style.backgroundColor = capacityPercent >= 100 ? '#dc2626' : categoryColor;
+    const capacityFilled = document.getElementById("event-capacity-filled");
+    capacityFilled.style.width = capacityPercent + "%";
+    capacityFilled.style.backgroundColor =
+      capacityPercent >= 100 ? "#dc2626" : categoryColor;
 
-    const capacityText = document.getElementById('event-capacity-text');
+    const capacityText = document.getElementById("event-capacity-text");
     if (spotsLeft > 0) {
       capacityText.textContent = `${spotsLeft} vagas disponíveis de ${event.capacity}`;
-      capacityText.style.color = '#1f2937'; // cor normal
+      capacityText.style.color = "#1f2937"; // cor normal
     } else {
-      capacityText.textContent = 'Evento completo - Sem vagas disponíveis';
-      capacityText.style.color = '#dc2626';
+      capacityText.textContent = "Evento completo - Sem vagas disponíveis";
+      capacityText.style.color = "#dc2626";
     }
 
     // Registration Button
-    const registrationBtn = document.getElementById('event-registration-btn');
-    registrationBtn.setAttribute('data-event-slug', event.slug);
+    const registrationBtn = document.getElementById("event-registration-btn");
+    registrationBtn.setAttribute("data-event-slug", event.slug);
 
-    if (eventStatus === 'past') {
-      registrationBtn.textContent = 'Ver Gravação';
-      registrationBtn.classList.remove('btn-primary');
-      registrationBtn.classList.add('btn-secondary');
+    if (eventStatus === "past") {
+      registrationBtn.textContent = "Ver Gravação";
+      registrationBtn.classList.remove("btn-primary");
+      registrationBtn.classList.add("btn-secondary");
       registrationBtn.disabled = true;
     } else if (spotsLeft <= 0) {
       // BLOQUEAR SE CAPACIDADE ATINGIDA
-      registrationBtn.textContent = 'Evento Completo';
+      registrationBtn.textContent = "Evento Completo";
       registrationBtn.disabled = true;
-      registrationBtn.classList.add('btn-disabled');
-      console.log('🚫 Inscrições fechadas - Capacidade máxima atingida');
+      registrationBtn.classList.add("btn-disabled");
+      console.log("🚫 Inscrições fechadas - Capacidade máxima atingida");
     } else {
-      registrationBtn.textContent = 'Inscrever-me';
+      registrationBtn.textContent = "Inscrever-me";
       registrationBtn.disabled = false;
     }
 
- // Speakers Section (below Inscrever-me)
- renderSpeakers(event.hosts || [event.host], categoryColor);
+    // Speakers Section (below Inscrever-me)
+    renderSpeakers(event.hosts || [event.host], categoryColor);
 
     // Update Page Title
     document.title = `${event.title} - Conheça Farmácia`;
 
     // Similar Events
-    const similarEvents = getSimilarEvents(eventsData.events, event);
+    const allEvents = await getEvents();
+  const similarEvents = getSimilarEvents(allEvents, event);
     if (similarEvents.length >= 2) {
-      similarEventsSection.classList.remove('hidden');
-      renderSimilarEvents(similarEvents, eventsData.events);
+      similarEventsSection.classList.remove("hidden");
+      renderSimilarEvents(similarEvents, allEvents);
     } else {
-      similarEventsSection.classList.add('hidden');
+      similarEventsSection.classList.add("hidden");
     }
-
   } catch (error) {
-    console.error('Erro ao carregar detalhe do evento:', error);
-    eventNotFound.classList.remove('hidden');
+    console.error("Erro ao carregar detalhe do evento:", error);
+    eventNotFound.classList.remove("hidden");
   }
 
   // ==========================================
@@ -282,15 +313,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   let event = null; // Reference to current event for capacity updates
 
   async function refreshCapacity() {
-    console.log('🔄 Atualizando contagem de vagas...');
-    updateCapacityStatus('updating');
+    console.log("🔄 Atualizando contagem de vagas...");
+    updateCapacityStatus("updating");
 
     // Tentar obter do cache primeiro
     const cached = await getCachedCapacity(event.slug);
     if (cached) {
       updateCapacityUI(cached);
-      updateCapacityStatus('valid');
-      console.log('✅ Dados do cache utilizados');
+      updateCapacityStatus("valid");
+      console.log("✅ Dados do cache utilizados");
       return;
     }
 
@@ -307,10 +338,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       await setCapacityCache(event.slug, capacityData);
 
       updateCapacityUI(capacityData);
-      updateCapacityStatus('valid');
+      updateCapacityStatus("valid");
       console.log(`✅ Vagas atualizadas: ${spotsLeft} disponíveis`);
     } else {
-      updateCapacityStatus('error');
+      updateCapacityStatus("error");
     }
   }
 
@@ -318,61 +349,62 @@ document.addEventListener('DOMContentLoaded', async () => {
     const { spotsLeft, capacityPercent, realCount } = data;
 
     // Atualizar barra de capacidade
-    const capacityFilled = document.getElementById('event-capacity-filled');
+    const capacityFilled = document.getElementById("event-capacity-filled");
     if (capacityFilled) {
-      capacityFilled.style.width = capacityPercent + '%';
-      capacityFilled.style.backgroundColor = capacityPercent >= 100 ? '#dc2626' : categoryColor;
+      capacityFilled.style.width = capacityPercent + "%";
+      capacityFilled.style.backgroundColor =
+        capacityPercent >= 100 ? "#dc2626" : categoryColor;
     }
 
     // Atualizar texto de vagas
-    const capacityText = document.getElementById('event-capacity-text');
+    const capacityText = document.getElementById("event-capacity-text");
     if (capacityText) {
       if (spotsLeft > 0) {
         capacityText.textContent = `${spotsLeft} vagas disponíveis de ${event.capacity}`;
-        capacityText.style.color = '#1f2937';
+        capacityText.style.color = "#1f2937";
       } else {
-        capacityText.textContent = 'Evento completo - Sem vagas disponíveis';
-        capacityText.style.color = '#dc2626';
+        capacityText.textContent = "Evento completo - Sem vagas disponíveis";
+        capacityText.style.color = "#dc2626";
       }
     }
 
     // Atualizar botão de inscrição
-    const registrationBtn = document.getElementById('event-registration-btn');
+    const registrationBtn = document.getElementById("event-registration-btn");
     if (registrationBtn) {
       if (spotsLeft <= 0) {
-        registrationBtn.textContent = 'Evento Completo';
+        registrationBtn.textContent = "Evento Completo";
         registrationBtn.disabled = true;
-        registrationBtn.classList.add('btn-disabled');
+        registrationBtn.classList.add("btn-disabled");
       }
     }
   }
 
   // Indicador visual de status
   function updateCapacityStatus(status, message) {
-    const statusEl = document.getElementById('capacity-status');
+    const statusEl = document.getElementById("capacity-status");
     if (!statusEl) return;
 
-    const dot = statusEl.querySelector('.status-dot');
-    const text = statusEl.querySelector('.status-text');
+    const dot = statusEl.querySelector(".status-dot");
+    const text = statusEl.querySelector(".status-text");
     if (!dot || !text) return;
 
-    dot.classList.remove('updating', 'error', 'valid');
+    dot.classList.remove("updating", "error", "valid");
 
     switch (status) {
-      case 'updating':
-        dot.classList.add('updating');
-        text.textContent = 'A atualizar...';
+      case "updating":
+        dot.classList.add("updating");
+        text.textContent = "A atualizar...";
         break;
-      case 'error':
-        dot.classList.add('error');
-        text.textContent = message || 'Erro na atualização';
+      case "error":
+        dot.classList.add("error");
+        text.textContent = message || "Erro na atualização";
         break;
-      case 'valid':
-        dot.classList.add('valid');
-        text.textContent = 'Vagas atualizadas';
+      case "valid":
+        dot.classList.add("valid");
+        text.textContent = "Vagas atualizadas";
         break;
       default:
-        text.textContent = 'Vagas atualizadas agora';
+        text.textContent = "Vagas atualizadas agora";
     }
   }
 
@@ -382,11 +414,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       initialInterval: 30000, // 30s em primeiro plano
       maxInterval: 120000, // 2min máximo com backoff
       maxRetries: 5,
-      useBackoff: true
+      useBackoff: true,
     });
 
     // Setup cleanup quando elemento for removido
-    const eventContainer = document.getElementById('event-capacity-container');
+    const eventContainer = document.getElementById("event-capacity-container");
     pollingInstance.setupCleanup(eventContainer);
   }
 
@@ -394,18 +426,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Verificar se há parâmetro refresh=true na URL
   const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('refresh') === 'true') {
-    console.log('🔄 Parâmetro refresh=true detetado, atualizando...');
+  if (urlParams.get("refresh") === "true") {
+    console.log("🔄 Parâmetro refresh=true detetado, atualizando...");
     refreshCapacity();
     const params = new URLSearchParams(window.location.search);
-    params.delete('refresh');
-    const newUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
-    window.history.replaceState({}, '', newUrl);
+    params.delete("refresh");
+    const newUrl =
+      window.location.pathname +
+      (params.toString() ? "?" + params.toString() : "");
+    window.history.replaceState({}, "", newUrl);
   }
 
   function calculateDuration(startTime, endTime) {
-    const [startHour, startMin] = startTime.split(':').map(Number);
-    const [endHour, endMin] = endTime.split(':').map(Number);
+    const [startHour, startMin] = startTime.split(":").map(Number);
+    const [endHour, endMin] = endTime.split(":").map(Number);
 
     const startTotalMin = startHour * 60 + startMin;
     const endTotalMin = endHour * 60 + endMin;
@@ -425,42 +459,54 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function getSimilarEvents(allEvents, currentEvent) {
     return allEvents
-      .filter(e =>
-        e.category === currentEvent.category &&
-        e.id !== currentEvent.id
+      .filter(
+        (e) => e.category === currentEvent.category && e.slug !== currentEvent.slug
       )
       .slice(0, 3);
   }
 
   function renderSimilarEvents(similarEvents, allEvents) {
-    const grid = document.getElementById('similar-events-grid');
-    grid.innerHTML = '';
+    const grid = document.getElementById("similar-events-grid");
+    grid.innerHTML = "";
 
     function getCategoryColor(category) {
       const colors = {
-        workshop: '#ff6c23',
-        palestra: '#0a844f',
-        congresso: '#002a32',
+        workshop: "#ff6c23",
+        palestra: "#0a844f",
+        congresso: "#002a32",
       };
-      return colors[category] || '#00493a';
+      return colors[category] || "#00493a";
     }
 
     function calculateStatus(eventDate) {
-      const today = new Date().toISOString().split('T')[0];
-      return eventDate >= today ? 'upcoming' : 'past';
+      const today = new Date().toISOString().split("T")[0];
+      return eventDate >= today ? "upcoming" : "past";
     }
 
-    similarEvents.forEach(event => {
+    similarEvents.forEach((event) => {
       const categoryColor = getCategoryColor(event.category);
       const eventDate = formatDate(event.date);
-      const dateObj = new Date(event.date + 'T00:00:00');
-      const day = String(dateObj.getDate()).padStart(2, '0');
-      const month = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'][dateObj.getMonth()];
+      const dateObj = new Date(event.date + "T00:00:00");
+      const day = String(dateObj.getDate()).padStart(2, "0");
+      const month = [
+        "JAN",
+        "FEV",
+        "MAR",
+        "ABR",
+        "MAI",
+        "JUN",
+        "JUL",
+        "AGO",
+        "SET",
+        "OUT",
+        "NOV",
+        "DEZ",
+      ][dateObj.getMonth()];
 
-      const card = document.createElement('article');
-      card.className = 'event-card';
+      const card = document.createElement("article");
+      card.className = "event-card";
 
-      const spotsLeft = event.capacity - event.registered;
+      const spotsLeft = event.capacity - (event.registered || 0);
 
       card.innerHTML = `
 <div class="event-card-header">
@@ -475,7 +521,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     <span class="event-badge" style="background-color: ${categoryColor}20; color: ${categoryColor}">
       ${event.categoryLabel}
     </span>
-    <span class="event-type-badge">${event.type === 'online' ? 'Online' : 'Presencial'}</span>
+    <span class="event-type-badge">${event.type === "online" ? "Online" : "Presencial"}</span>
   </div>
 
   <h3 class="event-card-title">${event.title}</h3>
@@ -488,18 +534,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     <div class="event-meta-item">
       <span>${event.location}</span>
     </div>
-    ${spotsLeft > 0 ? `
+    ${
+      spotsLeft > 0
+        ? `
       <div class="event-meta-item">
         <span>${spotsLeft} vagas disponíveis</span>
       </div>
-    ` : `
+    `
+        : `
       <div class="event-meta-item">
         <span>Evento completo</span>
       </div>
-    `}
+    `
+    }
   </div>
 
-  <a href="evento.html?id=${event.id}" class="event-card-cta">
+  <a href="evento.html?id=${event.slug}" class="event-card-cta">
     Mais Informações
   </a>
 </div>
@@ -508,36 +558,143 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-
+  /**
+   * Render speaker cards in the speakers section (below Inscrever-me)
+   */
 /**
-* Render speaker cards in the speakers section (below Inscrever-me)
-*/
+ * Render speaker cards with "Show More" / "Show Less" controls
+ * Mobile: shows 2 speakers initially
+ * Desktop: shows 3 speakers initially
+ */
 function renderSpeakers(hosts, categoryColor) {
-  const container = document.getElementById('speakers-container');
-  const section = document.getElementById('speakers-section');
+  const container = document.getElementById("speakers-container");
+  const section = document.getElementById("speakers-section");
   if (!container || !section) return;
 
+  // Normalize hosts to array
+  const hostsArray = Array.isArray(hosts) ? hosts : hosts ? [hosts] : [];
+
   // Hide section if no hosts
-  if (!hosts || hosts.length === 0) {
-    section.classList.add('hidden');
+  if (hostsArray.length === 0) {
+    section.classList.add("hidden");
     return;
   }
-  section.classList.remove('hidden');
+  section.classList.remove("hidden");
 
-  container.innerHTML = '';
-  hosts.forEach((host) => {
-    const card = document.createElement('div');
-    card.className = 'speaker-card';
+  // Define limits: mobile (2) vs desktop (3)
+  const isMobile = window.innerWidth < 768;
+  const initialLimit = isMobile ? 2 : 3;
+  const shouldShowButton = hostsArray.length > initialLimit;
 
-    const initials = host.name ? host.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : '?';
-    const color = categoryColor || '#0a844f';
+  // Clear container
+  container.innerHTML = "";
 
-    card.innerHTML = '<div class="speaker-card-avatar" style="background-color:' + color + '">' + initials + '</div>' +
-      '<div class="speaker-card-name">' + (host.name || '') + '</div>' +
-      (host.role ? '<div class="speaker-card-role">' + host.role + '</div>' : '') +
-      (host.organization ? '<div class="speaker-card-organization">' + host.organization + '</div>' : '');
+  // Render speaker cards
+  hostsArray.forEach((host, index) => {
+    const card = document.createElement("div");
+    card.className = "speaker-card";
+    
+    // Hide cards beyond initial limit
+    if (index >= initialLimit) {
+      card.classList.add("speaker-card--hidden");
+    }
+    card.dataset.speakerIndex = index;
+
+    const initials = host.name
+      ? host.name
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .substring(0, 2)
+          .toUpperCase()
+      : "?";
+    const color = categoryColor || "#0a844f";
+
+    card.innerHTML =
+      '<div class="speaker-card-avatar" style="background-color:' +
+      color +
+      '">' +
+      initials +
+      "</div>" +
+      '<div class="speaker-card-name">' +
+      (host.name || "") +
+      "</div>" +
+      (host.role
+        ? '<div class="speaker-card-role">' + host.role + "</div>"
+        : "") +
+      (host.organization
+        ? '<div class="speaker-card-organization">' +
+          host.organization +
+          "</div>"
+        : "");
 
     container.appendChild(card);
   });
+
+  // Create or remove "Show More" button
+  const existingShowMore = container.querySelector(".speaker-show-more-btn");
+  if (shouldShowButton && !existingShowMore) {
+    const showMoreBtn = document.createElement("button");
+    showMoreBtn.className = "speaker-show-more-btn";
+    showMoreBtn.textContent = `Mostrar mais ${hostsArray.length - initialLimit} palestrantes`;
+    showMoreBtn.dataset.action = "show-more";
+    container.appendChild(showMoreBtn);
+  } else if (!shouldShowButton && existingShowMore) {
+    existingShowMore.remove();
+  }
+
+  // Add event listener for buttons
+  container.addEventListener("click", handleSpeakerControls);
 }
+
+/**
+ * Handle "Show More" / "Show Less" button clicks
+ */
+function handleSpeakerControls(event) {
+  const target = event.target;
+  const container = document.getElementById("speakers-container");
+  if (!container) return;
+
+  // Check if clicked "Show More"
+  if (target.classList.contains("speaker-show-more-btn")) {
+    const allCards = container.querySelectorAll(".speaker-card");
+    allCards.forEach((card) => {
+      card.classList.remove("speaker-card--hidden");
+    });
+
+    // Remove "Show More" button
+    target.remove();
+
+    // Add "Show Less" button
+    const showLessBtn = document.createElement("button");
+    showLessBtn.className = "speaker-show-less-btn";
+    showLessBtn.textContent = "Ocultar palestrantes";
+    showLessBtn.dataset.action = "show-less";
+    container.appendChild(showLessBtn);
+  }
+
+  // Check if clicked "Show Less"
+  if (target.classList.contains("speaker-show-less-btn")) {
+    const isMobile = window.innerWidth < 768;
+    const initialLimit = isMobile ? 2 : 3;
+
+    const allCards = container.querySelectorAll(".speaker-card");
+    allCards.forEach((card, index) => {
+      if (index >= initialLimit) {
+        card.classList.add("speaker-card--hidden");
+      }
+    });
+
+    // Remove "Show Less" button
+    target.remove();
+
+    // Re-add "Show More" button
+    const showMoreBtn = document.createElement("button");
+    showMoreBtn.className = "speaker-show-more-btn";
+    showMoreBtn.textContent = `Mostrar mais ${allCards.length - initialLimit} palestrantes`;
+    showMoreBtn.dataset.action = "show-more";
+    container.appendChild(showMoreBtn);
+  }
+}
+
 });
