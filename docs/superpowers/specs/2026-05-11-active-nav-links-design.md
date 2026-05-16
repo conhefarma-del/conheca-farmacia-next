@@ -18,10 +18,10 @@ O mobile drawer tem active state (border-radius + fundo) nos links, mas apresent
 
 ## Ficheiros a Modificar
 
-| Ficheiro | Mudança |
-|----------|---------|
+| Ficheiro        | Mudança                                                                                                                                                    |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `src/script.js` | Corrigir `setActiveDrawerLink()`: usar mapa de páginas → secção pai; renomear para `setActiveNavLink()`; aplicar classe ativa nos nav-links desktop também |
-| `src/input.css` | Adicionar `.nav-links a.nav-link-active` (pill/fundo), `.nav-links a:hover`, dark mode |
+| `src/input.css` | Adicionar `.nav-links a.nav-link-active` (pill/fundo), `.nav-links a:hover`, dark mode                                                                     |
 
 Não se mexe nos HTMLs — tudo é dinâmico via JS.
 
@@ -35,24 +35,24 @@ Substituir a função `setActiveDrawerLink()` (linhas 9-30) por `setActiveNavLin
 // Map page paths (both with and without .html) to their parent section link href
 // Netlify serves clean URLs (e.g. /artigos instead of /artigos.html)
 const PAGE_SECTION_MAP = {
-  'index.html': 'index.html',
-  '': 'index.html',
-  'artigos.html': 'artigos.html',
-  'artigos': 'artigos.html',
-  'artigo.html': 'artigos.html',
-  'artigo': 'artigos.html',
-  'eventos.html': 'eventos.html',
-  'eventos': 'eventos.html',
-  'evento.html': 'eventos.html',
-  'evento': 'eventos.html',
-  'inscricao.html': 'eventos.html',
-  'inscricao': 'eventos.html',
-  'lives-list.html': 'lives-list.html',
-  'lives-list': 'lives-list.html',
-  'lives.html': 'lives-list.html',
-  'lives': 'lives-list.html',
-  'sobre.html': 'sobre.html',
-  'sobre': 'sobre.html',
+  "index.html": "index.html",
+  "": "index.html",
+  "artigos.html": "artigos.html",
+  artigos: "artigos.html",
+  "artigo.html": "artigos.html",
+  artigo: "artigos.html",
+  "eventos.html": "eventos.html",
+  eventos: "eventos.html",
+  "evento.html": "eventos.html",
+  evento: "eventos.html",
+  "inscricao.html": "eventos.html",
+  inscricao: "eventos.html",
+  "lives-list.html": "lives-list.html",
+  "lives-list": "lives-list.html",
+  "lives.html": "lives-list.html",
+  lives: "lives-list.html",
+  "sobre.html": "sobre.html",
+  sobre: "sobre.html",
 };
 
 function setActiveNavLink() {
@@ -64,7 +64,10 @@ function setActiveNavLink() {
   const drawerLinksEl = document.getElementById("drawer-links");
   if (drawerLinksEl) {
     drawerLinksEl.querySelectorAll("a").forEach((link) => {
-      const linkHref = link.getAttribute("href").replace(/^\//, "").replace(/#.*$/, "");
+      const linkHref = link
+        .getAttribute("href")
+        .replace(/^\//, "")
+        .replace(/#.*$/, "");
       if (activeHref && linkHref === activeHref) {
         link.classList.add("drawer-link-active");
       } else {
@@ -77,7 +80,10 @@ function setActiveNavLink() {
   const navLinksEl = document.querySelector(".nav-links");
   if (navLinksEl) {
     navLinksEl.querySelectorAll("a").forEach((link) => {
-      const linkHref = link.getAttribute("href").replace(/^\//, "").replace(/#.*$/, "");
+      const linkHref = link
+        .getAttribute("href")
+        .replace(/^\//, "")
+        .replace(/#.*$/, "");
       if (activeHref && linkHref === activeHref) {
         link.classList.add("nav-link-active");
       } else {
@@ -128,17 +134,17 @@ html.dark .drawer-links li a.drawer-link-active {
 
 ### 3. Regras de matching
 
-| Página atual | Link ativo |
-|-------------|-----------|
-| `index.html` ou path vazio | Início |
-| `artigos.html` | Artigos |
-| `artigo.html` | Artigos |
-| `eventos.html` | Eventos |
-| `evento.html` | Eventos |
-| `inscricao.html` | Eventos |
-| `lives-list.html` | Lives |
-| `lives.html` | Lives |
-| `sobre.html` | Sobre Nós |
+| Página atual               | Link ativo |
+| -------------------------- | ---------- |
+| `index.html` ou path vazio | Início     |
+| `artigos.html`             | Artigos    |
+| `artigo.html`              | Artigos    |
+| `eventos.html`             | Eventos    |
+| `evento.html`              | Eventos    |
+| `inscricao.html`           | Eventos    |
+| `lives-list.html`          | Lives      |
+| `lives.html`               | Lives      |
+| `sobre.html`               | Sobre Nós  |
 
 ## Verificação
 

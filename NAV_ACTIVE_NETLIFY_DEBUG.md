@@ -40,6 +40,7 @@ Corremos simulações em Node.js com todos os cenários de pathname (`/artigos`,
 ### 3. Verificação do build do Vite
 
 Confirmámos que:
+
 - O bundle `main-*.js` contém a função `setActiveNavLink()` completa
 - O `PAGE_SECTION_MAP` está incluído no bundle com todas as chaves
 - Todas as páginas importam o `main.js` (via `main-*.js` chunk partilhado)
@@ -48,12 +49,14 @@ Confirmámos que:
 ### 4. Comparação entre deploy que funcionava e o que quebrou
 
 O deploy `2a3e776` (floating drawer) **funcionava** — usava `endsWith()` para matching:
+
 ```js
 // Versão antiga que funcionava
 if (href.endsWith(link.getAttribute("href"))) { ... }
 ```
 
 O deploy `c60b166` (PAGE_SECTION_MAP) **quebrou** — usava comparação exacta:
+
 ```js
 // Versão nova que quebrou
 if (activeHref && linkHref === activeHref) { ... }
@@ -63,14 +66,15 @@ if (activeHref && linkHref === activeHref) { ... }
 
 Ao comparar os hrefs no HTML **no dist local** vs **no site live do Netlify**, encontrámos a diferença:
 
-| O que | HTML no dist/ | HTML servido pelo Netlify |
-|-------|--------------|--------------------------|
-| Link Artigos | `href="artigos.html"` | `href='/artigos'` |
-| Link Eventos | `href="eventos.html"` | `href='/eventos'` |
-| Link Início | `href="index.html#inicio"` | `href='/#inicio'` |
-| Link Sobre | `href="sobre.html"` | `href='/sobre'` |
+| O que        | HTML no dist/              | HTML servido pelo Netlify |
+| ------------ | -------------------------- | ------------------------- |
+| Link Artigos | `href="artigos.html"`      | `href='/artigos'`         |
+| Link Eventos | `href="eventos.html"`      | `href='/eventos'`         |
+| Link Início  | `href="index.html#inicio"` | `href='/#inicio'`         |
+| Link Sobre   | `href="sobre.html"`        | `href='/sobre'`           |
 
 O **Netlify Post Processing** (Asset Optimization) reescreve automaticamente os hrefs no HTML deployado:
+
 - Remove a extensão `.html`
 - Adiciona `/` inicial (caminho absoluto)
 - Altera aspas duplas para plicas
@@ -100,9 +104,9 @@ Criámos uma função de normalização que **ambos os lados** (pathname e linkH
 // rewrites href="artigos.html" → href='/artigos' at deploy time
 function normalizeToSection(href) {
   return href
-    .replace(/^\//, "")       // Remove / inicial
-    .replace(/[?#].*$/, "")   // Remove query strings e hashes
-    .replace(/\.html$/, "");  // Remove extensão .html
+    .replace(/^\//, "") // Remove / inicial
+    .replace(/[?#].*$/, "") // Remove query strings e hashes
+    .replace(/\.html$/, ""); // Remove extensão .html
 }
 ```
 
@@ -134,7 +138,7 @@ O href `index.html` normaliza para `"index"` (removida a extensão). Sem a chave
 const PAGE_SECTION_MAP = {
   // Homepage
   "index.html": "index.html",
-  "index": "index.html",     // ← Adicionado
+  index: "index.html", // ← Adicionado
   "": "index.html",
   // ... resto do MAP
 };
@@ -144,14 +148,14 @@ const PAGE_SECTION_MAP = {
 
 ## Cenários testados
 
-| Cenário | Pathname | Link href | normalizedPath | linkSection | activeHref | Match |
-|---------|----------|-----------|----------------|-------------|------------|-------|
-| Netlify artigos | `/artigos` | `/artigos` | `artigos` | `artigos.html` | `artigos.html` | ✓ |
-| Netlify homepage | `/` | `/#inicio` | `""` | `index.html` | `index.html` | ✓ |
-| Localhost artigos | `/artigos.html` | `artigos.html` | `artigos` | `artigos.html` | `artigos.html` | ✓ |
-| Localhost homepage | `/index.html` | `index.html#inicio` | `index` | `index.html` | `index.html` | ✓ |
-| Netlify artigo detail | `/artigo.html?id=slug` | `/artigos` | `artigo` | `artigos.html` | `artigos.html` | ✓ |
-| Netlify evento detail | `/evento?id=slug` | `/eventos` | `evento` | `eventos.html` | `eventos.html` | ✓ |
+| Cenário               | Pathname               | Link href           | normalizedPath | linkSection    | activeHref     | Match |
+| --------------------- | ---------------------- | ------------------- | -------------- | -------------- | -------------- | ----- |
+| Netlify artigos       | `/artigos`             | `/artigos`          | `artigos`      | `artigos.html` | `artigos.html` | ✓     |
+| Netlify homepage      | `/`                    | `/#inicio`          | `""`           | `index.html`   | `index.html`   | ✓     |
+| Localhost artigos     | `/artigos.html`        | `artigos.html`      | `artigos`      | `artigos.html` | `artigos.html` | ✓     |
+| Localhost homepage    | `/index.html`          | `index.html#inicio` | `index`        | `index.html`   | `index.html`   | ✓     |
+| Netlify artigo detail | `/artigo.html?id=slug` | `/artigos`          | `artigo`       | `artigos.html` | `artigos.html` | ✓     |
+| Netlify evento detail | `/evento?id=slug`      | `/eventos`          | `evento`       | `eventos.html` | `eventos.html` | ✓     |
 
 ---
 

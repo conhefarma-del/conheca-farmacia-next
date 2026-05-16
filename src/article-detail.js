@@ -1,13 +1,42 @@
-import articlesData from "./content/articles-catalog.json";
+import { getArticleBySlug, getArticles } from "./lib/api.js";
+import { renderBreadcrumb } from "./breadcrumb.js";
 
 // Cores por categoria (mesmo padrão que articles-logic.js)
 const categoryColors = {
   profissionais: "#ff6c23",
   "voce-sabia": "#0a844f",
+  "conheca-medicamento": "#7c3aed",
   curiosidades: "#002a32",
   saude: "#006171",
   legislacao: "#ff4d4d",
 };
+
+// Show loading skeleton while fetching data
+function showLoadingState() {
+  const hero = document.getElementById("article-hero");
+  const body = document.getElementById("article-body");
+  const relatedSection = document.querySelector(".article-related-section");
+
+  if (hero) hero.style.opacity = "0.4";
+  if (body) {
+    body.innerHTML = `
+      <div class="animate-pulse space-y-4">
+        <div class="h-4 bg-brand-deep/10 rounded w-3/4"></div>
+        <div class="h-4 bg-brand-deep/10 rounded w-full"></div>
+        <div class="h-4 bg-brand-deep/10 rounded w-5/6"></div>
+        <div class="h-4 bg-brand-deep/10 rounded w-2/3"></div>
+        <div class="h-4 bg-brand-deep/10 rounded w-full"></div>
+        <div class="h-4 bg-brand-deep/10 rounded w-4/5"></div>
+      </div>`;
+  }
+  if (relatedSection) relatedSection.style.display = "none";
+}
+
+// Remove loading skeleton after data arrives
+function hideLoadingState() {
+  const hero = document.getElementById("article-hero");
+  if (hero) hero.style.opacity = "1";
+}
 
 // Format date to Portuguese
 function formatDate(dateStr) {
@@ -130,21 +159,26 @@ async function loadArticle() {
   }
 
   try {
-    console.log("Catálogo de artigos carregado via import:", articlesData);
+    showLoadingState();
 
-    // Find article in catalog
-    const article = articlesData.articles.find((a) => a.id == articleId);
+    // Fetch article from Supabase (with JSON fallback)
+    const article = await getArticleBySlug(articleId);
 
     if (!article) {
       ErrorHandler.handle(
-        new Error(`Artigo com ID ${articleId} não encontrado`),
+        new Error(`Artigo com slug ${articleId} não encontrado`),
         "PAGE",
         "Artigo não encontrado"
       );
       return;
     }
 
-    console.log("Artigo encontrado:", article);
+    // Breadcrumb
+    renderBreadcrumb([
+      { label: "Início", href: "/" },
+      { label: "Artigos", href: "/artigos.html" },
+      { label: article.title },
+    ]);
 
     // Convert markdown to HTML (with sanitization)
     const rawHtmlContent = marked.parse(article.content);
@@ -186,7 +220,7 @@ async function loadArticle() {
     const categoryEl = document.getElementById("article-category");
     categoryEl.className = "article-tag";
     categoryEl.style.cssText = `background-color: ${categoryColor}20; color: ${categoryColor}; border: 1px solid
-  ${categoryColor}40`;
+      ${categoryColor}40`;
     categoryEl.textContent = article.categoryLabel;
     document.getElementById("article-title").textContent = article.title;
     document.getElementById("article-featured-image").src = article.image;
@@ -225,10 +259,14 @@ async function loadArticle() {
     // Render references section
     renderReferences(article);
 
+    // Remove loading state
+    hideLoadingState();
+
     // Load related articles (same category, exclude current)
     // Show all related articles (carousel activates if 3+ items)
-    const relatedArticles = articlesData.articles.filter(
-      (a) => a.category === article.category && a.id !== article.id
+    const allArticles = await getArticles();
+    const relatedArticles = allArticles.filter(
+      (a) => a.category === article.category && a.slug !== article.slug
     );
 
     const relatedSection = document.querySelector(".article-related-section");
@@ -245,16 +283,17 @@ async function loadArticle() {
         const card = document.createElement("article");
         card.className = "article-card border border-brand-divider/10";
         card.innerHTML = `
-          <img src="${relArticle.image}" alt="${relArticle.title}" class="article-card-img">
-          <div class="article-card-content">
-            <span class="article-tag" style="background-color: ${categoryColors[relArticle.category] || '#666'}20; color:
-            ${categoryColors[relArticle.category] || '#666'}; border: 1px solid ${categoryColors[relArticle.category] ||
-            '#666'}40">${relArticle.categoryLabel}</span>
-            <h3 class="article-card-title">${relArticle.title}</h3>
-            <p class="article-card-excerpt">${relArticle.excerpt}</p>
-            <a href="artigo.html?id=${relArticle.id}" class="article-card-link">Ler mais <span>→</span></a>
-          </div>
-        `;
+        <img src="${relArticle.image}" alt="${relArticle.title}" class="article-card-img">
+        <div class="article-card-content">
+          <span class="article-tag" style="background-color: ${categoryColors[relArticle.category] || "#666"}20; color:
+          ${categoryColors[relArticle.category] || "#666"}; border: 1px solid ${
+          categoryColors[relArticle.category] || "#666"
+        }40">${relArticle.categoryLabel}</span>
+          <h3 class="article-card-title">${relArticle.title}</h3>
+          <p class="article-card-excerpt">${relArticle.excerpt}</p>
+          <a href="artigo.html?id=${relArticle.slug}" class="article-card-link">Ler mais <span>&rarr;</span></a>
+        </div>
+      `;
         relatedGrid.appendChild(card);
       });
 
@@ -267,6 +306,7 @@ async function loadArticle() {
     // Update page title
     document.title = `${article.title} - Conheça Farmácia`;
   } catch (error) {
+    hideLoadingState();
     ErrorHandler.handle(error, "PAGE", "Desculpe, artigo não disponível");
   }
 }

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Artigo - Admin</title>
+    <link rel="stylesheet" href="/src/admin/styles/admin.css">
+</head>
+<body class="admin-dashboard">
+    <header class="admin-header">
+        <div class="admin-logo">
+            <h1>Editar Artigo</h1>
+        </div>
+        <nav class="admin-nav">
+            <a href="/src/admin/dashboard.html">Dashboard</a>
+            <a href="/src/admin/artigos/index.html">Artigos</a>
+            <a href="/src/admin/eventos/index.html">Eventos</a>
+            <a href="/src/admin/lives/index.html">Lives</a>
+            <a href="#" id="logout-btn">Sair</a>
+        </nav>
+    </header>
+
+    <main class="admin-content">
+        <div class="admin-card">
+            <div id="loading" class="admin-loading">Carregando...</div>
+            <form id="article-form" class="admin-form" style="display: none;">
+                <div class="admin-form-grid">
+                    <div class="admin-form-group">
+                        <label for="title">Título</label>
+                        <input type="text" id="title" name="title" required class="admin-input" placeholder="Título do artigo">
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label for="slug">Slug</label>
+                        <input type="text" id="slug" name="slug" required class="admin-input" placeholder="ex: nome-do-artigo">
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label for="category">Categoria</label>
+                        <select id="category" name="category" required class="admin-input">
+                            <option value="">Selecione...</option>
+                            <option value="profissionais">Para Profissionais</option>
+                            <option value="voce-sabia">Você Sabia?</option>
+                            <option value="conheca-medicamento">Conheça o Medicamento</option>
+                            <option value="curiosidades">Curiosidades</option>
+                            <option value="saude">Saúde e Informação</option>
+                        </select>
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label for="status">Status</label>
+                        <select id="status" name="status" required class="admin-input">
+                            <option value="draft">Rascunho</option>
+                            <option value="published">Publicado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="admin-form-group">
+                    <label for="excerpt">Resumo/Excerto</label>
+                    <textarea id="excerpt" name="excerpt" class="admin-textarea" style="min-height: 100px;" placeholder="Breve resumo do artigo"></textarea>
+                </div>
+
+                <div class="admin-form-group">
+                    <label for="content">Conteúdo (Markdown)</label>
+                    <textarea id="content" name="content" required class="admin-textarea" placeholder="Conteúdo completo do artigo em Markdown..."></textarea>
+                </div>
+
+                <div class="admin-form-grid">
+                    <div class="admin-form-group">
+                        <label for="author_name">Autor (Nome)</label>
+                        <input type="text" id="author_name" name="author_name" class="admin-input" placeholder="Nome do autor">
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label for="author_role">Autor (Cargo)</label>
+                        <input type="text" id="author_role" name="author_role" class="admin-input" placeholder="Cargo do autor">
+                    </div>
+                </div>
+
+                <div class="admin-form-group">
+                    <label for="author_bio">Autor (Biografia)</label>
+                    <textarea id="author_bio" name="author_bio" class="admin-textarea" style="min-height: 60px;" placeholder="Breve biografia do autor"></textarea>
+
+ <div class="admin-form-grid">
+ <div class="admin-form-group">
+ <label for="author_avatar">Avatar (Iniciais)</label>
+ <input type="text" id="author_avatar" name="author_avatar" class="admin-input" placeholder="ML">
+ </div>
+
+ <div class="admin-form-group">
+ <label for="author_avatar_bg">Cor do Avatar</label>
+ <input type="text" id="author_avatar_bg" name="author_avatar_bg" class="admin-input" placeholder="#00493a">
+ </div>
+ </div>
+                </div>
+
+                <div class="admin-form-group">
+                    <label for="image_url">Imagem (URL)</label>
+                    <input type="text" id="image_url" name="image_url" class="admin-input" placeholder="/images/artigo.jpg">
+                    <div class="admin-image-upload" id="image-upload">
+                        <p>📁 Clique para fazer upload ou arraste uma imagem</p>
+                        <input type="file" id="image-file" accept="image/*" style="display: none;">
+                    </div>
+                    <img id="image-preview" class="admin-image-preview" style="display: none;">
+                </div>
+
+                <div class="admin-form-group">
+                    <label>Referências</label>
+                    <div id="references-container">
+                        <!-- References will be populated dynamically -->
+                    </div>
+                    <button type="button" class="admin-btn admin-btn-sm" onclick="addReference()">+ Adicionar Referência</button>
+                </div>
+
+                <div class="admin-form-grid">
+                    <div class="admin-form-group">
+                        <label for="published_date">Data de Publicação</label>
+                        <input type="date" id="published_date" name="published_date" class="admin-input">
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label for="read_time">Tempo de Leitura (min)</label>
+                        <input type="number" id="read_time" name="read_time" class="admin-input" placeholder="5">
+                    </div>
+                </div>
+
+                <div id="form-error" class="admin-error-message" style="display: none;"></div>
+
+                <div class="admin-form-actions">
+                    <button type="submit" class="admin-btn admin-btn-primary">Atualizar Artigo</button>
+                    <a href="/src/admin/artigos/index.html" class="admin-btn admin-btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script type="module">
+        import { supabaseClient } from '../../config.js';
+        import { checkAuth } from '../lib/auth.js';
+        import { compressImage, uploadImage } from '../lib/image-compressor.js';
+        import { logAudit } from '../lib/audit-logger.js';
+
+        // Check authentication
+        await checkAuth();
+
+        let currentArticleId = null;
+        let oldValues = null;
+
+        // Helper: Generate slug from title
+        function generateSlug(title) {
+            return title
+                .toLowerCase()
+                .replace(/à|á|â|ä|ã|å/g, 'a')
+                .replace(/è|é|ê|ë/g, 'e')
+                .replace(/ì|í|î|ï/g, 'i')
+                .replace(/ò|ó|ô|ö|õ/g, 'o')
+                .replace(/ù|ú|û|ü/g, 'u')
+                .replace(/ç/g, 'c')
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-|-$/g, '');
+        }
+
+        // Update slug when title changes
+        document.getElementById('title')?.addEventListener('input', function() {
+            const slugInput = document.getElementById('slug');
+            if (slugInput.value === '' || slugInput.value === generateSlug(this.value)) {
+                slugInput.value = generateSlug(this.value);
+            }
+        });
+
+        // Add reference field
+        window.addReference = function(value = '') {
+            const container = document.getElementById('references-container');
+            const newRow = document.createElement('div');
+            newRow.className = 'admin-reference-row';
+            newRow.style.marginTop = '8px';
+            newRow.innerHTML = `
+                <input type="text" class="admin-input reference-input" placeholder="URL ou texto da referência" value="${value}" style="display: inline-block; width: calc(100% - 100px);">
+                <button type="button" class="admin-btn admin-btn-sm admin-btn-danger" onclick="this.parentElement.remove()">Remover</button>
+            `;
+            container.appendChild(newRow);
+        };
+
+        // Load article data
+        async function loadArticle() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+
+            if (!id) {
+                alert('ID do artigo não fornecido');
+                window.location.href = '/src/admin/artigos/index.html';
+                return;
+            }
+
+            currentArticleId = id;
+
+            const { data: article, error } = await supabaseClient
+                .from('articles')
+                .select('*')
+                .eq('id', id)
+                .single();
+
+            if (error || !article) {
+                alert('Erro ao carregar artigo: ' + (error?.message || 'Não encontrado'));
+                window.location.href = '/src/admin/artigos/index.html';
+                return;
+            }
+
+            // Store old values for audit
+            oldValues = { ...article };
+
+            // Populate form
+            document.getElementById('title').value = article.title || '';
+            document.getElementById('slug').value = article.slug || '';
+            document.getElementById('category').value = article.category || '';
+            document.getElementById('status').value = article.status || 'draft';
+            document.getElementById('excerpt').value = article.excerpt || '';
+            document.getElementById('content').value = article.content || '';
+            document.getElementById('author_name').value = article.author_name || '';
+            document.getElementById('author_role').value = article.author_role || '';
+            document.getElementById('author_bio').value = article.author_bio || '';
+            document.getElementById('author_avatar').value = article.author_avatar || '';
+            document.getElementById('author_avatar_bg').value = article.author_avatar_bg || '';
+            document.getElementById('image_url').value = article.image_url || '';
+            document.getElementById('published_date').value = article.published_date ? new Date(article.published_date).toISOString().split('T')[0] : '';
+            document.getElementById('read_time').value = article.read_time || '';
+
+            // Load references
+            const references = article.references_arr || article.references || [];
+                if (references.length > 0) {
+                const container = document.getElementById('references-container');
+                container.innerHTML = '';
+                references.forEach(ref => addReference(ref));
+            } else {
+                addReference(); // Add one empty field
+            }
+
+            // Show image preview
+            if (article.image_url) {
+                const imagePreview = document.getElementById('image-preview');
+                imagePreview.src = article.image_url;
+                imagePreview.style.display = 'block';
+            }
+
+            // Show form
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('article-form').style.display = 'block';
+        }
+
+        // Image upload handling
+        const imageUpload = document.getElementById('image-upload');
+        const imageFileInput = document.getElementById('image-file');
+        const imagePreview = document.getElementById('image-preview');
+        const imageUrlInput = document.getElementById('image_url');
+
+        imageUpload?.addEventListener('click', () => imageFileInput?.click());
+
+        imageFileInput?.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Compress image
+            const compressedBlob = await compressImage(file);
+
+            // Upload to Supabase Storage
+            const fileName = `articles/${Date.now()}_${file.name}`;
+            const result = await uploadImage(compressedBlob, 'article-images', fileName);
+
+            if (result.url) {
+                imageUrlInput.value = result.url;
+                imagePreview.src = result.url;
+                imagePreview.style.display = 'block';
+            } else {
+                alert('Erro no upload: ' + result.error);
+            }
+        });
+
+        // Form submission
+        document.getElementById('article-form')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errorDiv = document.getElementById('form-error');
+            errorDiv.style.display = 'none';
+
+            // Collect references
+            const references = Array.from(document.querySelectorAll('.reference-input'))
+                .map(input => input.value.trim())
+                .filter(ref => ref !== '');
+
+            // Get category label
+            const categorySelect = document.getElementById('category');
+            const categoryLabel = categorySelect.options[categorySelect.selectedIndex]?.text || '';
+
+            const articleData = {
+                slug: document.getElementById('slug').value,
+                title: document.getElementById('title').value,
+                excerpt: document.getElementById('excerpt').value,
+                category: document.getElementById('category').value,
+                category_label: categoryLabel,
+                content: document.getElementById('content').value,
+                author_name: document.getElementById('author_name').value,
+                author_role: document.getElementById('author_role').value,
+                author_bio: document.getElementById('author_bio').value,
+                author_avatar: document.getElementById('author_avatar').value,
+                author_avatar_bg: document.getElementById('author_avatar_bg').value,
+                image_url: document.getElementById('image_url').value,
+                published_date: document.getElementById('published_date').value || null,
+                read_time: parseInt(document.getElementById('read_time').value) || null,
+                references_arr: references,
+                status: document.getElementById('status').value,
+                updated_at: new Date().toISOString(),
+            };
+
+            try {
+                const { error } = await supabaseClient
+                    .from('articles')
+                    .update(articleData)
+                    .eq('id', currentArticleId);
+
+                if (error) throw error;
+
+                // Log audit
+                await logAudit('UPDATE', 'articles', currentArticleId, oldValues, articleData);
+
+                // Redirect to list
+                window.location.href = '/src/admin/artigos/index.html';
+            } catch (error) {
+                errorDiv.textContent = 'Erro ao atualizar: ' + error.message;
+                errorDiv.style.display = 'block';
+            }
+        });
+
+        // Logout handler
+        document.getElementById('logout-btn')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            import('../lib/auth.js').then(({ logout }) => logout());
+        });
+
+        // Initialize
+        loadArticle();
+    </script>
+</body>
+</html>

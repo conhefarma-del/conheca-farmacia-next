@@ -5,9 +5,9 @@
 
 const THEME_KEY = "theme";
 const DARK_CLASS = "dark";
-const LOGO_SELECTOR = '.logo img';
-const LOGO_LIGHT = '/logo/logo-principal-verde.svg';
-const LOGO_DARK = '/logo/logo-principal-branco.svg';
+const LOGO_SELECTOR = ".logo img";
+const LOGO_LIGHT = "/logo/logo-principal-verde.svg";
+const LOGO_DARK = "/logo/logo-principal-branco.svg";
 
 /**
  * Get current theme preference
@@ -60,18 +60,18 @@ function updateLogo(theme) {
   // Header logo
   const headerLogo = document.querySelector(LOGO_SELECTOR);
   if (headerLogo) {
-    const currentSrc = headerLogo.getAttribute('src');
+    const currentSrc = headerLogo.getAttribute("src");
     if (currentSrc !== newSrc) {
-      headerLogo.setAttribute('src', newSrc);
+      headerLogo.setAttribute("src", newSrc);
     }
   }
 
   // Drawer logo
-  const drawerLogoImg = document.querySelector('.drawer-logo img');
+  const drawerLogoImg = document.querySelector(".drawer-logo img");
   if (drawerLogoImg) {
-    const currentSrc = drawerLogoImg.getAttribute('src');
+    const currentSrc = drawerLogoImg.getAttribute("src");
     if (currentSrc !== newSrc) {
-      drawerLogoImg.setAttribute('src', newSrc);
+      drawerLogoImg.setAttribute("src", newSrc);
     }
   }
 }

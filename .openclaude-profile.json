@@ -2,9 +2,8 @@
   "profile": "openai",
   "env": {
     "OPENAI_BASE_URL": "https://integrate.api.nvidia.com/v1",
-    "OPENAI_MODEL": "z-ai/glm-5.1",
-    "OPENAI_API_FORMAT": "chat_completions",
-    "OPENAI_API_KEY": "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"
+    "OPENAI_MODEL": "nvidia/nemotron-3-super-120b-a12b",
+    "OPENAI_API_KEY": "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"
   },
-  "createdAt": "2026-05-08T01:28:32.900Z"
+  "createdAt": "2026-05-16T16:02:38.190Z"
 }

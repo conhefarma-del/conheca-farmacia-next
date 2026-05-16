@@ -16,8 +16,8 @@ When the floating drawer opens on mobile, `body.drawer-open .header` applies `tr
 
 ## Files Modified
 
-| File | Responsibility |
-|------|---------------|
+| File            | Responsibility                                                     |
+| --------------- | ------------------------------------------------------------------ |
 | `src/input.css` | Change header transform from push-left to slide-up; add transition |
 
 Only one file needs changes — this is a pure CSS fix.
@@ -27,19 +27,17 @@ Only one file needs changes — this is a pure CSS fix.
 ### Task 1: Replace header push with slide-up animation
 
 **Files:**
+
 - Modify: `src/input.css:583-591`
 
 Current code (lines 583–591):
 
 ```css
 body.drawer-open main,
-
 body.drawer-open .header {
+  transform: translateX(-20%);
 
-transform: translateX(-20%);
-
-transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 ```
 
@@ -49,19 +47,15 @@ Change `body.drawer-open .header` from `translateX(-20%)` to `translateY(-100%)`
 
 ```css
 body.drawer-open main {
+  transform: translateX(-20%);
 
-transform: translateX(-20%);
-
-transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 body.drawer-open .header {
+  transform: translateY(-100%);
 
-transform: translateY(-100%);
-
-transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 ```
 

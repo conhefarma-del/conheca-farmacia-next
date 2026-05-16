@@ -127,7 +127,7 @@ export function getInscriptionEmailTemplate(
                         <table width="100%" cellpadding="0" cellspacing="0" style="margin: 32px 0;">
                             <tr>
                                 <td align="center">
-                                    <a href="https://conhecafarmacia.ao" style="display: inline-block; background-color: #00493a; color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: 600; transition: background-color 0.3s ease;">
+                                    <a href="https://conhecafarmacia.com" style="display: inline-block; background-color: #00493a; color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: 600; transition: background-color 0.3s ease;">
                                         Saber Mais
                                     </a>
                                 </td>

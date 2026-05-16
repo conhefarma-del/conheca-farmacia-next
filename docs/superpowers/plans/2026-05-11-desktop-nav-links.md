@@ -12,18 +12,18 @@
 
 ## Files to Modify
 
-| File | Change |
-|------|--------|
-| `src/input.css` | Add `.nav-links` base styles + desktop/mobile responsive rules; remove duplicate media queries |
-| `index.html` | Add `<ul class="nav-links">` inside `header-right` before theme toggle |
-| `artigos.html` | Same as index.html |
-| `artigo.html` | Same as index.html |
-| `eventos.html` | Same as index.html |
-| `evento.html` | Same as index.html |
-| `inscricao.html` | Same as index.html |
-| `lives.html` | Same as index.html |
-| `lives-list.html` | Same as index.html |
-| `sobre.html` | Same as index.html |
+| File              | Change                                                                                         |
+| ----------------- | ---------------------------------------------------------------------------------------------- |
+| `src/input.css`   | Add `.nav-links` base styles + desktop/mobile responsive rules; remove duplicate media queries |
+| `index.html`      | Add `<ul class="nav-links">` inside `header-right` before theme toggle                         |
+| `artigos.html`    | Same as index.html                                                                             |
+| `artigo.html`     | Same as index.html                                                                             |
+| `eventos.html`    | Same as index.html                                                                             |
+| `evento.html`     | Same as index.html                                                                             |
+| `inscricao.html`  | Same as index.html                                                                             |
+| `lives.html`      | Same as index.html                                                                             |
+| `lives-list.html` | Same as index.html                                                                             |
+| `sobre.html`      | Same as index.html                                                                             |
 
 No new files created. No JS changes.
 
@@ -32,6 +32,7 @@ No new files created. No JS changes.
 ### Task 1: Restore nav-links CSS in input.css
 
 **Files:**
+
 - Modify: `src/input.css:165-1726` (replace duplicate media queries with clean nav-links styles)
 
 - [ ] **Step 1: Add .nav-links base styles after .hamburger rules (line ~185)**
@@ -114,6 +115,7 @@ git commit -m "feat: restore desktop nav-links CSS styles"
 ### Task 2: Add nav-links HTML to all 9 pages
 
 **Files:**
+
 - Modify: `index.html` (line 29, inside `<div class="header-right">`)
 - Modify: `artigos.html` (same position)
 - Modify: `artigo.html` (same position)
@@ -194,6 +196,7 @@ Run: `npm run dev`
 - [ ] **Step 2: Verify desktop (>=769px)**
 
 Open http://localhost:5173 at desktop width. Expected:
+
 - Logo on left
 - Nav links (Início, Artigos, Eventos, Lives, Sobre Nós) visible between logo and theme toggle
 - Theme toggle button visible
@@ -202,6 +205,7 @@ Open http://localhost:5173 at desktop width. Expected:
 - [ ] **Step 3: Verify mobile (<769px)**
 
 Resize to mobile width. Expected:
+
 - Logo on left
 - Theme toggle button visible (right side)
 - Hamburger button visible (far right)
@@ -211,6 +215,7 @@ Resize to mobile width. Expected:
 - [ ] **Step 4: Verify dark mode**
 
 Toggle dark mode. Expected:
+
 - Nav links text color changes to light color
 - All other behavior unchanged
 

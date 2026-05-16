@@ -13,11 +13,13 @@
 ### Task 1: Atualizar article-body-wrapper para col-span-2
 
 **Files:**
+
 - Modify: `src/input.css:378-380` (`.article-body-wrapper`)
 
 - [ ] **Step 1: Modificar a classe `.article-body-wrapper` no CSS**
 
   Atual:
+
   ```css
   .article-body-wrapper {
     @apply w-full;
@@ -25,6 +27,7 @@
   ```
 
   Novo:
+
   ```css
   .article-body-wrapper {
     @apply lg:col-span-2;
@@ -32,8 +35,8 @@
   ```
 
 - [ ] **Step 2: Verificar que o build compila sem erros**
-  Run: `npm run build`
-  Expected: BUILD SUCCESS, sem warnings de CSS
+      Run: `npm run build`
+      Expected: BUILD SUCCESS, sem warnings de CSS
 
 - [ ] **Step 3: Commit**
   ```bash
@@ -46,11 +49,13 @@
 ### Task 2: Remover sticky do author-card-detailed
 
 **Files:**
+
 - Modify: `src/input.css:432-434` (`.author-card-detailed`)
 
 - [ ] **Step 1: Modificar a classe `.author-card-detailed` no CSS**
 
   Atual:
+
   ```css
   .author-card-detailed {
     @apply bg-brand-bg-alt rounded-2xl p-8 text-center sticky top-8;
@@ -58,6 +63,7 @@
   ```
 
   Novo:
+
   ```css
   .author-card-detailed {
     @apply bg-brand-bg-alt rounded-2xl p-8 text-center;
@@ -65,8 +71,8 @@
   ```
 
 - [ ] **Step 2: Verificar que o build compila sem erros**
-  Run: `npm run build`
-  Expected: BUILD SUCCESS
+      Run: `npm run build`
+      Expected: BUILD SUCCESS
 
 - [ ] **Step 3: Commit**
   ```bash
@@ -81,8 +87,8 @@
 **Files:** Nenhum — teste manual
 
 - [ ] **Step 1: Iniciar o dev server e abrir artigo.html**
-  Run: `npm run dev`
-  Abrir: `http://localhost:5173/artigo.html?id=001`
+      Run: `npm run dev`
+      Abrir: `http://localhost:5173/artigo.html?id=001`
 
 - [ ] **Step 2: Verificar desktop (≥1024px)**
   - Conteúdo do artigo ocupa ~2/3 da largura
@@ -94,4 +100,4 @@
   - Sem regressões visuais
 
 - [ ] **Step 4: Commit final se tudo OK (nenhuma alteração extra necessária)**
-  Se forem necessários ajustes, corrigir e commitar.
+      Se forem necessários ajustes, corrigir e commitar.

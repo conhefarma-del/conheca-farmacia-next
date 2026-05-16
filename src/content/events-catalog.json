@@ -35,7 +35,7 @@
           "role": "Fisioterapeuta · Mestre",
           "organization": "Multiperfil"
         }
-               ],
+      ],
       "image": "/content/events/workshop_farmacologia_capa.png",
       "registrationLink": "#"
     },
@@ -157,6 +157,64 @@
         }
       ],
       "image": "/content/articles/Para-Profissionais---Carrossel_01.png",
+      "registrationLink": "#"
+    },
+    {
+      "id": "004-seminario-biotecnologia",
+      "slug": "004-seminario-biotecnologia",
+      "title": "Seminário: Avanços em Biotecnologia Farmacêutica",
+      "excerpt": "Discussão sobre as últimas inovações em biotecnologia aplicada à produção de medicamentos e vacinas.",
+      "category": "seminario",
+      "categoryLabel": "Seminário",
+      "date": "2026-06-20",
+      "time": "14:00",
+      "endTime": "17:30",
+      "status": "upcoming",
+      "location": "Auditório da Universidade Agostinho Neto",
+      "type": "presencial",
+      "capacity": 150,
+      "hosts": [
+        {
+          "name": "Dra. Isabel Fernandes",
+          "role": "Biotecnologista · PhD em Engenharia Genética",
+          "organization": "INEB"
+        },
+        {
+          "name": "Eng. Carlos Mendes",
+          "role": "Engenheiro Químico · Especialista em Bioprocessos",
+          "organization": "Farmanguinhos"
+        }
+      ],
+      "image": "/content/events/seminario_biotecnologia_capa.png",
+      "registrationLink": "#"
+    },
+    {
+      "id": "005-outro-caso-clinico",
+      "slug": "005-outro-caso-clinico",
+      "title": "Outro: Caso Clínico Interativo - Intoxicação por Medicamentos",
+      "excerpt": "Análise interativa de um caso real de intoxicação medicamentosa, com discussão de diagnóstico e tratamento.",
+      "category": "outro",
+      "categoryLabel": "Outro",
+      "date": "2026-07-01",
+      "time": "10:00",
+      "endTime": "12:00",
+      "status": "upcoming",
+      "location": "Hospital Geral de Luanda",
+      "type": "presencial",
+      "capacity": 30,
+      "hosts": [
+        {
+          "name": "Dr. Rafael Santos",
+          "role": "Médico Toxicologista · Chefe do Setor de Emergência",
+          "organization": "HGL"
+        },
+        {
+          "name": "Enf. Ana Paula",
+          "role": "Enfermeiro · Especialista em Toxicologia",
+          "organization": "Conheça Farmácia"
+        }
+      ],
+      "image": "/content/events/outro_caso_clinico_capa.png",
       "registrationLink": "#"
     }
   ]

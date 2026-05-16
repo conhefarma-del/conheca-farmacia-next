@@ -1,4 +1,6 @@
 import { supabaseClient, SUPABASE_URL, SUPABASE_ANON_KEY } from "./config.js";
+import { renderBreadcrumb } from "./breadcrumb.js";
+import eventsData from "./content/events-catalog.json";
 import { initInlineValidation } from "./inscription-validation.js";
 
 // Inicializar Supabase na janela global para compatibilidade
@@ -71,6 +73,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (eventoSlug) {
       eventoSlugInput.value = eventoSlug;
       console.log("✓ Evento carregado:", eventoSlug);
+
+      // Breadcrumb: Início > Eventos > Nome Evento > Inscrição
+      const eventForBreadcrumb = eventsData.events.find(
+        (e) => e.slug === eventoSlug
+      );
+      const eventTitle = eventForBreadcrumb
+        ? eventForBreadcrumb.title
+        : eventoSlug;
+      renderBreadcrumb([
+        { label: "Início", href: "/" },
+        { label: "Eventos", href: "/eventos.html" },
+        { label: eventTitle, href: "/evento.html?id=" + eventoSlug },
+        { label: "Inscrição" },
+      ]);
     } else {
       console.warn("⚠ nenhum evento especificado na URL");
     }

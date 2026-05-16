@@ -49,12 +49,13 @@ Os artigos são armazenados em `content/articles-catalog.json` e contêm todos o
 
 ## 🏷️ Categorias Disponíveis
 
-| ID  | Categoria       | Label              | Cor        |
-| --- | --------------- | ------------------ | ---------- |
-| 1   | `profissionais` | Para Profissionais | 🟠 #ff6c23 |
-| 2   | `voce-sabia`    | Você Sabia?        | 🟢 #0a844f |
-| 3   | `curiosidades`  | Curiosidades       | ⬛ #002a32 |
-| 4   | `saude`         | Saúde e Informação | 🔵 #006171 |
+| ID  | Categoria             | Label                 | Cor        |
+| --- | --------------------- | --------------------- | ---------- |
+| 1   | `profissionais`       | Para Profissionais    | 🟠 #ff6c23 |
+| 2   | `voce-sabia`          | Você Sabia?           | 🟢 #0a844f |
+| 3   | `curiosidades`        | Curiosidades          | ⬛ #002a32 |
+| 4   | `saude`               | Saúde e Informação    | 🔵 #006171 |
+| 5   | `conheca-medicamento` | Conheça o Medicamento | 🟣 #7c3aed |
 
 ---
 

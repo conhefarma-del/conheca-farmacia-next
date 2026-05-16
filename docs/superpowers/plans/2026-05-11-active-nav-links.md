@@ -12,11 +12,11 @@
 
 ## Files to Modify
 
-| File | Change |
-|------|--------|
+| File            | Change                                                                                                                       |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | `src/script.js` | Replace `setActiveDrawerLink()` (lines 9-30) with `setActiveNavLink()` using `PAGE_SECTION_MAP`; update call site (line 102) |
-| `src/input.css` | Add `.nav-links a:hover`, `.nav-links a.nav-link-active`, and dark-mode variants after line 182 |
-| `netlify.toml` | Add missing `/lives` and `/lives-list` redirects |
+| `src/input.css` | Add `.nav-links a:hover`, `.nav-links a.nav-link-active`, and dark-mode variants after line 182                              |
+| `netlify.toml`  | Add missing `/lives` and `/lives-list` redirects                                                                             |
 
 No HTML changes needed. No new files created.
 
@@ -25,6 +25,7 @@ No HTML changes needed. No new files created.
 ### Task 1: Fix JS active-state logic and expand to desktop nav-links
 
 **Files:**
+
 - Modify: `src/script.js:9-30` (replace `setActiveDrawerLink`) and `src/script.js:102` (update call)
 
 - [ ] **Step 1: Replace the `setActiveDrawerLink` function with `setActiveNavLink`**
@@ -35,24 +36,24 @@ In `src/script.js`, replace lines 8-30 (the comment + entire function) with:
 // Active page detection — maps current path to parent section
 // Supports both .html paths (localhost) and clean URLs (Netlify)
 const PAGE_SECTION_MAP = {
-  'index.html': 'index.html',
-  '': 'index.html',
-  'artigos.html': 'artigos.html',
-  'artigos': 'artigos.html',
-  'artigo.html': 'artigos.html',
-  'artigo': 'artigos.html',
-  'eventos.html': 'eventos.html',
-  'eventos': 'eventos.html',
-  'evento.html': 'eventos.html',
-  'evento': 'eventos.html',
-  'inscricao.html': 'eventos.html',
-  'inscricao': 'eventos.html',
-  'lives-list.html': 'lives-list.html',
-  'lives-list': 'lives-list.html',
-  'lives.html': 'lives-list.html',
-  'lives': 'lives-list.html',
-  'sobre.html': 'sobre.html',
-  'sobre': 'sobre.html',
+  "index.html": "index.html",
+  "": "index.html",
+  "artigos.html": "artigos.html",
+  artigos: "artigos.html",
+  "artigo.html": "artigos.html",
+  artigo: "artigos.html",
+  "eventos.html": "eventos.html",
+  eventos: "eventos.html",
+  "evento.html": "eventos.html",
+  evento: "eventos.html",
+  "inscricao.html": "eventos.html",
+  inscricao: "eventos.html",
+  "lives-list.html": "lives-list.html",
+  "lives-list": "lives-list.html",
+  "lives.html": "lives-list.html",
+  lives: "lives-list.html",
+  "sobre.html": "sobre.html",
+  sobre: "sobre.html",
 };
 
 function setActiveNavLink() {
@@ -63,7 +64,10 @@ function setActiveNavLink() {
   // Drawer links
   if (drawerLinks) {
     drawerLinks.querySelectorAll("a").forEach((link) => {
-      const linkHref = link.getAttribute("href").replace(/^\//, "").replace(/#.*$/, "");
+      const linkHref = link
+        .getAttribute("href")
+        .replace(/^\//, "")
+        .replace(/#.*$/, "");
       if (activeHref && linkHref === activeHref) {
         link.classList.add("drawer-link-active");
       } else {
@@ -76,7 +80,10 @@ function setActiveNavLink() {
   const navLinksEl = document.querySelector(".nav-links");
   if (navLinksEl) {
     navLinksEl.querySelectorAll("a").forEach((link) => {
-      const linkHref = link.getAttribute("href").replace(/^\//, "").replace(/#.*$/, "");
+      const linkHref = link
+        .getAttribute("href")
+        .replace(/^\//, "")
+        .replace(/#.*$/, "");
       if (activeHref && linkHref === activeHref) {
         link.classList.add("nav-link-active");
       } else {
@@ -124,6 +131,7 @@ git commit -m "fix: replace setActiveDrawerLink with PAGE_SECTION_MAP for Netlif
 ### Task 2: Add CSS for nav-links active state and hover
 
 **Files:**
+
 - Modify: `src/input.css:178-182` (after `html.dark .nav-links a` block)
 
 - [ ] **Step 1: Add hover and active state styles for `.nav-links a`**
@@ -131,7 +139,6 @@ git commit -m "fix: replace setActiveDrawerLink with PAGE_SECTION_MAP for Netlif
 In `src/input.css`, after line 182 (`}` closing `html.dark .nav-links a`), insert:
 
 ```css
-
 /* Desktop nav-links hover */
 .nav-links a:hover {
   background: rgba(0, 73, 58, 0.06);
@@ -194,7 +201,6 @@ In `src/input.css`, change line 178:
 Then remove the duplicate `.nav-links a:hover` from Step 1 (since we just defined it here). The final insertion after line 182 should be:
 
 ```css
-
 /* Desktop nav-links active state (pill style) */
 .nav-links a.nav-link-active {
   background: rgba(0, 73, 58, 0.12);
@@ -239,6 +245,7 @@ git commit -m "feat: add pill-style active state and hover to desktop nav-links 
 ### Task 3: Add missing Netlify redirects for lives pages
 
 **Files:**
+
 - Modify: `netlify.toml` (add after line 43, before `[[headers]]`)
 
 - [ ] **Step 1: Add /lives and /lives-list redirects**
@@ -276,6 +283,7 @@ Run: `npm run dev`
 - [ ] **Step 2: Verify desktop (>=769px)**
 
 Open http://localhost:5173. Expected:
+
 - Nav links visible: Início has pill background (active)
 - Click "Artigos" → artigos.html loads → "Artigos" has pill background, "Início" no longer active
 - Hover over any nav-link: subtle background appears + text color changes
@@ -283,11 +291,13 @@ Open http://localhost:5173. Expected:
 - [ ] **Step 3: Verify sub-pages**
 
 Open http://localhost:5173/evento.html (or navigate to an event). Expected:
+
 - "Eventos" has pill active state in both desktop nav-links and drawer
 
 - [ ] **Step 4: Verify mobile (<769px)**
 
 Resize to mobile width. Expected:
+
 - Nav links hidden, hamburger visible
 - Open drawer → correct link has active background
 - "Início" is NOT active when on artigos.html
@@ -295,6 +305,7 @@ Resize to mobile width. Expected:
 - [ ] **Step 5: Verify dark mode**
 
 Toggle dark mode. Expected:
+
 - Desktop nav active: light background pill
 - Desktop nav hover: subtle light background
 - Drawer active: light background

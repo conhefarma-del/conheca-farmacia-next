@@ -1,4 +1,4 @@
-import articlesData from "./content/articles-catalog.json";
+import { getArticles } from './lib/api.js';
 
 let articles = [];
 let currentFilter = "all";
@@ -8,6 +8,7 @@ let searchTerm = "";
 const categoryColors = {
   profissionais: "#ff6c23",
   "voce-sabia": "#0a844f",
+  "conheca-medicamento": "#7c3aed",
   curiosidades: "#002a32",
   saude: "#006171",
   legislacao: "#ff4d4d",
@@ -42,7 +43,8 @@ document.addEventListener("DOMContentLoaded", () => {
       noResults.classList.add("hidden");
       filtered.forEach((article) => {
         const card = document.createElement("article");
-        card.className = "article-card article-card-anim border border-brand-divider/10";
+        card.className =
+          "article-card article-card-anim border border-brand-divider/10";
         card.innerHTML = `
           <img src="${article.image}" alt="${article.title}" class="article-card-img" loading="lazy" decoding="async">
           <div class="article-card-content">
@@ -73,8 +75,10 @@ document.addEventListener("DOMContentLoaded", () => {
     renderArticles();
   });
 
-  // Load articles from imported data
-  articles = articlesData.articles;
-  console.log("Catálogo carregado:", articlesData);
-  renderArticles();
+   // Load articles from Supabase (with JSON fallback)
+  (async () => {
+    articles = await getArticles();
+    console.log("Artigos carregados do Supabase:", articles.length);
+    renderArticles();
+  })();
 });

@@ -108,6 +108,62 @@ Proteção de formulários com múltiplas camadas:
 - **Rate Limiting Frontend**: Máximo 1 inscrição a cada 5 segundos
 - **Rate Limiting Backend**: Edge Function limita a 5 requests/IP/minuto
 
+---
+
+## 📊 CMS Admin (Gestão de Conteúdo)
+
+O projeto inclui um painel administrativo para gerir conteúdo sem código.
+
+### Acesso
+
+- **URL**: `/src/admin/index.html`
+- **Autenticação**: Supabase Auth (apenas utilizadores em `admin_users`)
+- **Funcionalidades**: CRUD de artigos, eventos, lives
+
+### Estrutura do Admin
+
+```
+src/admin/
+├── index.html # Login page
+├── dashboard.html # Stats e activity feed
+├── artigos/ # CRUD artigos
+│   ├── index.html
+│   ├── new.html
+│   └── edit.html
+├── eventos/ # CRUD eventos
+│   ├── index.html
+│   ├── new.html
+│   └── edit.html
+├── lives/ # CRUD lives
+│   ├── index.html
+│   ├── new.html
+│   └── edit.html
+├── lib/
+│   ├── auth.js # Auth Supabase
+│   ├── image-compressor.js # Compressão de imagens
+│   └── audit-logger.js # Logging de ações
+└── styles/
+    └── admin.css # CSS exclusivo
+```
+
+### Funcionalidades
+
+| Módulo | Funcionalidades |
+|--------|-----------------|
+| **Artigos** | Criar, editar, publicar, referências, upload de imagens |
+| **Eventos** | Gerir eventos, capacidade, múltiplos palestrantes |
+| **Lives** | Transmissões ao vivo, links, materiais |
+| **Audit Logs** | Todas as ações registadas (CREATE, UPDATE, DELETE) |
+
+### Migração de Dados
+
+Os dados JSON foram migrados para Supabase:
+- 15 artigos
+- 6 eventos
+- 4 lives
+
+Os ficheiros JSON originais permanecem como fallback.
+
 ### 5. **Validação em Duas Camadas**
 
 | Camada       | Validação                                                          |

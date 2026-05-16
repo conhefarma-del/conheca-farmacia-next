@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Eventos - Admin</title>
+ <link rel="stylesheet" href="/src/admin/styles/admin.css">
+</head>
+<body class="admin-dashboard">
+ <header class="admin-header">
+ <div class="admin-logo">
+ <h1>Gerir Eventos</h1>
+ </div>
+ <nav class="admin-nav">
+ <a href="/src/admin/dashboard.html">Dashboard</a>
+ <a href="/src/admin/artigos/index.html">Artigos</a>
+ <a href="/src/admin/eventos/index.html" class="active">Eventos</a>
+ <a href="/src/admin/lives/index.html">Lives</a>
+ <a href="#" id="logout-btn">Sair</a>
+ </nav>
+ </header>
+
+ <main class="admin-content">
+ <div class="admin-card">
+ <div class="admin-card-header">
+ <h2>Lista de Eventos</h2>
+ <a href="/src/admin/eventos/new.html" class="admin-btn admin-btn-primary">
+ + Novo Evento
+ </a>
+ </div>
+
+ <div class="admin-filters">
+ <select id="filter-status" class="admin-input">
+ <option value="all">Todos Status</option>
+ <option value="published">Publicados</option>
+ <option value="draft">Rascunho</option>
+ </select>
+ <select id="filter-category" class="admin-input">
+ <option value="all">Todas Categorias</option>
+ <option value="workshop">Workshop</option>
+ <option value="palestra">Palestra</option>
+ <option value="congresso">Congresso</option>
+ <option value="seminario">Seminário</option>
+ <option value="outro">Outro</option>
+ </select>
+ </div>
+
+ <table class="admin-table">
+ <thead>
+ <tr>
+ <th>Título</th>
+ <th>Categoria</th>
+ <th>Data</th>
+ <th>Tipo</th>
+ <th>Status</th>
+ <th>Ações</th>
+ </tr>
+ </thead>
+ <tbody id="events-table">
+ <tr>
+ <td colspan="6">Carregando...</td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ </main>
+
+ <script type="module" src="/src/admin/admin-events.js"></script>
+</body>
+</html>

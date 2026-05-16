@@ -17,28 +17,28 @@ function normalizeToSection(href) {
 const PAGE_SECTION_MAP = {
   // Homepage
   "index.html": "index.html",
-  "index": "index.html",
+  index: "index.html",
   "": "index.html",
   // Artigos section
   "artigos.html": "artigos.html",
-  "artigos": "artigos.html",
+  artigos: "artigos.html",
   "artigo.html": "artigos.html",
-  "artigo": "artigos.html",
+  artigo: "artigos.html",
   // Eventos section
   "eventos.html": "eventos.html",
-  "eventos": "eventos.html",
+  eventos: "eventos.html",
   "evento.html": "eventos.html",
-  "evento": "eventos.html",
+  evento: "eventos.html",
   "inscricao.html": "eventos.html",
-  "inscricao": "eventos.html",
+  inscricao: "eventos.html",
   // Lives section
   "lives-list.html": "lives-list.html",
   "lives-list": "lives-list.html",
   "lives.html": "lives-list.html",
-  "lives": "lives-list.html",
+  lives: "lives-list.html",
   // Sobre section
   "sobre.html": "sobre.html",
-  "sobre": "sobre.html",
+  sobre: "sobre.html",
 };
 
 // Active page detection for drawer + desktop nav-links
