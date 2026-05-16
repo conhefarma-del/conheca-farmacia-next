@@ -1,4 +1,4 @@
-import livesData from "./content/lives-catalog.json";
+import { getLives } from './lib/api.js';
 
 let lives = [];
 let currentStatus = "upcoming";
@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const colors = {
       live: "#006171",
       webinar: "#7c3aed",
+      entrevista: "#ff6c23",
     };
     return colors[category] || "#00493a";
   }
@@ -121,8 +122,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   temporalBtns.forEach((btn) => {
     btn.addEventListener("click", async () => {
-      temporalBtns.forEach((b) => b.classList.remove("temporal-btn-active"));
-      btn.classList.add("temporal-btn-active");
+      temporalBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
       currentStatus = btn.dataset.status;
       await renderLives();
     });
@@ -130,11 +131,31 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   categoryBtns.forEach((btn) => {
     btn.addEventListener("click", async () => {
-      categoryBtns.forEach((b) => b.classList.remove("filter-btn-active"));
-      btn.classList.add("filter-btn-active");
+      categoryBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
       currentCategory = btn.dataset.category;
       await renderLives();
     });
+  });
+
+  // Set initial active state for temporal buttons
+  // Default to showing upcoming lives
+  temporalBtns.forEach((btn) => {
+    if (btn.dataset.status === "upcoming") {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
+    }
+  });
+
+  // Set initial active state for category buttons
+  // Default to showing all categories
+  categoryBtns.forEach((btn) => {
+    if (btn.dataset.category === "all") {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
+    }
   });
 
   if (newsletterForm) {
@@ -152,7 +173,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   // Inicialização
-  lives = livesData.events.map((live) => ({
+  lives = await getLives();
+  lives = lives.map((live) => ({
     ...live,
     status: calculateStatus(live.data),
   }));

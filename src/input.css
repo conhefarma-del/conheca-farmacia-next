@@ -853,7 +853,7 @@ html.dark .form-note {
     @apply px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 border-2 border-brand-deep text-brand-deep hover:bg-brand-deep/10;
   }
 
-  .temporal-btn-active {
+  .temporal-btn.active {
     @apply bg-brand-primary border-brand-primary text-white;
   }
 
@@ -889,6 +889,18 @@ html.dark .form-note {
     @apply border-[#7c3aed] text-brand-deep hover:bg-[#7c3aed]/10 hover:text-[#7c3aed];
   }
 
+  .filter-btn[data-category="seminario"] {
+    @apply border-[#7c3aed] text-brand-deep hover:bg-[#7c3aed]/10 hover:text-[#7c3aed];
+  }
+
+  .filter-btn[data-category="outro"] {
+    @apply border-[#6b7280] text-brand-deep hover:bg-[#6b7280]/10 hover:text-[#6b7280];
+  }
+
+  .filter-btn[data-category="entrevista"] {
+    @apply border-[#ff6c23] text-brand-deep hover:bg-[#ff6c23]/10 hover:text-[#ff6c23];
+  }
+
   .filter-btn-active,
   .filter-btn.active {
     @apply text-white shadow-md;
@@ -922,6 +934,21 @@ html.dark .form-note {
   .filter-btn-active[data-category="webinar"],
   .filter-btn.active[data-category="webinar"] {
     @apply bg-[#7c3aed] border-[#7c3aed];
+  }
+
+  .filter-btn-active[data-category="seminario"],
+  .filter-btn.active[data-category="seminario"] {
+    @apply bg-[#7c3aed] border-[#7c3aed];
+  }
+
+  .filter-btn-active[data-category="outro"],
+  .filter-btn.active[data-category="outro"] {
+    @apply bg-[#6b7280] border-[#6b7280];
+  }
+
+  .filter-btn-active[data-category="entrevista"],
+  .filter-btn.active[data-category="entrevista"] {
+    @apply bg-[#ff6c23] border-[#ff6c23];
   }
 
   .events-grid-section {

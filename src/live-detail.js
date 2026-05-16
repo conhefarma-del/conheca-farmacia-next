@@ -1,4 +1,5 @@
-import livesData from "./content/lives-catalog.json";
+import { getLives, getLiveBySlug } from './lib/api.js';
+import { renderBreadcrumb } from "./breadcrumb.js";
 
 /**
  * Formata uma data no formato YYYY-MM-DD para formato por extenso em PT
@@ -48,6 +49,7 @@ function getCategoryColor(category) {
   const colors = {
     live: "#006171",
     webinar: "#7c3aed",
+    entrevista: "#ff6c23",
   };
   return colors[category] || "#00493a";
 }
@@ -173,8 +175,57 @@ function renderLiveDetail(live) {
   document.title = `${live.titulo} - Conheça Farmácia`;
 }
 
+/**
+ * Show a loading skeleton while data is being fetched
+ */
+function showLoading() {
+  const heroSection = document.querySelector(".event-hero");
+  const contentSection = document.querySelector(".event-content-section");
+  const sections = [heroSection, contentSection].filter(Boolean);
+
+  sections.forEach((section) => {
+    section.style.opacity = "0.4";
+    section.style.pointerEvents = "none";
+  });
+
+  // Add a loading indicator after breadcrumb
+  const breadcrumb = document.getElementById("breadcrumb");
+  if (breadcrumb) {
+    const loader = document.createElement("div");
+    loader.id = "live-loading";
+    loader.className = "flex items-center justify-center py-8";
+    loader.innerHTML = `
+      <div class="inline-flex items-center gap-3 text-brand-deep/60">
+        <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+        </svg>
+        <span class="text-sm font-medium">A carregar live...</span>
+      </div>
+    `;
+    breadcrumb.after(loader);
+  }
+}
+
+/**
+ * Remove loading skeleton after data is loaded
+ */
+function hideLoading() {
+  const heroSection = document.querySelector(".event-hero");
+  const contentSection = document.querySelector(".event-content-section");
+  const sections = [heroSection, contentSection].filter(Boolean);
+
+  sections.forEach((section) => {
+    section.style.opacity = "";
+    section.style.pointerEvents = "";
+  });
+
+  const loader = document.getElementById("live-loading");
+  if (loader) loader.remove();
+}
+
 // Main execution
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(window.location.search);
   const liveId = params.get("id");
 
@@ -185,20 +236,32 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
+  showLoading();
+
   try {
-    // Find live by slug
-    const live = livesData.events.find((l) => l.slug === liveId);
+    // Fetch live from Supabase via API layer
+    const live = await getLiveBySlug(liveId);
 
     if (!live) {
       console.error(`Live com ID/slug ${liveId} não encontrada`);
+      hideLoading();
       liveNotFound.classList.remove("hidden");
       return;
     }
 
     console.log("Live encontrada:", live);
+
+    // Breadcrumb
+    renderBreadcrumb([
+      { label: "Início", href: "/" },
+      { label: "Lives", href: "/lives-list.html" },
+      { label: live.titulo },
+    ]);
     renderLiveDetail(live);
+    hideLoading();
   } catch (error) {
     console.error("Erro ao carregar detalhe da live:", error);
+    hideLoading();
     liveNotFound.classList.remove("hidden");
   }
 });

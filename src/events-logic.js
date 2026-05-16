@@ -1,5 +1,5 @@
-import eventsData from "./content/events-catalog.json";
-import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseClient } from "./config.js";
+import { supabaseClient } from "./config.js";
+import { getEvents } from "./lib/api.js";
 
 let events = [];
 let currentStatus = "upcoming";
@@ -86,10 +86,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function getCategoryColor(category) {
+    // Import the color map from config
+    // Since we can't import directly in this context, we'll define it here
+    // but it should match what's in config.js
     const colors = {
       workshop: "#ff6c23",
       palestra: "#0a844f",
       congresso: "#002a32",
+      seminario: "#7c3aed",
+      outro: "#6b7280",
     };
     return colors[category] || "#00493a";
   }
@@ -199,19 +204,36 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  // Temporal filter button event listeners
   temporalBtns.forEach((btn) => {
     btn.addEventListener("click", async () => {
-      temporalBtns.forEach((b) => b.classList.remove("temporal-btn-active"));
-      btn.classList.add("temporal-btn-active");
+      // Remove active class from all temporal buttons
+      temporalBtns.forEach((button) => {
+        button.classList.remove("active");
+      });
+      // Add active class to clicked button
+      btn.classList.add("active");
+      // Update current status filter
       currentStatus = btn.dataset.status;
+      // Re-render events with new filter
       await renderEvents();
     });
   });
 
+  // Set initial active state for temporal buttons
+  // Default to showing upcoming events
+  temporalBtns.forEach((btn) => {
+    if (btn.dataset.status === "upcoming") {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
+    }
+  });
+
   categoryBtns.forEach((btn) => {
     btn.addEventListener("click", async () => {
-      categoryBtns.forEach((b) => b.classList.remove("filter-btn-active"));
-      btn.classList.add("filter-btn-active");
+      categoryBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
       currentCategory = btn.dataset.category;
       await renderEvents();
     });
@@ -248,10 +270,29 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Inicialização
-  events = eventsData.events.map((event) => ({
-    ...event,
-    status: calculateStatus(event.date),
-  }));
+  async function initializeEvents() {
+    try {
+      // Tentar buscar eventos do Supabase
+      const supabaseEvents = await getEvents();
+      events = supabaseEvents.map((event) => ({
+        ...event,
+        status: calculateStatus(event.date),
+      }));
+      console.log("✅ Eventos carregados do Supabase:", events.length);
+    } catch (error) {
+      console.warn("⚠️ Falha ao carregar do Supabase, usando fallback:", error);
+      // Fallback para dados locais
+      import("./content/events-catalog.json").then((module) => {
+        events = module.default.events.map((event) => ({
+          ...event,
+          status: calculateStatus(event.date),
+        }));
+        console.log("✅ Eventos carregados do fallback JSON:", events.length);
+      });
+    }
 
-  await renderEvents();
+    await renderEvents();
+  }
+
+  initializeEvents();
 });
