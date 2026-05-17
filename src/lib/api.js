@@ -240,3 +240,306 @@ export async function getLiveBySlug(slug) {
     return fallback ? normalizeLive(fallback) : null;
   }
 }
+
+/**
+ * Fetch count of admin users from Supabase
+ * @returns {Promise<number>}
+ */
+export async function getAdminUsersCount() {
+  try {
+    const { count, error } = await supabaseClient
+      .from('admin_users')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'active');
+
+    if (error) throw error;
+    return count || 0;
+  } catch (error) {
+    console.error('Error fetching admin users count:', error);
+    return 0;
+  }
+}
+
+/**
+ * Fetch count of newsletter subscribers from Supabase
+ * @returns {Promise<number>}
+ */
+export async function getNewsletterSubscribersCount() {
+  try {
+    const { count, error } = await supabaseClient
+      .from('newsletter')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'active');
+
+    if (error) throw error;
+    return count || 0;
+  } catch (error) {
+    console.error('Error fetching newsletter subscribers count:', error);
+    return 0;
+  }
+}
+
+/**
+ * Fetch count of articles published in the last 30 days
+ * @returns {Promise<number>}
+ */
+export async function getArticlesLast30DaysCount() {
+  try {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const thirtyDaysAgoISO = thirtyDaysAgo.toISOString();
+
+    const { count, error } = await supabaseClient
+      .from('articles')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'published')
+      .gte('published_at', thirtyDaysAgoISO);
+
+    if (error) throw error;
+    return count || 0;
+  } catch (error) {
+    console.error('Error fetching articles from last 30 days count:', error);
+    return 0; // fallback to 0 on error
+  }
+}
+
+/**
+ * Fetch count of unique categories from Supabase
+ * @returns {Promise<number>}
+ */
+export async function getUniqueCategoriesCount() {
+  try {
+    // Get unique categories from articles, events, and lives
+    const [articlesResult, eventsResult, livesResult] = await Promise.all([
+      supabaseClient
+        .from('articles')
+        .select('category')
+        .eq('status', 'published')
+        .not('category', 'is', null),
+
+      supabaseClient
+        .from('events')
+        .select('category')
+        .eq('status', 'published')
+        .not('category', 'is', null),
+
+      supabaseClient
+        .from('lives')
+        .select('category')
+        .eq('status', 'published')
+        .not('category', 'is', null)
+    ]);
+
+    if (articlesResult.error) throw articlesResult.error;
+    if (eventsResult.error) throw eventsResult.error;
+    if (livesResult.error) throw livesResult.error;
+
+    // Collect all categories
+    const allCategories = [
+      ...(articlesResult.data || []).map(item => item.category),
+      ...(eventsResult.data || []).map(item => item.category),
+      ...(livesResult.data || []).map(item => item.category)
+    ].filter(Boolean); // Remove null/undefined/empty values
+
+    // Count unique categories using Set
+    const uniqueCategories = new Set(allCategories);
+    return uniqueCategories.size;
+  } catch (error) {
+    console.error('Error fetching unique categories count:', error);
+    return 0;
+  }
+}
+
+/**
+ * Get category distribution across all content types
+ * @returns {Promise<Array<{category: string, count: number}>}
+ */
+export async function getCategoryDistribution() {
+  try {
+    // Get categories from articles, events, and lives
+    const [articlesResult, eventsResult, livesResult] = await Promise.all([
+      supabaseClient
+      .from('articles')
+      .select('category')
+      .eq('status', 'published')
+      .not('category', 'is', null),
+
+      supabaseClient
+      .from('events')
+      .select('category')
+      .eq('status', 'published')
+      .not('category', 'is', null),
+
+      supabaseClient
+      .from('lives')
+      .select('category')
+      .eq('status', 'published')
+      .not('category', 'is', null)
+    ]);
+
+    if (articlesResult.error) throw articlesResult.error;
+    if (eventsResult.error) throw eventsResult.error;
+    if (livesResult.error) throw livesResult.error;
+
+    // Collect all categories
+    const allCategories = [
+      ...(articlesResult.data || []).map(item => item.category),
+      ...(eventsResult.data || []).map(item => item.category),
+      ...(livesResult.data || []).map(item => item.category)
+    ].filter(Boolean);
+
+    // Count occurrences of each category
+    const categoryCounts = {};
+    allCategories.forEach(category => {
+      categoryCounts[category] = (categoryCounts[category] || 0) + 1;
+    });
+
+    // Convert to array of objects for Chart.js
+    const distribution = Object.keys(categoryCounts).map(category => ({
+      category,
+      count: categoryCounts[category]
+    }));
+
+    // Sort by count descending
+    distribution.sort((a, b) => b.count - a.count);
+
+    return distribution;
+  } catch (error) {
+    console.error('Error fetching category distribution:', error);
+    return [];
+  }
+}
+
+/**
+ * Get top 5 most viewed articles
+ * @returns {Promise<Array<{id: string, title: string, slug: string, view_count: number, author_name: string, published_at: string}>}
+ */
+export async function getTopViewedArticles() {
+  try {
+    const { data, error } = await supabaseClient
+      .from('articles')
+      .select('id, title, slug, view_count, author_name, published_at')
+      .eq('status', 'published')
+      .order('view_count', { ascending: false })
+      .limit(5);
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching top viewed articles:', error);
+    return [];
+  }
+}
+
+/**
+ * Get total content count (sum of articles, events, and lives)
+ * @returns {Promise<number>}
+ */
+export async function getTotalContentCount() {
+  try {
+    const [articlesCount, eventsCount, livesCount] = await Promise.all([
+      getPublishedArticlesCount(),
+      getPublishedEventsCount(),
+      getPublishedLivesCount()
+    ]);
+
+    return (articlesCount || 0) + (eventsCount || 0) + (livesCount || 0);
+  } catch (error) {
+    console.error('Error fetching total content count:', error);
+    return 0;
+  }
+}
+
+/**
+ * Get recent admin activity from audit_logs
+ * @param {number} limit - Number of activities to return
+ * @returns {Promise<Array<{id: string, action: string, table_name: string, record_id: string, performed_at: string, performer_name: string}>}
+ */
+export async function getRecentAdminActivity(limit = 10) {
+  try {
+    const { data, error } = await supabaseClient
+      .from('audit_logs')
+      .select('id, action, table_name, record_id, performed_at, performer_name')
+      .order('performed_at', { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching recent admin activity:', error);
+    return [];
+  }
+}
+
+/**
+ * Get top publishing admin (admin with most publications)
+ * @returns {Promise<{performer_name: string, count: number}>}
+ */
+export async function getTopPublishingAdmin() {
+  try {
+    const { data, error } = await supabaseClient
+      .from('audit_logs')
+      .select('performer_name, count')
+      .eq('action', 'INSERT')
+      .in('table_name', ['articles', 'events', 'lives'])
+      .order('count', { ascending: false })
+      .limit(1);
+
+    if (error) throw error;
+    return data && data.length > 0
+      ? { performer_name: data[0].performer_name, count: data[0].count }
+      : { performer_name: 'Nenhum', count: 0 };
+  } catch (error) {
+    console.error('Error fetching top publishing admin:', error);
+    return { performer_name: 'Erro', count: 0 };
+  }
+}
+
+/**
+ * Get event fill rate for next upcoming event
+ * @returns {Promise<{event: Object|null, fillRate: number}>}
+ */
+export async function getEventFillRate() {
+  try {
+    // Get the next upcoming event
+    const { data: upcomingEvents, error: upcomingError } = await supabaseClient
+      .from('events')
+      .select('id, title, date, capacity')
+      .gte('date', new Date().toISOString().split('T')[0])
+      .eq('status', 'published')
+      .order('date', { ascending: true })
+      .limit(1);
+
+    if (upcomingError) throw upcomingError;
+
+    if (!upcomingEvents || upcomingEvents.length === 0) {
+      return { event: null, fillRate: 0 };
+    }
+
+    const event = upcomingEvents[0];
+
+    // Get registration count for this event
+    const { count, error: countError } = await supabaseClient
+      .from('event_registrations')
+      .select('*', { count: 'exact', head: true })
+      .eq('event_id', event.id);
+
+    if (countError) throw countError;
+
+    const registrationCount = count || 0;
+    const fillRate = event.capacity > 0 ? (registrationCount / event.capacity) * 100 : 0;
+
+    return {
+      event: {
+        id: event.id,
+        title: event.title,
+        date: event.date,
+        capacity: event.capacity
+      },
+      fillRate: parseFloat(fillRate.toFixed(2))
+    };
+  } catch (error) {
+    console.error('Error fetching event fill rate:', error);
+    return { event: null, fillRate: 0 };
+  }
+}
