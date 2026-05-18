@@ -1,70 +1,186 @@
 <!DOCTYPE html>
 <html lang="pt-PT">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artigos - Admin</title>
-    <link rel="stylesheet" href="/src/admin/styles/admin.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{title}</title>
+  <link rel="stylesheet" href="/src/admin/styles/admin.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="admin-dashboard">
-    <header class="admin-header">
-        <div class="admin-logo">
-            <h1>Gerir Artigos</h1>
+  <!-- Mobile Hamburger -->
+  <button class="admin-hamburger" id="hamburger-btn" aria-label="Abrir menu">
+    <i data-lucide="menu" style="width:24px;height:24px"></i>
+  </button>
+  <div class="admin-sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar-header">
+      <div class="admin-sidebar-logo">
+        <img src="/logo/logo-principal-branco.svg" alt="conheceFarma">
+        <div>
+          <h1>conheceFarma</h1>
+          <p class="admin-sidebar-subtitle">Painel Administrativo</p>
         </div>
-        <nav class="admin-nav">
-            <a href="/src/admin/dashboard.html">Dashboard</a>
-            <a href="/src/admin/artigos/index.html" class="active">Artigos</a>
-            <a href="/src/admin/eventos/index.html">Eventos</a>
-            <a href="/src/admin/lives/index.html">Lives</a>
-            <a href="#" id="logout-btn">Sair</a>
-        </nav>
-    </header>
+      </div>
+    </div>
 
-    <main class="admin-content">
-        <div class="admin-card">
-            <div class="admin-card-header">
-                <h2>Lista de Artigos</h2>
-                <a href="/src/admin/artigos/new.html" class="admin-btn admin-btn-primary">
-                    + Novo Artigo
-                </a>
-            </div>
+    <nav class="admin-nav-vertical">
+      <a href="/src/admin/dashboard.html">
+        <i data-lucide="home"></i>
+        Dashboard
+      </a>
+      <a href="/src/admin/artigos/index.html" class="active">
+        <i data-lucide="file-text"></i>
+        Artigos
+      </a>
+      <a href="/src/admin/eventos/index.html">
+        <i data-lucide="calendar"></i>
+        Eventos
+      </a>
+      <a href="/src/admin/lives/index.html">
+        <i data-lucide="video"></i>
+        Lives
+      </a>
+    </nav>
 
-            <div class="admin-filters">
-                <select id="filter-status" class="admin-input">
-                    <option value="all">Todos Status</option>
-                    <option value="published">Publicados</option>
-                    <option value="draft">Rascunho</option>
-                </select>
-                <select id="filter-category" class="admin-input">
-                    <option value="all">Todas Categorias</option>
-                    <option value="profissionais">Para Profissionais</option>
-                    <option value="voce-sabia">Você Sabia?</option>
-                    <option value="conheca-medicamento">Conheça o Medicamento</option>
-                    <option value="curiosidades">Curiosidades</option>
-                    <option value="saude">Saúde</option>
-                </select>
-            </div>
+    <div class="admin-sidebar-footer">
+      <button id="dark-mode-toggle" class="admin-sidebar-btn" title="Alternar modo escuro">
+        <i data-lucide="sun" class="sun-icon" width="20" height="20"></i>
+        <i data-lucide="moon" class="moon-icon" width="20" height="20" style="display:none"></i>
+      </button>
+      <a href="#" id="logout-btn">
+        <i data-lucide="log-out"></i>
+        Sair
+      </a>
+    </div>
+  </aside>
 
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>Título</th>
-                        <th>Categoria</th>
-                        <th>Status</th>
-                        <th>Data</th>
-                        <th>Autor</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="articles-table">
-                    <tr>
-                        <td colspan="6">Carregando...</td>
-                    </tr>
-                </tbody>
-            </table>
+  <!-- Main Content -->
+  <main class="admin-main-content">
+    <!-- Top Bar -->
+    <div class="admin-top-bar">
+      <div class="admin-search-container">
+        <i data-lucide="search" class="admin-search-icon"></i>
+        <input type="text" id="admin-search-input" class="admin-search-input" placeholder="Pesquisar artigos...">
+      </div>
+
+      <div class="admin-top-actions">
+        <button class="admin-icon-btn">
+          <i data-lucide="bell"></i>
+          <span class="badge"></span>
+        </button>
+
+        <div class="admin-user-menu">
+          <div class="admin-user-avatar">A</div>
+          <div class="admin-user-info">
+            <span class="admin-user-name">Administrador</span>
+            <span class="admin-user-email">admin@conhecefarmacia.pt</span>
+          </div>
         </div>
-    </main>
+      </div>
+    </div>
 
-    <script type="module" src="/src/admin/admin-articles.js"></script>
+    <!-- Page Header -->
+    <div class="admin-page-header">
+      <h1 class="admin-page-title">Gerir Artigos</h1>
+      <p class="admin-page-subtitle">Crie e edite artigos para o seu site</p>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="admin-stats-grid">
+      <div class="admin-stat-card stat-green">
+        <div class="admin-stat-card-icon">
+          <i data-lucide="file-text"></i>
+        </div>
+        <div>
+          <div class="admin-stat-card-label">Total</div>
+          <div class="admin-stat-card-value" id="stat-total">-</div>
+        </div>
+        <div class="admin-stat-card-actions">
+          <button class="admin-stat-card-btn" onclick="window.location.href='/src/admin/artigos/new.html'">
+            <i data-lucide="plus"></i>
+            Novo
+          </button>
+        </div>
+      </div>
+
+      <div class="admin-stat-card stat-purple">
+        <div class="admin-stat-card-icon">
+          <i data-lucide="check"></i>
+        </div>
+        <div>
+          <div class="admin-stat-card-label">Publicados</div>
+          <div class="admin-stat-card-value" id="stat-published">-</div>
+        </div>
+      </div>
+
+      <div class="admin-stat-card stat-orange">
+        <div class="admin-stat-card-icon">
+          <i data-lucide="clock"></i>
+        </div>
+        <div>
+          <div class="admin-stat-card-label">Rascunhos</div>
+          <div class="admin-stat-card-value" id="stat-drafts">-</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Articles Table -->
+    <div class="admin-dashboard-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3>Lista de Artigos</h3>
+        <a href="/src/admin/artigos/new.html" class="admin-btn admin-btn-primary" style="background: var(--admin-accent); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 600;">
+          <i data-lucide="plus"></i>
+          Adicionar Artigo
+        </a>
+      </div>
+
+      <div id="articles-container">
+        <p class="admin-text-muted">A carregar artigos...</p>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="/src/admin/admin-articles.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script type="module">
+    import { initDarkMode, toggleDarkMode } from '../lib/dark-mode.js';
+
+    // Init dark mode
+    initDarkMode();
+    document.getElementById('dark-mode-toggle')?.addEventListener('click', toggleDarkMode);
+
+    // Mobile hamburger menu
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const sidebar = document.querySelector('.admin-sidebar');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+    function toggleSidebar() {
+      sidebar.classList.toggle('open');
+      sidebarOverlay.classList.toggle('active');
+    }
+
+    hamburgerBtn?.addEventListener('click', toggleSidebar);
+    sidebarOverlay?.addEventListener('click', toggleSidebar);
+
+    // Close sidebar on link click (mobile)
+    sidebar?.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+          sidebar.classList.remove('open');
+          sidebarOverlay.classList.remove('active');
+        }
+      });
+    });
+
+    // Initialize Lucide icons
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+  </script>
 </body>
 </html>
