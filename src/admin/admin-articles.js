@@ -1,170 +1,212 @@
 // src/admin/admin-articles.js
-import { supabaseClient } from '../config.js';
-import { checkAuth, logout } from './lib/auth.js';
-import { logAudit } from './lib/audit-logger.js';
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+import { getAllArticles, deleteArticle as apiDeleteArticle } from '../lib/api.js';
 
-// Check authentication
-await checkAuth();
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 let allArticles = [];
-let currentFilter = { status: 'all', category: 'all' };
+let currentFilter = { status: 'all' };
+let searchQuery = '';
+
+// Verificar autenticação
+async function checkAuth() {
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (!session) {
+    window.location.href = '/src/admin/index.html';
+    return false;
+  }
+
+  return true;
+}
+
+// Logout
+document.getElementById('logout-btn')?.addEventListener('click', async (e) => {
+  e.preventDefault();
+  await supabase.auth.signOut();
+  window.location.href = '/src/admin/index.html';
+});
 
 // Load articles
 async function loadArticles() {
-    const { data: articles, error } = await supabaseClient
-        .from('articles')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-    if (error) {
-        console.error('Erro ao carregar artigos:', error);
-        return;
-    }
-
+  try {
+    const articles = await getAllArticles();
     allArticles = articles || [];
     renderArticles();
-    setupFilters();
+    renderStats();
+  } catch (error) {
+    console.error('Erro ao carregar artigos:', error);
+  }
 }
 
-// Filter articles based on current filter
-function getFilteredArticles() {
-    return allArticles.filter(article => {
-        const statusMatch = currentFilter.status === 'all' || article.status === currentFilter.status;
-        const categoryMatch = currentFilter.category === 'all' || article.category === currentFilter.category;
-        return statusMatch && categoryMatch;
-    });
+// Render stats
+function renderStats() {
+  const total = allArticles.length;
+  const published = allArticles.filter(a => a.status === 'published').length;
+  const drafts = allArticles.filter(a => a.status === 'draft').length;
+
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-published').textContent = published;
+  document.getElementById('stat-drafts').textContent = drafts;
 }
 
-// Toggle article status (draft/published)
-window.toggleStatus = async function(id, currentStatus) {
-    const newStatus = currentStatus === 'published' ? 'draft' : 'published';
-
-    if (!confirm(`Alterar status para "${newStatus === 'published' ? 'Publicado' : 'Rascunho'}"?`)) return;
-
-    try {
-        const { error } = await supabaseClient
-            .from('articles')
-            .update({ status: newStatus })
-            .eq('id', id);
-
-        if (error) throw error;
-
-        // Log audit
-        await logAudit('UPDATE', 'articles', id, { status: currentStatus }, { status: newStatus });
-
-        // Reload list
-        loadArticles();
-    } catch (error) {
-        alert('Erro ao alterar status: ' + error.message);
-    }
-};
-
-// Render articles table
+// Render articles list
 function renderArticles() {
-    const tbody = document.getElementById('articles-table');
-    const articles = getFilteredArticles();
+  const container = document.getElementById('articles-container');
+  const articles = getFilteredArticles();
 
-    if (!articles || articles.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6">Nenhum artigo encontrado</td></tr>';
-        return;
-    }
+  if (!articles || articles.length === 0) {
+    container.innerHTML = '<p class="admin-text-muted">Nenhum artigo encontrado</p>';
+    return;
+  }
 
-    tbody.innerHTML = articles.map(article => `
+  container.innerHTML = `
+    <div class="admin-table-wrapper">
+    <table class="admin-table">
+      <thead>
         <tr>
+          <th>Título</th>
+          <th>Categoria</th>
+          <th>Status</th>
+          <th>Data</th>
+          <th>Autor</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${articles.map(article => `
+          <tr>
             <td>${escapeHtml(article.title)}</td>
-            <td>${escapeHtml(article.category_label || article.category)}</td>
+            <td>${escapeHtml(article.category_label || article.category || '-')}</td>
             <td>
-                <button
-                    onclick="toggleStatus('${article.id}', '${article.status}')"
-                    class="admin-badge admin-badge-${article.status}"
-                    style="cursor: pointer; border: none; padding: 4px 12px; border-radius: 999px; font-size: 14px; font-weight: 500;"
-                >
-                    ${article.status === 'published' ? 'Publicado' : 'Rascunho'}
-                </button>
+              <button
+                onclick="toggleStatus('${article.id}', '${article.status}')"
+                class="admin-status-badge ${article.status === 'published' ? 'admin-status-published' : 'admin-status-draft'}"
+                style="cursor: pointer; border: none;"
+              >
+                ${article.status === 'published' ? 'Publicado' : 'Rascunho'}
+              </button>
             </td>
             <td>${formatDate(article.published_date)}</td>
             <td>${escapeHtml(article.author_name || '-')}</td>
             <td>
-                <a href="/src/admin/artigos/edit.html?id=${article.id}" class="admin-btn admin-btn-sm">
-                    Editar
+              <div class="admin-actions">
+                <a href="/src/admin/artigos/edit.html?id=${article.id}" class="admin-btn admin-btn-secondary">
+                  <i data-lucide="pencil"></i>
+                  Editar
                 </a>
-                <button onclick="deleteArticle('${article.id}', '${escapeHtml(article.title)}')" class="admin-btn admin-btn-sm admin-btn-danger">
-                    Excluir
+                <button onclick="deleteArticle('${article.id}', '${escapeHtml(article.title)}')" class="admin-btn admin-btn-danger">
+                  <i data-lucide="trash-2"></i>
+                  Excluir
                 </button>
+              </div>
             </td>
-        </tr>
-    `).join('');
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    </div>
+  `;
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
 }
 
-// Setup filter event listeners
-function setupFilters() {
-    const statusFilter = document.getElementById('filter-status');
-    const categoryFilter = document.getElementById('filter-category');
+// Filter articles
+function getFilteredArticles() {
+  return allArticles.filter(article => {
+    // Status filter
+    if (currentFilter.status !== 'all' && article.status !== currentFilter.status) return false;
 
-    statusFilter?.addEventListener('change', (e) => {
-        currentFilter.status = e.target.value;
-        renderArticles();
-    });
+    // Search filter
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      const title = (article.title || '').toLowerCase();
+      const excerpt = (article.excerpt || '').toLowerCase();
+      const category = (article.category_label || article.category || '').toLowerCase();
+      const author = (article.author_name || '').toLowerCase();
 
-    categoryFilter?.addEventListener('change', (e) => {
-        currentFilter.category = e.target.value;
-        renderArticles();
-    });
+      if (!title.includes(q) && !excerpt.includes(q) && !category.includes(q) && !author.includes(q)) {
+        return false;
+      }
+    }
 
-    // Logout handler
-    document.getElementById('logout-btn')?.addEventListener('click', (e) => {
-        e.preventDefault();
-        logout();
-    });
+    return true;
+  });
 }
+
+// Toggle status
+window.toggleStatus = async function(id, currentStatus) {
+  const newStatus = currentStatus === 'published' ? 'draft' : 'published';
+
+  if (!confirm(`Alterar status para "${newStatus === 'published' ? 'Publicado' : 'Rascunho'}"?`)) return;
+
+  try {
+    const { error } = await supabase
+      .from('articles')
+      .update({ status: newStatus })
+      .eq('id', id);
+
+    if (error) throw error;
+
+    loadArticles();
+  } catch (error) {
+    alert('Erro ao alterar status: ' + error.message);
+  }
+};
 
 // Delete article
 window.deleteArticle = async function(id, title) {
-    if (!confirm(`Tem certeza que deseja excluir o artigo "${title}"?`)) return;
+  if (!confirm(`Tem certeza que deseja excluir o artigo "${title}"?`)) return;
 
-    try {
-        // Get article data before deletion for audit
-        const { data: article } = await supabaseClient
-            .from('articles')
-            .select('*')
-            .eq('id', id)
-            .single();
+  try {
+    const error = await apiDeleteArticle(id);
+    if (error) throw error;
 
-        const { error } = await supabaseClient
-            .from('articles')
-            .delete()
-            .eq('id', id);
-
-        if (error) {
-            alert('Erro ao excluir: ' + error.message);
-            return;
-        }
-
-        // Log audit
-        await logAudit('DELETE', 'articles', id, article, null);
-
-        // Reload list
-        loadArticles();
-    } catch (error) {
-        alert('Erro ao excluir: ' + error.message);
-    }
+    loadArticles();
+  } catch (error) {
+    alert('Erro ao excluir: ' + error.message);
+  }
 };
 
 // Helper functions
 function escapeHtml(text) {
-    if (!text) return '';
-    return text.replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+  if (!text) return '';
+  return text.replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 function formatDate(dateStr) {
-    if (!dateStr) return '-';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('pt-PT');
+  if (!dateStr) return '-';
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('pt-PT');
+}
+
+// Search with debounce
+let searchDebounce;
+function initSearch() {
+  const searchInput = document.getElementById('admin-search-input');
+  if (!searchInput) return;
+
+  searchInput.addEventListener('input', (e) => {
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(() => {
+      searchQuery = e.target.value.trim();
+      renderArticles();
+    }, 300);
+  });
 }
 
 // Initialize
-loadArticles();
+document.addEventListener('DOMContentLoaded', async () => {
+  const isAuth = await checkAuth();
+  if (isAuth) {
+    loadArticles();
+    initSearch();
+  }
+});

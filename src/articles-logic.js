@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <span class="article-tag" style="background-color: ${categoryColors[article.category]}20; color: ${categoryColors[article.category]}; border: 1px solid ${categoryColors[article.category]}40">${article.categoryLabel}</span>
             <h3 class="article-card-title">${article.title}</h3>
             <p class="article-card-excerpt">${article.excerpt}</p>
-            <a href="artigo.html?id=${article.id}" class="article-card-link">Ler mais <span>→</span></a>
+            <a href="artigo.html?id=${article.slug}" class="article-card-link">Ler mais <span>→</span></a>
           </div>
         `;
         grid.appendChild(card);

@@ -3,15 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Login - conheaFarma</title>
+  <title>Admin Login - conheceFarma</title>
   <link rel="stylesheet" href="/src/admin/styles/admin.css">
 </head>
 <body class="admin-login-page">
   <div class="admin-login-container">
     <div class="admin-login-box">
       <div class="admin-login-header">
-        <img src="/logo.png" alt="conheaFarma" class="admin-login-logo">
-        <h1>Admin Login</h1>
+        <img src="/logo/logo-principal-verde.svg" alt="conheceFarma" class="admin-login-logo">
+        <h1>Área Administrativa</h1>
+        <p style="color: var(--admin-text-muted); margin: 8px 0 0 0; font-size: 14px;">
+          Aceda com as suas credenciais
+        </p>
       </div>
 
       <form id="login-form" class="admin-login-form">
@@ -28,7 +31,7 @@
         </div>
 
         <div class="admin-form-group">
-          <label for="password">Password</label>
+          <label for="password">Palavra-passe</label>
           <input
             type="password"
             id="password"
@@ -45,6 +48,10 @@
           Entrar
         </button>
       </form>
+
+      <p style="text-align: center; margin-top: 24px; font-size: 13px; color: var(--admin-text-muted);">
+        Acesso restrito a administradores autorizados
+      </p>
     </div>
   </div>
 

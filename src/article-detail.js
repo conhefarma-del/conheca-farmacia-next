@@ -1,5 +1,6 @@
 import { getArticleBySlug, getArticles } from "./lib/api.js";
 import { renderBreadcrumb } from "./breadcrumb.js";
+import { errorHandler } from "./lib/error-handler.js";
 
 // Cores por categoria (mesmo padrão que articles-logic.js)
 const categoryColors = {
@@ -150,10 +151,9 @@ async function loadArticle() {
   const articleId = params.get("id");
 
   if (!articleId) {
-    ErrorHandler.handle(
+    errorHandler.handle(
       new Error("ID do artigo não fornecido"),
-      "PAGE",
-      "Artigo não encontrado"
+      { mode: "PAGE" }
     );
     return;
   }
@@ -165,10 +165,9 @@ async function loadArticle() {
     const article = await getArticleBySlug(articleId);
 
     if (!article) {
-      ErrorHandler.handle(
+      errorHandler.handle(
         new Error(`Artigo com slug ${articleId} não encontrado`),
-        "PAGE",
-        "Artigo não encontrado"
+        { mode: "PAGE" }
       );
       return;
     }
@@ -307,7 +306,7 @@ async function loadArticle() {
     document.title = `${article.title} - Conheça Farmácia`;
   } catch (error) {
     hideLoadingState();
-    ErrorHandler.handle(error, "PAGE", "Desculpe, artigo não disponível");
+    errorHandler.handle(error, { mode: "PAGE" });
   }
 }
 

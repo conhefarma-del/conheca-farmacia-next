@@ -85,48 +85,65 @@
     </div>
 
 
- <div class="admin-card">
- <div class="admin-card-header">
- <h2>Lista de Eventos</h2>
- <a href="/src/admin/eventos/new.html" class="admin-btn admin-btn-primary">
- + Novo Evento
- </a>
- </div>
+    <!-- Page Header -->
+    <div class="admin-page-header">
+      <h1 class="admin-page-title">Gerir Eventos</h1>
+      <p class="admin-page-subtitle">Crie e edite eventos para o seu site</p>
+    </div>
 
- <div class="admin-filters">
- <select id="filter-status" class="admin-input">
- <option value="all">Todos Status</option>
- <option value="published">Publicados</option>
- <option value="draft">Rascunho</option>
- </select>
- <select id="filter-category" class="admin-input">
- <option value="all">Todas Categorias</option>
- <option value="workshop">Workshop</option>
- <option value="palestra">Palestra</option>
- <option value="congresso">Congresso</option>
- <option value="seminario">Seminário</option>
- <option value="outro">Outro</option>
- </select>
- </div>
+    <!-- Stats Grid -->
+    <div class="admin-stats-grid">
+      <div class="admin-stat-card stat-green">
+        <div class="admin-stat-card-icon">
+          <i data-lucide="calendar"></i>
+        </div>
+        <div>
+          <div class="admin-stat-card-label">Total</div>
+          <div class="admin-stat-card-value" id="stat-total">-</div>
+        </div>
+        <div class="admin-stat-card-actions">
+          <button class="admin-stat-card-btn" onclick="window.location.href='/src/admin/eventos/new.html'">
+            <i data-lucide="plus"></i>
+            Novo
+          </button>
+        </div>
+      </div>
 
- <table class="admin-table">
- <thead>
- <tr>
- <th>Título</th>
- <th>Categoria</th>
- <th>Data</th>
- <th>Tipo</th>
- <th>Status</th>
- <th>Ações</th>
- </tr>
- </thead>
- <tbody id="events-table">
- <tr>
- <td colspan="6">Carregando...</td>
- </tr>
- </tbody>
- </table>
- </div>
+      <div class="admin-stat-card stat-purple">
+        <div class="admin-stat-card-icon">
+          <i data-lucide="check"></i>
+        </div>
+        <div>
+          <div class="admin-stat-card-label">Publicados</div>
+          <div class="admin-stat-card-value" id="stat-published">-</div>
+        </div>
+      </div>
+
+      <div class="admin-stat-card stat-orange">
+        <div class="admin-stat-card-icon">
+          <i data-lucide="clock"></i>
+        </div>
+        <div>
+          <div class="admin-stat-card-label">Rascunhos</div>
+          <div class="admin-stat-card-value" id="stat-drafts">-</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Events Table -->
+    <div class="admin-dashboard-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3>Lista de Eventos</h3>
+        <a href="/src/admin/eventos/new.html" class="admin-btn admin-btn-primary" style="background: var(--admin-accent); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 600;">
+          <i data-lucide="plus"></i>
+          Adicionar Evento
+        </a>
+      </div>
+
+      <div id="events-container">
+        <p class="admin-text-muted">A carregar eventos...</p>
+      </div>
+    </div>
  
   </main>
 

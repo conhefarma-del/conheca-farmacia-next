@@ -190,7 +190,7 @@ document.addEventListener("DOMContentLoaded", async () => {
  </div>
 
  <div class="event-card-actions mt-auto">
- <a href="evento.html?id=${event.id}" class="btn btn-secondary btn-small">
+ <a href="evento.html?id=${event.slug}" class="btn btn-secondary btn-small">
  Mais Informações
  </a>
  <button data-event-slug="${event.slug}" class="btn btn-primary btn-small btn-inscrever" ${event.status === "past" || isCapacityFull ? "disabled" : ""}>

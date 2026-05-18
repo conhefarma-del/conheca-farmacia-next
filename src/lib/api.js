@@ -19,14 +19,16 @@ function normalizeArticle(row) {
   const isSupabase = 'category_label' in row || 'author_name' in row;
 
   return {
-    id: row.slug,
+    id: row.id || row.slug,
     slug: row.slug,
     title: row.title,
     excerpt: row.excerpt,
     category: row.category,
     categoryLabel: isSupabase ? row.category_label : row.categoryLabel,
+    category_label: isSupabase ? row.category_label : row.categoryLabel,
     image: isSupabase ? row.image_url : row.image,
     content: row.content,
+    status: row.status,
     author: isSupabase ? {
       name: row.author_name,
       role: row.author_role,
@@ -34,7 +36,9 @@ function normalizeArticle(row) {
       avatar: row.author_avatar,
       avatarBg: row.author_avatar_bg,
     } : row.author,
+    author_name: isSupabase ? row.author_name : row.author?.name,
     date: isSupabase ? row.published_date : row.date,
+    published_date: isSupabase ? row.published_date : row.date,
     readTime: isSupabase ? row.read_time : row.readTime,
     references: isSupabase ? row.references_arr : row.references,
   };
@@ -47,12 +51,13 @@ function normalizeEvent(row) {
   const isSupabase = 'category_label' in row || 'end_time' in row;
 
   return {
-    id: row.slug,
+    id: row.id || row.slug,
     slug: row.slug,
     title: row.title,
     excerpt: row.excerpt,
     category: row.category,
     categoryLabel: isSupabase ? row.category_label : row.categoryLabel,
+    category_label: isSupabase ? row.category_label : row.categoryLabel,
     image: isSupabase ? row.image_url : row.image,
     date: row.date,
     time: formatTime(isSupabase ? row.time : row.time),
@@ -61,6 +66,7 @@ function normalizeEvent(row) {
     type: row.type,
     capacity: row.capacity,
     hosts: row.hosts,
+    status: row.status,
     registrationLink: isSupabase ? row.registration_link : row.registrationLink,
   };
 }
@@ -75,19 +81,27 @@ function normalizeLive(row) {
   if (isSupabase) {
     return {
       slug: row.slug,
+      id: row.id || row.slug,
+      title: row.title,
       titulo: row.title,
       resumo: row.excerpt,
+      category: row.category,
       categoria: row.category,
+      category_label: row.category_label,
       categoriaLabel: row.category_label,
+      image: row.image_url,
       imagem: row.image_url,
+      date: row.date,
       data: row.date,
       hora: formatTime(row.time),
       hora_termino: formatTime(row.end_time),
+      platform: row.platform,
       plataforma: row.platform,
       link_acesso: row.access_link,
       id_reuniao: row.meeting_id,
       senha: row.password,
       materiais_apoio: row.materials,
+      status: row.status,
       anfitriao: {
         nome: row.host_name,
         cargo: row.host_role,
@@ -238,6 +252,63 @@ export async function getLiveBySlug(slug) {
     const { getFallbackLiveBySlug } = await import('./fallback-data.js');
     const fallback = getFallbackLiveBySlug(slug);
     return fallback ? normalizeLive(fallback) : null;
+  }
+}
+
+/**
+ * Fetch count of published articles from Supabase
+ * @returns {Promise<number>}
+ */
+export async function getPublishedArticlesCount() {
+  try {
+    const { count, error } = await supabaseClient
+      .from('articles')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'published');
+
+    if (error) throw error;
+    return count || 0;
+  } catch (error) {
+    console.error('Error fetching published articles count:', error);
+    return 0;
+  }
+}
+
+/**
+ * Fetch count of published events from Supabase
+ * @returns {Promise<number>}
+ */
+export async function getPublishedEventsCount() {
+  try {
+    const { count, error } = await supabaseClient
+      .from('events')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'published');
+
+    if (error) throw error;
+    return count || 0;
+  } catch (error) {
+    console.error('Error fetching published events count:', error);
+    return 0;
+  }
+}
+
+/**
+ * Fetch count of published lives from Supabase
+ * @returns {Promise<number>}
+ */
+export async function getPublishedLivesCount() {
+  try {
+    const { count, error } = await supabaseClient
+      .from('lives')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'published');
+
+    if (error) throw error;
+    return count || 0;
+  } catch (error) {
+    console.error('Error fetching published lives count:', error);
+    return 0;
   }
 }
 
@@ -431,6 +502,106 @@ export async function getTopViewedArticles() {
   }
 }
 
+// --- Admin functions (return ALL content, not just published) ---
+
+/**
+ * Fetch ALL articles (including drafts) for admin
+ * @returns {Promise<Array>}
+ */
+export async function getAllArticles() {
+  try {
+    const { data, error } = await supabaseClient
+      .from('articles')
+      .select('*')
+      .order('published_date', { ascending: false });
+
+    if (error) throw error;
+    return (data || []).map(normalizeArticle);
+  } catch (error) {
+    console.error('Error fetching all articles:', error);
+    return [];
+  }
+}
+
+/**
+ * Fetch ALL events (including drafts) for admin
+ * @returns {Promise<Array>}
+ */
+export async function getAllEvents() {
+  try {
+    const { data, error } = await supabaseClient
+      .from('events')
+      .select('*')
+      .order('date', { ascending: true });
+
+    if (error) throw error;
+    return (data || []).map(normalizeEvent);
+  } catch (error) {
+    console.error('Error fetching all events:', error);
+    return [];
+  }
+}
+
+/**
+ * Fetch ALL lives (including drafts) for admin
+ * @returns {Promise<Array>}
+ */
+export async function getAllLives() {
+  try {
+    const { data, error } = await supabaseClient
+      .from('lives')
+      .select('*')
+      .order('date', { ascending: true });
+
+    if (error) throw error;
+    return (data || []).map(normalizeLive);
+  } catch (error) {
+    console.error('Error fetching all lives:', error);
+    return [];
+  }
+}
+
+// --- Delete functions for admin ---
+
+/**
+ * Delete an article by ID
+ * @param {string} id
+ * @returns {Promise<null>}
+ */
+export async function deleteArticle(id) {
+  const { error } = await supabaseClient
+    .from('articles')
+    .delete()
+    .eq('id', id);
+  if (error) throw error;
+}
+
+/**
+ * Delete an event by ID
+ * @param {string} id
+ * @returns {Promise<null>}
+ */
+export async function deleteEvent(id) {
+  const { error } = await supabaseClient
+    .from('events')
+    .delete()
+    .eq('id', id);
+  if (error) throw error;
+}
+
+/**
+ * Delete a live by ID
+ * @param {string} id
+ * @returns {Promise<null>}
+ */
+export async function deleteLive(id) {
+  const { error } = await supabaseClient
+    .from('lives')
+    .delete()
+    .eq('id', id);
+  if (error) throw error;
+}
+
 /**
  * Get total content count (sum of articles, events, and lives)
  * @returns {Promise<number>}
@@ -453,14 +624,14 @@ export async function getTotalContentCount() {
 /**
  * Get recent admin activity from audit_logs
  * @param {number} limit - Number of activities to return
- * @returns {Promise<Array<{id: string, action: string, table_name: string, record_id: string, performed_at: string, performer_name: string}>}
+ * @returns {Promise<Array<{id: string, action: string, table_name: string, record_id: string, created_at: string, user_email: string}>}
  */
 export async function getRecentAdminActivity(limit = 10) {
   try {
     const { data, error } = await supabaseClient
       .from('audit_logs')
-      .select('id, action, table_name, record_id, performed_at, performer_name')
-      .order('performed_at', { ascending: false })
+      .select('id, action, table_name, record_id, created_at, user_email')
+      .order('created_at', { ascending: false })
       .limit(limit);
 
     if (error) throw error;
@@ -479,16 +650,26 @@ export async function getTopPublishingAdmin() {
   try {
     const { data, error } = await supabaseClient
       .from('audit_logs')
-      .select('performer_name, count')
-      .eq('action', 'INSERT')
-      .in('table_name', ['articles', 'events', 'lives'])
-      .order('count', { ascending: false })
-      .limit(1);
+      .select('user_email')
+      .eq('action', 'CREATE')
+      .in('table_name', ['articles', 'events', 'lives']);
 
     if (error) throw error;
-    return data && data.length > 0
-      ? { performer_name: data[0].performer_name, count: data[0].count }
-      : { performer_name: 'Nenhum', count: 0 };
+
+    if (!data || data.length === 0) {
+      return { performer_name: 'Nenhum', count: 0 };
+    }
+
+    // Group by user_email in JavaScript
+    const counts = {};
+    data.forEach(row => {
+      const name = row.user_email || 'Desconhecido';
+      counts[name] = (counts[name] || 0) + 1;
+    });
+
+    // Find the top performer
+    const topName = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+    return { performer_name: topName, count: counts[topName] };
   } catch (error) {
     console.error('Error fetching top publishing admin:', error);
     return { performer_name: 'Erro', count: 0 };

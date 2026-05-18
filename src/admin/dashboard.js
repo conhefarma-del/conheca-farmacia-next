@@ -7,8 +7,17 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 import {
   getArticles,
   getEvents,
-  getLives
+  getLives,
+  getPublishedArticlesCount,
+  getPublishedEventsCount,
+  getPublishedLivesCount,
+  getAdminUsersCount,
+  getNewsletterSubscribersCount,
+  getUniqueCategoriesCount,
+  getRecentAdminActivity,
+  getCategoryDistribution
 } from '../lib/api.js';
+import { searchAllContent } from '../lib/search.js';
 
 // Configuração do Supabase
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
@@ -36,20 +45,37 @@ function formatNumber(num) {
 // Carregar estatísticas
 async function loadStats() {
   try {
-    const articles = await getArticles();
-    const events = await getEvents();
-    const lives = await getLives();
+    const [
+      articlesCount,
+      eventsCount,
+      livesCount,
+      usersCount,
+      categoriesCount,
+      events,
+      activity
+    ] = await Promise.all([
+      getPublishedArticlesCount(),
+      getPublishedEventsCount(),
+      getPublishedLivesCount(),
+      getAdminUsersCount(),
+      getUniqueCategoriesCount(),
+      getEvents(),
+      getRecentAdminActivity(5)
+    ]);
 
     // Atualizar cards de estatísticas
-    document.getElementById('stat-articles').textContent = formatNumber(articles.length);
-    document.getElementById('stat-events').textContent = formatNumber(events.length);
-    document.getElementById('stat-users').textContent = formatNumber(21); // Simulado
-    document.getElementById('stat-files').textContent = formatNumber(1220); // Simulado
-    document.getElementById('stat-categories').textContent = formatNumber(65); // Simulado
-    document.getElementById('stat-comments').textContent = formatNumber(9876); // Simulado
+    document.getElementById('stat-articles').textContent = formatNumber(articlesCount);
+    document.getElementById('stat-events').textContent = formatNumber(eventsCount);
+    document.getElementById('stat-users').textContent = formatNumber(usersCount);
+    document.getElementById('stat-files').textContent = formatNumber(livesCount);
+    document.getElementById('stat-categories').textContent = formatNumber(categoriesCount);
+    document.getElementById('stat-total').textContent = formatNumber(articlesCount + eventsCount + livesCount);
 
-    // Carregar últimos eventos
+    // Carregar últimos eventos na secção de atividade
     loadLatestEvents(events.slice(0, 5));
+
+    // Carregar distribuição de categorias para o gráfico
+    loadCategoryChart();
   } catch (error) {
     console.error('Erro ao carregar estatísticas:', error);
   }
@@ -80,7 +106,7 @@ function loadLatestEvents(events) {
       </div>
       <div class="admin-activity-content">
         <div class="admin-activity-title">${event.title || 'Evento'}</div>
-        <div class="admin-activity-desc">${event.description ? event.description.substring(0, 50) + '...' : 'Novo Evento'}</div>
+        <div class="admin-activity-desc">${event.excerpt ? event.excerpt.substring(0, 50) + '...' : 'Novo Evento'}</div>
       </div>
       <span class="admin-activity-time">${event.date ? new Date(event.date).toLocaleDateString('pt-PT') : 'Hoje'}</span>
     </li>
@@ -138,29 +164,22 @@ function renderUserStatsChart() {
   });
 }
 
-// Renderizar gráfico de estatísticas
+// Renderizar gráfico de estatísticas (distribuição de categorias)
 function renderStatsChart() {
   const ctx = document.getElementById('statsChart');
   if (!ctx) return;
 
-  new Chart(ctx, {
+  // Store chart reference for updates
+  window.statsChartInstance = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: ['10', '20', '30', '40', '50', '60', '70', '80', '90', '100', '110', '120'],
-      datasets: [
-        {
-          label: 'Visitantes',
-          data: [120, 150, 180, 140, 160, 190, 200, 170, 210, 220, 240, 250],
-          backgroundColor: 'rgba(249, 115, 22, 0.7)',
-          borderRadius: 2,
-        },
-        {
-          label: 'Subscritores',
-          data: [80, 100, 120, 90, 110, 130, 140, 120, 150, 160, 170, 180],
-          backgroundColor: 'rgba(139, 92, 246, 0.7)',
-          borderRadius: 2,
-        }
-      ]
+      labels: ['A carregar...'],
+      datasets: [{
+        label: 'Conteúdos',
+        data: [0],
+        backgroundColor: 'rgba(249, 115, 22, 0.7)',
+        borderRadius: 4,
+      }]
     },
     options: {
       responsive: true,
@@ -168,7 +187,7 @@ function renderStatsChart() {
       indexAxis: 'y',
       plugins: {
         legend: {
-          position: 'bottom'
+          display: false
         }
       },
       scales: {
@@ -186,6 +205,34 @@ function renderStatsChart() {
       }
     }
   });
+}
+
+// Carregar gráfico de distribuição de categorias com dados reais
+async function loadCategoryChart() {
+  try {
+    const distribution = await getCategoryDistribution();
+
+    if (!distribution || distribution.length === 0) return;
+
+    const colors = [
+      'rgba(16, 185, 129, 0.8)',
+      'rgba(139, 92, 246, 0.8)',
+      'rgba(249, 115, 22, 0.8)',
+      'rgba(59, 130, 246, 0.8)',
+      'rgba(236, 72, 153, 0.8)',
+      'rgba(6, 182, 212, 0.8)',
+      'rgba(245, 158, 11, 0.8)',
+    ];
+
+    if (window.statsChartInstance) {
+      window.statsChartInstance.data.labels = distribution.map(d => d.category);
+      window.statsChartInstance.data.datasets[0].data = distribution.map(d => d.count);
+      window.statsChartInstance.data.datasets[0].backgroundColor = distribution.map((_, i) => colors[i % colors.length]);
+      window.statsChartInstance.update();
+    }
+  } catch (error) {
+    console.error('Erro ao carregar distribuição de categorias:', error);
+  }
 }
 
 // Renderizar gráfico de velocidade do site
