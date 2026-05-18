@@ -64,6 +64,15 @@ html.dark body {
   color: var(--admin-text);
 }
 
+/* Base Typography */
+body {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--admin-text);
+  background-color: var(--admin-bg);
+}
+
 /* =============================================
  MODERN DASHBOARD STYLES
  ============================================= */
