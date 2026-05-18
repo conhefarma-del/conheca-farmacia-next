@@ -79,6 +79,9 @@ body {
 
 /* Top Bar */
 .admin-top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
   background: var(--admin-card-bg);
   padding: 16px 32px;
   border-bottom: 1px solid var(--admin-border);
@@ -87,7 +90,6 @@ body {
   justify-content: space-between;
   gap: 20px;
   box-sizing: border-box;
-  overflow: hidden;
 }
 
 .admin-search-container {
