@@ -1008,10 +1008,12 @@ select.admin-input {
 
 .admin-form-group label {
   display: block;
-  font-weight: 500;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   margin-bottom: 8px;
   color: var(--admin-text);
-  font-size: 14px;
+  font-size: 13px;
 }
 
 /* Form actions (buttons row) */
