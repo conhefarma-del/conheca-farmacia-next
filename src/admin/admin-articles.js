@@ -1,32 +1,19 @@
 // src/admin/admin-articles.js
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-import { getAllArticles, deleteArticle as apiDeleteArticle } from '../lib/api.js';
+import { supabaseClient } from '../config.js';
+import { checkAuth, logout, initIdleTimeout } from './lib/auth.js';
+import { escapeHtml } from '../lib/security.js';
+import { getAllArticles, deleteArticle as apiDeleteArticle, getTopArticlesByViews, getTopArticlesByShares, getTopArticlesByReadingTime } from '../lib/api.js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+const supabase = supabaseClient;
 
 let allArticles = [];
 let currentFilter = { status: 'all' };
 let searchQuery = '';
 
-// Verificar autenticação
-async function checkAuth() {
-  const { data: { session } } = await supabase.auth.getSession();
-
-  if (!session) {
-    window.location.href = '/src/admin/index.html';
-    return false;
-  }
-
-  return true;
-}
-
 // Logout
 document.getElementById('logout-btn')?.addEventListener('click', async (e) => {
   e.preventDefault();
-  await supabase.auth.signOut();
-  window.location.href = '/src/admin/index.html';
+  await logout();
 });
 
 // Load articles
@@ -50,6 +37,79 @@ function renderStats() {
   document.getElementById('stat-total').textContent = total;
   document.getElementById('stat-published').textContent = published;
   document.getElementById('stat-drafts').textContent = drafts;
+}
+
+// Load analytics data for the top articles card
+async function loadAnalytics(metric = 'views') {
+  const list = document.getElementById('analytics-list');
+  if (!list) return;
+
+  list.innerHTML = '<p style="color: var(--admin-text-muted); font-size: 13px;">A carregar...</p>';
+
+  try {
+    let data = [];
+    let valueKey = '';
+
+    if (metric === 'views') {
+      data = await getTopArticlesByViews(3);
+      valueKey = 'view_count';
+    } else if (metric === 'shares') {
+      data = await getTopArticlesByShares(3);
+      valueKey = 'share_count';
+    } else if (metric === 'reading') {
+      data = await getTopArticlesByReadingTime(3);
+      valueKey = 'total_reading_time';
+    }
+
+    if (!data || data.length === 0) {
+      list.innerHTML = '<p style="color: var(--admin-text-muted); font-size: 13px;">Sem dados ainda</p>';
+      return;
+    }
+
+    list.innerHTML = data.map((article, i) => {
+      let value = article[valueKey] || 0;
+      let suffix = '';
+
+      if (metric === 'reading') {
+        if (value >= 3600) {
+          suffix = `${Math.floor(value / 3600)}h ${Math.floor((value % 3600) / 60)}m`;
+        } else if (value >= 60) {
+          suffix = `${Math.floor(value / 60)}m ${value % 60}s`;
+        } else {
+          suffix = `${value}s`;
+        }
+      } else {
+        suffix = value.toString();
+      }
+
+      return `
+        <div class="admin-analytics-item">
+          <span class="admin-analytics-rank">${i + 1}</span>
+          <span class="admin-analytics-title">${escapeHtml(article.title)}</span>
+          <span class="admin-analytics-value">${suffix}</span>
+        </div>
+      `;
+    }).join('');
+  } catch (error) {
+    console.error('Erro ao carregar analytics:', error);
+    list.innerHTML = '<p style="color: var(--admin-text-muted); font-size: 13px;">Erro ao carregar</p>';
+  }
+}
+
+// Initialize analytics filters
+function initAnalyticsFilters() {
+  const container = document.getElementById('analytics-filters');
+  if (!container) return;
+
+  container.addEventListener('click', (e) => {
+    const btn = e.target.closest('.admin-analytics-filter');
+    if (!btn) return;
+
+    container.querySelectorAll('.admin-analytics-filter').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    loadAnalytics(btn.dataset.metric);
+  });
 }
 
 // Render articles list
@@ -93,7 +153,7 @@ function renderArticles() {
             <td>${escapeHtml(article.author_name || '-')}</td>
             <td>
               <div class="admin-actions">
-                <a href="/src/admin/artigos/edit.html?id=${article.id}" class="admin-btn admin-btn-secondary">
+                <a href="./edit.html?id=${article.id}" class="admin-btn admin-btn-secondary">
                   <i data-lucide="pencil"></i>
                   Editar
                 </a>
@@ -171,15 +231,6 @@ window.deleteArticle = async function(id, title) {
   }
 };
 
-// Helper functions
-function escapeHtml(text) {
-  if (!text) return '';
-  return text.replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
 
 function formatDate(dateStr) {
   if (!dateStr) return '-';
@@ -206,7 +257,10 @@ function initSearch() {
 document.addEventListener('DOMContentLoaded', async () => {
   const isAuth = await checkAuth();
   if (isAuth) {
+    initIdleTimeout();
     loadArticles();
     initSearch();
+    initAnalyticsFilters();
+    loadAnalytics('views');
   }
 });

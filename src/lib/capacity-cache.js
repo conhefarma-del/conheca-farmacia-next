@@ -3,6 +3,7 @@
  * Duração curta (15s) para evitar requests duplicados
  * enquanto mantém dados quase em tempo real
  */
+import { logger } from './logger.js';
 
 const CAPACITY_CACHE_PREFIX = "capacity_cache";
 const CAPACITY_CACHE_DURATION = 15000; // 15 segundos
@@ -23,7 +24,7 @@ export async function getCachedCapacity(eventId) {
     }
     return null; // Cache expirado ou inválido
   } catch (error) {
-    console.warn("Erro ao ler cache de capacidade:", error);
+    logger.warn("Erro ao ler cache de capacidade:", error);
     return null;
   }
 }
@@ -43,7 +44,7 @@ export async function setCapacityCache(eventId, data) {
       })
     );
   } catch (error) {
-    console.warn("Erro ao guardar cache de capacidade:", error);
+    logger.warn("Erro ao guardar cache de capacidade:", error);
   }
 }
 
@@ -55,7 +56,7 @@ export function clearCapacityCache(eventId) {
   try {
     localStorage.removeItem(`${CAPACITY_CACHE_PREFIX}_${eventId}`);
   } catch (error) {
-    console.warn("Erro ao limpar cache de capacidade:", error);
+    logger.warn("Erro ao limpar cache de capacidade:", error);
   }
 }
 
@@ -70,6 +71,6 @@ export function clearAllCapacityCache() {
 
     keysToRemove.forEach((key) => localStorage.removeItem(key));
   } catch (error) {
-    console.warn("Erro ao limpar cache de capacidade:", error);
+    logger.warn("Erro ao limpar cache de capacidade:", error);
   }
 }

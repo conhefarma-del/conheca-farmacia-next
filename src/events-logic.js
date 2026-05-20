@@ -1,64 +1,25 @@
 import { supabaseClient } from "./config.js";
 import { getEvents } from "./lib/api.js";
+import { escapeHtml, validateUrl } from "./lib/security.js";
+import { logger } from "./lib/logger.js";
+import { subscribeToNewsletter } from "./lib/newsletter.js";
 
 let events = [];
 let currentStatus = "upcoming";
 let currentCategory = "all";
 
-// ==========================================
-// DIAGNÓSTICO: Função exposta para debugging no console
-// ==========================================
-window.debugInscriptions = async function (slug) {
-  const s = slug || "001-farmacologia-clinica";
-  console.log("🔍 Debug: Contando inscrições para:", s);
-
-  const { data, error, count } = await supabaseClient
-    .from("inscricoes")
-    .select("*", { count: "exact", head: true })
-    .eq("evento_slug", s);
-
-  console.log("📊 Resultado:", { data, error, count });
-  console.log("📝 SQL: SELECT * FROM inscricoes WHERE evento_slug = ?", s);
-
-  if (error) {
-    console.error("❌ Erro:", error);
-  } else {
-    console.log(`✅ ${count} inscrições encontradas`);
-  }
-  return { data, error, count };
-};
-
-console.log(
-  '💡 DICA: Execute debugInscriptions("001-farmacologia-clinica") no console para debug'
-);
-
 // Função para contar inscrições reais do Supabase
 async function getInscriptionCount(eventoSlug) {
   try {
-    console.log(`🔍 [events-logic] Contando inscrições para: "${eventoSlug}"`);
-
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      console.warn("⚠️ Supabase credentials não disponíveis");
-      return null;
-    }
-
-    // Usar cliente Supabase para melhor fiabilidade
     const { data, error, count } = await supabaseClient
       .from("inscricoes")
       .select("*", { count: "exact", head: true })
       .eq("evento_slug", eventoSlug);
 
-    if (error) {
-      console.error(`❌ [events-logic] Erro Supabase:`, error.message);
-      console.error("Código:", error.code);
-      console.error("Detalhes:", error.details);
-      return null;
-    }
+    if (error) return null;
 
-    console.log(`✅ [events-logic] Inscrições encontradas: ${count}`);
     return count || 0;
-  } catch (error) {
-    console.error("❌ [events-logic] Erro geral:", error.message);
+  } catch {
     return null;
   }
 }
@@ -150,29 +111,29 @@ document.addEventListener("DOMContentLoaded", async () => {
  <div class="day">${day}</div>
  <div class="month">${month}</div>
  </div>
- <img src="${event.image}" alt="${event.title}" class="event-card-image" loading="lazy" decoding="async">
+ <img src="${escapeHtml(event.image)}" alt="${escapeHtml(event.title)}" class="event-card-image" loading="lazy" decoding="async">
 </div>
 
 <div class="event-card-content">
  <div class="flex flex-row flex-wrap items-center gap-2 mb-4">
  <span class="inline-block text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider"
  style="background-color: ${categoryColor}20; color: ${categoryColor}; border: 1px solid ${categoryColor}40">
- ${event.categoryLabel}
+ ${escapeHtml(event.categoryLabel)}
  </span>
  <span class="inline-block text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider bg-slate-100 text-slate-600 border border-slate-200">
  ${event.type === "online" ? "Online" : "Presencial"}
  </span>
  </div>
 
- <h3 class="event-card-title">${event.title}</h3>
- <p class="event-card-excerpt">${event.excerpt}</p>
+ <h3 class="event-card-title">${escapeHtml(event.title)}</h3>
+ <p class="event-card-excerpt">${escapeHtml(event.excerpt)}</p>
 
  <div class="event-card-meta">
  <div class="event-meta-item">
- <span>${event.time} — ${event.endTime}</span>
+ <span>${escapeHtml(event.time)} — ${escapeHtml(event.endTime)}</span>
  </div>
  <div class="event-meta-item">
- <span>${event.location}</span>
+ <span>${escapeHtml(event.location)}</span>
  </div>
  ${
    spotsLeft > 0
@@ -190,10 +151,10 @@ document.addEventListener("DOMContentLoaded", async () => {
  </div>
 
  <div class="event-card-actions mt-auto">
- <a href="evento.html?id=${event.slug}" class="btn btn-secondary btn-small">
+ <a href="evento.html?id=${encodeURIComponent(event.slug)}" class="btn btn-secondary btn-small">
  Mais Informações
  </a>
- <button data-event-slug="${event.slug}" class="btn btn-primary btn-small btn-inscrever" ${event.status === "past" || isCapacityFull ? "disabled" : ""}>
+ <button data-event-slug="${escapeHtml(event.slug)}" class="btn btn-primary btn-small btn-inscrever" ${event.status === "past" || isCapacityFull ? "disabled" : ""}>
  ${isCapacityFull ? "Completo" : event.status === "upcoming" ? "Inscrever-me" : "Ver Gravação"}
  </button>
  </div>
@@ -240,10 +201,31 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   if (newsletterForm) {
-    newsletterForm.addEventListener("submit", (e) => {
+    newsletterForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      newsletterForm.reset();
-      alert("Obrigado por se inscrever!");
+      const emailInput = document.getElementById("newsletter-email");
+      const honeypot = newsletterForm.querySelector('[name="website"]');
+      const submitBtn = newsletterForm.querySelector('button[type="submit"]');
+
+      if (honeypot && honeypot.value) {
+        newsletterForm.reset();
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "A subscrever...";
+
+      const result = await subscribeToNewsletter(emailInput.value, false);
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Notifique-me";
+
+      if (result.success) {
+        newsletterForm.reset();
+        alert(result.message);
+      } else {
+        alert(result.error);
+      }
     });
   }
 
@@ -251,14 +233,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   // REFRESH ON FOCUS: Atualizar lista ao retornar à página
   // ==========================================
   window.addEventListener("focus", async () => {
-    console.log("👁️ Janela em foco, atualizando lista de eventos...");
+    logger.log("👁️ Janela em foco, atualizando lista de eventos...");
     await renderEvents();
   });
 
   // Verificar se há parâmetro refresh=true na URL
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get("refresh") === "true") {
-    console.log("🔄 Parâmetro refresh=true detetado, atualizando...");
+    logger.log("🔄 Parâmetro refresh=true detetado, atualizando...");
     await renderEvents();
     // Remover apenas o parâmetro refresh
     const newParams = new URLSearchParams(window.location.search);
@@ -278,16 +260,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         ...event,
         status: calculateStatus(event.date),
       }));
-      console.log("✅ Eventos carregados do Supabase:", events.length);
+      logger.log("✅ Eventos carregados do Supabase:", events.length);
     } catch (error) {
-      console.warn("⚠️ Falha ao carregar do Supabase, usando fallback:", error);
+      logger.warn("⚠️ Falha ao carregar do Supabase, usando fallback:", error);
       // Fallback para dados locais
       import("./content/events-catalog.json").then((module) => {
         events = module.default.events.map((event) => ({
           ...event,
           status: calculateStatus(event.date),
         }));
-        console.log("✅ Eventos carregados do fallback JSON:", events.length);
+        logger.log("✅ Eventos carregados do fallback JSON:", events.length);
       });
     }
 

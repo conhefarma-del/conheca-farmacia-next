@@ -81,8 +81,12 @@ function updateLogo(theme) {
  * @param {'dark' | 'light'} theme
  */
 function setTheme(theme) {
-  if (typeof window !== "undefined" && window.localStorage) {
-    localStorage.setItem(THEME_KEY, theme);
+  try {
+    if (typeof window !== "undefined" && window.localStorage) {
+      localStorage.setItem(THEME_KEY, theme);
+    }
+  } catch {
+    // localStorage indisponível (quota excedida, modo privado, etc.)
   }
   applyTheme(theme);
 }

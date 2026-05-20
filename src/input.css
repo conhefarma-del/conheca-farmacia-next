@@ -694,6 +694,113 @@ html.dark .form-note {
     @apply space-y-4;
   }
 
+  /* Share Section */
+  .article-share-section {
+    @apply py-16 md:py-20 bg-brand-bg;
+  }
+
+  .share-bar {
+    @apply flex items-center gap-3 flex-wrap;
+  }
+
+  .share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    color: white;
+  }
+
+  .share-btn svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  .share-whatsapp {
+    background: #25D366;
+  }
+  .share-whatsapp:hover {
+    background: #1da851;
+    transform: translateY(-1px);
+  }
+
+  .share-facebook {
+    background: #1877F2;
+  }
+  .share-facebook:hover {
+    background: #1464d8;
+    transform: translateY(-1px);
+  }
+
+  .share-linkedin {
+    background: #0A66C2;
+  }
+  .share-linkedin:hover {
+    background: #085299;
+    transform: translateY(-1px);
+  }
+
+  .share-generic {
+    background: #374151;
+  }
+  .share-generic:hover {
+    background: #1f2937;
+    transform: translateY(-1px);
+  }
+
+  html.dark .share-generic {
+    background: #e5e7eb;
+    color: #111827;
+  }
+  html.dark .share-generic:hover {
+    background: #d1d5db;
+  }
+
+  /* Toast */
+  .share-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--brand-deep);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 9999;
+    pointer-events: none;
+  }
+  .share-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Mobile: horizontal scroll */
+  @media (max-width: 640px) {
+    .share-bar {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 4px;
+    }
+    .share-btn {
+      flex-shrink: 0;
+    }
+  }
+
   .article-related-section {
     @apply py-20 md:py-24 bg-brand-bg-alt;
   }

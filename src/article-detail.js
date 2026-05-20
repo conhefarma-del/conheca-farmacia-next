@@ -1,6 +1,8 @@
 import { getArticleBySlug, getArticles } from "./lib/api.js";
 import { renderBreadcrumb } from "./breadcrumb.js";
 import { errorHandler } from "./lib/error-handler.js";
+import { supabaseClient } from "./config.js";
+import { escapeHtml } from "./lib/security.js";
 
 // Cores por categoria (mesmo padrão que articles-logic.js)
 const categoryColors = {
@@ -70,9 +72,131 @@ function renderReferences(article) {
     refElement.className = "reference-item";
     refElement.innerHTML = `
       <span class="reference-number">${index + 1}.</span>
-      <span class="reference-text">${ref}</span>
+      <span class="reference-text">${escapeHtml(ref)}</span>
     `;
     referencesList.appendChild(refElement);
+  });
+}
+
+// Render share section with OG tags and share buttons
+function renderShareSection(article) {
+  const url = window.location.href;
+  const title = article.title;
+  const description = article.description || article.excerpt || '';
+  const image = article.image || '';
+
+  // Update OG tags in head
+  function setMeta(property, content) {
+    if (!content) return;
+    let tag = document.querySelector(`meta[property="${property}"]`);
+    if (!tag) {
+      tag = document.createElement('meta');
+      tag.setAttribute('property', property);
+      document.head.appendChild(tag);
+    }
+    tag.setAttribute('content', content);
+  }
+
+  setMeta('og:title', title);
+  setMeta('og:description', description);
+  setMeta('og:image', image);
+  setMeta('og:url', url);
+  setMeta('og:type', 'article');
+
+  // Set share links
+  const encodedUrl = encodeURIComponent(url);
+  const encodedTitle = encodeURIComponent(title);
+  const encodedText = encodeURIComponent(`${title} — ${description}`);
+
+  const whatsapp = document.getElementById('share-whatsapp');
+  const facebook = document.getElementById('share-facebook');
+  const linkedin = document.getElementById('share-linkedin');
+  const generic = document.getElementById('share-generic');
+
+  if (whatsapp) whatsapp.href = `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`;
+  if (facebook) facebook.href = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+  if (linkedin) linkedin.href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+
+  // Track share clicks
+  if (whatsapp) whatsapp.addEventListener('click', () => trackShare(article.id));
+  if (facebook) facebook.addEventListener('click', () => trackShare(article.id));
+  if (linkedin) linkedin.addEventListener('click', () => trackShare(article.id));
+
+  // Generic share: Web Share API (mobile) or copy link (desktop)
+  if (generic) {
+    generic.addEventListener('click', async () => {
+      trackShare(article.id);
+      if (navigator.share) {
+        try {
+          await navigator.share({ title, text: description, url });
+        } catch (e) {
+          // User cancelled — ignore
+        }
+      } else {
+        try {
+          await navigator.clipboard.writeText(url);
+          showToast('Link copiado!');
+        } catch (e) {
+          // Fallback for older browsers
+          const input = document.createElement('input');
+          input.value = url;
+          document.body.appendChild(input);
+          input.select();
+          document.execCommand('copy');
+          document.body.removeChild(input);
+          showToast('Link copiado!');
+        }
+      }
+    });
+  }
+}
+
+// Show toast notification
+function showToast(message) {
+  const existing = document.querySelector('.share-toast');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.className = 'share-toast';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  requestAnimationFrame(() => toast.classList.add('show'));
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 2000);
+}
+
+// Track article page view
+function trackPageView(slug) {
+  supabaseClient.rpc('increment_view_count', { article_slug: slug }).then(() => {}).catch(() => {});
+}
+
+// Track share action
+function trackShare(articleId) {
+  supabaseClient.rpc('increment_share_count', { row_id: articleId }).then(() => {}).catch(() => {});
+}
+
+// Track reading time (sends every 30s while page is visible)
+function trackReadingTime(articleId) {
+  let readingStart = Date.now();
+
+  setInterval(() => {
+    if (!document.hidden) {
+      const elapsed = Math.floor((Date.now() - readingStart) / 1000);
+      if (elapsed > 0) {
+        supabaseClient.rpc('add_reading_time', { row_id: articleId, seconds: elapsed }).then(() => {}).catch(() => {});
+        readingStart = Date.now();
+      }
+    }
+  }, 30000);
+
+  // Reset timer when page becomes visible again
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      readingStart = Date.now();
+    }
   });
 }
 
@@ -181,6 +305,22 @@ async function loadArticle() {
 
     // Convert markdown to HTML (with sanitization)
     const rawHtmlContent = marked.parse(article.content);
+    // MED-06: Restrict img src to Supabase Storage and relative paths only
+    DOMPurify.addHook('afterSanitizeAttributes', function (node) {
+      if (node.tagName === 'IMG') {
+        const src = node.getAttribute('src');
+        if (src && !src.startsWith('/') && !src.startsWith('./') && !src.startsWith('data:') && !src.includes('supabase.co')) {
+          node.removeAttribute('src');
+        }
+      }
+      if (node.tagName === 'A') {
+        const href = node.getAttribute('href');
+        if (href && (href.startsWith('javascript:') || href.startsWith('data:') || href.startsWith('vbscript:'))) {
+          node.removeAttribute('href');
+        }
+      }
+    });
+
     // Sanitize HTML to prevent XSS injection
     const htmlContent = DOMPurify.sanitize(rawHtmlContent, {
       ALLOWED_TAGS: [
@@ -258,6 +398,15 @@ async function loadArticle() {
     // Render references section
     renderReferences(article);
 
+    // Render share section
+    renderShareSection(article);
+
+    // Track page view
+    trackPageView(article.slug);
+
+    // Track reading time
+    trackReadingTime(article.id);
+
     // Remove loading state
     hideLoadingState();
 
@@ -282,15 +431,15 @@ async function loadArticle() {
         const card = document.createElement("article");
         card.className = "article-card border border-brand-divider/10";
         card.innerHTML = `
-        <img src="${relArticle.image}" alt="${relArticle.title}" class="article-card-img">
+        <img src="${escapeHtml(relArticle.image)}" alt="${escapeHtml(relArticle.title)}" class="article-card-img">
         <div class="article-card-content">
           <span class="article-tag" style="background-color: ${categoryColors[relArticle.category] || "#666"}20; color:
           ${categoryColors[relArticle.category] || "#666"}; border: 1px solid ${
           categoryColors[relArticle.category] || "#666"
-        }40">${relArticle.categoryLabel}</span>
-          <h3 class="article-card-title">${relArticle.title}</h3>
-          <p class="article-card-excerpt">${relArticle.excerpt}</p>
-          <a href="artigo.html?id=${relArticle.slug}" class="article-card-link">Ler mais <span>&rarr;</span></a>
+        }40">${escapeHtml(relArticle.categoryLabel)}</span>
+          <h3 class="article-card-title">${escapeHtml(relArticle.title)}</h3>
+          <p class="article-card-excerpt">${escapeHtml(relArticle.excerpt)}</p>
+          <a href="artigo.html?id=${encodeURIComponent(relArticle.slug)}" class="article-card-link">Ler mais <span>&rarr;</span></a>
         </div>
       `;
         relatedGrid.appendChild(card);

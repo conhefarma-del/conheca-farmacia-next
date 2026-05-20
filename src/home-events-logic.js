@@ -1,5 +1,7 @@
 import eventsData from "./content/events-catalog.json";
 import livesData from "./content/lives-catalog.json";
+import { escapeHtml } from "./lib/security.js";
+import { logger } from "./lib/logger.js";
 
 /**
  * Formata uma data no formato YYYY-MM-DD para formato por extenso em PT
@@ -93,15 +95,15 @@ function renderEventsGrid(events, container) {
 					<div class="day">${day}</div>
 					<div class="month">${month}</div>
 				</div>
-				<img src="${event.image}" alt="${event.title}" class="event-card-image">
+				<img src="${escapeHtml(event.image)}" alt="${escapeHtml(event.title)}" class="event-card-image">
 			</div>
 			<div class="event-card-content">
 				<div class="event-date">
 					${fullDate}
 				</div>
-				<h3 class="event-card-title">${event.title}</h3>
-				<p class="event-card-desc">${event.excerpt}</p>
-				<a href="evento.html?id=${event.slug}" class="btn btn-primary btn-small w-full btn-inscrever">Mais Informações</a>
+				<h3 class="event-card-title">${escapeHtml(event.title)}</h3>
+				<p class="event-card-desc">${escapeHtml(event.excerpt)}</p>
+				<a href="evento.html?id=${encodeURIComponent(event.slug)}" class="btn btn-primary btn-small w-full btn-inscrever">Mais Informações</a>
 			</div>
 		`;
     container.appendChild(card);
@@ -140,15 +142,15 @@ function renderLivesGrid(lives, container) {
 					<div class="day">${day}</div>
 					<div class="month">${month}</div>
 				</div>
-				<img src="${live.imagem}" alt="${live.titulo}" class="event-card-image">
+				<img src="${escapeHtml(live.imagem)}" alt="${escapeHtml(live.titulo)}" class="event-card-image">
 			</div>
 			<div class="event-card-content">
 				<div class="event-date">
 					${fullDate}
 				</div>
-				<h3 class="event-card-title">${live.titulo}</h3>
-				<p class="event-card-desc">${live.resumo}</p>
-				<a href="lives.html?id=${live.slug}" class="btn btn-primary btn-small w-full btn-inscrever">Aceder Live</a>
+				<h3 class="event-card-title">${escapeHtml(live.titulo)}</h3>
+				<p class="event-card-desc">${escapeHtml(live.resumo)}</p>
+				<a href="lives.html?id=${encodeURIComponent(live.slug)}" class="btn btn-primary btn-small w-full btn-inscrever">Aceder Live</a>
 			</div>
 		`;
     container.appendChild(card);
@@ -159,13 +161,13 @@ function renderLivesGrid(lives, container) {
  * Função principal de inicialização
  */
 async function initHomeEvents() {
-  console.log("🏠 Home Events: Carregando catálogos...");
+  logger.log("🏠 Home Events: Carregando catálogos...");
 
   // Carrega eventos regulares
   const eventsContainer = document.getElementById("home-events-grid");
   if (eventsContainer) {
     const events = eventsData.events || [];
-    console.log(`📅 Eventos regulares carregados: ${events.length}`);
+    logger.log(`📅 Eventos regulares carregados: ${events.length}`);
     renderEventsGrid(events, eventsContainer);
   }
 
@@ -173,7 +175,7 @@ async function initHomeEvents() {
   const livesContainer = document.getElementById("home-lives-grid");
   if (livesContainer) {
     const lives = livesData.events || [];
-    console.log(`📹 Lives carregadas: ${lives.length}`);
+    logger.log(`📹 Lives carregadas: ${lives.length}`);
     renderLivesGrid(lives, livesContainer);
   }
 }

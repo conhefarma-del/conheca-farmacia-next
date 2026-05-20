@@ -3,10 +3,11 @@
  * Carrega estatísticas e renderiza gráficos
  */
 
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+import { supabaseClient } from '../config.js';
+import { checkAuth, initIdleTimeout } from './lib/auth.js';
+import { escapeHtml } from '../lib/security.js';
 import {
   getArticles,
-  getEvents,
   getLives,
   getPublishedArticlesCount,
   getPublishedEventsCount,
@@ -15,27 +16,13 @@ import {
   getNewsletterSubscribersCount,
   getUniqueCategoriesCount,
   getRecentAdminActivity,
-  getCategoryDistribution
+  getCategoryDistribution,
+  getPageViewsByPeriod,
+  getInscriptionsByPeriod
 } from '../lib/api.js';
 import { searchAllContent } from '../lib/search.js';
 
-// Configuração do Supabase
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
-
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-// Verificar autenticação
-async function checkAuth() {
-  const { data: { session } } = await supabase.auth.getSession();
-
-  if (!session) {
-    window.location.href = '/src/admin/index.html';
-    return false;
-  }
-
-  return true;
-}
+const supabase = supabaseClient;
 
 // Formatar número com separador de milhares
 function formatNumber(num) {
@@ -51,7 +38,6 @@ async function loadStats() {
       livesCount,
       usersCount,
       categoriesCount,
-      events,
       activity
     ] = await Promise.all([
       getPublishedArticlesCount(),
@@ -59,8 +45,7 @@ async function loadStats() {
       getPublishedLivesCount(),
       getAdminUsersCount(),
       getUniqueCategoriesCount(),
-      getEvents(),
-      getRecentAdminActivity(5)
+      getRecentAdminActivity(10)
     ]);
 
     // Atualizar cards de estatísticas
@@ -71,8 +56,8 @@ async function loadStats() {
     document.getElementById('stat-categories').textContent = formatNumber(categoriesCount);
     document.getElementById('stat-total').textContent = formatNumber(articlesCount + eventsCount + livesCount);
 
-    // Carregar últimos eventos na secção de atividade
-    loadLatestEvents(events.slice(0, 5));
+    // Carregar timeline de atividades na secção de atualizações
+    loadActivityTimeline(activity || []);
 
     // Carregar distribuição de categorias para o gráfico
     loadCategoryChart();
@@ -81,60 +66,96 @@ async function loadStats() {
   }
 }
 
-// Carregar últimos eventos
-function loadLatestEvents(events) {
+// Mapear table_name para label em português
+const tableLabels = {
+  articles: 'Artigo',
+  events: 'Evento',
+  lives: 'Live'
+};
+
+// Mapear action para label em português
+const actionLabels = {
+  CREATE: 'Criado',
+  UPDATE: 'Atualizado',
+  DELETE: 'Eliminado',
+  PUBLISH: 'Publicado',
+  UNPUBLISH: 'Despublicado'
+};
+
+// Formatar data/hora: "11:32 / 18/05/2026"
+function formatDateTime(dateStr) {
+  const d = new Date(dateStr);
+  const time = d.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+  const date = d.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  return `${time} / ${date}`;
+}
+
+// Carregar timeline de atividades
+function loadActivityTimeline(activity) {
   const container = document.getElementById('latest-events');
 
-  if (!events || events.length === 0) {
-    container.innerHTML = '<li class="admin-activity-item"><span class="admin-activity-desc">Sem eventos recentes</span></li>';
+  if (!activity || activity.length === 0) {
+    container.innerHTML = '<div class="admin-timeline"><div class="admin-timeline-item"><div class="admin-timeline-dot-wrapper"><div class="admin-timeline-dot action-create"></div></div><div class="admin-timeline-content"><div class="admin-timeline-text">Sem atividades recentes</div></div></div></div>';
     return;
   }
 
-  const eventIcons = {
-    'page': 'stat-green',
-    'comment': 'stat-purple',
-    'user': 'stat-orange',
-    'post': 'stat-blue'
-  };
+  const html = activity.map(item => {
+    const tableLabel = tableLabels[item.table_name] || item.table_name;
+    const actionLabel = actionLabels[item.action] || item.action;
+    const actionClass = item.action.toLowerCase();
+    const badgeText = `${tableLabel} ${actionLabel}`;
+    const timeText = formatDateTime(item.created_at);
 
-  container.innerHTML = events.map(event => `
-    <li class="admin-activity-item">
-      <div class="admin-activity-icon ${eventIcons.page || 'stat-green'}">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
+    // Extrair título do conteúdo de new_values
+    let contentTitle = '';
+    if (item.new_values) {
+      const values = typeof item.new_values === 'string' ? JSON.parse(item.new_values) : item.new_values;
+      contentTitle = escapeHtml(values.title || values.name || '');
+    }
+
+    return `
+      <div class="admin-timeline-item">
+        <div class="admin-timeline-dot-wrapper">
+          <div class="admin-timeline-dot action-${actionClass}"></div>
+        </div>
+        <div class="admin-timeline-content">
+          <div class="admin-timeline-text">${badgeText}${contentTitle ? ': ' + contentTitle : ''}</div>
+          <div class="admin-timeline-badges">
+            <span class="admin-timeline-badge badge-type badge-${actionClass}">${badgeText}</span>
+            <span class="admin-timeline-badge badge-time">${timeText}</span>
+          </div>
+        </div>
       </div>
-      <div class="admin-activity-content">
-        <div class="admin-activity-title">${event.title || 'Evento'}</div>
-        <div class="admin-activity-desc">${event.excerpt ? event.excerpt.substring(0, 50) + '...' : 'Novo Evento'}</div>
-      </div>
-      <span class="admin-activity-time">${event.date ? new Date(event.date).toLocaleDateString('pt-PT') : 'Hoje'}</span>
-    </li>
-  `).join('');
+    `;
+  }).join('');
+
+  container.innerHTML = `<div class="admin-timeline">${html}</div>`;
 }
 
-// Renderizar gráfico de estatísticas de utilizadores
-function renderUserStatsChart() {
-  const ctx = document.getElementById('userStatsChart');
+// Activity chart instance reference for dynamic updates
+window.activityChartInstance = null;
+
+// Renderizar gráfico de atividade (visitas + inscrições)
+function renderActivityChart() {
+  const ctx = document.getElementById('activityChart');
   if (!ctx) return;
 
-  // Dados simulados para o gráfico
-  const data = {
-    labels: ['9', '11', '13', '15', '17', '19', '21', '23', '25', '27', '29'],
-    datasets: [{
-      label: 'Utilizadores',
-      data: [320, 400, 280, 350, 420, 480, 380, 450, 320, 380, 420],
-      backgroundColor: 'rgba(16, 185, 129, 0.7)',
-      borderRadius: 4,
-    }]
-  };
-
-  new Chart(ctx, {
+  window.activityChartInstance = new Chart(ctx, {
     type: 'bar',
-    data: data,
+    data: {
+      labels: ['A carregar...'],
+      datasets: [{
+        label: 'Conteudos',
+        data: [0],
+        backgroundColor: 'rgba(249, 115, 22, 0.7)',
+        borderRadius: 4,
+        barThickness: 10,
+      }]
+    },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      indexAxis: 'y',
       plugins: {
         legend: {
           display: false
@@ -142,25 +163,68 @@ function renderUserStatsChart() {
         tooltip: {
           callbacks: {
             label: function(context) {
-              return context.parsed.y + ' utilizadores';
+              return context.parsed.x + ' registos';
             }
           }
         }
       },
       scales: {
-        y: {
+        x: {
           beginAtZero: true,
           grid: {
             color: 'rgba(0, 0, 0, 0.05)'
           }
         },
-        x: {
+        y: {
           grid: {
             display: false
           }
         }
       }
     }
+  });
+}
+
+// Carregar dados de atividade para um período
+async function loadActivityData(period = 'week') {
+  try {
+    const [pageViews, inscriptions] = await Promise.all([
+      getPageViewsByPeriod(period),
+      getInscriptionsByPeriod(period)
+    ]);
+
+    const colors = [
+      'rgba(59, 130, 246, 0.8)',   // azul - visitas
+      'rgba(249, 115, 22, 0.8)',   // laranja - inscrições
+    ];
+
+    if (window.activityChartInstance) {
+      window.activityChartInstance.data.labels = ['Visitas ao Site', 'Inscrições em Eventos'];
+      window.activityChartInstance.data.datasets[0].data = [pageViews, inscriptions];
+      window.activityChartInstance.data.datasets[0].backgroundColor = colors;
+      window.activityChartInstance.update();
+    }
+  } catch (error) {
+    console.error('Erro ao carregar dados de atividade:', error);
+  }
+}
+
+// Inicializar filtros do gráfico de atividade
+function initActivityFilters() {
+  const filterContainer = document.getElementById('activity-filters');
+  if (!filterContainer) return;
+
+  filterContainer.addEventListener('click', (e) => {
+    const btn = e.target.closest('.admin-chart-filter-btn');
+    if (!btn) return;
+
+    // Atualizar estado ativo
+    filterContainer.querySelectorAll('.admin-chart-filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    // Carregar dados para o período selecionado
+    const period = btn.dataset.period;
+    loadActivityData(period);
   });
 }
 
@@ -179,6 +243,7 @@ function renderStatsChart() {
         data: [0],
         backgroundColor: 'rgba(249, 115, 22, 0.7)',
         borderRadius: 4,
+        barThickness: 10,
       }]
     },
     options: {
@@ -215,17 +280,21 @@ async function loadCategoryChart() {
     if (!distribution || distribution.length === 0) return;
 
     const colors = [
-      'rgba(16, 185, 129, 0.8)',
-      'rgba(139, 92, 246, 0.8)',
-      'rgba(249, 115, 22, 0.8)',
-      'rgba(59, 130, 246, 0.8)',
-      'rgba(236, 72, 153, 0.8)',
-      'rgba(6, 182, 212, 0.8)',
-      'rgba(245, 158, 11, 0.8)',
+      '#ff6c23',
+      '#0a844f',
+      '#7c3aed',
+      '#002a32',
+      '#006171',
+      '#7c3aed',
     ];
 
+    // Formatar labels: capitalizar primeira letra, remover hífens
+    function formatLabel(label) {
+      return label.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    }
+
     if (window.statsChartInstance) {
-      window.statsChartInstance.data.labels = distribution.map(d => d.category);
+      window.statsChartInstance.data.labels = distribution.map(d => formatLabel(d.category));
       window.statsChartInstance.data.datasets[0].data = distribution.map(d => d.count);
       window.statsChartInstance.data.datasets[0].backgroundColor = distribution.map((_, i) => colors[i % colors.length]);
       window.statsChartInstance.update();
@@ -235,51 +304,18 @@ async function loadCategoryChart() {
   }
 }
 
-// Renderizar gráfico de velocidade do site
-function renderSpeedChart() {
-  const ctx = document.getElementById('speedChart');
-  if (!ctx) return;
-
-  // Dados simulados
-  const speedData = {
-    labels: ['Grade', 'Page Size', 'Load Time', 'Requests'],
-    datasets: [{
-      data: [75, 100, 60, 42],
-      backgroundColor: [
-        'rgba(59, 130, 246, 0.7)',
-        'rgba(139, 92, 246, 0.7)',
-        'rgba(16, 185, 129, 0.7)',
-        'rgba(249, 115, 22, 0.7)'
-      ],
-      borderWidth: 0
-    }]
-  };
-
-  new Chart(ctx, {
-    type: 'doughnut',
-    data: speedData,
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'bottom'
-        }
-      }
-    }
-  });
-}
-
 // Inicializar dashboard
 async function init() {
   const isAuth = await checkAuth();
   if (!isAuth) return;
 
+  initIdleTimeout();
   loadStats();
-  renderUserStatsChart();
+  renderActivityChart();
   renderStatsChart();
-  renderSpeedChart();
   initSearch();
+  initActivityFilters();
+  loadActivityData('week');
 }
 
 // Iniciar quando o DOM estiver pronto
@@ -328,7 +364,7 @@ function initSearch() {
  * Display search results
  */
 function displaySearchResults(results, container) {
-  if (!results || (results.articles.length === 0 && results.events.length === 0 && results.lives.length === 0 && results.users.length === 0)) {
+  if (!results || (results.articles.length === 0 && results.events.length === 0 && results.lives.length === 0)) {
     container.innerHTML = '<p class="admin-search-no-results">Nenhum resultado encontrado</p>';
     return;
   }
@@ -359,23 +395,7 @@ function displaySearchResults(results, container) {
     html += '</ul>';
   }
 
-  if (results.users.length > 0) {
-    html += '<h4 class="admin-search-section-title">Utilizadores (' + results.users.length + ')</h4><ul class="admin-search-list">';
-    results.users.slice(0, 5).forEach(user => {
-      html += '<li class="admin-search-item">' + escapeHtml(user.name) + ' <span class="admin-search-email">' + escapeHtml(user.email) + '</span></li>';
-    });
-    html += '</ul>';
-  }
-
   html += '</div>';
   container.innerHTML = html;
 }
 
-/**
- * Escape HTML to prevent XSS
- */
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
-}

@@ -28,6 +28,7 @@ function getWelcomeTemplate(nome: string): string {
 <tr><td align="center" style="padding:40px 20px">
 <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);overflow:hidden">
 <tr><td style="background:linear-gradient(135deg,#00493a 0%,#0a844f 100%);padding:40px 20px;text-align:center">
+<img src="https://conhecafarmacia.netlify.app/logo/logo-principal-branco.png" alt="Conheça Farmácia" style="height:48px;margin-bottom:16px">
 <h1 style="margin:0;color:#ffffff;font-size:28px;font-weight:700">Conheça Farmácia</h1>
 <p style="margin:8px 0 0 0;color:rgba(255,255,255,0.9);font-size:14px;font-weight:300">Conhecimento que conecta. Formação que transforma.</p>
 </td></tr>
@@ -72,6 +73,7 @@ function getAlertTemplate(
 <tr><td align="center" style="padding:40px 20px">
 <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);overflow:hidden">
 <tr><td style="background:linear-gradient(135deg,#00493a 0%,#0a844f 100%);padding:40px 20px;text-align:center">
+<img src="https://conhecafarmacia.netlify.app/logo/logo-principal-branco.png" alt="Conheça Farmácia" style="height:48px;margin-bottom:16px">
 <h1 style="margin:0;color:#ffffff;font-size:28px;font-weight:700">Conheça Farmácia</h1>
 <p style="margin:8px 0 0 0;color:rgba(255,255,255,0.9);font-size:14px;font-weight:300">Conhecimento que conecta. Formação que transforma.</p>
 </td></tr>
@@ -164,7 +166,7 @@ serve(async (req) => {
         type,
         contentTitle || "Novo conteúdo",
         contentDescription || "",
-        contentUrl || "https://conhecafarmacia.com",
+        contentUrl || "https://conhecafarmacia.netlify.app",
         contentDate
       );
       const labels: Record<string, string> = {

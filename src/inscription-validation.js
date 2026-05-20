@@ -1,5 +1,6 @@
 // Validação Inline para Formulário de Inscrição
 // Adiciona feedback visual em tempo real nos campos do formulário
+import { logger } from "./lib/logger.js";
 
 export function initInlineValidation() {
   const form = document.getElementById("inscription-form");
@@ -124,5 +125,5 @@ export function initInlineValidation() {
     }
   });
 
-  console.log("✓ Validação inline inicializada");
+  logger.log("✓ Validação inline inicializada");
 }

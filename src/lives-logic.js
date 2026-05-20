@@ -1,4 +1,7 @@
 import { getLives } from './lib/api.js';
+import { escapeHtml, validateUrl } from './lib/security.js';
+import { logger } from './lib/logger.js';
+import { subscribeToNewsletter } from './lib/newsletter.js';
 
 let lives = [];
 let currentStatus = "upcoming";
@@ -79,37 +82,37 @@ document.addEventListener("DOMContentLoaded", async () => {
   <div class="day">${day}</div>
   <div class="month">${month}</div>
  </div>
- <img src="${live.imagem}" alt="${live.titulo}" class="event-card-image" loading="lazy" decoding="async">
+ <img src="${escapeHtml(live.imagem)}" alt="${escapeHtml(live.titulo)}" class="event-card-image" loading="lazy" decoding="async">
 </div>
 
 <div class="event-card-content">
  <div class="flex flex-row flex-wrap items-center gap-2 mb-4">
   <span class="inline-block text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider"
   style="background-color: ${categoryColor}20; color: ${categoryColor}; border: 1px solid ${categoryColor}40">
-  ${live.categoriaLabel}
+  ${escapeHtml(live.categoriaLabel)}
   </span>
   <span class="inline-block text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider bg-slate-100 text-slate-600 border border-slate-200">
-  ${live.plataforma}
+  ${escapeHtml(live.plataforma)}
   </span>
  </div>
 
- <h3 class="event-card-title">${live.titulo}</h3>
- <p class="event-card-excerpt">${live.resumo}</p>
+ <h3 class="event-card-title">${escapeHtml(live.titulo)}</h3>
+ <p class="event-card-excerpt">${escapeHtml(live.resumo)}</p>
 
  <div class="event-card-meta">
   <div class="event-meta-item">
-   <span>${live.hora}</span>
+   <span>${escapeHtml(live.hora)}</span>
   </div>
   <div class="event-meta-item">
-   <span>${live.plataforma}</span>
+   <span>${escapeHtml(live.plataforma)}</span>
   </div>
  </div>
 
  <div class="event-card-actions mt-auto">
-  <a href="lives.html?id=${live.slug}" class="btn btn-secondary btn-small">
+  <a href="lives.html?id=${encodeURIComponent(live.slug)}" class="btn btn-secondary btn-small">
    Mais Informações
   </a>
-  <a href="${live.link_acesso}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-small" style="background-color: ${categoryColor}; border-color: ${categoryColor}">
+  <a href="${validateUrl(live.link_acesso)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-small" style="background-color: ${categoryColor}; border-color: ${categoryColor}">
    ${live.status === "upcoming" ? "Aceder Live" : "Ver Gravação"}
   </a>
  </div>
@@ -159,16 +162,37 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   if (newsletterForm) {
-    newsletterForm.addEventListener("submit", (e) => {
+    newsletterForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      newsletterForm.reset();
-      alert("Obrigado por se inscrever!");
+      const emailInput = document.getElementById("newsletter-email");
+      const honeypot = newsletterForm.querySelector('[name="website"]');
+      const submitBtn = newsletterForm.querySelector('button[type="submit"]');
+
+      if (honeypot && honeypot.value) {
+        newsletterForm.reset();
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "A subscrever...";
+
+      const result = await subscribeToNewsletter(emailInput.value, false);
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Notifique-me";
+
+      if (result.success) {
+        newsletterForm.reset();
+        alert(result.message);
+      } else {
+        alert(result.error);
+      }
     });
   }
 
   // Refresh on focus
   window.addEventListener("focus", async () => {
-    console.log("👁️ Janela em foco, atualizando lista de lives...");
+    logger.log("👁️ Janela em foco, atualizando lista de lives...");
     await renderLives();
   });
 

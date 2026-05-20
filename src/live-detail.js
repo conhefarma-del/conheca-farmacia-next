@@ -1,5 +1,8 @@
 import { getLives, getLiveBySlug } from './lib/api.js';
+import { supabaseClient } from './config.js';
 import { renderBreadcrumb } from "./breadcrumb.js";
+import { escapeHtml, validateUrl } from "./lib/security.js";
+import { logger } from "./lib/logger.js";
 
 /**
  * Formata uma data no formato YYYY-MM-DD para formato por extenso em PT
@@ -105,7 +108,12 @@ function renderLiveDetail(live) {
 
   // Quick Access Button
   const accessBtn = document.getElementById("live-access-btn");
-  accessBtn.href = live.link_acesso;
+  accessBtn.href = validateUrl(live.link_acesso);
+
+  // Tracking: access_count
+  accessBtn.addEventListener('click', () => {
+    supabaseClient.rpc('increment_live_access_count', { live_slug: live.slug }).then(() => {}).catch(() => {});
+  });
 
   // Meeting credentials (ID e Senha)
   const credentialsDiv = document.getElementById("live-credentials");
@@ -143,10 +151,14 @@ function renderLiveDetail(live) {
     live.materiais_apoio.forEach((material, index) => {
       const li = document.createElement("li");
       li.innerHTML = `
-				<a href="${material}" target="_blank" rel="noopener noreferrer" class="material-link" style="color: ${categoryColor}; text-decoration: none; font-weight: 500;">
+				<a href="${validateUrl(material)}" target="_blank" rel="noopener noreferrer" class="material-link" style="color: ${categoryColor}; text-decoration: none; font-weight: 500;">
 					→ Material ${index + 1}
 				</a>
 			`;
+      // Tracking: download_count
+      li.querySelector('.material-link').addEventListener('click', () => {
+        supabaseClient.rpc('increment_live_download_count', { live_slug: live.slug }).then(() => {}).catch(() => {});
+      });
       materialsList.appendChild(li);
     });
     materialsSection.style.display = "block";
@@ -249,7 +261,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    console.log("Live encontrada:", live);
+    logger.log("Live encontrada:", live);
 
     // Breadcrumb
     renderBreadcrumb([
@@ -259,6 +271,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     ]);
     renderLiveDetail(live);
     hideLoading();
+
+    // Tracking: view_count
+    supabaseClient.rpc('increment_live_view_count', { live_slug: live.slug }).then(() => {}).catch(() => {});
   } catch (error) {
     console.error("Erro ao carregar detalhe da live:", error);
     hideLoading();

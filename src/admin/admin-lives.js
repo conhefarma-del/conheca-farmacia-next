@@ -1,31 +1,18 @@
 // src/admin/admin-lives.js
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-import { getAllLives, deleteLive as apiDeleteLive } from '../lib/api.js';
+import { supabaseClient } from '../config.js';
+import { checkAuth, logout, initIdleTimeout } from './lib/auth.js';
+import { escapeHtml } from '../lib/security.js';
+import { getAllLives, deleteLive as apiDeleteLive, getTopLivesByViews, getTopLivesByAccess, getTopLivesByDownloads, getUpcomingLives } from '../lib/api.js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+const supabase = supabaseClient;
 
 let allLives = [];
 let searchQuery = '';
 
-// Verificar autenticação
-async function checkAuth() {
-  const { data: { session } } = await supabase.auth.getSession();
-
-  if (!session) {
-    window.location.href = '/src/admin/index.html';
-    return false;
-  }
-
-  return true;
-}
-
 // Logout
 document.getElementById('logout-btn')?.addEventListener('click', async (e) => {
   e.preventDefault();
-  await supabase.auth.signOut();
-  window.location.href = '/src/admin/index.html';
+  await logout();
 });
 
 // Load lives
@@ -100,7 +87,7 @@ function renderLives() {
             </td>
             <td>
               <div class="admin-actions">
-                <a href="/src/admin/lives/edit.html?id=${live.id}" class="admin-btn admin-btn-secondary">
+                <a href="./edit.html?id=${live.id}" class="admin-btn admin-btn-secondary">
                   <i data-lucide="pencil"></i>
                   Editar
                 </a>
@@ -135,15 +122,6 @@ window.deleteLive = async function(id, title) {
   }
 };
 
-// Helper functions
-function escapeHtml(text) {
-  if (!text) return '';
-  return text.replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
 
 function formatDate(dateStr) {
   if (!dateStr) return '-';
@@ -166,11 +144,83 @@ function initSearch() {
   });
 }
 
+// Analytics
+async function loadAnalytics(metric = 'views') {
+  const list = document.getElementById('analytics-list');
+  if (!list) return;
+
+  list.innerHTML = '<p style="color: var(--admin-text-muted); font-size: 13px;">A carregar...</p>';
+
+  try {
+    let data = [];
+    let valueKey = '';
+
+    if (metric === 'views') {
+      data = await getTopLivesByViews(3);
+      valueKey = 'view_count';
+    } else if (metric === 'access') {
+      data = await getTopLivesByAccess(3);
+      valueKey = 'access_count';
+    } else if (metric === 'downloads') {
+      data = await getTopLivesByDownloads(3);
+      valueKey = 'download_count';
+    } else if (metric === 'upcoming') {
+      data = await getUpcomingLives(3);
+    }
+
+    if (!data || data.length === 0) {
+      list.innerHTML = '<p style="color: var(--admin-text-muted); font-size: 13px;">Sem dados ainda</p>';
+      return;
+    }
+
+    list.innerHTML = data.map((live, i) => {
+      let value = '';
+
+      if (metric === 'upcoming') {
+        const dateStr = live.date ? formatDate(live.date) : '-';
+        const platform = live.platform ? ` · ${escapeHtml(live.platform)}` : '';
+        value = `${dateStr}${platform}`;
+      } else {
+        value = (live[valueKey] || 0).toString();
+      }
+
+      return `
+        <div class="admin-analytics-item">
+          <span class="admin-analytics-rank">${i + 1}</span>
+          <span class="admin-analytics-title">${escapeHtml(live.title)}</span>
+          <span class="admin-analytics-value">${value}</span>
+        </div>
+      `;
+    }).join('');
+  } catch (error) {
+    console.error('Erro ao carregar analytics:', error);
+    list.innerHTML = '<p style="color: var(--admin-text-muted); font-size: 13px;">Erro ao carregar</p>';
+  }
+}
+
+function initAnalyticsFilters() {
+  const container = document.getElementById('analytics-filters');
+  if (!container) return;
+
+  container.addEventListener('click', (e) => {
+    const btn = e.target.closest('.admin-analytics-filter');
+    if (!btn) return;
+
+    container.querySelectorAll('.admin-analytics-filter').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    loadAnalytics(btn.dataset.metric);
+  });
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
   const isAuth = await checkAuth();
   if (isAuth) {
+    initIdleTimeout();
     loadLives();
     initSearch();
+    initAnalyticsFilters();
+    loadAnalytics('views');
   }
 });

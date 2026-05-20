@@ -218,7 +218,7 @@ export async function getLives() {
   try {
     const { data, error } = await supabaseClient
       .from('lives')
-      .select('*')
+      .select('id, slug, title, excerpt, category, category_label, image_url, date, time, end_time, platform, access_link, materials, status, host_name, host_role, host_organization, view_count, access_count, download_count, published_at')
       .eq('status', 'published')
       .order('date', { ascending: true });
 
@@ -240,7 +240,7 @@ export async function getLiveBySlug(slug) {
   try {
     const { data, error } = await supabaseClient
       .from('lives')
-      .select('*')
+      .select('id, slug, title, excerpt, category, category_label, image_url, date, time, end_time, platform, access_link, materials, status, host_name, host_role, host_organization, view_count, access_count, download_count, published_at')
       .eq('slug', slug)
       .eq('status', 'published')
       .single();
@@ -569,6 +569,8 @@ export async function getAllLives() {
  * @returns {Promise<null>}
  */
 export async function deleteArticle(id) {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) throw new Error('Unauthorized: login required');
   const { error } = await supabaseClient
     .from('articles')
     .delete()
@@ -582,6 +584,8 @@ export async function deleteArticle(id) {
  * @returns {Promise<null>}
  */
 export async function deleteEvent(id) {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) throw new Error('Unauthorized: login required');
   const { error } = await supabaseClient
     .from('events')
     .delete()
@@ -595,6 +599,8 @@ export async function deleteEvent(id) {
  * @returns {Promise<null>}
  */
 export async function deleteLive(id) {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) throw new Error('Unauthorized: login required');
   const { error } = await supabaseClient
     .from('lives')
     .delete()
@@ -630,7 +636,7 @@ export async function getRecentAdminActivity(limit = 10) {
   try {
     const { data, error } = await supabaseClient
       .from('audit_logs')
-      .select('id, action, table_name, record_id, created_at, user_email')
+      .select('id, action, table_name, record_id, created_at, user_email, new_values')
       .order('created_at', { ascending: false })
       .limit(limit);
 
@@ -722,5 +728,315 @@ export async function getEventFillRate() {
   } catch (error) {
     console.error('Error fetching event fill rate:', error);
     return { event: null, fillRate: 0 };
+  }
+}
+
+/**
+ * Fetch page view count for a given period
+ * @param {'day'|'week'|'month'|'6months'|'year'} period
+ * @returns {Promise<number>}
+ */
+export async function getPageViewsByPeriod(period = 'month') {
+  try {
+    const now = new Date();
+    let startDate;
+
+    if (period === 'day') {
+      startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    } else if (period === 'week') {
+      startDate = new Date(now);
+      startDate.setDate(startDate.getDate() - 7);
+    } else if (period === 'month') {
+      startDate = new Date(now);
+      startDate.setMonth(startDate.getMonth() - 1);
+    } else if (period === '6months') {
+      startDate = new Date(now);
+      startDate.setMonth(startDate.getMonth() - 6);
+    } else if (period === 'year') {
+      startDate = new Date(now);
+      startDate.setFullYear(startDate.getFullYear() - 1);
+    }
+
+    const { count, error } = await supabaseClient
+      .from('page_views')
+      .select('*', { count: 'exact', head: true })
+      .gte('created_at', startDate.toISOString());
+
+    if (error) throw error;
+    return count || 0;
+  } catch (error) {
+    console.error('Error fetching page views:', error);
+    return 0;
+  }
+}
+
+/**
+ * Fetch inscription count for a given period
+ * @param {'day'|'week'|'month'|'6months'|'year'} period
+ * @returns {Promise<number>}
+ */
+export async function getInscriptionsByPeriod(period = 'month') {
+  try {
+    const now = new Date();
+    let startDate;
+
+    if (period === 'day') {
+      startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    } else if (period === 'week') {
+      startDate = new Date(now);
+      startDate.setDate(startDate.getDate() - 7);
+    } else if (period === 'month') {
+      startDate = new Date(now);
+      startDate.setMonth(startDate.getMonth() - 1);
+    } else if (period === '6months') {
+      startDate = new Date(now);
+      startDate.setMonth(startDate.getMonth() - 6);
+    } else if (period === 'year') {
+      startDate = new Date(now);
+      startDate.setFullYear(startDate.getFullYear() - 1);
+    }
+
+    const { count, error } = await supabaseClient
+      .from('inscricoes')
+      .select('*', { count: 'exact', head: true })
+      .gte('created_at', startDate.toISOString());
+
+    if (error) throw error;
+    return count || 0;
+  } catch (error) {
+    console.error('Error fetching inscriptions:', error);
+    return 0;
+  }
+}
+
+/**
+ * Get top articles by view count
+ * @param {number} limit
+ * @returns {Promise<Array>}
+ */
+export async function getTopArticlesByViews(limit = 3) {
+  try {
+    const { data, error } = await supabaseClient
+      .from('articles')
+      .select('title, slug, view_count')
+      .eq('status', 'published')
+      .order('view_count', { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching top articles by views:', error);
+    return [];
+  }
+}
+
+/**
+ * Get top articles by share count
+ * @param {number} limit
+ * @returns {Promise<Array>}
+ */
+export async function getTopArticlesByShares(limit = 3) {
+  try {
+    const { data, error } = await supabaseClient
+      .from('articles')
+      .select('title, slug, share_count')
+      .eq('status', 'published')
+      .order('share_count', { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching top articles by shares:', error);
+    return [];
+  }
+}
+
+/**
+ * Get top articles by reading time
+ * @param {number} limit
+ * @returns {Promise<Array>}
+ */
+export async function getTopArticlesByReadingTime(limit = 3) {
+  try {
+    const { data, error } = await supabaseClient
+      .from('articles')
+      .select('title, slug, total_reading_time')
+      .eq('status', 'published')
+      .order('total_reading_time', { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching top articles by reading time:', error);
+    return [];
+  }
+}
+
+/**
+ * Get top events by view count
+ * @param {number} limit
+ * @returns {Promise<Array>}
+ */
+export async function getTopEventsByViews(limit = 3) {
+  try {
+    const { data, error } = await supabaseClient
+      .from('events')
+      .select('title, slug, view_count')
+      .eq('status', 'published')
+      .order('view_count', { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching top events by views:', error);
+    return [];
+  }
+}
+
+/**
+ * Get top events by fill rate (inscritos/capacity)
+ * @param {number} limit
+ * @returns {Promise<Array>}
+ */
+export async function getTopEventsByFillRate(limit = 3) {
+  try {
+    const { data: events, error } = await supabaseClient
+      .from('events')
+      .select('title, slug, capacity')
+      .eq('status', 'published')
+      .gt('capacity', 0);
+
+    if (error) throw error;
+    if (!events || events.length === 0) return [];
+
+    for (const event of events) {
+      const { count } = await supabaseClient
+        .from('inscricoes')
+        .select('*', { count: 'exact', head: true })
+        .eq('evento_slug', event.slug);
+      event.inscription_count = count || 0;
+      event.fill_rate = Math.round((count / event.capacity) * 100);
+    }
+
+    return events.sort((a, b) => b.fill_rate - a.fill_rate).slice(0, limit);
+  } catch (error) {
+    console.error('Error fetching top events by fill rate:', error);
+    return [];
+  }
+}
+
+/**
+ * Get upcoming published events
+ * @param {number} limit
+ * @returns {Promise<Array>}
+ */
+export async function getUpcomingEvents(limit = 3) {
+  try {
+    const { data, error } = await supabaseClient
+      .from('events')
+      .select('title, slug, date, location')
+      .eq('status', 'published')
+      .gte('date', new Date().toISOString().split('T')[0])
+      .order('date', { ascending: true })
+      .limit(limit);
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching upcoming events:', error);
+    return [];
+  }
+}
+
+/**
+ * Get top lives by view count
+ * @param {number} limit
+ * @returns {Promise<Array>}
+ */
+export async function getTopLivesByViews(limit = 3) {
+  try {
+    const { data, error } = await supabaseClient
+      .from('lives')
+      .select('title, slug, view_count')
+      .eq('status', 'published')
+      .order('view_count', { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching top lives by views:', error);
+    return [];
+  }
+}
+
+/**
+ * Get top lives by access count (Aceder Agora clicks)
+ * @param {number} limit
+ * @returns {Promise<Array>}
+ */
+export async function getTopLivesByAccess(limit = 3) {
+  try {
+    const { data, error } = await supabaseClient
+      .from('lives')
+      .select('title, slug, access_count')
+      .eq('status', 'published')
+      .order('access_count', { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching top lives by access:', error);
+    return [];
+  }
+}
+
+/**
+ * Get top lives by download count
+ * @param {number} limit
+ * @returns {Promise<Array>}
+ */
+export async function getTopLivesByDownloads(limit = 3) {
+  try {
+    const { data, error } = await supabaseClient
+      .from('lives')
+      .select('title, slug, download_count')
+      .eq('status', 'published')
+      .order('download_count', { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching top lives by downloads:', error);
+    return [];
+  }
+}
+
+/**
+ * Get upcoming published lives
+ * @param {number} limit
+ * @returns {Promise<Array>}
+ */
+export async function getUpcomingLives(limit = 3) {
+  try {
+    const { data, error } = await supabaseClient
+      .from('lives')
+      .select('title, slug, date, time, platform')
+      .eq('status', 'published')
+      .gte('date', new Date().toISOString().split('T')[0])
+      .order('date', { ascending: true })
+      .limit(limit);
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching upcoming lives:', error);
+    return [];
   }
 }

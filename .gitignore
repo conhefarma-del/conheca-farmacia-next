@@ -1,5 +1,33 @@
+# Dependencies
 node_modules/
+
+# Environment
 .env
-.DS_Store
+.env.local
+.env.production
+.env.*.local
+
+# Build
 dist/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Debug files
+diagnostico.html
 check-supabase.mjs
+
+# Claude
+.claude/
+
+# Local Netlify folder
+.netlify

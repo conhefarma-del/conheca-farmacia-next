@@ -1,5 +1,6 @@
 // Script para capturar cliques em botões "Inscrever-me" com data-event-slug
 // Redireciona para inscricao.html?evento={slug}
+import { logger } from "./lib/logger.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   // Capturar todos os botões com data-event-slug
@@ -20,14 +21,14 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      console.log("✓ Redirecionando para inscrição:", eventSlug);
+      logger.log("✓ Redirecionando para inscrição:", eventSlug);
 
       // Redirecionar para página de inscrição com o evento como parâmetro
       window.location.href = `inscricao.html?evento=${encodeURIComponent(eventSlug)}`;
     });
   });
 
-  console.log(
+  logger.log(
     `✓ ${inscricaoButtons.length} botão(ões) de inscrição configurado(s)`
   );
 });

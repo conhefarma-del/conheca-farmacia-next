@@ -1,3 +1,6 @@
+import { escapeHtml } from './security.js';
+import { logger } from './logger.js';
+
 /**
  * @typedef {'INFO' | 'WARN' | 'ERROR' | 'CRITICAL'} Severity
  * @typedef {'PAGE' | 'CONTAINER' | 'TOAST' | 'LOG'} DeliveryMode
@@ -35,7 +38,7 @@ class ErrorHandler {
     const sanitizedMessage =
       typeof DOMPurify !== "undefined"
         ? DOMPurify.sanitize(message, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] })
-        : message;
+        : escapeHtml(message);
 
     switch (mode) {
       case "PAGE":
@@ -168,7 +171,7 @@ class ErrorHandler {
       this._debugContainer.appendChild(entry);
       this._debugContainer.scrollTop = this._debugContainer.scrollHeight;
     } else {
-      console.log(`[${severity}] ${message}`);
+      logger.log(`[${severity}] ${message}`);
     }
   }
 

@@ -1,5 +1,6 @@
 // src/admin/lib/audit-logger.js
 import { supabaseClient } from '../../config.js';
+import { logger } from '../../lib/logger.js';
 
 /**
  * Log an audit event
@@ -14,7 +15,7 @@ export async function logAudit(action, tableName, recordId, oldValues = null, ne
     const { data: { session } } = await supabaseClient.auth.getSession();
 
     if (!session?.user) {
-      console.warn('No session for audit log');
+      logger.warn('No session for audit log');
       return;
     }
 

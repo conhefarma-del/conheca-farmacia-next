@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Novo Artigo - Admin</title>
-    <link rel="stylesheet" href="/src/admin/styles/admin.css">
+    <link rel="stylesheet" href="../styles/admin.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -29,21 +29,29 @@
         </div>
 
         <nav class="admin-nav-vertical">
-            <a href="/src/admin/dashboard.html">
+            <a href="../dashboard.html">
                 <i data-lucide="home"></i>
                 Dashboard
             </a>
-            <a href="/src/admin/artigos/index.html" class="active">
+            <a href="./index.html" class="active">
                 <i data-lucide="file-text"></i>
                 Artigos
             </a>
-            <a href="/src/admin/eventos/index.html">
+            <a href="../eventos/index.html">
                 <i data-lucide="calendar"></i>
                 Eventos
             </a>
-            <a href="/src/admin/lives/index.html">
+            <a href="../lives/index.html">
                 <i data-lucide="video"></i>
                 Lives
+            </a>
+            <a href="../newsletter.html">
+        <i data-lucide="mail"></i>
+        Newsletter
+      </a>
+      <a href="../definicoes.html">
+                <i data-lucide="settings"></i>
+                Definições
             </a>
         </nav>
 
@@ -69,11 +77,6 @@
             </div>
 
             <div class="admin-top-actions">
-                <button class="admin-icon-btn">
-                    <i data-lucide="bell"></i>
-                    <span class="badge"></span>
-                </button>
-
                 <div class="admin-user-menu">
                     <div class="admin-user-avatar">A</div>
                     <div class="admin-user-info">
@@ -124,6 +127,16 @@
 
                 <div class="admin-form-group">
                     <label for="content">Conteúdo (Markdown)</label>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="admin-textarea-expand" data-target="content" title="Expandir editor">
+                            <i data-lucide="maximize-2"></i>
+                            Expandir
+                        </button>
+                        <button type="button" id="preview-btn" class="admin-textarea-expand" title="Pré-visualizar artigo">
+                            <i data-lucide="eye"></i>
+                            Pré-visualizar
+                        </button>
+                    </div>
                     <textarea id="content" name="content" required class="admin-textarea" placeholder="Conteúdo completo do artigo em Markdown..."></textarea>
                 </div>
 
@@ -148,7 +161,7 @@
                     <label for="image_url">Imagem (URL)</label>
                     <input type="text" id="image_url" name="image_url" class="admin-input" placeholder="/images/artigo.jpg">
                     <div class="admin-image-upload" id="image-upload">
-                        <p>Clique para fazer upload ou arraste uma imagem</p>
+                        <p>Clique para fazer upload de uma imagem</p>
                         <input type="file" id="image-file" accept="image/*" style="display: none;">
                     </div>
                     <img id="image-preview" class="admin-image-preview" style="display: none;">
@@ -181,13 +194,35 @@
 
                 <div class="admin-form-actions">
                     <button type="submit" class="admin-btn admin-btn-primary">Salvar Artigo</button>
-                    <a href="/src/admin/artigos/index.html" class="admin-btn admin-btn-secondary">Cancelar</a>
+                    <a href="./index.html" class="admin-btn admin-btn-secondary">Cancelar</a>
                 </div>
             </form>
         </div>
     </main>
 
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Editor Overlay -->
+    <div id="editor-overlay" class="admin-editor-overlay">
+        <div class="admin-editor-overlay-content">
+            <div class="admin-editor-overlay-header">
+                <div class="admin-editor-overlay-title">
+                    <i data-lucide="file-text"></i>
+                    Conteúdo (Markdown)
+                </div>
+                <button type="button" id="editor-close" class="admin-editor-close">
+                    <i data-lucide="x"></i>
+                    Fechar
+                </button>
+            </div>
+            <textarea id="editor-overlay-textarea" class="admin-editor-overlay-textarea" placeholder="Escreva o conteúdo em Markdown..."></textarea>
+            <div class="admin-editor-overlay-footer">
+                <span class="admin-editor-overlay-hint">
+                    Pressione <kbd>Esc</kbd> para fechar
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest" integrity="sha384-ZgnJ3Zpr70Xoify35DjOZWqHib1iYJBpYpQUIEpDASG9+fJ745WzNQuC004dwU0W" crossorigin="anonymous"></script>
     <script type="module">
         import { initDarkMode, toggleDarkMode } from '../lib/dark-mode.js';
 
@@ -229,6 +264,7 @@
         import { checkAuth } from '../lib/auth.js';
         import { compressImage, uploadImage } from '../lib/image-compressor.js';
         import { logAudit } from '../lib/audit-logger.js';
+        import { openPreview } from '../lib/preview.js';
 
         // Check authentication
         await checkAuth();
@@ -297,6 +333,22 @@
         };
 
         // Form submission
+        // Preview button
+        document.getElementById('preview-btn')?.addEventListener('click', () => {
+            openPreview({
+                title: document.getElementById('title').value,
+                content: document.getElementById('content').value,
+                category: document.getElementById('category').value,
+                categoryLabel: document.getElementById('category').selectedOptions[0]?.textContent || '',
+                imageUrl: document.getElementById('image_url').value,
+                publishedDate: document.getElementById('published_date').value,
+                authorName: document.getElementById('author_name').value,
+                authorRole: document.getElementById('author_role').value,
+                readTime: document.getElementById('read_time').value,
+                excerpt: document.getElementById('excerpt').value,
+            });
+        });
+
         document.getElementById('article-form')?.addEventListener('submit', async (e) => {
             e.preventDefault();
             const errorDiv = document.getElementById('form-error');
@@ -343,7 +395,7 @@ author_avatar_bg: document.getElementById('author_avatar_bg').value,
                 await logAudit('CREATE', 'articles', data.id, null, articleData);
 
                 // Redirect to list
-                window.location.href = '/src/admin/artigos/index.html';
+                window.location.href = './index.html';
             } catch (error) {
                 errorDiv.textContent = 'Erro ao salvar: ' + error.message;
                 errorDiv.style.display = 'block';
@@ -355,6 +407,60 @@ author_avatar_bg: document.getElementById('author_avatar_bg').value,
             e.preventDefault();
             import('../lib/auth.js').then(({ logout }) => logout());
         });
+
+        // Markdown Editor Overlay
+        const overlay = document.getElementById('editor-overlay');
+        const overlayTextarea = document.getElementById('editor-overlay-textarea');
+        let activeTextarea = null;
+
+        function openEditor(targetId) {
+            activeTextarea = document.getElementById(targetId);
+            if (!activeTextarea) return;
+            overlayTextarea.value = activeTextarea.value;
+            overlay.classList.add('active');
+            overlayTextarea.focus();
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeEditor() {
+            if (activeTextarea) {
+                activeTextarea.value = overlayTextarea.value;
+            }
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+            activeTextarea = null;
+        }
+
+        document.querySelectorAll('.admin-textarea-expand').forEach(btn => {
+            btn.addEventListener('click', () => openEditor(btn.dataset.target));
+        });
+
+        document.getElementById('editor-close')?.addEventListener('click', closeEditor);
+
+        overlay?.addEventListener('click', (e) => {
+            if (e.target === overlay) closeEditor();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && overlay.classList.contains('active')) {
+                closeEditor();
+            }
+        });
+    </script>
+    <script type="module">
+        import { checkAuth, getAdminProfile, updateTopBar, logout } from '../lib/auth.js';
+
+        // Logout handler
+        document.getElementById('logout-btn')?.addEventListener('click', async (e) => {
+            e.preventDefault();
+            await logout();
+        });
+
+        (async () => {
+            await checkAuth();
+            const profile = await getAdminProfile();
+            if (profile) updateTopBar(profile);
+        })();
     </script>
 </body>
 </html>

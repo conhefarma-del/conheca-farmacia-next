@@ -383,6 +383,57 @@ node -e "JSON.parse(require('fs').readFileSync('package.json'))"
 - Seguir convenção de nomenclatura do projeto
 - Verificar se existe utility class antes de criar CSS novo
 
+### 19. Vite Rollup Input - Estrutura de Diretórios no Build
+
+**Problema**: Ao adicionar ficheiros HTML de subdiretórios (ex: `src/admin/`) ao `rollupOptions.input`, o Vite preserva a estrutura de diretórios relativa à raiz do projeto. Ou seja:
+- `src/admin/index.html` → `dist/src/admin/index.html` (não `dist/admin/index.html`)
+
+**Solução**:
+1. Adicionar os ficheiros ao `rollupOptions.input` normalmente
+2. Usar um passo pós-build no `package.json` para mover os ficheiros:
+   ```json
+   "build": "vite build && cp -r dist/src/admin dist/admin && rm -rf dist/src"
+   ```
+
+**Prevenção**:
+- Antes de adicionar entradas ao rollup, pensar na estrutura de saída desejada
+- Se o destino for diferente da estrutura de origem, planejar o passo de relocação
+
+### 20. Vite 8 Plugin Hooks - closeBundle/writeBundle Podem Não Executar
+
+**Problema**: Em Vite 8 (que usa rolldown internamente), os hooks `closeBundle()` e `writeBundle()` de plugins customizados podem não ser executados, mesmo que a build passe sem erros.
+
+**Solução**:
+- Usar scripts shell no `package.json` em vez de plugins Vite para operações pós-build
+- Exemplo: `"build": "vite build && cp -r dist/src/admin dist/admin && rm -rf dist/src"`
+
+**Prevenção**:
+- Não confiar em hooks de plugin para operações críticas pós-build
+- Testar se o hook executa adicionando `console.log()` e verificando a saída
+- Preferir scripts npm para tarefas de reorganização de ficheiros
+
+### 21. node -e com Strings Complexas Falha no Windows Bash
+
+**Problema**: No Windows (bash/Git Bash), `node -e` com scripts inline longos ou com caracteres especiais pode falhar com exit code 127 ("command not found"), enquanto scripts simples funcionam normalmente.
+
+**Exemplo**:
+```bash
+# Funciona:
+node -e "console.log('hello')"
+
+# Falha com exit code 127:
+node -e "const{cpSync,rmSync,existsSync}=require('fs');const s='dist/src/admin'..."
+```
+
+**Solução**:
+1. Usar comandos shell nativos (`cp`, `rm`, `mv`) em vez de `node -e` para operações simples
+2. Se precisar de Node.js, criar um ficheiro `.js` separado e executar com `node ficheiro.js`
+
+**Prevenção**:
+- Para operações de ficheiros em scripts npm no Windows, preferir `cp -r`, `rm -rf`, `mv`
+- Evitar `node -e` com scripts inline complexos
+- Se necessário usar Node.js, criar ficheiro dedicado em `scripts/`
+
 ### Important Notes
 
 - **Development**: Must use `npm run dev` — direct file:// opening fails (ES modules)

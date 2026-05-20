@@ -1,4 +1,6 @@
 import { getArticles } from './lib/api.js';
+import { escapeHtml } from './lib/security.js';
+import { logger } from './lib/logger.js';
 
 let articles = [];
 let currentFilter = "all";
@@ -22,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const filterButtons = document.querySelectorAll(".filter-btn");
 
   function renderArticles() {
-    console.log("Renderizando artigos. Total:", articles.length);
+    logger.log("Renderizando artigos. Total:", articles.length);
 
     const filtered = articles.filter((article) => {
       const matchesFilter =
@@ -33,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return matchesFilter && matchesSearch;
     });
 
-    console.log("Artigos filtrados:", filtered.length);
+    logger.log("Artigos filtrados:", filtered.length);
 
     grid.innerHTML = "";
 
@@ -46,12 +48,12 @@ document.addEventListener("DOMContentLoaded", () => {
         card.className =
           "article-card article-card-anim border border-brand-divider/10";
         card.innerHTML = `
-          <img src="${article.image}" alt="${article.title}" class="article-card-img" loading="lazy" decoding="async">
+          <img src="${escapeHtml(article.image)}" alt="${escapeHtml(article.title)}" class="article-card-img" loading="lazy" decoding="async">
           <div class="article-card-content">
-            <span class="article-tag" style="background-color: ${categoryColors[article.category]}20; color: ${categoryColors[article.category]}; border: 1px solid ${categoryColors[article.category]}40">${article.categoryLabel}</span>
-            <h3 class="article-card-title">${article.title}</h3>
-            <p class="article-card-excerpt">${article.excerpt}</p>
-            <a href="artigo.html?id=${article.slug}" class="article-card-link">Ler mais <span>→</span></a>
+            <span class="article-tag" style="background-color: ${categoryColors[article.category]}20; color: ${categoryColors[article.category]}; border: 1px solid ${categoryColors[article.category]}40">${escapeHtml(article.categoryLabel)}</span>
+            <h3 class="article-card-title">${escapeHtml(article.title)}</h3>
+            <p class="article-card-excerpt">${escapeHtml(article.excerpt)}</p>
+            <a href="artigo.html?id=${encodeURIComponent(article.slug)}" class="article-card-link">Ler mais <span>→</span></a>
           </div>
         `;
         grid.appendChild(card);
@@ -78,7 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
    // Load articles from Supabase (with JSON fallback)
   (async () => {
     articles = await getArticles();
-    console.log("Artigos carregados do Supabase:", articles.length);
+    logger.log("Artigos carregados do Supabase:", articles.length);
     renderArticles();
   })();
 });

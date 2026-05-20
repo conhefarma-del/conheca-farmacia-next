@@ -1,9 +1,11 @@
 // Importar configurações do Supabase
-import { supabaseClient, SUPABASE_URL, SUPABASE_ANON_KEY } from "./config.js";
+import { supabaseClient } from "./config.js";
 import { getEvents, getEventBySlug } from './lib/api.js';
 import { renderBreadcrumb } from "./breadcrumb.js";
 import { createPolling } from "./lib/polling.js";
 import { getCachedCapacity, setCapacityCache } from "./lib/capacity-cache.js";
+import { escapeHtml, validateUrl } from "./lib/security.js";
+import { logger } from "./lib/logger.js";
 
 function formatDate(dateStr) {
   const date = new Date(dateStr + "T00:00:00");
@@ -17,116 +19,19 @@ function formatDateSimple(dateStr) {
   return date.toLocaleDateString("pt-PT", options);
 }
 
-// ==========================================
-// DIAGNÓSTICO: Função exposta para debugging no console
-// ==========================================
-window.debugInscriptions = async function (slug) {
-  const s = slug || new URLSearchParams(window.location.search).get("id");
-  console.log("🔍 Debug: Contando inscrições para:", s);
-
-  const { data, error, count } = await supabaseClient
-    .from("inscricoes")
-    .select("*", { count: "exact", head: true })
-    .eq("evento_slug", s);
-
-  console.log("📊 Resultado:", { data, error, count });
-  console.log("📝 SQL: SELECT * FROM inscricoes WHERE evento_slug = ?", s);
-
-  if (error) {
-    console.error("❌ Erro:", error);
-  } else {
-    console.log(`✅ ${count} inscrições encontradas`);
-  }
-  return { data, error, count };
-};
-
-console.log("💡 DICA: Execute debugInscriptions() no console para debug");
-
 // Função para contar inscrições reais do Supabase
 async function getInscriptionCount(eventoSlug) {
   try {
-    console.log(`🔍 Contando inscrições para: "${eventoSlug}"`);
-    console.log(`🔗 SUPABASE_URL: ${SUPABASE_URL?.substring(0, 30)}...`);
-    console.log(`🔑 SUPABASE_ANON_KEY presente: ${!!SUPABASE_ANON_KEY}`);
-
-    // Verificar se Supabase está disponível
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      console.warn("⚠️ Supabase credentials não disponíveis");
-      return null;
-    }
-
-    // Método 1: Usar cliente Supabase (mais fiável que REST API direta)
-    console.log("📡 A usar cliente Supabase...");
-    console.log(`📊 Tabela: inscricoes, Filtro: evento_slug = "${eventoSlug}"`);
-
-    const query = supabaseClient
+    const { data, error, count } = await supabaseClient
       .from("inscricoes")
       .select("*", { count: "exact", head: true })
       .eq("evento_slug", eventoSlug);
 
-    console.log(
-      "📝 Query SQL equivalente: SELECT * FROM inscricoes WHERE evento_slug = ?",
-      eventoSlug
-    );
+    if (error) return null;
 
-    const { data, error, count } = await query;
-
-    if (error) {
-      console.error("❌ Erro na query Supabase:", error.message);
-      console.error("Código:", error.code);
-      console.error("Detalhes:", error.details);
-      console.error("Hint:", error.hint);
-
-      // Erro RLS (42501) significa que a política bloqueia a acesso
-      if (error.code === "42501") {
-        console.error(
-          '🚫 ERRO RLS: Política de segurança bloqueia leitura. Verifique as políticas da tabela "inscricoes".'
-        );
-      }
-
-      return null;
-    }
-
-    console.log(`✅ Inscrições encontradas (Supabase): ${count}`);
-    console.log(`📦 Dados retornados:`, data);
     return count || 0;
-  } catch (error) {
-    console.error("❌ Erro ao conectar com Supabase:", error.message);
-    console.error("Stack:", error.stack);
-
-    // Fallback: tentar REST API direta
-    console.log("🔄 A tentar REST API direta...");
-    try {
-      const url = `${SUPABASE_URL}/rest/v1/inscricoes?evento_slug=eq.${encodeURIComponent(eventoSlug)}&limit=1`;
-      console.log(`🌐 URL REST: ${url.substring(0, 100)}...`);
-
-      const response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-          apikey: SUPABASE_ANON_KEY,
-          Prefer: "count=exact",
-        },
-      });
-
-      console.log(`📡 Status HTTP: ${response.status} ${response.statusText}`);
-
-      if (!response.ok) {
-        console.error(`❌ REST API falhou: ${response.status}`);
-        return null;
-      }
-
-      const contentRange = response.headers.get("content-range");
-      console.log(`📦 Content-Range header: ${contentRange}`);
-
-      if (!contentRange) return null;
-
-      const count = parseInt(contentRange.split("/")[1]);
-      console.log(`✅ Inscrições encontradas (REST): ${count}`);
-      return count;
-    } catch (e) {
-      console.error("❌ REST API também falhou:", e.message);
-      return null;
-    }
+  } catch {
+    return null;
   }
 }
 
@@ -146,7 +51,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   try {
     // Load event from Supabase (with JSON fallback)
- console.log("Carregando evento do Supabase:", eventId);
+ logger.log("Carregando evento do Supabase:", eventId);
 
     // Find event by slug (URL parameter contains the slug, not numeric ID)
     const event = await getEventBySlug(eventId);
@@ -157,7 +62,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    console.log("Evento encontrado:", event);
+    logger.log("Evento encontrado:", event);
 
     // Breadcrumb
     renderBreadcrumb([
@@ -165,6 +70,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       { label: "Eventos", href: "/eventos.html" },
       { label: event.title },
     ]);
+
+    // Track page view
+    supabaseClient.rpc('increment_event_view_count', { event_slug: event.slug }).then(() => {}).catch(() => {});
 
     // Calculate event status
     const today = new Date();
@@ -225,19 +133,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // SINCRONIZAR COM SUPABASE: Contar inscrições reais
     let inscriptionCount = 0; // Default — registered count comes from Supabase inscriptions, not from event data
-    console.log(`📊 Valor padrão (JSON): ${inscriptionCount}`);
-    console.log(`📊 Slug do evento: ${event.slug}`);
+    logger.log(`📊 Valor padrão (JSON): ${inscriptionCount}`);
+    logger.log(`📊 Slug do evento: ${event.slug}`);
 
-    console.log("⏳ A consultar Supabase...");
+    logger.log("⏳ A consultar Supabase...");
     const realCount = await getInscriptionCount(event.slug);
 
-    console.log(`🔍 Resultado da query: ${realCount}`);
+    logger.log(`🔍 Resultado da query: ${realCount}`);
 
     if (realCount !== null && realCount !== undefined && realCount >= 0) {
       inscriptionCount = realCount;
-      console.log(`✅ Usando contagem real do Supabase: ${inscriptionCount}`);
+      logger.log(`✅ Usando contagem real do Supabase: ${inscriptionCount}`);
     } else {
-      console.log(
+      logger.log(
         `⚠️ Falha na query Supabase (retornou ${realCount}), usando JSON: ${inscriptionCount}`
       );
     }
@@ -248,7 +156,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       (inscriptionCount / event.capacity) * 100
     );
 
-    console.log(
+    logger.log(
       `📈 Capacidade: ${event.capacity}, Inscrições: ${inscriptionCount}, Vagas: ${spotsLeft}, Percentual: ${capacityPercent}%`
     );
 
@@ -280,7 +188,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       registrationBtn.textContent = "Evento Completo";
       registrationBtn.disabled = true;
       registrationBtn.classList.add("btn-disabled");
-      console.log("🚫 Inscrições fechadas - Capacidade máxima atingida");
+      logger.log("🚫 Inscrições fechadas - Capacidade máxima atingida");
     } else {
       registrationBtn.textContent = "Inscrever-me";
       registrationBtn.disabled = false;
@@ -313,7 +221,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   let event = null; // Reference to current event for capacity updates
 
   async function refreshCapacity() {
-    console.log("🔄 Atualizando contagem de vagas...");
+    logger.log("🔄 Atualizando contagem de vagas...");
     updateCapacityStatus("updating");
 
     // Tentar obter do cache primeiro
@@ -321,7 +229,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (cached) {
       updateCapacityUI(cached);
       updateCapacityStatus("valid");
-      console.log("✅ Dados do cache utilizados");
+      logger.log("✅ Dados do cache utilizados");
       return;
     }
 
@@ -339,7 +247,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       updateCapacityUI(capacityData);
       updateCapacityStatus("valid");
-      console.log(`✅ Vagas atualizadas: ${spotsLeft} disponíveis`);
+      logger.log(`✅ Vagas atualizadas: ${spotsLeft} disponíveis`);
     } else {
       updateCapacityStatus("error");
     }
@@ -427,7 +335,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Verificar se há parâmetro refresh=true na URL
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get("refresh") === "true") {
-    console.log("🔄 Parâmetro refresh=true detetado, atualizando...");
+    logger.log("🔄 Parâmetro refresh=true detetado, atualizando...");
     refreshCapacity();
     const params = new URLSearchParams(window.location.search);
     params.delete("refresh");
@@ -514,25 +422,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     <div class="day">${day}</div>
     <div class="month">${month}</div>
   </div>
-  <img src="${event.image}" alt="${event.title}" class="event-card-image">
+  <img src="${escapeHtml(event.image)}" alt="${escapeHtml(event.title)}" class="event-card-image">
 </div>
 <div class="event-card-content">
   <div class="event-card-meta-top">
     <span class="event-badge" style="background-color: ${categoryColor}20; color: ${categoryColor}">
-      ${event.categoryLabel}
+      ${escapeHtml(event.categoryLabel)}
     </span>
     <span class="event-type-badge">${event.type === "online" ? "Online" : "Presencial"}</span>
   </div>
 
-  <h3 class="event-card-title">${event.title}</h3>
-  <p class="event-card-excerpt">${event.excerpt}</p>
+  <h3 class="event-card-title">${escapeHtml(event.title)}</h3>
+  <p class="event-card-excerpt">${escapeHtml(event.excerpt)}</p>
 
   <div class="event-card-meta">
     <div class="event-meta-item">
-      <span>${event.time} — ${event.endTime}</span>
+      <span>${escapeHtml(event.time)} — ${escapeHtml(event.endTime)}</span>
     </div>
     <div class="event-meta-item">
-      <span>${event.location}</span>
+      <span>${escapeHtml(event.location)}</span>
     </div>
     ${
       spotsLeft > 0
@@ -549,7 +457,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   </div>
 
-  <a href="evento.html?id=${event.slug}" class="event-card-cta">
+  <a href="evento.html?id=${encodeURIComponent(event.slug)}" class="event-card-cta">
     Mais Informações
   </a>
 </div>
@@ -614,17 +522,17 @@ function renderSpeakers(hosts, categoryColor) {
       '<div class="speaker-card-avatar" style="background-color:' +
       color +
       '">' +
-      initials +
+      escapeHtml(initials) +
       "</div>" +
       '<div class="speaker-card-name">' +
-      (host.name || "") +
+      escapeHtml(host.name || "") +
       "</div>" +
       (host.role
-        ? '<div class="speaker-card-role">' + host.role + "</div>"
+        ? '<div class="speaker-card-role">' + escapeHtml(host.role) + "</div>"
         : "") +
       (host.organization
         ? '<div class="speaker-card-organization">' +
-          host.organization +
+          escapeHtml(host.organization) +
           "</div>"
         : "");
 

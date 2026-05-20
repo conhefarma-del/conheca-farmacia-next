@@ -1,12 +1,11 @@
-import { supabaseClient, SUPABASE_URL, SUPABASE_ANON_KEY } from "./config.js";
+import { supabaseClient } from "./config.js";
 import { renderBreadcrumb } from "./breadcrumb.js";
 import eventsData from "./content/events-catalog.json";
 import { initInlineValidation } from "./inscription-validation.js";
+import { logger } from "./lib/logger.js";
 
-// Inicializar Supabase na janela global para compatibilidade
-window.supabase = supabaseClient;
-window.SUPABASE_URL = SUPABASE_URL;
-window.SUPABASE_ANON_KEY = SUPABASE_ANON_KEY;
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 document.addEventListener("DOMContentLoaded", async () => {
   const inscriptionForm = document.getElementById("inscription-form");
@@ -17,7 +16,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const btnText = document.getElementById("btn-text");
   const eventoSlugInput = document.getElementById("evento_slug");
 
-  console.log("🔧 Iniciando sistema de inscrição...");
+  logger.log("🔧 Iniciando sistema de inscrição...");
 
   // ==========================================
   // RATE LIMITING: Impedir múltiplas submissões
@@ -29,8 +28,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Aguardar que Supabase esteja pronto
   async function waitForSupabase(timeout = 10000) {
     return new Promise((resolve, reject) => {
-      if (window.supabase && typeof window.supabase.from === "function") {
-        console.log("✅ Supabase já disponível");
+      if (supabaseClient && typeof supabaseClient.from === "function") {
+        logger.log("✅ Supabase já disponível");
         resolve();
         return;
       }
@@ -41,7 +40,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       window.addEventListener("supabase-ready", () => {
         clearTimeout(timeoutId);
-        console.log("✅ Evento supabase-ready recebido");
+        logger.log("✅ Evento supabase-ready recebido");
         resolve();
       });
 
@@ -54,9 +53,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Tentar inicializar Supabase
   try {
-    console.log("⏳ Aguardando Supabase...");
+    logger.log("⏳ Aguardando Supabase...");
     await waitForSupabase(15000);
-    console.log("✅ Supabase inicializado com sucesso");
+    logger.log("✅ Supabase inicializado com sucesso");
   } catch (error) {
     console.error("❌ Erro ao inicializar Supabase:", error);
   }
@@ -72,7 +71,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const eventoSlug = getEventoSlugFromURL();
     if (eventoSlug) {
       eventoSlugInput.value = eventoSlug;
-      console.log("✓ Evento carregado:", eventoSlug);
+      logger.log("✓ Evento carregado:", eventoSlug);
 
       // Breadcrumb: Início > Eventos > Nome Evento > Inscrição
       const eventForBreadcrumb = eventsData.events.find(
@@ -88,7 +87,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         { label: "Inscrição" },
       ]);
     } else {
-      console.warn("⚠ nenhum evento especificado na URL");
+      // BAI-04: Redirecionar se não há evento especificado
+      const formContainer = document.getElementById("form-container");
+      if (formContainer) {
+        formContainer.innerHTML = `
+          <div style="text-align:center; padding: 3rem 1rem;">
+            <h2 style="margin-bottom: 1rem;">Evento não especificado</h2>
+            <p style="margin-bottom: 1.5rem; opacity: 0.7;">Por favor, selecione um evento antes de se inscrever.</p>
+            <a href="/eventos.html" class="btn btn-primary">Ver Eventos</a>
+          </div>
+        `;
+      }
     }
   }
 
@@ -224,7 +233,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Validate honeypot with enhanced logic
   function validateHoneypot(honeypot) {
     if (honeypot && honeypot.trim() !== "") {
-      console.warn("🚨 SEGURANÇA: Bot detectado (honeypot preenchido)");
+      logger.warn("🚨 SEGURANÇA: Bot detectado (honeypot preenchido)");
       return false;
     }
     return true;
@@ -233,7 +242,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Mostrar erros de validação
   function showValidationErrors(errors) {
     const errorList = errors.map((err) => `• ${err}`).join("\n");
-    console.warn("⚠️ Erros de validação:\n" + errorList);
+    logger.warn("⚠️ Erros de validação:\n" + errorList);
     showError(
       `Por favor, corrija os seguintes erros:\n\n${errorList.replace(/• /g, "• ")}`
     );
@@ -241,7 +250,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Show success message
   function showSuccess() {
-    console.log("✅ Mostrando mensagem de sucesso...");
+    logger.log("✅ Mostrando mensagem de sucesso...");
     // Fade out form
     formContainer.style.opacity = "0";
     formContainer.style.transform = "translateY(20px)";
@@ -266,7 +275,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const eventoSlug = eventoSlugInput.value;
       setTimeout(() => {
         if (eventoSlug) {
-          console.log(`🔄 Redirecionando para evento: ${eventoSlug}`);
+          logger.log(`🔄 Redirecionando para evento: ${eventoSlug}`);
           // Redirecionar para o evento usando o slug (mesmo formato da URL de origem)
           window.location.href = `evento.html?id=${encodeURIComponent(eventoSlug)}&refresh=true`;
         } else {
@@ -304,28 +313,28 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ==========================================
   async function checkForDuplicateInscription(email, eventoSlug) {
     try {
-      console.log(
-        `🔍 Verificando inscrição duplicada para ${email} no evento ${eventoSlug}...`
+      logger.log(
+        `🔍 Verificando inscrição duplicada para o evento ${eventoSlug}...`
       );
 
-      const { data: existingInscriptions, error } = await window.supabase
+      const { data: existingInscriptions, error } = await supabaseClient
         .from("inscricoes")
         .select("id", { count: "exact" })
         .eq("email", email)
         .eq("evento_slug", eventoSlug);
 
       if (error) {
-        console.warn("⚠️ Erro ao verificar duplicata:", error);
+        logger.warn("⚠️ Erro ao verificar duplicata:", error);
         // Não falhar silenciosamente - deixar o INSERT tentar
         return false;
       }
 
       if (existingInscriptions && existingInscriptions.length > 0) {
-        console.warn("⚠️ Inscrição duplicada detetada");
+        logger.warn("⚠️ Inscrição duplicada detetada");
         return true; // Existe duplicata
       }
 
-      console.log("✅ Nenhuma inscrição duplicada encontrada");
+      logger.log("✅ Nenhuma inscrição duplicada encontrada");
       return false; // Sem duplicata
     } catch (error) {
       console.error("❌ Erro ao verificar duplicata:", error);
@@ -382,7 +391,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         );
       }
 
-      console.log("✅ Validação server-side passou com sucesso");
+      logger.log("✅ Validação server-side passou com sucesso");
       return true;
     } catch (error) {
       clearTimeout(timeoutId);
@@ -407,7 +416,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   inscriptionForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    console.log("📤 Iniciando submissão do formulário...");
+    logger.log("📤 Iniciando submissão do formulário...");
 
     // ==========================================
     // RATE LIMITING: Proteção contra spam
@@ -425,7 +434,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     lastSubmissionTime = now;
 
     // Verificar se Supabase está disponível
-    if (!window.supabase || typeof window.supabase.from !== "function") {
+    if (!supabaseClient || typeof supabaseClient.from !== "function") {
       console.error("❌ Supabase não foi inicializado corretamente");
       showError(
         "Não conseguimos estabelecer conexão no momento. Por favor, recarregue a página e tente novamente."
@@ -438,7 +447,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // ==========================================
     const honeypot = document.getElementById("honeypot").value;
     if (!validateHoneypot(honeypot)) {
-      console.warn("🚨 SEGURANÇA: Submissão bloqueada por honeypot");
+      logger.warn("🚨 SEGURANÇA: Submissão bloqueada por honeypot");
       showError(
         "Não foi possível validar o seu pedido. Por favor, tente novamente."
       );
@@ -474,7 +483,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       nivel_escolaridade: sanitizeInput(rawData.nivel_escolaridade) || null,
     };
 
-    console.log("📋 Dados do formulário (sanitizados):", data);
+    logger.log("📋 Dados do formulário validados");
 
     // ==========================================
     // VALIDAÇÃO ANTES DO ENVIO: Garantir que nenhum campo é vazio
@@ -492,7 +501,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (!value || (typeof value === "string" && value.trim() === "")) {
         console.error(`❌ Campo obrigatório vazio: ${field}`);
       } else {
-        console.log(`✓ ${field}: "${value}" (${value.length} caracteres)`);
+        logger.log(`✓ ${field}: OK (${value.length} caracteres)`);
       }
     }
 
@@ -515,7 +524,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       // ==========================================
       await validateWithEdgeFunction(data, honeypot);
 
-      console.log("🔗 Conectando ao Supabase...");
+      logger.log("🔗 Conectando ao Supabase...");
       btnText.textContent = "A processar...";
 
       // ==========================================
@@ -531,13 +540,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         );
       }
 
-      // Insert into Supabase - LOG DADOS
-      console.log("📤 DADOS INSERÇÃO:", JSON.stringify(data));
-      console.log("🔍 evento_slug:", data.evento_slug);
-      console.log("🔍 email:", data.email);
+      // Insert into Supabase
 
       // INSERT sem .select() para evitar erros de RLS com papel anon
-      const { error } = await window.supabase.from("inscricoes").insert([data]);
+      const { error } = await supabaseClient.from("inscricoes").insert([data]);
 
       if (error) {
         console.error("❌ Erro ao inserir:", error);
@@ -570,22 +576,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         throw new Error(error.message || "Erro ao salvar inscrição");
       }
 
-      console.log("✅ Inscrição salva com sucesso!");
+      logger.log("✅ Inscrição salva com sucesso!");
       showSuccess();
     } catch (error) {
       console.error("❌ Erro na submissão:", error);
-
-      // Se for erro de JSON parsing e dados foram enviados, considerar como sucesso
-      if (
-        error.message.includes("JSON") ||
-        error.message.includes("Unexpected end")
-      ) {
-        console.log(
-          "⚠️ Erro de parsing mas os dados foram provavelmente gravados"
-        );
-        showSuccess();
-        return;
-      }
 
       showError(
         error.message ||
@@ -602,5 +596,5 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Initialize on page load
   initInlineValidation();
   initializeForm();
-  console.log("✓ Sistema de inscrição pronto");
+  logger.log("✓ Sistema de inscrição pronto");
 });

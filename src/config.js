@@ -38,12 +38,5 @@ const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   },
 });
 
-// Exportar para módulos ES6
-export { supabaseClient, SUPABASE_URL, SUPABASE_ANON_KEY };
-
-// Manter compatibilidade com código legado (window.supabase)
-window.supabase = supabaseClient;
-window.SUPABASE_URL = SUPABASE_URL;
-window.SUPABASE_ANON_KEY = SUPABASE_ANON_KEY;
-
-console.log("✅ Supabase configurado com biblioteca oficial");
+// Exportar cliente Supabase (nunca exportar chaves brutas)
+export { supabaseClient };

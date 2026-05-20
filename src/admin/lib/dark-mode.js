@@ -12,7 +12,11 @@ function isDarkMode() {
 
 function setDarkMode(enabled) {
   document.documentElement.classList.toggle('dark', enabled);
-  localStorage.setItem(STORAGE_KEY, enabled ? 'true' : 'false');
+  try {
+    localStorage.setItem(STORAGE_KEY, enabled ? 'true' : 'false');
+  } catch {
+    // localStorage indisponível
+  }
   updateToggleIcon();
 }
 

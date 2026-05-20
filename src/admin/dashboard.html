@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard - Admin</title>
-  <link rel="stylesheet" href="/src/admin/styles/admin.css">
+  <link rel="stylesheet" href="./styles/admin.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -29,21 +29,29 @@
     </div>
 
     <nav class="admin-nav-vertical">
-      <a href="/src/admin/dashboard.html" class="active">
+      <a href="./dashboard.html" class="active">
         <i data-lucide="home"></i>
         Dashboard
       </a>
-      <a href="/src/admin/artigos/index.html">
+      <a href="./artigos/index.html">
         <i data-lucide="file-text"></i>
         Artigos
       </a>
-      <a href="/src/admin/eventos/index.html">
+      <a href="./eventos/index.html">
         <i data-lucide="calendar"></i>
         Eventos
       </a>
-      <a href="/src/admin/lives/index.html">
+      <a href="./lives/index.html">
         <i data-lucide="video"></i>
         Lives
+      </a>
+      <a href="./newsletter.html">
+        <i data-lucide="mail"></i>
+        Newsletter
+      </a>
+      <a href="./definicoes.html">
+        <i data-lucide="settings"></i>
+        Definições
       </a>
     </nav>
 
@@ -69,11 +77,6 @@
       </div>
 
       <div class="admin-top-actions">
-        <button class="admin-icon-btn">
-          <i data-lucide="bell"></i>
-          <span class="badge"></span>
-        </button>
-
         <div class="admin-user-menu">
           <div class="admin-user-avatar">A</div>
           <div class="admin-user-info">
@@ -86,136 +89,119 @@
 
     <!-- Dashboard Content -->
     <div class="admin-content">
-      <!-- Stats Grid -->
-      <div class="admin-stats-grid">
-        <!-- Pages -->
-        <div class="admin-stat-card stat-green">
-          <div class="admin-stat-card-icon">
-            <i data-lucide="file-text"></i>
-          </div>
-          <div>
-            <div class="admin-stat-card-label">Artigos</div>
+      <!-- Dashboard Layout - Stats + Activity -->
+      <div class="admin-dashboard-layout">
+        <!-- Stats Grid - 3x2 -->
+        <div class="admin-stats-grid">
+          <!-- Artigos -->
+          <div class="admin-stat-card stat-green">
+            <div class="admin-stat-card-label">ARTIGOS</div>
             <div class="admin-stat-card-value" id="stat-articles">-</div>
+            <div class="admin-stat-card-actions">
+              <button class="admin-stat-card-btn" onclick="window.location.href='./artigos/index.html'">
+                Ver Todos
+              </button>
+            </div>
           </div>
-          <div class="admin-stat-card-actions">
-            <button class="admin-stat-card-btn" onclick="window.location.href='/src/admin/artigos/index.html'">
-              <i data-lucide="eye"></i>
-              View All
-            </button>
-          </div>
-        </div>
 
-        <!-- Eventos -->
-        <div class="admin-stat-card stat-purple">
-          <div class="admin-stat-card-icon">
-            <i data-lucide="calendar"></i>
-          </div>
-          <div>
-            <div class="admin-stat-card-label">Eventos</div>
+          <!-- Eventos -->
+          <div class="admin-stat-card stat-purple">
+            <div class="admin-stat-card-label">EVENTOS</div>
             <div class="admin-stat-card-value" id="stat-events">-</div>
+            <div class="admin-stat-card-actions">
+              <button class="admin-stat-card-btn" onclick="window.location.href='./eventos/index.html'">
+                Ver Todos
+              </button>
+            </div>
           </div>
-          <div class="admin-stat-card-actions">
-            <button class="admin-stat-card-btn" onclick="window.location.href='/src/admin/eventos/index.html'">
-              <i data-lucide="eye"></i>
-              View All
-            </button>
-          </div>
-        </div>
 
-        <!-- Users -->
-        <div class="admin-stat-card stat-orange">
-          <div class="admin-stat-card-icon">
-            <i data-lucide="users"></i>
-          </div>
-          <div>
-            <div class="admin-stat-card-label">Utilizadores</div>
-            <div class="admin-stat-card-value" id="stat-users">-</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Second Row -->
-      <div class="admin-stats-grid">
-        <!-- Lives -->
-        <div class="admin-stat-card stat-blue">
-          <div class="admin-stat-card-icon">
-            <i data-lucide="video"></i>
-          </div>
-          <div>
-            <div class="admin-stat-card-label">Lives</div>
+          <!-- Lives -->
+          <div class="admin-stat-card stat-blue">
+            <div class="admin-stat-card-label">LIVES</div>
             <div class="admin-stat-card-value" id="stat-files">-</div>
+            <div class="admin-stat-card-actions">
+              <button class="admin-stat-card-btn" onclick="window.location.href='./lives/index.html'">
+                Ver Todos
+              </button>
+            </div>
           </div>
-          <div class="admin-stat-card-actions">
-            <button class="admin-stat-card-btn" onclick="window.location.href='/src/admin/lives/index.html'">
-              <i data-lucide="eye"></i>
-              View All
-            </button>
+
+          <!-- Utilizadores -->
+          <div class="admin-stat-card stat-orange">
+            <div class="admin-stat-card-icon">
+              <i data-lucide="users"></i>
+            </div>
+            <div>
+              <div class="admin-stat-card-label">Utilizadores</div>
+              <div class="admin-stat-card-value" id="stat-users">-</div>
+            </div>
+          </div>
+
+          <!-- Categorias -->
+          <div class="admin-stat-card stat-black">
+            <div class="admin-stat-card-icon">
+              <i data-lucide="grid-3x3"></i>
+            </div>
+            <div>
+              <div class="admin-stat-card-label">Categorias</div>
+              <div class="admin-stat-card-value" id="stat-categories">-</div>
+            </div>
+          </div>
+
+          <!-- Total Conteúdos -->
+          <div class="admin-stat-card stat-cyan">
+            <div class="admin-stat-card-icon">
+              <i data-lucide="archive"></i>
+            </div>
+            <div>
+              <div class="admin-stat-card-label">Total</div>
+              <div class="admin-stat-card-value" id="stat-total">-</div>
+            </div>
           </div>
         </div>
 
-        <!-- Categories -->
-        <div class="admin-stat-card stat-black">
-          <div class="admin-stat-card-icon">
-            <i data-lucide="grid-3x3"></i>
-          </div>
-          <div>
-            <div class="admin-stat-card-label">Categorias</div>
-            <div class="admin-stat-card-value" id="stat-categories">-</div>
-          </div>
-        </div>
-
-        <!-- Total Conteúdos -->
-        <div class="admin-stat-card stat-cyan">
-          <div class="admin-stat-card-icon">
-            <i data-lucide="archive"></i>
-          </div>
-          <div>
-            <div class="admin-stat-card-label">Total Conteúdos</div>
-            <div class="admin-stat-card-value" id="stat-total">-</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Dashboard Grid with Charts and Activity -->
-      <div class="admin-dashboard-grid">
-        <!-- User Stats Chart -->
-        <div class="admin-dashboard-card">
-          <h3>Atividade Recente</h3>
-          <div class="admin-chart-container">
-            <canvas id="userStatsChart"></canvas>
-          </div>
-        </div>
-
-        <!-- Latest Events -->
-        <div class="admin-dashboard-card">
-          <h3>Últimos Eventos</h3>
+        <!-- Activity Card -->
+        <div class="admin-activity-card">
+          <h3>Últimas Atualizações</h3>
           <ul class="admin-activity-list" id="latest-events">
             <!-- Events will be populated by JavaScript -->
           </ul>
         </div>
+      </div>
 
-        <!-- Statistics -->
-        <div class="admin-dashboard-card">
-          <h3>Distribuição por Categoria</h3>
+      <!-- Dashboard Grid with Charts -->
+      <div class="admin-dashboard-grid">
+        <!-- Website Activity -->
+        <div class="admin-dashboard-card admin-activity-chart-card">
+          <div class="admin-chart-header">
+            <h3>Atividade do Site</h3>
+            <div class="admin-chart-filters" id="activity-filters">
+              <button class="admin-chart-filter-btn" data-period="day">Dia</button>
+              <button class="admin-chart-filter-btn active" data-period="week">Semana</button>
+              <button class="admin-chart-filter-btn" data-period="month">Mês</button>
+              <button class="admin-chart-filter-btn" data-period="6months">6 Meses</button>
+              <button class="admin-chart-filter-btn" data-period="year">1 Ano</button>
+            </div>
+          </div>
           <div class="admin-chart-container">
-            <canvas id="statsChart"></canvas>
+            <canvas id="activityChart"></canvas>
           </div>
         </div>
 
-        <!-- Site Speed -->
-        <div class="admin-dashboard-card">
-          <h3>Site Speed</h3>
+        <!-- Statistics -->
+        <div class="admin-dashboard-card admin-category-chart-card">
+          <h3>Distribuição por Categoria</h3>
           <div class="admin-chart-container">
-            <canvas id="speedChart"></canvas>
+            <canvas id="statsChart"></canvas>
           </div>
         </div>
       </div>
     </div>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <script type="module" src="/src/admin/dashboard.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/lucide@latest" integrity="sha384-ZgnJ3Zpr70Xoify35DjOZWqHib1iYJBpYpQUIEpDASG9+fJ745WzNQuC004dwU0W" crossorigin="anonymous"></script>
+  <script type="module" src="./dashboard.js"></script>
   <script type="module">
     import { initDarkMode, toggleDarkMode } from './lib/dark-mode.js';
 
@@ -250,6 +236,21 @@
     if (typeof lucide !== 'undefined') {
       lucide.createIcons();
     }
+  </script>
+  <script type="module">
+    import { checkAuth, getAdminProfile, updateTopBar, logout } from './lib/auth.js';
+
+    // Logout handler
+    document.getElementById('logout-btn')?.addEventListener('click', async (e) => {
+      e.preventDefault();
+      await logout();
+    });
+
+    (async () => {
+      await checkAuth();
+      const profile = await getAdminProfile();
+      if (profile) updateTopBar(profile);
+    })();
   </script>
 </body>
 </html>

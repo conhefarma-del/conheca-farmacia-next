@@ -270,7 +270,7 @@
               Fique Atualizado
             </h2>
             <p class="text-white/80 mb-8">
-              Receba notificações sobre novas lives e webinars diretamente na
+              Receba notificações sobre novos artigos, eventos, palestras e webinars diretamente na
               sua caixa de entrada.
             </p>
 
@@ -278,6 +278,10 @@
               id="newsletter-form"
               class="flex flex-col md:flex-row gap-3 items-center justify-center"
             >
+              <!-- Honeypot anti-spam -->
+              <div style="position: absolute; left: -9999px;" aria-hidden="true">
+                <input type="text" name="website" tabindex="-1" autocomplete="off" />
+              </div>
               <input
                 type="email"
                 id="newsletter-email"
@@ -290,7 +294,7 @@
               </button>
             </form>
             <p class="text-white/60 text-sm mt-4">
-              Respeitamos sua privacidade. Sem spam, prometemos!
+              Respeitamos sua privacidade!
             </p>
           </div>
         </div>
@@ -355,28 +359,28 @@
                 <a
                   href="https://www.facebook.com/conhecafarmacia"
                   target="_blank"
-                  >Facebook</a
+                  rel="noopener noreferrer">Facebook</a
                 >
               </li>
               <li>
                 <a
                   href="https://www.instagram.com/conhecafarmacia"
                   target="_blank"
-                  >Instagram</a
+                  rel="noopener noreferrer">Instagram</a
                 >
               </li>
               <li>
                 <a
                   href="https://www.tiktok.com/conhecafarmaciaofficial"
                   target="_blank"
-                  >TikTok</a
+                  rel="noopener noreferrer">TikTok</a
                 >
               </li>
               <li>
                 <a
                   href="https://www.linkedin.com/company/conhecafarmacia"
                   target="_blank"
-                  >LinkedIn</a
+                  rel="noopener noreferrer">LinkedIn</a
                 >
               </li>
             </ul>
