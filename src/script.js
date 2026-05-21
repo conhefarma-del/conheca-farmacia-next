@@ -152,7 +152,7 @@ setActiveNavLink();
 const adminGateBtn = document.getElementById('admin-gate-btn');
 if (adminGateBtn) {
   adminGateBtn.addEventListener('click', () => {
-    window.location.href = '/src/admin/index.html';
+    window.location.href = '/admin/index.html';
   });
 }
 
