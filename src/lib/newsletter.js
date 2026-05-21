@@ -40,7 +40,7 @@ export async function subscribeToNewsletter(email, honeypot) {
  */
 async function sendWelcomeEmail(email) {
   try {
-    await fetch(`${SUPABASE_URL}/functions/v1/send-newsletter-email-v3`, {
+    await fetch(`${SUPABASE_URL}/functions/v1/send-newsletter-email`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -71,21 +71,36 @@ export async function getNewsletterSubscribers() {
 
 /**
  * Enviar alerta de conteúdo (admin)
+ * @param {Array} targetEmails — se fornecido, envia apenas para estes emails em vez de todos os ativos
  */
-export async function sendContentAlert(type, content) {
-  const { data: subscribers } = await supabaseClient
-    .from('newsletter')
-    .select('email')
-    .eq('status', 'active');
+export async function sendContentAlert(type, content, targetEmails = null) {
+  let subscribers;
+
+  if (targetEmails && targetEmails.length > 0) {
+    // Enviar apenas para emails específicos
+    const { data } = await supabaseClient
+      .from('newsletter')
+      .select('email, unsubscribe_token')
+      .in('email', targetEmails)
+      .eq('status', 'active');
+    subscribers = data || [];
+  } else {
+    // Enviar para todos os ativos
+    const { data } = await supabaseClient
+      .from('newsletter')
+      .select('email, unsubscribe_token')
+      .eq('status', 'active');
+    subscribers = data || [];
+  }
 
   if (!subscribers || subscribers.length === 0) {
-    return { success: false, error: 'Nenhum subscritor ativo.' };
+    return { success: false, error: 'Nenhum subscritor ativo selecionado.' };
   }
 
   const results = [];
   for (const subscriber of subscribers) {
     try {
-      const response = await fetch(`${SUPABASE_URL}/functions/v1/send-newsletter-email-v3`, {
+      const response = await fetch(`${SUPABASE_URL}/functions/v1/send-newsletter-email`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -98,6 +113,9 @@ export async function sendContentAlert(type, content) {
           contentUrl: content.url,
           contentDescription: content.description,
           contentDate: content.date,
+          contentPlatform: content.platform,
+          contentLocation: content.location,
+          unsubscribeToken: subscriber.unsubscribe_token,
         }),
       });
       results.push({ email: subscriber.email, success: response.ok });
@@ -108,6 +126,30 @@ export async function sendContentAlert(type, content) {
 
   const successful = results.filter(r => r.success).length;
   return { success: true, sent: successful, total: subscribers.length };
+}
+
+/**
+ * Cancelar inscrição de subscritor por ID (soft delete — admin)
+ */
+export async function unsubscribeById(id) {
+  const { error } = await supabaseClient
+    .from('newsletter')
+    .update({ status: 'unsubscribed', updated_at: new Date().toISOString() })
+    .eq('id', id);
+
+  return { success: !error, error: error?.message };
+}
+
+/**
+ * Apagar subscritor permanentemente (hard delete — admin)
+ */
+export async function deleteSubscriber(id) {
+  const { error } = await supabaseClient
+    .from('newsletter')
+    .delete()
+    .eq('id', id);
+
+  return { success: !error, error: error?.message };
 }
 
 /**
@@ -123,4 +165,16 @@ export async function unsubscribeByToken(token) {
   }
 
   return data;
+}
+
+/**
+ * Reativar subscrição cancelada (admin)
+ */
+export async function reactivateSubscriber(id) {
+  const { error } = await supabaseClient
+    .from('newsletter')
+    .update({ status: 'active', updated_at: new Date().toISOString() })
+    .eq('id', id);
+
+  return { success: !error, error: error?.message };
 }

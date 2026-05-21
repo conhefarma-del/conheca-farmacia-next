@@ -1,6 +1,7 @@
 import { getArticles } from './lib/api.js';
 import { escapeHtml } from './lib/security.js';
 import { logger } from './lib/logger.js';
+import { subscribeToNewsletter } from './lib/newsletter.js';
 
 let articles = [];
 let currentFilter = "all";
@@ -83,4 +84,43 @@ document.addEventListener("DOMContentLoaded", () => {
     logger.log("Artigos carregados do Supabase:", articles.length);
     renderArticles();
   })();
+
+  // Newsletter subscription
+  const newsletterForm = document.getElementById("newsletter-form");
+  if (newsletterForm) {
+    newsletterForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const emailInput = document.getElementById("newsletter-email");
+      const honeypot = newsletterForm.querySelector('[name="website"]');
+      const submitBtn = newsletterForm.querySelector('button[type="submit"]');
+
+      if (honeypot && honeypot.value) {
+        newsletterForm.reset();
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "A subscrever...";
+
+      const result = await subscribeToNewsletter(emailInput.value, false);
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Subscrever";
+
+      const feedback = document.getElementById("newsletter-feedback");
+      if (feedback) {
+        feedback.className = "mt-4 rounded-lg px-4 py-3 text-sm text-center";
+        if (result.success) {
+          feedback.classList.add("bg-green-100", "text-green-800", "border", "border-green-300");
+          feedback.textContent = result.message || "Subscrição realizada com sucesso!";
+          newsletterForm.reset();
+        } else {
+          feedback.classList.add("bg-red-100", "text-red-800", "border", "border-red-300");
+          feedback.textContent = result.error || "Erro ao subscrever.";
+        }
+        feedback.classList.remove("hidden");
+        setTimeout(() => feedback.classList.add("hidden"), 5000);
+      }
+    });
+  }
 });

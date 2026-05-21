@@ -218,13 +218,21 @@ document.addEventListener("DOMContentLoaded", async () => {
       const result = await subscribeToNewsletter(emailInput.value, false);
 
       submitBtn.disabled = false;
-      submitBtn.textContent = "Notifique-me";
+      submitBtn.textContent = "Subscrever";
 
-      if (result.success) {
-        newsletterForm.reset();
-        alert(result.message);
-      } else {
-        alert(result.error);
+      const feedback = document.getElementById("newsletter-feedback");
+      if (feedback) {
+        feedback.className = "mt-4 rounded-lg px-4 py-3 text-sm text-center";
+        if (result.success) {
+          feedback.classList.add("bg-green-100", "text-green-800", "border", "border-green-300");
+          feedback.textContent = result.message || "Subscrição realizada com sucesso!";
+          newsletterForm.reset();
+        } else {
+          feedback.classList.add("bg-red-100", "text-red-800", "border", "border-red-300");
+          feedback.textContent = result.error || "Erro ao subscrever.";
+        }
+        feedback.classList.remove("hidden");
+        setTimeout(() => feedback.classList.add("hidden"), 5000);
       }
     });
   }
