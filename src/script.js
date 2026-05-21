@@ -148,6 +148,14 @@ if (drawer) {
 // Set active link on load
 setActiveNavLink();
 
+// Footer Admin Gate Button — redirect to admin (which has gate questions)
+const adminGateBtn = document.getElementById('admin-gate-btn');
+if (adminGateBtn) {
+  adminGateBtn.addEventListener('click', () => {
+    window.location.href = '/src/admin/index.html';
+  });
+}
+
 // Export for use in other modules if needed
 export function initNavigation() {
   return {

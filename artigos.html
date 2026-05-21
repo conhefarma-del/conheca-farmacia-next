@@ -37,7 +37,7 @@
           <button
             class="theme-toggle"
             aria-label="Alternar modo escuro"
-            onclick="toggleTheme()"
+           
           >
             <!-- Sun icon (visible in dark mode) -->
             <svg class="sun-icon" viewBox="0 0 24 24">
@@ -112,7 +112,7 @@
         <button
           class="drawer-theme-toggle"
           aria-label="Alternar modo escuro"
-          onclick="toggleTheme()"
+         
         >
           <svg class="sun-icon" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="5"></circle>
@@ -282,6 +282,45 @@
           </div>
         </div>
       </section>
+
+      <!-- Newsletter Signup Section -->
+      <section class="newsletter-section">
+        <div class="container-center">
+          <div class="max-w-2xl mx-auto text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+              Fique Atualizado
+            </h2>
+            <p class="text-white/80 mb-8">
+              Receba notificações sobre novos artigos, eventos, palestras e webinars diretamente na
+              sua caixa de entrada.
+            </p>
+
+            <form
+              id="newsletter-form"
+              class="flex flex-col md:flex-row gap-3 items-center justify-center"
+            >
+              <!-- Honeypot anti-spam -->
+              <div style="position: absolute; left: -9999px;" aria-hidden="true">
+                <input type="text" name="website" tabindex="-1" autocomplete="off" />
+              </div>
+              <input
+                type="email"
+                id="newsletter-email"
+                placeholder="Seu email"
+                class="flex-1 min-w-[250px] px-4 py-3 rounded-lg border border-white/30 focus:outline-none focus:ring-2 focus:ring-white/50"
+                required
+              />
+              <button type="submit" class="btn btn-primary whitespace-nowrap">
+                Subscrever
+              </button>
+            </form>
+            <div id="newsletter-feedback" class="hidden mt-4 rounded-lg px-4 py-3 text-sm text-center"></div>
+            <p class="text-white/60 text-sm mt-4">
+              Respeitamos sua privacidade!
+            </p>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- Footer -->
@@ -374,6 +413,16 @@
 
         <div class="footer-bottom">
           <p>&copy; 2026 Conheça Farmácia. Todos os direitos reservados.</p>
+        </div>
+
+        <!-- Admin Access (discreet) -->
+        <div class="footer-admin-access">
+          <button id="admin-gate-btn" class="footer-admin-btn" aria-label="Acesso administrativo" title="Acesso administrativo">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </button>
         </div>
       </div>
     </footer>

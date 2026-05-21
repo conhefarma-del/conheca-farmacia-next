@@ -1180,7 +1180,7 @@ html.dark .form-note {
   }
 
   .newsletter-section {
-    @apply bg-brand-primary text-white py-20 md:py-24;
+    @apply bg-brand-primary text-white py-12 md:py-16;
   }
 
   .hidden {
@@ -1750,4 +1750,42 @@ html.dark .theme-toggle .sun-icon {
 html.dark .theme-toggle .moon-icon {
   @apply hidden;
 }
+}
+
+/* =============================================
+   FOOTER ADMIN ACCESS BUTTON (discreet)
+   ============================================= */
+.footer-admin-access {
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.footer-admin-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.2);
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease, opacity 0.3s ease;
+  opacity: 0.4;
+}
+
+.footer-admin-btn:hover {
+  color: rgba(255, 255, 255, 0.6);
+  opacity: 1;
+}
+
+.footer-admin-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }

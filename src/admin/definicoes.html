@@ -220,6 +220,59 @@
           </button>
         </div>
       </div>
+
+      <!-- Secção Perguntas de Acesso -->
+      <div class="settings-section">
+        <h2 class="settings-section-title">
+          <i data-lucide="key" width="20" height="20"></i>
+          Perguntas de Acesso
+        </h2>
+        <p class="settings-section-description">
+          Configure as perguntas de segurança que aparecem antes do login. As respostas são guardadas de forma encriptada (SHA256).
+        </p>
+
+        <form id="gate-questions-form" class="settings-form">
+          <div class="settings-form-group">
+            <label for="gate-question-1">Pergunta 1</label>
+            <div class="settings-input-wrapper">
+              <input type="text" id="gate-question-1" placeholder="Ex: Qual é o nome do fundador?" disabled>
+              <button type="button" class="settings-edit-btn" data-target="gate-question-1" title="Editar pergunta">
+                <i data-lucide="pencil" width="16" height="16"></i>
+              </button>
+            </div>
+          </div>
+          <div class="settings-form-group">
+            <label for="gate-answer-1">Resposta 1</label>
+            <input type="password" id="gate-answer-1" placeholder="Resposta secreta" autocomplete="off">
+            <span class="settings-form-hint">A resposta será guardada de forma encriptada.</span>
+          </div>
+          <div class="settings-form-group">
+            <label for="gate-question-2">Pergunta 2</label>
+            <div class="settings-input-wrapper">
+              <input type="text" id="gate-question-2" placeholder="Ex: Qual é o código de acesso?" disabled>
+              <button type="button" class="settings-edit-btn" data-target="gate-question-2" title="Editar pergunta">
+                <i data-lucide="pencil" width="16" height="16"></i>
+              </button>
+            </div>
+          </div>
+          <div class="settings-form-group">
+            <label for="gate-answer-2">Resposta 2</label>
+            <input type="password" id="gate-answer-2" placeholder="Resposta secreta" autocomplete="off">
+            <span class="settings-form-hint">A resposta será guardada de forma encriptada.</span>
+          </div>
+          <div id="gate-success" class="settings-success" style="display: none;"></div>
+          <div id="gate-error-msg" class="settings-error" style="display: none;"></div>
+          <div id="gate-actions" style="display: none;">
+            <button type="submit" class="admin-btn admin-btn-primary">
+              <i data-lucide="save" width="16" height="16"></i>
+              Guardar Perguntas
+            </button>
+            <button type="button" id="gate-cancel" class="admin-btn admin-btn-secondary">
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   </main>
 

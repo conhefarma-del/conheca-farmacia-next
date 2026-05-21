@@ -124,9 +124,19 @@ if (typeof window !== "undefined" && window.matchMedia) {
 // Initialize immediately to prevent FOUC (Flash of Unstyled Content)
 initTheme();
 
-// Expose toggleTheme to global scope for onclick handler
-if (typeof window !== "undefined") {
-  window.toggleTheme = toggleTheme;
+// Attach click listeners to toggle buttons (CSP-compliant, no inline onclick)
+function attachToggleListeners() {
+  document.querySelectorAll(".theme-toggle, .drawer-theme-toggle").forEach(btn => {
+    btn.addEventListener("click", toggleTheme);
+  });
+}
+
+if (typeof document !== "undefined") {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", attachToggleListeners);
+  } else {
+    attachToggleListeners();
+  }
 }
 
 // Export for use in other modules

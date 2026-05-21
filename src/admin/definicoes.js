@@ -267,3 +267,124 @@ document.getElementById('confirm-accept')?.addEventListener('click', async () =>
   }
 });
 
+// =============================================
+// SECÇÃO PERGUNTAS DE ACESSO
+// =============================================
+
+// Carregar perguntas existentes
+async function loadGateQuestions() {
+  try {
+    const { data, error } = await supabaseClient.rpc('get_access_questions');
+    if (error) throw error;
+
+    if (data && data.length > 0) {
+      document.getElementById('gate-question-1').value = data[0].question_1 || '';
+      document.getElementById('gate-question-2').value = data[0].question_2 || '';
+    }
+  } catch (error) {
+    if (import.meta.env.DEV) console.error('Erro ao carregar perguntas:', error);
+  }
+}
+
+// Carregar perguntas ao inicializar
+loadGateQuestions();
+
+// Botões de editar nas perguntas
+document.querySelectorAll('#gate-questions-form .settings-edit-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const targetId = btn.dataset.target;
+    const input = document.getElementById(targetId);
+    if (!input) return;
+
+    input.disabled = false;
+    input.focus();
+    btn.style.display = 'none';
+    document.getElementById('gate-actions').style.display = 'flex';
+  });
+});
+
+// Botão Cancelar edição de perguntas
+document.getElementById('gate-cancel')?.addEventListener('click', async () => {
+  await loadGateQuestions();
+
+  document.querySelectorAll('#gate-question-1, #gate-question-2').forEach(input => {
+    input.disabled = true;
+  });
+  document.querySelectorAll('#gate-questions-form .settings-edit-btn').forEach(btn => {
+    btn.style.display = '';
+  });
+  document.getElementById('gate-actions').style.display = 'none';
+  document.getElementById('gate-success').style.display = 'none';
+  document.getElementById('gate-error-msg').style.display = 'none';
+});
+
+// Formulário de Perguntas de Acesso
+document.getElementById('gate-questions-form')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const q1 = document.getElementById('gate-question-1').value.trim();
+  const a1 = document.getElementById('gate-answer-1').value.trim();
+  const q2 = document.getElementById('gate-question-2').value.trim();
+  const a2 = document.getElementById('gate-answer-2').value.trim();
+  const successDiv = document.getElementById('gate-success');
+  const errorDiv = document.getElementById('gate-error-msg');
+
+  successDiv.style.display = 'none';
+  errorDiv.style.display = 'none';
+
+  // Validar
+  if (q1.length < 3) {
+    errorDiv.textContent = 'A pergunta 1 deve ter pelo menos 3 caracteres.';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  if (a1.length < 1) {
+    errorDiv.textContent = 'Introduza a resposta 1.';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  if (q2.length < 3) {
+    errorDiv.textContent = 'A pergunta 2 deve ter pelo menos 3 caracteres.';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  if (a2.length < 1) {
+    errorDiv.textContent = 'Introduza a resposta 2.';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  try {
+    const { error } = await supabaseClient.rpc('save_access_questions', {
+      q1: q1,
+      a1: a1,
+      q2: q2,
+      a2: a2
+    });
+
+    if (error) throw error;
+
+    // Limpar campos de resposta
+    document.getElementById('gate-answer-1').value = '';
+    document.getElementById('gate-answer-2').value = '';
+
+    // Desativar campos
+    document.querySelectorAll('#gate-question-1, #gate-question-2').forEach(input => {
+      input.disabled = true;
+    });
+    document.querySelectorAll('#gate-questions-form .settings-edit-btn').forEach(btn => {
+      btn.style.display = '';
+    });
+    document.getElementById('gate-actions').style.display = 'none';
+
+    successDiv.textContent = 'Perguntas de acesso guardadas com sucesso.';
+    successDiv.style.display = 'block';
+  } catch (error) {
+    errorDiv.textContent = error.message || 'Erro ao guardar perguntas.';
+    errorDiv.style.display = 'block';
+  }
+});
+
