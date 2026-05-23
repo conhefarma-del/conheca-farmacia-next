@@ -41,6 +41,7 @@ function normalizeArticle(row) {
     published_date: isSupabase ? row.published_date : row.date,
     readTime: isSupabase ? row.read_time : row.readTime,
     references: isSupabase ? row.references_arr : row.references,
+    metaDescription: isSupabase ? row.meta_description : row.metaDescription,
   };
 }
 
@@ -218,7 +219,7 @@ export async function getLives() {
   try {
     const { data, error } = await supabaseClient
       .from('lives')
-      .select('id, slug, title, excerpt, category, category_label, image_url, date, time, end_time, platform, access_link, materials, status, host_name, host_role, host_organization, view_count, access_count, download_count, published_at')
+      .select('id, slug, title, excerpt, category, category_label, image_url, date, time, end_time, platform, access_link, meeting_id, password, materials, status, host_name, host_role, host_organization, view_count, access_count, download_count, published_at')
       .eq('status', 'published')
       .order('date', { ascending: true });
 
@@ -240,7 +241,7 @@ export async function getLiveBySlug(slug) {
   try {
     const { data, error } = await supabaseClient
       .from('lives')
-      .select('id, slug, title, excerpt, category, category_label, image_url, date, time, end_time, platform, access_link, materials, status, host_name, host_role, host_organization, view_count, access_count, download_count, published_at')
+      .select('id, slug, title, excerpt, category, category_label, image_url, date, time, end_time, platform, access_link, meeting_id, password, materials, status, host_name, host_role, host_organization, view_count, access_count, download_count, published_at')
       .eq('slug', slug)
       .eq('status', 'published')
       .single();

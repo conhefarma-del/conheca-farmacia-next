@@ -109,8 +109,8 @@ document.addEventListener("DOMContentLoaded", async () => {
  </div>
 
  <div class="event-card-actions mt-auto">
-  <a href="lives.html?id=${encodeURIComponent(live.slug)}" class="btn btn-secondary btn-small">
-   Mais Informações
+  <a href="lives.html?id=${encodeURIComponent(live.slug)}" class="btn btn-secondary btn-small" aria-label="Ver live: ${escapeHtml(live.title)}">
+   Saber mais
   </a>
   <a href="${validateUrl(live.link_acesso)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-small" style="background-color: ${categoryColor}; border-color: ${categoryColor}">
    ${live.status === "upcoming" ? "Aceder Live" : "Ver Gravação"}

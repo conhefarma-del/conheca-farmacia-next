@@ -126,6 +126,12 @@
                 </div>
 
                 <div class="admin-form-group">
+                    <label for="meta_description">Meta Descrição (SEO)</label>
+                    <textarea id="meta_description" name="meta_description" class="admin-textarea" style="min-height: 60px;" placeholder="Descrição para motores de busca (máx. 160 caracteres). Se vazio, usa o resumo." maxlength="160"></textarea>
+                    <small class="text-xs" style="color: var(--admin-text-muted, #999);">Aparece nos resultados do Google. Recomendado: 120-160 caracteres.</small>
+                </div>
+
+                <div class="admin-form-group">
                     <label for="content">Conteúdo (Markdown)</label>
                     <div style="display: flex; gap: 8px;">
                         <button type="button" class="admin-textarea-expand" data-target="content" title="Expandir editor">
@@ -172,10 +178,10 @@
                     <div id="references-container">
                         <div class="admin-reference-row">
                             <input type="text" class="admin-input reference-input" placeholder="URL ou texto da referência">
-                            <button type="button" class="admin-btn admin-btn-sm admin-btn-danger" onclick="this.parentElement.remove()">Remover</button>
+                            <button type="button" class="admin-btn admin-btn-sm admin-btn-danger remove-ref-btn">Remover</button>
                         </div>
                     </div>
-                    <button type="button" class="admin-btn admin-btn-sm" onclick="addReference()">+ Adicionar Referência</button>
+                    <button type="button" id="add-reference-btn" class="admin-btn admin-btn-sm">+ Adicionar Referência</button>
                 </div>
 
                 <div class="admin-form-grid">
@@ -320,17 +326,36 @@
         });
 
         // Add reference field
-        window.addReference = function() {
+        function addReference(value = '') {
             const container = document.getElementById('references-container');
             const newRow = document.createElement('div');
             newRow.className = 'admin-reference-row';
             newRow.style.marginTop = '8px';
-            newRow.innerHTML = `
-                <input type="text" class="admin-input reference-input" placeholder="URL ou texto da referência" style="display: inline-block; width: calc(100% - 100px);">
-                <button type="button" class="admin-btn admin-btn-sm admin-btn-danger" onclick="this.parentElement.remove()">Remover</button>
-            `;
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'admin-input reference-input';
+            input.placeholder = 'URL ou texto da referência';
+            input.value = value;
+            input.style.cssText = 'display: inline-block; width: calc(100% - 100px);';
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'admin-btn admin-btn-sm admin-btn-danger remove-ref-btn';
+            removeBtn.textContent = 'Remover';
+
+            newRow.appendChild(input);
+            newRow.appendChild(removeBtn);
             container.appendChild(newRow);
-        };
+        }
+
+        // Event delegation for add/remove reference buttons
+        document.getElementById('add-reference-btn')?.addEventListener('click', () => addReference());
+        document.getElementById('references-container')?.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-ref-btn')) {
+                e.target.parentElement.remove();
+            }
+        });
 
         // Form submission
         // Preview button
@@ -367,6 +392,7 @@
                 slug: document.getElementById('slug').value,
                 title: document.getElementById('title').value,
                 excerpt: document.getElementById('excerpt').value,
+                meta_description: document.getElementById('meta_description').value,
                 category: document.getElementById('category').value,
                 category_label: categoryLabel,
                 content: document.getElementById('content').value,

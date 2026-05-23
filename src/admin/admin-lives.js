@@ -8,6 +8,9 @@ const supabase = supabaseClient;
 
 let allLives = [];
 let searchQuery = '';
+let sortField = 'date-desc';
+let statusFilter = 'all';
+let timeFilter = 'all';
 
 // Logout
 document.getElementById('logout-btn')?.addEventListener('click', async (e) => {
@@ -40,13 +43,65 @@ function renderStats() {
 
 // Filter lives
 function getFilteredLives() {
-  if (!searchQuery) return allLives;
-  const q = searchQuery.toLowerCase();
-  return allLives.filter(live => {
-    const title = (live.title || '').toLowerCase();
-    const resumo = (live.resumo || '').toLowerCase();
-    const category = (live.category_label || live.category || live.categoria || '').toLowerCase();
-    return title.includes(q) || resumo.includes(q) || category.includes(q);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  let filtered = allLives.filter(live => {
+    // Status filter
+    if (statusFilter !== 'all' && live.status !== statusFilter) return false;
+
+    // Time filter
+    if (timeFilter !== 'all') {
+      const liveDate = new Date(live.date);
+      if (timeFilter === 'upcoming' && liveDate < today) return false;
+      if (timeFilter === 'past' && liveDate >= today) return false;
+    }
+
+    // Search filter
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      const title = (live.title || '').toLowerCase();
+      const resumo = (live.resumo || '').toLowerCase();
+      const category = (live.category_label || live.category || live.categoria || '').toLowerCase();
+      return title.includes(q) || resumo.includes(q) || category.includes(q);
+    }
+
+    return true;
+  });
+
+  // Sort
+  filtered.sort((a, b) => {
+    switch (sortField) {
+      case 'date-asc': return new Date(a.date || 0) - new Date(b.date || 0);
+      case 'date-desc': return new Date(b.date || 0) - new Date(a.date || 0);
+      case 'title-asc': return (a.title || '').localeCompare(b.title || '', 'pt');
+      case 'title-desc': return (b.title || '').localeCompare(a.title || '', 'pt');
+      default: return 0;
+    }
+  });
+
+  return filtered;
+}
+
+// List filters
+function initListFilters() {
+  const sortSelect = document.getElementById('sort-select');
+  const statusSelect = document.getElementById('status-filter');
+  const timeSelect = document.getElementById('time-filter');
+
+  sortSelect?.addEventListener('change', (e) => {
+    sortField = e.target.value;
+    renderLives();
+  });
+
+  statusSelect?.addEventListener('change', (e) => {
+    statusFilter = e.target.value;
+    renderLives();
+  });
+
+  timeSelect?.addEventListener('change', (e) => {
+    timeFilter = e.target.value;
+    renderLives();
   });
 }
 
@@ -220,6 +275,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     initIdleTimeout();
     loadLives();
     initSearch();
+    initListFilters();
     initAnalyticsFilters();
     loadAnalytics('views');
   }

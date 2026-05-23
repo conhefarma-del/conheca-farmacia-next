@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <span class="article-tag" style="background-color: ${categoryColors[article.category]}20; color: ${categoryColors[article.category]}; border: 1px solid ${categoryColors[article.category]}40">${escapeHtml(article.categoryLabel)}</span>
             <h3 class="article-card-title">${escapeHtml(article.title)}</h3>
             <p class="article-card-excerpt">${escapeHtml(article.excerpt)}</p>
-            <a href="artigo.html?id=${encodeURIComponent(article.slug)}" class="article-card-link">Ler mais <span>→</span></a>
+            <a href="artigo.html?id=${encodeURIComponent(article.slug)}" class="article-card-link" aria-label="Ler artigo: ${escapeHtml(article.title)}">Ler mais <span>→</span></a>
           </div>
         `;
         grid.appendChild(card);

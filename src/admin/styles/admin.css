@@ -2640,3 +2640,28 @@ html.dark .settings-error {
     width: 100%;
   }
 }
+
+/* =============================================
+   LIST FILTERS
+   ============================================= */
+.admin-list-filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.admin-input-sm {
+  padding: 6px 10px;
+  font-size: 0.875rem;
+  border: 1px solid var(--admin-border);
+  border-radius: 6px;
+  background: var(--admin-input-bg, var(--admin-card-bg));
+  color: var(--admin-text);
+  cursor: pointer;
+}
+
+.admin-input-sm:focus {
+  outline: none;
+  border-color: var(--admin-accent);
+}

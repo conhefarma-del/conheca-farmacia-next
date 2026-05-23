@@ -103,7 +103,7 @@ function renderEventsGrid(events, container) {
 				</div>
 				<h3 class="event-card-title">${escapeHtml(event.title)}</h3>
 				<p class="event-card-desc">${escapeHtml(event.excerpt)}</p>
-				<a href="evento.html?id=${encodeURIComponent(event.slug)}" class="btn btn-primary btn-small w-full btn-inscrever">Mais Informações</a>
+				<a href="evento.html?id=${encodeURIComponent(event.slug)}" class="btn btn-primary btn-small w-full btn-inscrever" aria-label="Ver evento: ${escapeHtml(event.title)}">Saber mais</a>
 			</div>
 		`;
     container.appendChild(card);

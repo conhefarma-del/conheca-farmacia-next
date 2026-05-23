@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://conhecafarmacia.netlify.app/sitemap.xml

@@ -3,6 +3,16 @@ import { renderBreadcrumb } from "./breadcrumb.js";
 import { errorHandler } from "./lib/error-handler.js";
 import { supabaseClient } from "./config.js";
 import { escapeHtml } from "./lib/security.js";
+import {
+  setDocumentTitle,
+  setMetaDescription,
+  setCanonicalUrl,
+  setOpenGraphTags,
+  setTwitterCardTags,
+  injectJsonLd,
+  buildArticleSchema,
+  buildBreadcrumbSchema,
+} from "./lib/seo.js";
 
 // Cores por categoria (mesmo padrão que articles-logic.js)
 const categoryColors = {
@@ -85,23 +95,7 @@ function renderShareSection(article) {
   const description = article.description || article.excerpt || '';
   const image = article.image || '';
 
-  // Update OG tags in head
-  function setMeta(property, content) {
-    if (!content) return;
-    let tag = document.querySelector(`meta[property="${property}"]`);
-    if (!tag) {
-      tag = document.createElement('meta');
-      tag.setAttribute('property', property);
-      document.head.appendChild(tag);
-    }
-    tag.setAttribute('content', content);
-  }
-
-  setMeta('og:title', title);
-  setMeta('og:description', description);
-  setMeta('og:image', image);
-  setMeta('og:url', url);
-  setMeta('og:type', 'article');
+  // OG tags set via seo.js (called in loadArticle after data arrives)
 
   // Set share links
   const encodedUrl = encodeURIComponent(url);
@@ -297,11 +291,13 @@ async function loadArticle() {
     }
 
     // Breadcrumb
-    renderBreadcrumb([
+    const breadcrumbLevels = [
       { label: "Início", href: "/" },
       { label: "Artigos", href: "/artigos.html" },
       { label: article.title },
-    ]);
+    ];
+    renderBreadcrumb(breadcrumbLevels);
+    injectJsonLd(buildBreadcrumbSchema(breadcrumbLevels));
 
     // Convert markdown to HTML (with sanitization)
     const rawHtmlContent = marked.parse(article.content);
@@ -374,9 +370,9 @@ async function loadArticle() {
       article.author.name;
     document.getElementById("article-author-role").textContent =
       article.author.role;
-    document.getElementById("article-date").textContent = formatDate(
-      article.date
-    );
+    const dateEl = document.getElementById("article-date");
+    dateEl.setAttribute("datetime", article.published_date || article.date || "");
+    dateEl.textContent = formatDate(article.date);
     document.getElementById("article-readtime").textContent =
       `${article.readTime} min leitura`;
 
@@ -439,7 +435,7 @@ async function loadArticle() {
         }40">${escapeHtml(relArticle.categoryLabel)}</span>
           <h3 class="article-card-title">${escapeHtml(relArticle.title)}</h3>
           <p class="article-card-excerpt">${escapeHtml(relArticle.excerpt)}</p>
-          <a href="artigo.html?id=${encodeURIComponent(relArticle.slug)}" class="article-card-link">Ler mais <span>&rarr;</span></a>
+          <a href="artigo.html?id=${encodeURIComponent(relArticle.slug)}" class="article-card-link" aria-label="Ler artigo: ${escapeHtml(relArticle.title)}">Ler mais <span>&rarr;</span></a>
         </div>
       `;
         relatedGrid.appendChild(card);
@@ -451,8 +447,16 @@ async function loadArticle() {
       }
     }
 
-    // Update page title
-    document.title = `${article.title} - Conheça Farmácia`;
+    // SEO: meta tags, OG, Twitter Card, JSON-LD
+    const seoDescription = article.metaDescription || article.excerpt || article.title;
+    const seoImage = article.image || '';
+    setDocumentTitle(`${article.title} - Conheça Farmácia`);
+    setMetaDescription(seoDescription);
+    setCanonicalUrl(window.location.href);
+    setOpenGraphTags({ title: article.title, description: seoDescription, image: seoImage, url: window.location.href, type: 'article' });
+    setTwitterCardTags({ title: article.title, description: seoDescription, image: seoImage });
+    injectJsonLd(buildArticleSchema(article));
+
   } catch (error) {
     hideLoadingState();
     errorHandler.handle(error, { mode: "PAGE" });

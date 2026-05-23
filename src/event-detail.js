@@ -3,9 +3,18 @@ import { supabaseClient } from "./config.js";
 import { getEvents, getEventBySlug } from './lib/api.js';
 import { renderBreadcrumb } from "./breadcrumb.js";
 import { createPolling } from "./lib/polling.js";
-import { getCachedCapacity, setCapacityCache } from "./lib/capacity-cache.js";
+import { getCachedCapacity, setCapacityCache, clearCapacityCache } from "./lib/capacity-cache.js";
 import { escapeHtml, validateUrl } from "./lib/security.js";
 import { logger } from "./lib/logger.js";
+import {
+  setDocumentTitle,
+  setMetaDescription,
+  setCanonicalUrl,
+  setOpenGraphTags,
+  setTwitterCardTags,
+  injectJsonLd,
+  buildBreadcrumbSchema,
+} from "./lib/seo.js";
 
 function formatDate(dateStr) {
   const date = new Date(dateStr + "T00:00:00");
@@ -22,14 +31,11 @@ function formatDateSimple(dateStr) {
 // Função para contar inscrições reais do Supabase
 async function getInscriptionCount(eventoSlug) {
   try {
-    const { data, error, count } = await supabaseClient
-      .from("inscricoes")
-      .select("*", { count: "exact", head: true })
-      .eq("evento_slug", eventoSlug);
+    const { data, error } = await supabaseClient
+      .rpc("get_inscription_count", { event_slug: eventoSlug });
 
     if (error) return null;
-
-    return count || 0;
+    return data ?? 0;
   } catch {
     return null;
   }
@@ -49,12 +55,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
+
+  let event = null;
+  let categoryColor = "";
   try {
     // Load event from Supabase (with JSON fallback)
  logger.log("Carregando evento do Supabase:", eventId);
 
     // Find event by slug (URL parameter contains the slug, not numeric ID)
-    const event = await getEventBySlug(eventId);
+    event = await getEventBySlug(eventId);
 
     if (!event) {
       console.error(`Evento com ID/slug ${eventId} não encontrado`);
@@ -90,7 +99,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       return colors[category] || "#00493a";
     }
 
-    const categoryColor = getCategoryColor(event.category);
+    categoryColor = getCategoryColor(event.category);
 
     // Populate Hero Section
     const categoryBadge = document.getElementById("event-category");
@@ -197,8 +206,42 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Speakers Section (below Inscrever-me)
     renderSpeakers(event.hosts || [event.host], categoryColor);
 
-    // Update Page Title
-    document.title = `${event.title} - Conheça Farmácia`;
+    // SEO: meta tags, OG, Twitter Card, JSON-LD
+    const seoDescription = event.excerpt || event.title;
+    const seoImage = event.image || '';
+    setDocumentTitle(`${event.title} - Conheça Farmácia`);
+    setMetaDescription(seoDescription);
+    setCanonicalUrl(window.location.href);
+    setOpenGraphTags({ title: event.title, description: seoDescription, image: seoImage, url: window.location.href, type: 'article' });
+    setTwitterCardTags({ title: event.title, description: seoDescription, image: seoImage });
+
+    // JSON-LD Event schema
+    injectJsonLd({
+      '@context': 'https://schema.org',
+      '@type': 'Event',
+      'name': event.title,
+      'description': seoDescription,
+      'image': seoImage,
+      'startDate': event.date,
+      'eventStatus': 'https://schema.org/EventScheduled',
+      'eventAttendanceMode': 'https://schema.org/OfflineEventAttendanceMode',
+      'location': {
+        '@type': 'Place',
+        'name': event.location || 'Angola',
+      },
+      'organizer': {
+        '@type': 'Organization',
+        'name': 'Conheça Farmácia',
+        'url': window.location.origin,
+      },
+    });
+
+    const breadcrumbLevels = [
+      { label: "Início", href: "/" },
+      { label: "Eventos", href: "/eventos.html" },
+      { label: event.title },
+    ];
+    injectJsonLd(buildBreadcrumbSchema(breadcrumbLevels));
 
     // Similar Events
     const allEvents = await getEvents();
@@ -218,7 +261,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   // REFRESH CAPACITY: Atualizar vagas periodicamente
   // ==========================================
   let pollingInstance = null;
-  let event = null; // Reference to current event for capacity updates
 
   async function refreshCapacity() {
     logger.log("🔄 Atualizando contagem de vagas...");
@@ -336,6 +378,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get("refresh") === "true") {
     logger.log("🔄 Parâmetro refresh=true detetado, atualizando...");
+  if (event && event.slug) clearCapacityCache(event.slug);
     refreshCapacity();
     const params = new URLSearchParams(window.location.search);
     params.delete("refresh");
@@ -457,8 +500,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   </div>
 
-  <a href="evento.html?id=${encodeURIComponent(event.slug)}" class="event-card-cta">
-    Mais Informações
+  <a href="evento.html?id=${encodeURIComponent(event.slug)}" class="event-card-cta" aria-label="Ver evento: ${escapeHtml(event.title)}">
+    Saber mais
   </a>
 </div>
 `;

@@ -9,6 +9,8 @@ const supabase = supabaseClient;
 let allArticles = [];
 let currentFilter = { status: 'all' };
 let searchQuery = '';
+let sortField = 'date-desc';
+let statusFilter = 'all';
 
 // Logout
 document.getElementById('logout-btn')?.addEventListener('click', async (e) => {
@@ -176,9 +178,10 @@ function renderArticles() {
 
 // Filter articles
 function getFilteredArticles() {
-  return allArticles.filter(article => {
+  let filtered = allArticles.filter(article => {
     // Status filter
-    if (currentFilter.status !== 'all' && article.status !== currentFilter.status) return false;
+    const effectiveStatus = statusFilter !== 'all' ? statusFilter : currentFilter.status;
+    if (effectiveStatus !== 'all' && article.status !== effectiveStatus) return false;
 
     // Search filter
     if (searchQuery) {
@@ -194,6 +197,35 @@ function getFilteredArticles() {
     }
 
     return true;
+  });
+
+  // Sort
+  filtered.sort((a, b) => {
+    switch (sortField) {
+      case 'date-asc': return new Date(a.published_date || 0) - new Date(b.published_date || 0);
+      case 'date-desc': return new Date(b.published_date || 0) - new Date(a.published_date || 0);
+      case 'title-asc': return (a.title || '').localeCompare(b.title || '', 'pt');
+      case 'title-desc': return (b.title || '').localeCompare(a.title || '', 'pt');
+      default: return 0;
+    }
+  });
+
+  return filtered;
+}
+
+// List filters
+function initListFilters() {
+  const sortSelect = document.getElementById('sort-select');
+  const statusSelect = document.getElementById('status-filter');
+
+  sortSelect?.addEventListener('change', (e) => {
+    sortField = e.target.value;
+    renderArticles();
+  });
+
+  statusSelect?.addEventListener('change', (e) => {
+    statusFilter = e.target.value;
+    renderArticles();
   });
 }
 
@@ -260,6 +292,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     initIdleTimeout();
     loadArticles();
     initSearch();
+    initListFilters();
     initAnalyticsFilters();
     loadAnalytics('views');
   }

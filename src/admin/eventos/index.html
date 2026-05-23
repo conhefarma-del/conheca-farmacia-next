@@ -147,6 +147,26 @@
       </div>
     </div>
 
+    <!-- List Filters -->
+    <div class="admin-list-filters">
+      <select id="sort-select" class="admin-input admin-input-sm">
+        <option value="date-desc">Data (mais recente)</option>
+        <option value="date-asc">Data (mais antigo)</option>
+        <option value="title-asc">Título (A-Z)</option>
+        <option value="title-desc">Título (Z-A)</option>
+      </select>
+      <select id="status-filter" class="admin-input admin-input-sm">
+        <option value="all">Todos os estados</option>
+        <option value="published">Publicado</option>
+        <option value="draft">Rascunho</option>
+      </select>
+      <select id="time-filter" class="admin-input admin-input-sm">
+        <option value="all">Todos</option>
+        <option value="upcoming">Próximos</option>
+        <option value="past">Passados</option>
+      </select>
+    </div>
+
     <!-- Events Table -->
     <div class="admin-dashboard-card">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">

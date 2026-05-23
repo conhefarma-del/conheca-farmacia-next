@@ -151,8 +151,8 @@ document.addEventListener("DOMContentLoaded", async () => {
  </div>
 
  <div class="event-card-actions mt-auto">
- <a href="evento.html?id=${encodeURIComponent(event.slug)}" class="btn btn-secondary btn-small">
- Mais Informações
+ <a href="evento.html?id=${encodeURIComponent(event.slug)}" class="btn btn-secondary btn-small" aria-label="Ver evento: ${escapeHtml(event.title)}">
+ Saber mais
  </a>
  <button data-event-slug="${escapeHtml(event.slug)}" class="btn btn-primary btn-small btn-inscrever" ${event.status === "past" || isCapacityFull ? "disabled" : ""}>
  ${isCapacityFull ? "Completo" : event.status === "upcoming" ? "Inscrever-me" : "Ver Gravação"}

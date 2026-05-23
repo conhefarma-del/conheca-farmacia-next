@@ -8,6 +8,9 @@ const supabase = supabaseClient;
 
 let allEvents = [];
 let searchQuery = '';
+let sortField = 'date-desc';
+let statusFilter = 'all';
+let timeFilter = 'all';
 
 // Logout
 document.getElementById('logout-btn')?.addEventListener('click', async (e) => {
@@ -40,13 +43,65 @@ function renderStats() {
 
 // Filter events
 function getFilteredEvents() {
-  if (!searchQuery) return allEvents;
-  const q = searchQuery.toLowerCase();
-  return allEvents.filter(event => {
-    const title = (event.title || '').toLowerCase();
-    const excerpt = (event.excerpt || '').toLowerCase();
-    const category = (event.category_label || event.category || '').toLowerCase();
-    return title.includes(q) || excerpt.includes(q) || category.includes(q);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  let filtered = allEvents.filter(event => {
+    // Status filter
+    if (statusFilter !== 'all' && event.status !== statusFilter) return false;
+
+    // Time filter
+    if (timeFilter !== 'all') {
+      const eventDate = new Date(event.date);
+      if (timeFilter === 'upcoming' && eventDate < today) return false;
+      if (timeFilter === 'past' && eventDate >= today) return false;
+    }
+
+    // Search filter
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      const title = (event.title || '').toLowerCase();
+      const excerpt = (event.excerpt || '').toLowerCase();
+      const category = (event.category_label || event.category || '').toLowerCase();
+      return title.includes(q) || excerpt.includes(q) || category.includes(q);
+    }
+
+    return true;
+  });
+
+  // Sort
+  filtered.sort((a, b) => {
+    switch (sortField) {
+      case 'date-asc': return new Date(a.date || 0) - new Date(b.date || 0);
+      case 'date-desc': return new Date(b.date || 0) - new Date(a.date || 0);
+      case 'title-asc': return (a.title || '').localeCompare(b.title || '', 'pt');
+      case 'title-desc': return (b.title || '').localeCompare(a.title || '', 'pt');
+      default: return 0;
+    }
+  });
+
+  return filtered;
+}
+
+// List filters
+function initListFilters() {
+  const sortSelect = document.getElementById('sort-select');
+  const statusSelect = document.getElementById('status-filter');
+  const timeSelect = document.getElementById('time-filter');
+
+  sortSelect?.addEventListener('change', (e) => {
+    sortField = e.target.value;
+    renderEvents();
+  });
+
+  statusSelect?.addEventListener('change', (e) => {
+    statusFilter = e.target.value;
+    renderEvents();
+  });
+
+  timeSelect?.addEventListener('change', (e) => {
+    timeFilter = e.target.value;
+    renderEvents();
   });
 }
 
@@ -216,6 +271,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     initIdleTimeout();
     loadEvents();
     initSearch();
+    initListFilters();
     initAnalyticsFilters();
     loadAnalytics('views');
   }
