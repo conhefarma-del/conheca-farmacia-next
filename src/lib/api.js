@@ -219,7 +219,7 @@ export async function getLives() {
   try {
     const { data, error } = await supabaseClient
       .from('lives')
-      .select('id, slug, title, excerpt, category, category_label, image_url, date, time, end_time, platform, access_link, meeting_id, password, materials, status, host_name, host_role, host_organization, view_count, access_count, download_count, published_at')
+      .select('id, slug, title, excerpt, category, category_label, image_url, date, time, end_time, platform, access_link, meeting_id, password, materials, status, featured, host_name, host_role, host_organization, view_count, access_count, download_count, published_at')
       .eq('status', 'published')
       .order('date', { ascending: true });
 
@@ -241,7 +241,7 @@ export async function getLiveBySlug(slug) {
   try {
     const { data, error } = await supabaseClient
       .from('lives')
-      .select('id, slug, title, excerpt, category, category_label, image_url, date, time, end_time, platform, access_link, meeting_id, password, materials, status, host_name, host_role, host_organization, view_count, access_count, download_count, published_at')
+      .select('id, slug, title, excerpt, category, category_label, image_url, date, time, end_time, platform, access_link, meeting_id, password, materials, status, featured, host_name, host_role, host_organization, view_count, access_count, download_count, published_at')
       .eq('slug', slug)
       .eq('status', 'published')
       .single();
@@ -253,6 +253,78 @@ export async function getLiveBySlug(slug) {
     const { getFallbackLiveBySlug } = await import('./fallback-data.js');
     const fallback = getFallbackLiveBySlug(slug);
     return fallback ? normalizeLive(fallback) : null;
+  }
+}
+
+/**
+ * Fetch featured articles for homepage
+ * @param {number} limit
+ * @returns {Promise<Array>}
+ */
+export async function getFeaturedArticles(limit = 3) {
+  try {
+    const { data, error } = await supabaseClient
+      .from('articles')
+      .select('*')
+      .eq('status', 'published')
+      .eq('featured', true)
+      .order('published_date', { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+    return (data || []).map(normalizeArticle);
+  } catch (error) {
+    console.error('Error fetching featured articles:', error);
+    const { getFallbackArticles } = await import('./fallback-data.js');
+    return getFallbackArticles().slice(0, limit).map(normalizeArticle);
+  }
+}
+
+/**
+ * Fetch featured events for homepage
+ * @param {number} limit
+ * @returns {Promise<Array>}
+ */
+export async function getFeaturedEvents(limit = 2) {
+  try {
+    const { data, error } = await supabaseClient
+      .from('events')
+      .select('*')
+      .eq('status', 'published')
+      .eq('featured', true)
+      .order('date', { ascending: true })
+      .limit(limit);
+
+    if (error) throw error;
+    return (data || []).map(normalizeEvent);
+  } catch (error) {
+    console.error('Error fetching featured events:', error);
+    const { getFallbackEvents } = await import('./fallback-data.js');
+    return getFallbackEvents().slice(0, limit).map(normalizeEvent);
+  }
+}
+
+/**
+ * Fetch featured lives for homepage
+ * @param {number} limit
+ * @returns {Promise<Array>}
+ */
+export async function getFeaturedLives(limit = 2) {
+  try {
+    const { data, error } = await supabaseClient
+      .from('lives')
+      .select('id, slug, title, excerpt, category, category_label, image_url, date, time, end_time, platform, access_link, status, featured, host_name, host_role, host_organization, view_count, access_count, download_count, published_at')
+      .eq('status', 'published')
+      .eq('featured', true)
+      .order('date', { ascending: true })
+      .limit(limit);
+
+    if (error) throw error;
+    return (data || []).map(normalizeLive);
+  } catch (error) {
+    console.error('Error fetching featured lives:', error);
+    const { getFallbackLives } = await import('./fallback-data.js');
+    return getFallbackLives().slice(0, limit).map(normalizeLive);
   }
 }
 

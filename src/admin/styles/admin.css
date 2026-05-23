@@ -2665,3 +2665,19 @@ html.dark .settings-error {
   outline: none;
   border-color: var(--admin-accent);
 }
+
+/* Featured checkbox */
+.admin-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--admin-text);
+}
+
+.admin-checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--admin-accent);
+}

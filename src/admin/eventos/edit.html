@@ -123,6 +123,13 @@
  </div>
 
  <div class="admin-form-group">
+ <label class="admin-checkbox-label">
+ <input type="checkbox" id="featured" name="featured">
+ <span>Destacar na página principal</span>
+ </label>
+ </div>
+
+ <div class="admin-form-group">
  <label for="excerpt">Resumo/Excerto</label>
  <textarea id="excerpt" name="excerpt" class="admin-textarea" style="min-height: 100px;" placeholder="Breve resumo do evento"></textarea>
  </div>
@@ -319,6 +326,7 @@ import { escapeAttr } from '../../lib/security.js';
  document.getElementById('slug').value = event.slug || '';
  document.getElementById('category').value = event.category || '';
  document.getElementById('status').value = event.status || 'draft';
+            document.getElementById('featured').checked = event.featured || false;
  document.getElementById('excerpt').value = event.excerpt || '';
  document.getElementById('date').value = event.date || '';
  document.getElementById('time').value = event.time || '';
@@ -415,6 +423,7 @@ import { escapeAttr } from '../../lib/security.js';
  image_url: document.getElementById('image_url').value,
  registration_link: document.getElementById('registration_link').value,
  status: document.getElementById('status').value,
+ featured: document.getElementById('featured').checked,
  updated_at: new Date().toISOString(),
  };
 

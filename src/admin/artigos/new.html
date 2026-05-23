@@ -121,6 +121,13 @@
                 </div>
 
                 <div class="admin-form-group">
+                    <label class="admin-checkbox-label">
+                        <input type="checkbox" id="featured" name="featured">
+                        <span>Destacar na página principal</span>
+                    </label>
+                </div>
+
+                <div class="admin-form-group">
                     <label for="excerpt">Resumo/Excerto</label>
                     <textarea id="excerpt" name="excerpt" class="admin-textarea" style="min-height: 100px;" placeholder="Breve resumo do artigo"></textarea>
                 </div>
@@ -406,6 +413,7 @@ author_avatar_bg: document.getElementById('author_avatar_bg').value,
                 read_time: parseInt(document.getElementById('read_time').value) || null,
                 references_arr: references,
                 status: document.getElementById('status').value,
+                featured: document.getElementById('featured').checked,
             };
 
             try {
