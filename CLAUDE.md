@@ -2,291 +2,214 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## 📋 Common Development Commands
-
-### Development Server
+## Common Development Commands
 
 ```bash
-# Start development server with hot-reload
+# Dev server (hot-reload, http://localhost:5173)
 npm run dev
-# Opens at http://localhost:5173
-```
 
-### Production Build
-
-```bash
-# Build for production
+# Production build + post-build admin relocate
 npm run build
-# Preview production build
 npm run preview
-```
 
-### Code Formatting
-
-```bash
-# Format code with Prettier
+# Format code
 npm run format
 ```
 
-### Dependencies
-
-```bash
-# Install dependencies
-npm install
-```
-
-## 🏗️ Project Architecture & Structure
+## Project Architecture
 
 ### Core Technologies
 
-- **Framework**: Vite (ES modules, hot module replacement)
-- **Styling**: Tailwind CSS v4 (via `@tailwindcss/vite` plugin)
+- **Framework**: Vite (ES modules, HMR)
+- **Styling**: Tailwind CSS v4 (`@tailwindcss/vite` plugin)
 - **Backend**: Supabase (PostgreSQL, Auth, RLS, Edge Functions)
-- **CMS**: Painel admin interno (src/admin/) para gerir artigos, eventos, lives
-- **State Management**: Vanilla JavaScript (no framework)
+- **CMS**: Admin panel (`src/admin/`) for articles, events, lives management
+- **i18n**: PT/EN support via `src/i18n.js` + `public/i18n/*.json`
+- **State**: Vanilla JavaScript (no framework)
 
-### Key Directories & Files
+### Directory Structure
 
 ```
-├── index.html # Main HTML entry
-├── main.js # Vite entry point
-├── vite.config.js # Vite configuration
+├── index.html                  # Homepage
+├── pesquisa.html               # Global search page
+├── artigos.html / artigo.html  # Article list + detail
+├── eventos.html / evento.html  # Event list + detail
+├── lives-list.html / lives.html# Lives list + detail
+├── inscricao.html              # Registration form
+├── sobre.html                  # About page
+├── unsubscribe.html            # Newsletter unsubscribe
+├── 404.html                    # Error page
+├── main.js                     # Vite entry: CSS, script, dark-mode, analytics, i18n
+├── vite.config.js              # Vite config with rollupOptions.input
+├── netlify.toml                # Deploy config, redirects, CSP headers
+│
 ├── src/
-│ ├── input.css # Tailwind CSS directives
-│ ├── script.js # Global navigation, DOM utilities
-│ ├── config.js # Supabase client (persistSession: true para admin)
-│ ├── lib/
-│ │ ├── api.js # API layer: getArticles(), getEvents(), getLives()
-│ │ ├── fallback-data.js # Fallback para JSON local
-│ │ ├── capacity-cache.js # Cache de capacidade (15s)
-│ │ ├── polling.js # Polling de vagas (cleanup, visibility detection)
-│ │ └── supabaseClient.js # Cliente Supabase partilhado
-│ ├── admin/ # CMS Admin (gerir conteúdo)
-│ │ ├── index.html # Login page
-│ │ ├── dashboard.html # Stats e activity
-│ │ ├── artigos/ # CRUD artigos
-│ │ ├── eventos/ # CRUD eventos
-│ │ ├── lives/ # CRUD lives
-│ │ ├── lib/
-│ │ │ ├── auth.js # Auth Supabase
-│ │ │ ├── image-compressor.js # Compressão de imagens
-│ │ │ └── audit-logger.js # Logging de ações
-│ │ └── styles/ # CSS exclusivo do admin
-│ ├── content/ # JSON catalogs (fallback)
-│ │ ├── articles-catalog.json
-│ │ ├── events-catalog.json
-│ │ ├── lives-catalog.json
-│ │ └── ARTICLE_GUIDELINES.md
-│ ├── migrations/ # Backup e migrations de dados
-│ └── detail-pages/
-│     ├── article-detail.js # Renderização de artigo
-│     ├── event-detail.js # Renderização de evento
-│     └── live-detail.js # Renderização de live
-├── public/ # Static assets
-└── dist/ # Production build
+│   ├── input.css               # Tailwind directives + all custom CSS (@layer)
+│   ├── config.js               # Supabase client (persistSession: true for admin)
+│   ├── script.js               # Global nav, hamburger, search redirect, lang dropdown
+│   ├── dark-mode.js            # Theme toggle (sun-icon/moon-icon)
+│   ├── i18n.js                 # i18n system (fetches /i18n/{lang}.json)
+│   ├── hero-animated.js        # Hero ticker animation (homepage)
+│   ├── breadcrumb.js           # Breadcrumb navigation
+│   ├── pesquisa-logic.js       # Search page logic (client-side pagination)
+│   ├── articles-logic.js       # Articles listing
+│   ├── article-detail.js       # Article detail rendering
+│   ├── events-logic.js         # Events listing
+│   ├── event-detail.js         # Event detail rendering
+│   ├── lives-logic.js          # Lives listing
+│   ├── live-detail.js          # Live detail rendering
+│   ├── inscription-logic.js    # Registration form logic
+│   ├── inscription-handler.js  # Registration button handlers
+│   ├── inscription-validation.js# Form validation
+│   ├── unsubscribe.js          # Unsubscribe logic
+│   ├── home-articles-logic.js  # Homepage featured articles
+│   ├── home-events-logic.js    # Homepage featured events
+│   │
+│   ├── lib/
+│   │   ├── api.js              # API layer: getArticles(), getEvents(), getLives()
+│   │   ├── search.js           # searchAllContent() — Supabase ilike, no server pagination
+│   │   ├── security.js         # escapeHtml(), escapeAttr(), validateUrl()
+│   │   ├── seo.js              # SEO helpers (meta, OG, JSON-LD)
+│   │   ├── supabaseClient.js   # Shared Supabase client
+│   │   ├── fallback-data.js    # Local JSON fallback
+│   │   ├── analytics.js        # Page view tracking
+│   │   ├── capacity-cache.js   # Capacity cache (15s TTL)
+│   │   ├── polling.js          # Polling with cleanup + visibility detection
+│   │   ├── newsletter.js       # Newsletter subscription
+│   │   ├── sitemap.js          # Sitemap generator (build-time)
+│   │   ├── admin-gate.js       # Secret questions gate for admin access
+│   │   ├── error-handler.js    # Centralized error handling
+│   │   └── logger.js           # Logging utility
+│   │
+│   └── admin/                  # CMS Admin (sidebar layout)
+│       ├── index.html          # Login (split-screen redesign)
+│       ├── dashboard.html      # Stats + activity feed
+│       ├── artigos/            # CRUD articles
+│       ├── eventos/            # CRUD events
+│       ├── lives/              # CRUD lives
+│       ├── definicoes.html     # Settings (2FA, profile, password)
+│       ├── newsletter.html     # Newsletter subscriber management
+│       └── styles/admin.css    # Admin-only CSS
+│
+├── public/
+│   ├── i18n/                   # Translation files (pt.json, en.json)
+│   └── logo/                   # Logo variants
+│
+└── supabase/
+    ├── migrations/             # Database migrations (001-013+)
+    └── functions/              # Edge Functions (validate-inscription, newsletter, etc.)
 ```
 
-### Data Flow (CMS + Supabase)
+### Data Flow
 
-1. **Content Sources**: Supabase (primary) + JSON fallback (src/content/)
-2. **API Layer**: `src/lib/api.js` normaliza dados (snake_case → camelCase)
-3. **Rendering**: Detail pages usam `getEventBySlug()`, `getArticleBySlug()`, etc.
-4. **Admin CMS**: Cria/edita conteúdo → Supabase → Site público (leitura)
-5. **Fallback**: Se Supabase falhar, usa JSON local
+1. **Content Sources**: Supabase (primary) + JSON fallback (`src/content/`)
+2. **API Layer**: `src/lib/api.js` normalizes data (snake_case → camelCase)
+3. **Rendering**: Detail pages use `getEventBySlug()`, `getArticleBySlug()`, etc.
+4. **Admin CMS**: Creates/edits content → Supabase → Public site (read)
+5. **Fallback**: If Supabase fails, uses local JSON
 
-### Supabase Integration
+### Key Patterns
 
-- **Configuration**: `src/config.js` (client-side), `src/lib/supabaseClient.js` (shared)
-- **Tables**: `articles`, `events`, `lives`, `inscricoes`, `admin_users`, `audit_logs`
-- **RLS**: Ativo em todas as tabelas (apenas admins escrevem, público lê publicado)
-- **Edge Functions**: Validação de inscrições, email transacional
-- **Auth**: Admins autenticados via Supabase Auth (persistSession: true obrigatório)
+- **Header**: Utility bar (search icon → pesquisa.html, lang dropdown) + nav + theme toggle (sun-icon/moon-icon)
+- **Mobile**: Hamburger → floating drawer with `id="drawer-links"`, push animation
+- **Dark Mode**: `html.dark` class, CSS variables in `:root` and `html.dark`, toggle buttons use `.theme-toggle` (header) and `.drawer-theme-toggle` (drawer)
+- **Search**: Button/Enter triggers search, 15 results per page, client-side pagination from cache, highlight matches with `<mark>`
+- **Language**: Dropdown toggle with globe icon, localStorage persistence, `data-i18n` attributes on elements
+- **CSS Layers**: `@layer base`, `@layer components` for main styles; search page styles outside layers (scoped to `.search-*` classes)
+- **Admin**: All paths use relative (`./` or `../`), works in dev + production
 
-### Admin CMS
-
-- **Acesso**: `/src/admin/index.html` — apenas utilizadores em `admin_users`
-- **Funcionalidades**: CRUD completo para artigos, eventos, lives
-- **Audit Logs**: Todas as ações registadas em `audit_logs`
-- **Image Upload**: Compressão automática antes de upload para Supabase Storage
-
-## ⚠️ Lições Aprendidas (Erros a Evitar)
+## Lições Aprendidas (Erros a Evitar)
 
 ### 1. Edição de Ficheiros JavaScript
 
-**Problema**: Quando editar funções em ficheiros JS, garantir que:
-- Todas as chaves de abertura têm correspondente de fecho
-- Não deixar código incompleto no final do ficheiro
-- Validar sintaxe com `node --check` antes de testar no browser
+**Problema**: Quando editar funções em ficheiros JS, garantir que todas as chaves de abertura têm correspondente de fecho e não deixar código incompleto.
 
-**Solução**: 
+**Solução**: Validar sintaxe com `node --check` após cada edição:
 ```bash
-node --check src/event-detail.js  # Deve retornar vazio (sem erros)
+node --check src/filename.js  # Deve retornar vazio (sem erros)
 ```
 
 ### 2. Substituição de Funções em Ficheiros Existentes
 
-**Problema**: Ao substituir funções inteiras, o padrão de busca pode não ser exato devido a:
-- Diferenças de whitespace (espaços vs tabs)
-- Linhas em branco a mais ou a menos
-- Comentários adjacentes
+**Problema**: Ao substituir funções inteiras, o padrão de busca pode não ser exato devido a diferenças de whitespace, linhas em branco, ou comentários adjacentes.
 
-**Solução**:
-1. Ler o ficheiro completo primeiro
-2. Identificar marcadores únicos (comentários JSDoc, assinaturas de função)
-3. Usar Python para substituições complexas em vez de Edit tool
-4. Validar com `node --check` após edição
+**Solução**: Ler o ficheiro completo primeiro, identificar marcadores únicos, usar Python para substituições complexas, validar com `node --check` após edição.
 
 ### 3. Gerir Estado em Funções de Renderização
 
-**Problema**: Adicionar botões "Show More/Show Less" requer:
-- Referências a variáveis de estado (limite mobile/desktop)
-- Event listeners que persistem após re-renderização
-- Cuidado com resize handlers que podem quebrar estado
+**Problema**: Adicionar botões "Show More/Show Less" requer referências a variáveis de estado e event listeners que persistem após re-renderização.
 
-**Solução**:
-- Evitar resize handlers que re-renderizam — pode quebrar estado de botões
-- Se necessário, usar debounce e limpar estado antes de re-renderizar
-- Manter referência a dados originais para re-renderização
+**Solução**: Evitar resize handlers que re-renderizam; se necessário usar debounce e limpar estado antes de re-renderizar.
 
 ### 4. Validação de Sintaxe Após Edição de Ficheiros JavaScript
 
-**Problema**: Durante a implementação do botão "Show More" para palestrantes (2026-05-16), o ficheiro `src/event-detail.js` tinha um erro de sintaxe — faltava um fechamento `});` para o bloco `DOMContentLoaded`. O Vite falhava com erro `Expected '}' but found 'EOF'` e o build não compilava.
+**Problema**: Ficheiros JS com erro de sintaxe causam `Expected '}' but found 'EOF'` no Vite.
 
-**Sintoma**: Erro no Vite: `[PARSE_ERROR] Error: Expected '}' but found 'EOF'` em `src/event-detail.js`
-
-**Solução**:
-1. Após qualquer edição em ficheiros JavaScript, validar sintaxe ANTES de testar no browser:
+**Solução**: Após qualquer edição, validar e contar chaves:
 ```bash
-node --check src/event-detail.js  # Deve retornar vazio (sem erros)
+node --check src/filename.js
+python3 -c "content=open('src/filename.js').read(); print(f'Abertas: {content.count(\"{\")}, Fechadas: {content.count(\"}\")}')"
 ```
-2. Se houver erro, contar chaves `{` vs `}` para identificar blocos em falta:
-```bash
-python3 -c "content=open('src/event-detail.js').read(); print(f'Abertas: {content.count(\"{\")}, Fechadas: {content.count(\"}\")}')"
-```
-3. Adicionar fechamentos em falta no final do ficheiro
-4. Validar novamente com `node --check`
-
-**Prevenção**: Ao editar funções ou adicionar código, sempre:
-- Contar blocos abertos vs fechados
-- Validar sintaxe com `node --check` antes de fazer commit
-- Verificar se `DOMContentLoaded` e `try/catch` estão devidamente fechados
 
 ### 5. Configuração de Auth para Admin
 
-**Problema**: Ciclo infinito de login no admin se `persistSession: false`
+**Problema**: Ciclo infinito de login no admin se `persistSession: false`.
 
-**Solução**: `config.js` deve ter `persistSession: true` para admin CMS. Ver `memory:cms-admin-auth-fix.md`.
+**Solução**: `config.js` deve ter `persistSession: true` para admin CMS.
 
 ### 6. Edição de Ficheiros JavaScript - Adicionar Múltiplas Funções
 
-**Problema**: Ao adicionar múltiplas funções num ficheiro JS, tentar usar Edit tool com strings longas pode falhar devido a:
-- Diferenças de whitespace ou formatação
-- Comments adjacentes não considerados
-- Tamanho do padrão de busca muito longo
+**Problema**: Ao adicionar múltiplas funções, Edit tool com strings longas pode falhar devido a diferenças de whitespace.
 
-**Solução**:
-1. Adicionar funções individualmente, uma de cada vez
-2. Validar sintaxe com `node --check` após cada adição
-3. Se Edit tool falhar, usar Python para adicionar código no final do ficheiro
-4. Manter padrão de 2 espaços para indentação (consistente com o projeto)
-
-**Prevenção**:
-- Ler o ficheiro completo antes de editar
-- Identificar o último bloco de código para saber onde adicionar
-- Usar `wc -l` para verificar linha final do ficheiro
+**Solução**: Adicionar funções individualmente, validar com `node --check` após cada adição; se Edit tool falhar, usar Python.
 
 ### 7. Edição de Ficheiros CSS - Especificidade e Variáveis
 
-**Problema**: Ao adicionar CSS para novos componentes (ex: search results), é necessário:
-- Usar variáveis CSS consistentes com o tema (ex: `var(--admin-text)`, `var(--admin-border)`)
-- Manter especificidade adequada para sobrescrever estilos base
-- Considerar dark mode (variáveis automáticas)
+**Problema**: Novos componentes CSS devem usar variáveis consistentes com o tema (`var(--admin-text)`, etc.) e considerar dark mode.
 
-**Solução**:
-1. Ler o CSS existente para identificar variáveis disponíveis
-2. Adicionar novos estilos no final do ficheiro com comentário de secção
-3. Testar em ambos os modos (claro/escuro) se aplicável
+**Solução**: Ler CSS existente para identificar variáveis disponíveis, adicionar novos estilos no final com comentário de secção, testar em ambos os modos.
 
 ### 8. Import de Módulos em Ficheiros JavaScript
 
-**Problema**: Ao criar novos módulos (ex: `search.js`), esquecer de:
-- Exportar funções corretamente
-- Importar dependências (ex: `supabaseClient`)
-- Atualizar ficheiros que usam o módulo com o novo import
+**Problema**: Módulos novos esquecem exports ou imports de dependências.
 
-**Solução**:
-1. Criar módulo com exportação nomeada: `export async function searchAllContent() {...}`
-2. Importar dependências no topo: `import { supabaseClient } from '../config.js'`
-3. Adicionar import nos ficheiros que usam: `import { searchAllContent } from '../lib/search.js'`
-4. Validar sintaxe em todos os ficheiros modificados
+**Solução**: Criar módulo com exportação nomeada, importar dependências no topo, atualizar ficheiros que usam o módulo, validar sintaxe em todos os ficheiros modificados.
 
 ### 9. Validação de Sintaxe em Cadeia
 
-**Problema**: Múltiplos ficheiros JS modificados podem ter erros de sintaxe que só aparecem no runtime.
+**Problema**: Múltiplos ficheiros JS modificados podem ter erros que só aparecem no runtime.
 
-**Solução**:
-Após editar múltiplos ficheiros JS, validar todos em sequência:
+**Solução**: Após editar múltiplos ficheiros, validar todos em sequência:
 ```bash
-node --check src/lib/api.js
-node --check src/lib/search.js
-node --check src/admin/dashboard.js
+node --check src/lib/api.js && node --check src/lib/search.js && node --check src/script.js
 ```
-
-**Prevenção**:
-- Criar script de validação para rodar antes de commit
-- Adicionar validação no pipeline de CI/CD se disponível
 
 ### 10. Edição de Ficheiros HTML - Estrutura e IDs
 
-**Problema**: Ao modificar HTML, IDs de elementos (ex: `admin-search-input`) devem ser consistentes entre:
-- HTML (onde o elemento é definido)
-- JavaScript (onde o elemento é selecionado)
-- CSS (onde o elemento é estilizado)
+**Problema**: IDs de elementos devem ser consistentes entre HTML, JavaScript e CSS.
 
-**Solução**:
-1. Usar `grep` ou `Grep` tool para verificar consistência de IDs
-2. Manter convenção de naming: `bloco-elemento-modificador` (ex: `admin-search-input`)
-3. Validar que o elemento existe antes de adicionar funcionalidade JS
+**Solução**: Usar grep para verificar consistência de IDs, manter convenção `bloco-elemento-modificador`.
 
 ### 11. Criação de Ficheiros Novos
 
-**Problema**: Criar ficheiros novos (ex: `search.js`) requer:
-- Estrutura correta de módulo ES6
-- exports nomeados para funções públicas
-- imports corretos de dependências
+**Problema**: Ficheiros novos devem ter estrutura correta de módulo ES6 com exports nomeados.
 
-**Solução**:
-1. Usar Write tool para criar ficheiro com conteúdo completo
-2. Validar sintaxe com `node --check`
-3. Testar import noutro ficheiro para verificar exportação
+**Solução**: Usar Write tool com conteúdo completo, validar com `node --check`, testar import noutro ficheiro.
 
 ### 12. Git - Lidar com Line Endings (CRLF vs LF)
 
-**Problema**: No Windows, Git pode converter LF para CRLF, causando warnings:
-```
-warning: in the working copy of 'src/lib/api.js', LF will be replaced by CRLF
-```
-
-**Solução**:
-1. Aceitar warning como normal no Windows (Git gerencia automaticamente)
-2. Ou configurar repositório: `git config core.autocrlf true`
-3. Não alterar line endings manualmente
+No Windows, Git converte LF para CRLF automaticamente. Warnings são normais — não alterar manualmente.
 
 ### 13. Debounce em Event Listeners
 
-**Problema**: Event listeners como `input` em search boxes disparam a cada caractere, causando:
-- Múltiplas chamadas de API
-- Performance degradada
-- Rate limiting potencial
+**Problema**: Event listeners como `input` disparam a cada caractere, causando múltiplas chamadas de API.
 
 **Solução**:
 ```javascript
 let debounceTimer;
 searchInput.addEventListener('input', (e) => {
   clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(async () => {
-    // Executar pesquisa
-  }, 300); // 300ms de delay
+  debounceTimer = setTimeout(async () => { /* ... */ }, 300);
 });
 ```
 
@@ -294,150 +217,91 @@ searchInput.addEventListener('input', (e) => {
 
 **Problema**: Mostrar conteúdo de pesquisa (títulos, nomes) pode injetar HTML malicioso.
 
-**Solução**:
+**Solução**: Usar `escapeHtml()` de `security.js` antes de inserir no DOM:
 ```javascript
 function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
 }
-// Usar antes de inserir no DOM: escapeHtml(userInput)
 ```
 
 ### 15. Estrutura de Planos e Tasks
 
-**Problema**: Planos de implementação (ex: `linear-fluttering-widget.md`) podem ter tasks desatualizadas ou funções já implementadas noutras versões.
+**Problema**: Planos de implementação podem ter tasks desatualizadas.
 
-**Solução**:
-1. Ler ficheiro do plano para entender tasks
-2. Verificar estado atual do código antes de implementar
-3. Atualizar tasks com TaskCreate/TaskUpdate para tracking
-4. Marcar tasks como completed quando terminado
+**Solução**: Ler ficheiro do plano, verificar estado atual do código antes de implementar, usar TaskCreate/TaskUpdate para tracking.
 
 ### 16. Edição de Ficheiros JSON
 
-**Problema**: Ficheiros JSON (ex: `package.json`, catalogs) são sensíveis a:
-- Aspas duplas obrigatórias (não usar aspas simples)
-- Comas trailing (último elemento não pode ter vírgula)
-- Comentários não suportados (JSON não suporta `//` ou `/* */`)
-- Indentação consistente (geralmente 2 espaços)
+**Problema**: Ficheiros JSON são sensíveis a aspas duplas, trailing commas, e não suportam comentários.
 
-**Solução**:
-1. Usar `JSON.parse()` para validar sintaxe antes de commit:
+**Solução**: Validar com `JSON.parse()`:
 ```bash
 node -e "JSON.parse(require('fs').readFileSync('package.json'))"
 ```
-2. Usar Prettier para formatar: `npm run format`
-3. Validar no VSCode ou editor com linting JSON
-4. Se necessário adicionar comentários, usar formato `.jsonc`
-
-**Prevenção**:
-- Nunca adicionar comentários em ficheiros JSON
-- Verificar trailing commas antes de commit
-- Usar `json` schema validation se disponível
 
 ### 17. Edição de Ficheiros Markdown (.md)
 
-**Problema**: Ficheiros Markdown (ex: `CLAUDE.md`, `README.md`, `MEMORY.md`) podem ter:
-- Links quebrados (caminhos incorretos)
-- Formatação inconsistente (títulos, listas)
-- Code blocks sem linguagem especificada
+**Problema**: Ficheiros Markdown podem ter links quebrados, formatação inconsistente.
 
-**Solução**:
-1. Manter consistência com estilo existente
-2. Usar `#` para títulos (não `## ` no início de linha)
-3. Especificar linguagem em code blocks:
-   ```markdown
-   ```javascript
-   // código aqui
-   ```
-   ```
-4. Validar links com `grep` ou ferramenta online
-5. Usar Prettier: `npm run format` formata Markdown também
-
-**Prevenção**:
-- Ler o ficheiro antes de editar para entender estrutura
-- Manter mesmo estilo de formatação
-- Links relativos: usar `/` para raiz do projeto
+**Solução**: Manter consistência com estilo existente, especificar linguagem em code blocks, validar links.
 
 ### 18. Edição de Ficheiros CSS - Estrutura e Especificidade
 
-**Problema**: Ao adicionar CSS para novos componentes:
-- Variáveis CSS podem não estar definidas no tema
-- Especificidade pode não sobrescrever estilos existentes
-- Dark mode pode não ser considerado
+**Problema**: CSS duplicado no mesmo stylesheet causa conflitos imprevisíveis.
 
-**Solução**:
-1. Ler CSS existente para identificar variáveis (`var(--admin-*)`)
-2. Adicionar comentários de secção para organização:
-   ```css
-   /* =============================================
-      SEARCH RESULTS STYLES
-      ============================================= */
-   ```
-3. Testar em ambos modos (claro/escuro)
-4. Usar variáveis CSS para cores, espaçamentos, etc.
-
-**Prevenção**:
-- Manter dicionário de variáveis CSS disponíveis
-- Seguir convenção de nomenclatura do projeto
-- Verificar se existe utility class antes de criar CSS novo
+**Solução**: Consolidar seletores duplicados, usar variáveis CSS, adicionar comentários de secção, testar em ambos os modos (claro/escuro).
 
 ### 19. Vite Rollup Input - Estrutura de Diretórios no Build
 
-**Problema**: Ao adicionar ficheiros HTML de subdiretórios (ex: `src/admin/`) ao `rollupOptions.input`, o Vite preserva a estrutura de diretórios relativa à raiz do projeto. Ou seja:
-- `src/admin/index.html` → `dist/src/admin/index.html` (não `dist/admin/index.html`)
+**Problema**: Ficheiros em subdiretórios (ex: `src/admin/`) geram `dist/src/admin/` em vez de `dist/admin/`.
 
-**Solução**:
-1. Adicionar os ficheiros ao `rollupOptions.input` normalmente
-2. Usar um passo pós-build no `package.json` para mover os ficheiros:
-   ```json
-   "build": "vite build && cp -r dist/src/admin dist/admin && rm -rf dist/src"
-   ```
-
-**Prevenção**:
-- Antes de adicionar entradas ao rollup, pensar na estrutura de saída desejada
-- Se o destino for diferente da estrutura de origem, planejar o passo de relocação
+**Solução**: Usar passo pós-build no `package.json`:
+```json
+"build": "vite build && cp -r dist/src/admin dist/admin && rm -rf dist/src"
+```
 
 ### 20. Vite 8 Plugin Hooks - closeBundle/writeBundle Podem Não Executar
 
-**Problema**: Em Vite 8 (que usa rolldown internamente), os hooks `closeBundle()` e `writeBundle()` de plugins customizados podem não ser executados, mesmo que a build passe sem erros.
-
-**Solução**:
-- Usar scripts shell no `package.json` em vez de plugins Vite para operações pós-build
-- Exemplo: `"build": "vite build && cp -r dist/src/admin dist/admin && rm -rf dist/src"`
-
-**Prevenção**:
-- Não confiar em hooks de plugin para operações críticas pós-build
-- Testar se o hook executa adicionando `console.log()` e verificando a saída
-- Preferir scripts npm para tarefas de reorganização de ficheiros
+Em Vite 8 (Rolldown), hooks `closeBundle()`/`writeBundle()` de plugins podem não executar. Usar scripts shell no `package.json` em vez de plugins para operações pós-build.
 
 ### 21. node -e com Strings Complexas Falha no Windows Bash
 
-**Problema**: No Windows (bash/Git Bash), `node -e` com scripts inline longos ou com caracteres especiais pode falhar com exit code 127 ("command not found"), enquanto scripts simples funcionam normalmente.
+No Windows (Git Bash), `node -e` com scripts inline longos falha com exit code 127. Usar comandos shell nativos (`cp`, `rm`, `mv`) ou criar ficheiro `.js` separado.
 
-**Exemplo**:
-```bash
-# Funciona:
-node -e "console.log('hello')"
+### 22. Edição de Ficheiros CSS - CSS `@layer` Specificity
 
-# Falha com exit code 127:
-node -e "const{cpSync,rmSync,existsSync}=require('fs');const s='dist/src/admin'..."
-```
+Selectors fora de `@layer` sobrescrevem regras dentro de `@layer`. Ao adicionar estilos page-specific (ex: filtros de pesquisa), scoping com classe pai (`.search-filters .filter-btn`) evita sobrescrever cores de categorias noutras páginas.
 
-**Solução**:
-1. Usar comandos shell nativos (`cp`, `rm`, `mv`) em vez de `node -e` para operações simples
-2. Se precisar de Node.js, criar um ficheiro `.js` separado e executar com `node ficheiro.js`
+### 23. CSP — No Inline Scripts
 
-**Prevenção**:
-- Para operações de ficheiros em scripts npm no Windows, preferir `cp -r`, `rm -rf`, `mv`
-- Evitar `node -e` com scripts inline complexos
-- Se necessário usar Node.js, criar ficheiro dedicado em `scripts/`
+Nunca usar `onclick=`, `onsubmit=`, inline `<script>` sem `type="module"`, ou `style=""`. Sempre usar `.addEventListener()` em ficheiros `.js` externos. CSP no Netlify bloqueia handlers inline.
 
-### Important Notes
+### 24. Dark Mode Toggle Classes
 
-- **Development**: Must use `npm run dev` — direct file:// opening fails (ES modules)
-- **CSS Injection**: Tailwind CSS injected via JavaScript during Vite dev
-- **Routing**: Client-side via hash/fragment + programmatic navigation
-- **Security**: DOMPurify for Markdown; RLS policies; no secrets in frontend
-- **Admin Auth**: `persistSession: true` obrigatório em `config.js` para admin
+SVG icons devem usar `class="sun-icon"` e `class="moon-icon"` (nunca `theme-icon-light`/`theme-icon-dark`). O drawer toggle é `<button class="drawer-theme-toggle">` diretamente, não envolvido em div.
+
+### 25. Header/Footer Consistency
+
+Todas as páginas públicas devem ter a mesma estrutura de header (utility bar, nav, theme toggle) e footer (`footer-grid`, `footer-logo`, logo branco, `footer-divider`, `footer-bottom`, `footer-admin-access`).
+
+### 26. Hero Text Centering
+
+`.hero-subtitle` tem `lg:text-left` no seu @apply. Páginas que precisam de texto centrado devem adicionar `text-center` diretamente no elemento `<p>`.
+
+### 27. i18n Files
+
+Traduções ficam apenas em `public/i18n/`. `src/i18n.js` faz fetch via `/i18n/{lang}.json`. Nunca criar cópias duplicadas em `src/i18n/`.
+
+### 28. Language Dropdown
+
+A utility bar usa um único botão com globo (`.lang-toggle`) com dropdown (`.lang-dropdown`). JavaScript no `script.js` faz toggle, click-outside-close, e troca de idioma com sync do localStorage. Todas as 12 páginas HTML devem ter a mesma estrutura de dropdown.
+
+### 29. Search Page Architecture
+
+- `src/lib/search.js`: Busca TODOS os resultados do Supabase (sem `range()`)
+- `src/pesquisa-logic.js`: Paginação client-side (15/página) a partir de cache
+- Pesquisa dispara apenas com Enter ou clique no botão (sem pesquisa em tempo real)
+- Destaque de termos: `escapeHtml()` primeiro, depois `highlightTerms()` envolve em `<mark>`
+- Busca por Enter/botão em todas as páginas: redirect da utility bar para `pesquisa.html`

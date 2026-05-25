@@ -122,3 +122,8 @@ function updateLangButtons() {
 export function getTranslations() {
   return translations;
 }
+
+/**
+ * Ready promise — modules can `await i18nReady` before using t()
+ */
+export const i18nReady = initI18n().catch(console.error);

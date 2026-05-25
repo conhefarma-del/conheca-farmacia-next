@@ -148,6 +148,96 @@ if (drawer) {
 // Set active link on load
 setActiveNavLink();
 
+// Utility Bar — Search input (Enter → pesquisa.html)
+const utilitySearchInput = document.getElementById('utility-search-input');
+const isSearchPage = window.location.pathname.includes('pesquisa');
+
+if (utilitySearchInput) {
+  utilitySearchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const q = utilitySearchInput.value.trim();
+      if (q) {
+        window.location.href = `pesquisa.html?q=${encodeURIComponent(q)}`;
+      }
+    }
+  });
+}
+
+// Utility Bar — Search icon click (mobile → redirect to pesquisa.html)
+const utilitySearchIcon = document.querySelector('.utility-search-icon');
+if (utilitySearchIcon) {
+  utilitySearchIcon.addEventListener('click', () => {
+    if (isSearchPage) {
+      // On the search page, focus the search input
+      const searchInput = document.getElementById('search-input');
+      if (searchInput) searchInput.focus();
+    } else {
+      // On other pages, redirect to search page
+      window.location.href = 'pesquisa.html';
+    }
+  });
+}
+
+// Utility Bar — Language dropdown
+const langToggle = document.getElementById('lang-toggle');
+const langDropdown = document.getElementById('lang-dropdown');
+const langCurrent = document.getElementById('lang-current');
+
+if (langToggle && langDropdown) {
+  langToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = langDropdown.classList.toggle('open');
+    langToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!langDropdown.contains(e.target) && !langToggle.contains(e.target)) {
+      langDropdown.classList.remove('open');
+      langToggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  // Language option click
+  langDropdown.querySelectorAll('.lang-option').forEach(option => {
+    option.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const lang = option.getAttribute('data-lang');
+      if (!lang) return;
+
+      // Update active state
+      langDropdown.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
+      option.classList.add('active');
+
+      // Update toggle label
+      if (langCurrent) langCurrent.textContent = lang.toUpperCase();
+
+      // Close dropdown
+      langDropdown.classList.remove('open');
+      langToggle.setAttribute('aria-expanded', 'false');
+
+      // Apply language
+      try {
+        const { setLanguage } = await import('./i18n.js');
+        await setLanguage(lang);
+      } catch (_err) {
+        // i18n module not available on this page
+      }
+    });
+  });
+
+  // Sync active state from stored language on load
+  try {
+    const stored = localStorage.getItem('conheca-farmacia-lang');
+    if (stored && langCurrent) {
+      langCurrent.textContent = stored.toUpperCase();
+      langDropdown.querySelectorAll('.lang-option').forEach(o => {
+        o.classList.toggle('active', o.getAttribute('data-lang') === stored);
+      });
+    }
+  } catch (_err) {}
+}
+
 // Footer Admin Gate Button — redirect to admin (which has gate questions)
 const adminGateBtn = document.getElementById('admin-gate-btn');
 if (adminGateBtn) {

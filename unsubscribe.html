@@ -234,6 +234,26 @@
   </style>
 </head>
 <body>
+  <!-- Utility Bar -->
+  <div class="utility-bar">
+    <div class="utility-bar-container">
+      <div class="utility-search">
+        <svg class="utility-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" class="utility-search-input" id="utility-search-input" data-i18n="search.placeholder" placeholder="Pesquisar artigos, eventos, lives...">
+      </div>
+      <div class="utility-lang">
+        <button class="lang-toggle" id="lang-toggle" aria-expanded="false" aria-haspopup="true" aria-label="Alterar idioma">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span id="lang-current">PT</span>
+        </button>
+        <div class="lang-dropdown" id="lang-dropdown" role="menu">
+          <button class="lang-option active" data-lang="pt" role="menuitem">Portugues</button>
+          <button class="lang-option" data-lang="en" role="menuitem">English</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="card">
     <div class="card-body">
       <!-- Brand -->
@@ -244,7 +264,7 @@
       <!-- Loading State -->
       <div id="loading" class="state active">
         <div class="spinner"></div>
-        <p class="loading-text">A processar o seu pedido...</p>
+        <p class="loading-text" data-i18n="unsubscribe.loading_text">A processar o seu pedido...</p>
       </div>
 
       <!-- Success State -->
@@ -254,15 +274,15 @@
             <path d="M5 13l4 4L19 7"/>
           </svg>
         </div>
-        <h1 class="state-title">Subscrição Cancelada</h1>
-        <p class="state-message">A sua subscrição foi cancelada com sucesso. Deixará de receber os nossos emails de newsletter.</p>
+        <h1 class="state-title" data-i18n="unsubscribe.success_title">Subscrição Cancelada</h1>
+        <p class="state-message" data-i18n="unsubscribe.success_message">A sua subscrição foi cancelada com sucesso. Deixará de receber os nossos emails de newsletter.</p>
         <a href="/" class="btn">
           <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M19 12H5M12 19l-7-7 7-7"/>
           </svg>
-          Voltar ao Site
+          <span data-i18n="common.voltar_ao_site">Voltar ao Site</span>
         </a>
-        <p class="footer-note">Se foi um erro, pode sempre subscrever novamente<br>a partir do nosso site.</p>
+        <p class="footer-note" data-i18n="unsubscribe.success_footer">Se foi um erro, pode sempre subscrever novamente a partir do nosso site.</p>
       </div>
 
       <!-- Error State -->
@@ -272,19 +292,25 @@
             <path d="M6 18L18 6M6 6l12 12"/>
           </svg>
         </div>
-        <h1 class="state-title">Link Inválido</h1>
-        <p id="error-message" class="state-message">O link de cancelamento é inválido ou já foi utilizado.</p>
+        <h1 class="state-title" data-i18n="unsubscribe.error_title">Link Inválido</h1>
+        <p id="error-message" class="state-message" data-i18n="unsubscribe.error_message">O link de cancelamento é inválido ou já foi utilizado.</p>
         <a href="/" class="btn">
           <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M19 12H5M12 19l-7-7 7-7"/>
           </svg>
-          Voltar ao Site
+          <span data-i18n="common.voltar_ao_site">Voltar ao Site</span>
         </a>
-        <p class="footer-note">Se precisar de ajuda, contacte-nos em<br><a href="mailto:conhecerfarmacia@gmail.com" style="color: var(--green-700); text-decoration: none; font-weight: 500;">conhecerfarmacia@gmail.com</a></p>
+        <p class="footer-note"><span data-i18n="unsubscribe.error_footer">Se precisar de ajuda, contacte-nos em</span><br><a href="mailto:conhecerfarmacia@gmail.com" style="color: var(--green-700); text-decoration: none; font-weight: 500;">conhecerfarmacia@gmail.com</a></p>
       </div>
     </div>
   </div>
 
   <script type="module" src="/src/unsubscribe.js"></script>
+  <script type="module">
+    import { initI18n } from '/src/i18n.js';
+    document.addEventListener('DOMContentLoaded', () => {
+      initI18n();
+    });
+  </script>
 </body>
 </html>

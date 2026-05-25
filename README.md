@@ -1,447 +1,214 @@
-# 💊 Conheça Farmácia — Portal de Educação e Gestão Clínica
+# Conheca Farmacia — Portal de Educacao e Gestao Clinica
 
-[![Security: Verified](https://img.shields.io/badge/Security-Security--First-green?style=flat-square)](#arquitetura-de-segurança)
+[![Security: Verified](https://img.shields.io/badge/Security-Security--First-green?style=flat-square)](#arquitetura-de-seguranca)
 [![Database: Supabase](https://img.shields.io/badge/Database-Supabase-3ECF8E?style=flat-square&logo=supabase)](https://supabase.com)
 [![Framework: Vite](https://img.shields.io/badge/Framework-Vite-646CFF?style=flat-square&logo=vite)](https://vitejs.dev)
 
-O **Conheça Farmácia** é uma plataforma dedicada a promover o papel clínico do farmacêutico no ecossistema de saúde. Este projeto integra uma gestão robusta de inscrições em eventos científicos e um catálogo de artigos técnicos, focado na integridade dos dados e na experiência do profissional de saúde.
+O **Conheca Farmacia** e uma plataforma dedicada a promover o papel clinico do farmaceutico no ecossistema de saude. Artigos cientificos, eventos, lives, pesquisa global e suporte bilingue (PT/EN).
 
 ---
 
-## ⚡ Início Rápido
+## Inicio Rapido
 
-> **⚠️ IMPORTANTE:** Este projeto usa Vite e **NÃO** pode ser aberto diretamente no browser (file://). É necessário um servidor de desenvolvimento.
+> **IMPORTANTE:** Este projeto usa Vite e **NAO** pode ser aberto diretamente no browser (file://). E necessario um servidor de desenvolvimento.
 
 ```bash
-# Instalar dependências
 npm install
-
-# Servidor de desenvolvimento (com hot-reload)
 npm run dev
-# → O site abre em http://localhost:5173
+# Abre em http://localhost:5173
 
-# Build de produção
 npm run build
 npm run preview
 ```
 
-Para mais detalhes, consulte [DESENVOLVIMENTO.md](./DESENVOLVIMENTO.md).
-
 ---
 
-## 🚀 Visão Geral
+## Stack Tecnologica
 
-Este WebApp foi construído sob o paradigma **"Security-First"**, garantindo que informações sensíveis de profissionais (como nomes, e-mails e registos) sejam tratadas com os mais altos padrões de proteção moderna.
-
-### Funcionalidades Principais
-
-- 📰 **Catálogo de Artigos**: Conteúdo técnico em Markdown com renderização segura (DOMPurify)
-- 🎓 **Gestão de Eventos**: Inscrições em workshops, palestras e congressos com sincronização de vagas
-- 🔐 **Proteção de Dados**: Validação em duas camadas (frontend + Edge Function backend)
-- 📧 **Email Transacional**: Confirmações automáticas via Resend
-- 🛡️ **Anti-Spam**: Honeypots invisíveis + rate limiting (5s frontend, 5/60s backend)
-- 🔄 **Sincronização Real-Time**: Vagas atualizam diretamente do Supabase
-
----
-
-## 🛠️ Stack Tecnológica
-
-| Componente     | Tecnologia                                  | Propósito                       |
+| Componente     | Tecnologia                                  | Proposito                       |
 | -------------- | ------------------------------------------- | ------------------------------- |
-| **Frontend**   | HTML5, TailwindCSS, JavaScript (ES6+)       | Interface e lógica de cliente   |
+| **Frontend**   | HTML5, Tailwind CSS v4, JavaScript (ES6+)   | Interface e logica de cliente   |
 | **Bundler**    | Vite.js                                     | Performance otimizada e HMR     |
 | **Backend**    | Supabase (PostgreSQL, Auth, Edge Functions) | Banco de dados e API serverless |
-| **Segurança**  | DOMPurify                                   | Sanitização de XSS              |
-| **Email**      | Resend                                      | Transações de email             |
-| **Deployment** | Netlify                                     | Hospedagem estática e CI/CD     |
+| **Seguranca**  | DOMPurify, RLS, CSP headers                 | Sanitizacao de XSS              |
+| **Email**      | Resend                                      | Transacoes de email             |
+| **Deployment** | Netlify                                     | Hospedagem estatica e CI/CD     |
 
 ---
 
-## 🛡️ Arquitetura de Segurança (O Diferencial)
+## Funcionalidades
 
-O projeto foi submetido a auditorias de segurança (Red Team) para implementar:
+### Paginas Publicas (12)
 
-### 1. **Default Deny (RLS — Row Level Security)**
+| Pagina | Descricao |
+|--------|-----------|
+| `index.html` | Homepage com hero animado, artigos e eventos destaque |
+| `pesquisa.html` | Pesquisa global (artigos, eventos, lives) com filtros e paginacao |
+| `artigos.html` | Listagem de artigos com filtros por categoria |
+| `artigo.html` | Detalhe de artigo individual (Markdown + DOMPurify) |
+| `eventos.html` | Listagem de eventos com filtros por tipo |
+| `evento.html` | Detalhe de evento com palestrantes e inscricao |
+| `lives-list.html` | Listagem de lives e webinars |
+| `lives.html` | Detalhe de live individual |
+| `inscricao.html` | Formulario de inscricao com validacao dupla |
+| `sobre.html` | Sobre a organizacao |
+| `unsubscribe.html` | Cancelamento de newsletter |
+| `404.html` | Pagina de erro |
 
-Todas as tabelas no Supabase utilizam _Row Level Security_. Utilizadores anónimos têm permissão estrita apenas para `INSERT` em tabelas específicas:
+### Recursos Transversais
 
-```sql
--- Exemplo: Tabela inscricoes
-CREATE POLICY "allow_insert_inscricoes"
-  ON inscricoes FOR INSERT
-  WITH CHECK (
-    length(nome) <= 255 AND
-    length(email) <= 255 AND
-    length(telefone) <= 20
-  );
-```
+- **Pesquisa global**: Input na utility bar (mobile redireciona para pesquisa.html), pesquisa por Enter/botao, 15 resultados/pagina com paginacao client-side, destaque de termos pesquisados
+- **Dark mode**: Toggle no header e drawer mobile, persistencia em localStorage
+- **i18n PT/EN**: Dropdown na utility bar com globo, persistencia em localStorage, atributos `data-i18n` nos elementos
+- **Breadcrumbs**: Navegacao hierarquica nas paginas de detalhe
+- **SEO completo**: Meta tags, Open Graph, Twitter Card, JSON-LD, canonical URLs, sitemap.xml
+- **Analytics**: Tracking de page views com filtros temporais (Dia/Semana/Mes/6M/1A)
 
-### 2. **Sanitização Universal**
+### CMS Admin
 
-Implementação de `DOMPurify` para limpar qualquer conteúdo Markdown/HTML antes da renderização, prevenindo ataques de _Cross-Site Scripting_ (XSS):
-
-```javascript
-const htmlContent = DOMPurify.sanitize(markedParsed, {
-  ALLOWED_TAGS: ["b", "i", "em", "strong", "p", "br", "h1", "h2", "a", "img"],
-  ALLOWED_ATTR: ["href", "src", "alt", "title"],
-});
-```
-
-### 3. **Isolamento de Segredos**
-
-Chaves de API e URLs sensíveis são geridas exclusivamente via variáveis de ambiente (`.env`), nunca expostas no código fonte:
-
-```javascript
-// ❌ PROIBIDO
-const ANON_KEY = "eyJhbGc..."; // Hardcoded
-
-// ✅ CORRETO
-const ANON_KEY = process.env.SUPABASE_ANON_KEY;
-if (!ANON_KEY) throw new Error("Configure .env");
-```
-
-### 4. **Anti-Spam & Rate Limiting**
-
-Proteção de formulários com múltiplas camadas:
-
-- **Honeypot invisível**: Campo oculto que bots tentam preencher
-- **Rate Limiting Frontend**: Máximo 1 inscrição a cada 5 segundos
-- **Rate Limiting Backend**: Edge Function limita a 5 requests/IP/minuto
+- **URL**: `/src/admin/index.html` (dev) ou `/admin/index.html` (producao)
+- **Auth**: Supabase Auth + 2FA TOTP + gate de perguntas secretas
+- **Funcionalidades**: CRUD artigos, eventos lives, dashboard analytics, gestao de newsletter, definicoes de perfil
+- **Audit Logs**: Todas as acoes registadas em `audit_logs`
+- **Image Upload**: Compressao automatica antes de upload para Supabase Storage
 
 ---
 
-## 📊 CMS Admin (Gestão de Conteúdo)
+## Arquitetura de Seguranca
 
-O projeto inclui um painel administrativo para gerir conteúdo sem código.
+O projeto segue o paradigma **"Security-First"** com auditorias Red Team:
 
-### Acesso
+### RLS (Row Level Security)
 
-- **URL**: `/src/admin/index.html`
-- **Autenticação**: Supabase Auth (apenas utilizadores em `admin_users`)
-- **Funcionalidades**: CRUD de artigos, eventos, lives
+Todas as tabelas usam RLS. Utilizadores anonimos tem permissao estrita apenas para INSERT em tabelas especificas.
 
-### Estrutura do Admin
+### Sanitizacao Universal
 
-```
-src/admin/
-├── index.html # Login page
-├── dashboard.html # Stats e activity feed
-├── artigos/ # CRUD artigos
-│   ├── index.html
-│   ├── new.html
-│   └── edit.html
-├── eventos/ # CRUD eventos
-│   ├── index.html
-│   ├── new.html
-│   └── edit.html
-├── lives/ # CRUD lives
-│   ├── index.html
-│   ├── new.html
-│   └── edit.html
-├── lib/
-│   ├── auth.js # Auth Supabase
-│   ├── image-compressor.js # Compressão de imagens
-│   └── audit-logger.js # Logging de ações
-└── styles/
-    └── admin.css # CSS exclusivo
-```
+`DOMPurify` limpa qualquer conteudo Markdown/HTML antes da renderizacao. `escapeHtml()` e `escapeAttr()` em `src/lib/security.js` para todos os innerHTML com dados externos.
 
-### Funcionalidades
+### Anti-Spam
 
-| Módulo | Funcionalidades |
-|--------|-----------------|
-| **Artigos** | Criar, editar, publicar, referências, upload de imagens |
-| **Eventos** | Gerir eventos, capacidade, múltiplos palestrantes |
-| **Lives** | Transmissões ao vivo, links, materiais |
-| **Audit Logs** | Todas as ações registadas (CREATE, UPDATE, DELETE) |
+- Honeypot invisivel em formularios
+- Rate limiting frontend (5s cooldown)
+- Rate limiting backend (Edge Function: 5 requests/IP/minuto)
 
-### Migração de Dados
-
-Os dados JSON foram migrados para Supabase:
-- 15 artigos
-- 6 eventos
-- 4 lives
-
-Os ficheiros JSON originais permanecem como fallback.
-
-### 5. **Validação em Duas Camadas**
+### Validacao em Duas Camadas
 
 | Camada       | Validação                                                          |
 | ------------ | ------------------------------------------------------------------ |
 | **Frontend** | Regex (email RFC 5322, telefone Angola/Intl), maxLength, whitelist |
 | **Backend**  | Edge Function revalida tudo + rate limiting + honeypot check       |
-| **Database** | RLS Policies + UNIQUE constraints                                  |
+| **Database** | RLS Policies + CHECK constraints + UNIQUE constraints              |
 
-### 6. **Mensagens de Erro Seguras**
+### CSP Headers
 
-Sem divulgação de informação técnica ao utilizador:
-
-```javascript
-// ❌ PROIBIDO
-showError("Erro 23505: UNIQUE constraint violation");
-
-// ✅ CORRETO
-showError("Já tem uma inscrição neste evento. Se tem dúvidas, contacte-nos.");
-```
+Configurado no `netlify.toml`:
+- `script-src 'self' https://cdn.jsdelivr.net https://unpkg.com`
+- `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`
+- Sem `unsafe-inline` para scripts (todos os scripts usam `type="module"` e `.addEventListener()`)
 
 ---
 
-## 📂 Estrutura de Pastas
+## Estrutura de Pastas
 
-```text
-/conheca-farmacia
-├── .github/                      # Workflows de CI/CD e automação
-│   └── workflows/                # GitHub Actions (testes, deploy)
+```
+conheca-farmacia/
+├── index.html                  # Homepage
+├── pesquisa.html               # Pesquisa global
+├── artigos.html / artigo.html  # Artigos (list + detail)
+├── eventos.html / evento.html  # Eventos (list + detail)
+├── lives-list.html / lives.html# Lives (list + detail)
+├── inscricao.html              # Formulario de inscricao
+├── sobre.html                  # Sobre
+├── unsubscribe.html            # Newsletter unsubscribe
+├── 404.html                    # Pagina de erro
 │
-├── supabase/                     # Configurações de DB e Edge Functions
-│   ├── migrations/               # Ficheiros DDL para schema
-│   ├── functions/                # Edge Functions (validate-inscription, etc.)
-│   └── seed.sql                  # Dados iniciais
+├── main.js                     # Vite entry point
+├── vite.config.js              # Vite config + rollupOptions
+├── netlify.toml                # Deploy, redirects, headers
 │
-├── src/                          # Código fonte principal
-│   ├── assets/                   # Branding e recursos visuais
-│   │   ├── content/              # Imagens de artigos e eventos
-│   │   ├── icons/                # Ícones SVG
-│   │   ├── images/               # Imagens gerais
-│   │   └── logo/                 # Logos da marca
+├── src/
+│   ├── input.css               # Tailwind + CSS custom (@layer)
+│   ├── config.js               # Supabase client
+│   ├── script.js               # Nav, hamburger, search, lang dropdown
+│   ├── dark-mode.js            # Theme toggle
+│   ├── i18n.js                 # Translations (PT/EN)
+│   ├── hero-animated.js        # Hero ticker animation
+│   ├── pesquisa-logic.js       # Search page logic
+│   ├── articles-logic.js       # Articles listing
+│   ├── article-detail.js       # Article detail
+│   ├── events-logic.js         # Events listing
+│   ├── event-detail.js         # Event detail
+│   ├── lives-logic.js          # Lives listing
+│   ├── live-detail.js          # Live detail
 │   │
-│   ├── content/                  # Catálogos JSON + Guidelines
-│   │   ├── articles-catalog.json # Lista de artigos
-│   │   ├── events-catalog.json   # Lista de eventos
-│   │   ├── ARTICLE_GUIDELINES.md # Guia para criar artigos
-│   │   └── EVENT_GUIDELINES.md   # Guia para criar eventos
+│   ├── lib/                    # Shared modules
+│   │   ├── api.js              # Supabase API layer
+│   │   ├── search.js           # Global search
+│   │   ├── security.js         # escapeHtml, escapeAttr, validateUrl
+│   │   ├── seo.js              # SEO helpers
+│   │   ├── analytics.js        # Page view tracking
+│   │   ├── newsletter.js       # Newsletter subscription
+│   │   ├── sitemap.js          # Sitemap generator
+│   │   └── ...
 │   │
-│   ├── lib/                      # Configurações de SDKs
-│   │   └── supabaseClient.js     # Cliente Supabase (SSR/Node.js)
-│   │
-│   └── scripts/                  # Lógica de negócio
-│       ├── config.js             # Configuração Supabase (browser)
-│       ├── inscription-logic.js  # Lógica de inscrição
-│       ├── inscription-handler.js# Handler de botões
-│       ├── articles-logic.js     # Renderização de artigos
-│       ├── article-detail.js     # Detalhe de artigo individual
-│       ├── events-logic.js       # Renderização de eventos
-│       ├── event-detail.js       # Detalhe de evento individual
-│       └── script.js             # Inicialização geral
+│   └── admin/                  # CMS Admin panel
+│       ├── index.html          # Login (split-screen)
+│       ├── dashboard.html      # Stats + audit logs
+│       ├── artigos/            # CRUD artigos
+│       ├── eventos/            # CRUD eventos
+│       ├── lives/              # CRUD lives
+│       ├── definicoes.html     # Settings (2FA, profile)
+│       └── newsletter.html     # Subscriber management
 │
-├── .env.example                  # Template para variáveis de ambiente
-├── .env.local                    # ⚠️ NUNCA commit (variáveis reais)
-├── .gitignore                    # Proteção de ficheiros sensíveis
-├── package.json                  # Dependências do projeto
-├── vite.config.js                # Configuração Vite
+├── public/
+│   ├── i18n/                   # pt.json, en.json
+│   └── logo/                   # Logo variants
 │
-├── index.html                    # Página inicial
-├── artigos.html                  # Listagem de artigos
-├── artigo.html                   # Detalhe de artigo
-├── eventos.html                  # Listagem de eventos
-├── evento.html                   # Detalhe de evento
-├── inscricao.html                # Formulário de inscrição
-├── sobre.html                    # Página "Sobre"
-│
-└── README.md                     # Esta documentação
-
+└── supabase/
+    ├── migrations/             # Database migrations
+    └── functions/              # Edge Functions
 ```
 
 ---
 
-## 🚀 Quick Start
+## Tabelas Supabase
 
-### Pré-requisitos
-
-- Node.js 16+ e npm
-- Conta Supabase (https://supabase.com)
-- GitHub para deployments
-
-### 1. Clonar Repositório
-
-```bash
-git clone https://github.com/seu-user/conheca-farmacia.git
-cd conheca-farmacia
-```
-
-### 2. Instalar Dependências
-
-```bash
-npm install
-```
-
-### 3. Configurar Variáveis de Ambiente
-
-```bash
-cp .env.example .env.local
-# Editar .env.local com as credenciais do Supabase
-```
-
-### 4. Iniciar Servidor de Desenvolvimento
-
-```bash
-npm run dev
-```
-
-Abrir http://localhost:5173
+| Tabela | Proposito | RLS |
+|--------|-----------|-----|
+| `articles` | Artigos publicados | Public read, admin write |
+| `events` | Eventos e workshops | Public read, admin write |
+| `lives` | Lives e webinars | Public read, admin write |
+| `inscricoes` | Registros em eventos | Public insert, admin read |
+| `admin_users` | Utilizadores admin | Admin only |
+| `audit_logs` | Log de acoes admin | Admin only |
+| `newsletter_subscribers` | Subscritores newsletter | Public insert, admin manage |
+| `page_views` | Tracking de visitas | Public insert, admin read |
 
 ---
 
-## 📊 Tabelas Supabase
+## Deploy (Netlify)
 
-### `inscricoes`
+O deploy e automatico via GitHub:
 
-Armazena inscrições em eventos. Campos:
+1. Push para `main` → producao em `conhecafarmacia.netlify.app`
+2. Pull requests → deploy previews
+3. Build: `npm run build` (Vite + post-build admin relocate)
+4. Sitemap gerado automaticamente com paginas do Supabase
 
-- `id` (UUID, PK)
-- `nome` (VARCHAR(255))
-- `email` (VARCHAR(255))
-- `telefone` (VARCHAR(20))
-- `profissao` (VARCHAR(100))
-- `origem_evento` (VARCHAR(100))
-- `evento_slug` (VARCHAR(255), FK)
-- `created_at` (TIMESTAMP)
-
-**RLS Policies:**
-
-- ✅ `INSERT`: Permitido (com validação)
-- ❌ `SELECT`: Bloqueado para anónimos
-- ❌ `UPDATE`: Bloqueado para anónimos
-- ❌ `DELETE`: Bloqueado para anónimos
-
-### `users` (Supabase Auth)
-
-Utilizadores autenticados (admin, editors).
+Variaveis de ambiente necessarias no Netlify:
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+- `RESEND_API_KEY` (para emails)
 
 ---
 
-## 📝 Como Adicionar Novo Artigo
-
-1. **Preparar imagem**: 900×600px (proporção 3:2)
-2. **Guardar em**: `src/assets/content/articles/seu-artigo.png`
-3. **Editar**: `src/content/articles-catalog.json`
-
-```json
-{
-  "id": 10,
-  "slug": "010-novo-artigo",
-  "title": "Seu Título",
-  "excerpt": "Resumo breve",
-  "category": "profissionais",
-  "categoryLabel": "Para Profissionais",
-  "author": {
-    "name": "Maria Lima",
-    "role": "Farmacêutica",
-    "avatar": "ML",
-    "avatarBg": "#0a844f"
-  },
-  "date": "2026-04-19",
-  "readTime": 8,
-  "image": "assets/content/articles/seu-artigo.png",
-  "content": "## Conteúdo em Markdown aqui..."
-}
-```
-
-4. **Testar**: Abrir `artigos.html` e verificar renderização
-
-📖 **Leia**: [content/ARTICLE_GUIDELINES.md](src/content/ARTICLE_GUIDELINES.md) para detalhes completos.
-
----
-
-## 📅 Como Adicionar Novo Evento
-
-1. **Preparar imagem**: 1280×720px (proporção 16:9)
-2. **Guardar em**: `src/assets/content/articles/seu-evento.png`
-3. **Editar**: `src/content/events-catalog.json`
-
-```json
-{
-  "id": 11,
-  "slug": "011-workshop-novo",
-  "title": "Workshop: Seu Título",
-  "excerpt": "Resumo breve",
-  "category": "workshop",
-  "categoryLabel": "Workshop",
-  "date": "2026-05-20",
-  "time": "09:00",
-  "endTime": "13:00",
-  "location": "Luanda, Angola",
-  "type": "presencial",
-  "capacity": 50,
-  "registered": 0,
-  "host": {
-    "name": "João Pedro",
-    "role": "Farmacêutico",
-    "organization": "UNILA"
-  },
-  "image": "assets/content/articles/seu-evento.png",
-  "registrationLink": "#"
-}
-```
-
-4. **Testar**: Abrir `eventos.html` e verificar sincronização de vagas
-
-📖 **Leia**: [content/EVENT_GUIDELINES.md](src/content/EVENT_GUIDELINES.md) para detalhes completos.
-
----
-
-## 🧪 Testes de Segurança
-
-### Validação do Formulário
-
-```bash
-# Teste com dados malicioso (ex: <script>alert('XSS')</script>)
-# Sistema deve:
-# 1. ✅ Sanitizar no frontend
-# 2. ✅ Rejeitar no Edge Function
-# 3. ✅ Bloquear no RLS (se passar)
-```
-
-### Rate Limiting
-
-```bash
-# Submeter 6 inscrições em rápida sucessão
-# Frontend: Bloqueia após 1 submissão (5s cooldown)
-# Backend: Bloqueia após 5 submissões/minuto (429 Too Many Requests)
-```
-
-### Proteção contra Duplicatas
-
-```bash
-# Inscrever-se 2x com o mesmo email no mesmo evento
-# Sistema deve: "Já tem uma inscrição neste evento"
-```
-
----
-
-## 🔍 Auditorias de Segurança
-
-### Realizado
-
-- ✅ Análise de XSS em renderização Markdown
-- ✅ Validação de RLS Policies (Supabase)
-- ✅ Rate limiting (frontend + backend)
-- ✅ Proteção contra inscrições duplicadas
-- ✅ Remoção de console.log verbosos (information disclosure)
-- ✅ Mensagens de erro genéricas (sem stack traces)
-- ✅ Sanitização com DOMPurify (whitelist de tags)
-
-### Recomendações Futuras
-
-- 🔜 Implementar CAPTCHA para formulários públicos
-- 🔜 Audit logs para rastreabilidade de modificações
-- 🔜 Integração com WAF (Web Application Firewall)
-- 🔜 Penetration testing anual
-
----
-
-## 📧 Contacto & Suporte
+## Contacto
 
 - **Email**: conhecerfarmacia@gmail.com
-- **Issues**: https://github.com/seu-user/conheca-farmacia/issues
-- **Documentação**: Consulte as Guidelines em `src/content/`
+- **WhatsApp**: +244 925 696 002
+- **Website**: conhecafarmacia.netlify.app
 
 ---
 
-## 📄 Licença
-
-Este projeto é distribuído sob a licença MIT. Veja `LICENSE` para detalhes.
-
----
-
-**Desenvolvido com ❤️ para promover a excelência clínica farmacêutica.**
+**Desenvolvido com excelencia para promover a pratica farmaceutica.**

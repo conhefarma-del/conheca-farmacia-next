@@ -1,4 +1,4 @@
-import { t } from "./i18n.js";
+import { t, i18nReady } from "./i18n.js";
 
 const HERO_PHRASES = [
   { textKey: 'hero.animated_text', icon: '/assets/icons/Asset 1-branco.svg' },
@@ -220,12 +220,16 @@ function renderTickerBottom() {
 // Respect reduced motion preference
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 if (prefersReducedMotion.matches) {
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
+    await i18nReady;
     const cardText = document.querySelector('.hero-animated-text');
     if (cardText) cardText.textContent = getPhraseText(HERO_PHRASES[0]);
   });
 } else {
-  document.addEventListener('DOMContentLoaded', initHeroAnimated);
+  document.addEventListener('DOMContentLoaded', async () => {
+    await i18nReady;
+    initHeroAnimated();
+  });
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) stopCycle();
     else startCycle();

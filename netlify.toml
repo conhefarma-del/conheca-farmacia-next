@@ -71,6 +71,11 @@
   status = 200
 
 [[redirects]]
+  from = "/pesquisa"
+  to = "/pesquisa.html"
+  status = 200
+
+[[redirects]]
   from = "/lives/:id"
   to = "/lives.html?id=:id"
   status = 200

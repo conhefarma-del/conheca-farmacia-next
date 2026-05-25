@@ -22,6 +22,7 @@ export default defineConfig({
         livesList: resolve(__dirname, "lives-list.html"),
         notFound: resolve(__dirname, "404.html"),
         unsubscribe: resolve(__dirname, "unsubscribe.html"),
+        pesquisa: resolve(__dirname, "pesquisa.html"),
         // Admin CMS
         adminLogin: resolve(__dirname, "src/admin/index.html"),
         adminDashboard: resolve(__dirname, "src/admin/dashboard.html"),

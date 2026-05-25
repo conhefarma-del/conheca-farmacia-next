@@ -64,6 +64,26 @@
     </style>
   </head>
   <body class="antialiased text-brand-deep bg-brand-bg">
+    <!-- Utility Bar -->
+    <div class="utility-bar">
+      <div class="utility-bar-container">
+        <div class="utility-search">
+          <svg class="utility-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" class="utility-search-input" id="utility-search-input" data-i18n="search.placeholder" placeholder="Pesquisar artigos, eventos, lives...">
+        </div>
+        <div class="utility-lang">
+          <button class="lang-toggle" id="lang-toggle" aria-expanded="false" aria-haspopup="true" aria-label="Alterar idioma">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span id="lang-current">PT</span>
+          </button>
+          <div class="lang-dropdown" id="lang-dropdown" role="menu">
+            <button class="lang-option active" data-lang="pt" role="menuitem">Portugues</button>
+            <button class="lang-option" data-lang="en" role="menuitem">English</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Header -->
     <header class="header">
       <nav class="nav-container">
@@ -78,11 +98,11 @@
 
         <div class="header-right">
           <ul class="nav-links">
-            <li><a href="/index.html#inicio">Início</a></li>
-            <li><a href="/artigos.html">Artigos</a></li>
-            <li><a href="/eventos.html">Eventos</a></li>
-            <li><a href="/lives-list.html">Lives</a></li>
-            <li><a href="/sobre.html">Sobre Nós</a></li>
+            <li><a href="/index.html#inicio" data-i18n="nav.inicio">Início</a></li>
+            <li><a href="/artigos.html" data-i18n="nav.artigos">Artigos</a></li>
+            <li><a href="/eventos.html" data-i18n="nav.eventos">Eventos</a></li>
+            <li><a href="/lives-list.html" data-i18n="nav.lives">Lives</a></li>
+            <li><a href="/sobre.html" data-i18n="nav.sobre">Sobre Nós</a></li>
           </ul>
           <!-- Theme Toggle Button -->
           <button
@@ -147,11 +167,11 @@
       </div>
 
       <ul class="drawer-links" id="drawer-links">
-        <li><a href="/index.html#inicio">Início</a></li>
-        <li><a href="/artigos.html">Artigos</a></li>
-        <li><a href="/eventos.html">Eventos</a></li>
-        <li><a href="/lives-list.html">Lives</a></li>
-        <li><a href="/sobre.html">Sobre Nós</a></li>
+        <li><a href="/index.html#inicio" data-i18n="nav.inicio">Início</a></li>
+        <li><a href="/artigos.html" data-i18n="nav.artigos">Artigos</a></li>
+        <li><a href="/eventos.html" data-i18n="nav.eventos">Eventos</a></li>
+        <li><a href="/lives-list.html" data-i18n="nav.lives">Lives</a></li>
+        <li><a href="/sobre.html" data-i18n="nav.sobre">Sobre Nós</a></li>
       </ul>
 
       <div class="drawer-footer">
@@ -233,12 +253,12 @@
       <section class="hero">
         <div class="container-center text-center">
           <div class="error-code error-animate" aria-hidden="true">4<span class="accent">0</span>4</div>
-          <h1 class="hero-title error-animate">Página não encontrada</h1>
-          <p class="hero-subtitle error-animate">
+          <h1 class="hero-title error-animate" data-i18n="page404.title">Página não encontrada</h1>
+          <p class="hero-subtitle error-animate" data-i18n="page404.message">
             O conteúdo que procura pode ter sido movido ou já não existe.
           </p>
           <div class="error-animate">
-            <a href="/index.html" class="btn btn-primary">Voltar ao Início</a>
+            <a href="/index.html" class="btn btn-primary" data-i18n="page404.back_home">Voltar ao Início</a>
           </div>
         </div>
       </section>
@@ -253,7 +273,7 @@
               src="/logo/logo-principal-branco.svg"
               alt="Conheça Farmácia Logo"
             />
-            <p class="text-white/70 text-sm mt-4">
+            <p class="text-white/70 text-sm mt-4" data-i18n="footer.descricao">
               Conhecimento que conecta. Formação que transforma. Saúde que
               evolui.
             </p>
@@ -342,5 +362,11 @@
 
     <!-- Dark Mode + Drawer -->
     <script src="/js/404-page.js"></script>
+    <script type="module">
+      import { initI18n } from '/src/i18n.js';
+      document.addEventListener('DOMContentLoaded', () => {
+        initI18n();
+      });
+    </script>
   </body>
 </html>
