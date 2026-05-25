@@ -12,6 +12,26 @@
     />
   </head>
   <body class="antialiased text-brand-deep bg-brand-bg">
+    <!-- Utility Bar -->
+    <div class="utility-bar">
+      <div class="utility-bar-container">
+        <div class="utility-search">
+          <svg class="utility-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" class="utility-search-input" id="utility-search-input" data-i18n="search.placeholder" placeholder="Pesquisar artigos, eventos, lives...">
+        </div>
+        <div class="utility-lang">
+          <button class="lang-toggle" id="lang-toggle" aria-expanded="false" aria-haspopup="true" aria-label="Alterar idioma">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span id="lang-current">PT</span>
+          </button>
+          <div class="lang-dropdown" id="lang-dropdown" role="menu">
+            <button class="lang-option active" data-lang="pt" role="menuitem">Portugues</button>
+            <button class="lang-option" data-lang="en" role="menuitem">English</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Header -->
     <header class="header">
       <nav class="nav-container">
@@ -26,11 +46,11 @@
 
         <div class="header-right">
           <ul class="nav-links">
-            <li><a href="index.html#inicio">Início</a></li>
-            <li><a href="artigos.html">Artigos</a></li>
-            <li><a href="eventos.html">Eventos</a></li>
-            <li><a href="lives-list.html">Lives</a></li>
-            <li><a href="sobre.html">Sobre Nós</a></li>
+            <li><a href="index.html#inicio" data-i18n="nav.inicio">Início</a></li>
+            <li><a href="artigos.html" data-i18n="nav.artigos">Artigos</a></li>
+            <li><a href="eventos.html" data-i18n="nav.eventos">Eventos</a></li>
+            <li><a href="lives-list.html" data-i18n="nav.lives">Lives</a></li>
+            <li><a href="sobre.html" data-i18n="nav.sobre">Sobre Nós</a></li>
           </ul>
           <!-- Theme Toggle Button -->
           <button
@@ -99,11 +119,11 @@
 
       <!-- Drawer Navigation Links -->
       <ul class="drawer-links" id="drawer-links">
-        <li><a href="index.html#inicio">Início</a></li>
-        <li><a href="artigos.html">Artigos</a></li>
-        <li><a href="eventos.html">Eventos</a></li>
-        <li><a href="lives-list.html">Lives</a></li>
-        <li><a href="sobre.html">Sobre Nós</a></li>
+        <li><a href="index.html#inicio" data-i18n="nav.inicio">Início</a></li>
+        <li><a href="artigos.html" data-i18n="nav.artigos">Artigos</a></li>
+        <li><a href="eventos.html" data-i18n="nav.eventos">Eventos</a></li>
+        <li><a href="lives-list.html" data-i18n="nav.lives">Lives</a></li>
+        <li><a href="sobre.html" data-i18n="nav.sobre">Sobre Nós</a></li>
       </ul>
 
       <!-- Drawer Footer: Theme Toggle + Social Icons -->
@@ -241,7 +261,7 @@
 
               <!-- Quick Access Card -->
               <div class="event-details-card quick-access-card">
-                <h2 class="text-2xl font-bold text-brand-deep mb-6">
+                <h2 class="text-2xl font-bold text-brand-deep mb-6" data-i18n="live_detail.quick_access">
                   Acesso Rápido
                 </h2>
 
@@ -252,6 +272,7 @@
                     target="_blank"
                     rel="noopener noreferrer"
                     class="btn btn-primary btn-lg w-full"
+                    data-i18n="live_detail.access_now"
                   >
                     Aceder Agora
                   </a>
@@ -260,15 +281,15 @@
                     id="live-credentials"
                     class="live-credentials mt-6 p-4 bg-brand-bg-alt rounded-lg"
                   >
-                    <h3 class="text-lg font-bold text-brand-deep mb-3">
+                    <h3 class="text-lg font-bold text-brand-deep mb-3" data-i18n="live_detail.access_info">
                       Informações de Acesso
                     </h3>
                     <div id="meeting-id-container" class="mb-3">
-                      <span class="font-semibold">ID da Reunião:</span>
+                      <span class="font-semibold" data-i18n="live_detail.meeting_id">ID da Reunião:</span>
                       <span id="meeting-id" class="ml-2"></span>
                     </div>
                     <div id="meeting-password-container">
-                      <span class="font-semibold">Senha:</span>
+                      <span class="font-semibold" data-i18n="live_detail.password">Senha:</span>
                       <span id="meeting-password" class="ml-2"></span>
                     </div>
                   </div>
@@ -277,7 +298,7 @@
 
               <!-- Materials Section -->
               <div id="materials-section" class="event-details-card mt-8">
-                <h2 class="text-2xl font-bold text-brand-deep mb-4">
+                <h2 class="text-2xl font-bold text-brand-deep mb-4" data-i18n="live_detail.support_materials">
                   Materiais de Apoio
                 </h2>
                 <ul id="materials-list" class="materials-list space-y-2">
@@ -303,13 +324,13 @@
       <!-- Error State -->
       <section id="live-not-found" class="hidden py-20">
         <div class="container-center text-center">
-          <h2 class="text-3xl font-bold text-brand-deep mb-4">
+          <h2 class="text-3xl font-bold text-brand-deep mb-4" data-i18n="live_detail.not_found_title">
             Live não encontrada
           </h2>
-          <p class="text-brand-deep/70 mb-8">
+          <p class="text-brand-deep/70 mb-8" data-i18n="live_detail.not_found_text">
             Desculpe, não conseguimos encontrar a live que procura.
           </p>
-          <a href="index.html" class="btn btn-primary">Voltar ao Início</a>
+          <a href="index.html" class="btn btn-primary" data-i18n="live_detail.back_to_home">Voltar ao Início</a>
         </div>
       </section>
     </main>
@@ -324,7 +345,7 @@
               src="/logo/logo-principal-branco.svg"
               alt="Conheça Farmácia Logo"
             />
-            <p class="text-white/70 text-sm mt-4">
+            <p class="text-white/70 text-sm mt-4" data-i18n="footer.descricao">
               Conhecimento que conecta. Formação que transforma. Saúde que
               evolui.
             </p>
@@ -332,21 +353,21 @@
 
           <!-- Quick Links -->
           <div class="footer-links">
-            <h4>Navegação</h4>
+            <h4 data-i18n="footer.navegacao">Navegação</h4>
             <ul>
-              <li><a href="index.html#inicio">Início</a></li>
-              <li><a href="artigos.html">Artigos</a></li>
-              <li><a href="eventos.html">Eventos</a></li>
-              <li><a href="lives-list.html">Lives</a></li>
-              <li><a href="sobre.html">Sobre Nós</a></li>
+              <li><a href="index.html#inicio" data-i18n="nav.inicio">Início</a></li>
+              <li><a href="artigos.html" data-i18n="nav.artigos">Artigos</a></li>
+              <li><a href="eventos.html" data-i18n="nav.eventos">Eventos</a></li>
+              <li><a href="lives-list.html" data-i18n="nav.lives">Lives</a></li>
+              <li><a href="sobre.html" data-i18n="nav.sobre">Sobre Nós</a></li>
             </ul>
           </div>
 
           <!-- Contact -->
           <div class="footer-links">
-            <h4>Contato</h4>
+            <h4 data-i18n="footer.contacto">Contato</h4>
             <ul class="text-sm text-white/70">
-              <li>Luanda, Angola</li>
+              <li data-i18n="footer.localizacao">Luanda, Angola</li>
               <li>
                 <a
                   href="mailto:conhecerfarmacia@gmail.com"
@@ -366,7 +387,7 @@
 
           <!-- Social Media -->
           <div class="footer-links">
-            <h4>Redes Sociais</h4>
+            <h4 data-i18n="footer.redes_sociais">Redes Sociais</h4>
             <ul class="text-sm">
               <li>
                 <a
@@ -403,12 +424,18 @@
         <div class="footer-divider"></div>
 
         <div class="footer-bottom">
-          <p>&copy; 2026 Conheça Farmácia. Todos os direitos reservados.</p>
+          <p data-i18n="footer.direitos">&copy; 2026 Conheça Farmácia. Todos os direitos reservados.</p>
         </div>
       </div>
     </footer>
 
     <script type="module" src="/main.js"></script>
     <script type="module" src="/src/live-detail.js"></script>
+    <script type="module">
+      import { initI18n } from '/src/i18n.js';
+      document.addEventListener('DOMContentLoaded', () => {
+        initI18n();
+      });
+    </script>
   </body>
 </html>

@@ -1,6 +1,7 @@
 import { getLives, getLiveBySlug } from './lib/api.js';
 import { supabaseClient } from './config.js';
 import { renderBreadcrumb } from "./breadcrumb.js";
+import { t } from "./i18n.js";
 import { escapeHtml, validateUrl } from "./lib/security.js";
 import { logger } from "./lib/logger.js";
 
@@ -265,8 +266,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Breadcrumb
     renderBreadcrumb([
-      { label: "Início", href: "/" },
-      { label: "Lives", href: "/lives-list.html" },
+      { label: "Início", href: "/", i18nKey: "nav.inicio" },
+      { label: "Lives", href: "/lives-list.html", i18nKey: "nav.lives" },
       { label: live.titulo },
     ]);
     renderLiveDetail(live);

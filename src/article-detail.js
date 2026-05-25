@@ -1,5 +1,6 @@
 import { getArticleBySlug, getArticles } from "./lib/api.js";
 import { renderBreadcrumb } from "./breadcrumb.js";
+import { t } from "./i18n.js";
 import { errorHandler } from "./lib/error-handler.js";
 import { supabaseClient } from "./config.js";
 import { escapeHtml } from "./lib/security.js";
@@ -292,8 +293,8 @@ async function loadArticle() {
 
     // Breadcrumb
     const breadcrumbLevels = [
-      { label: "Início", href: "/" },
-      { label: "Artigos", href: "/artigos.html" },
+      { label: "Início", href: "/", i18nKey: "nav.inicio" },
+      { label: "Artigos", href: "/artigos.html", i18nKey: "nav.artigos" },
       { label: article.title },
     ];
     renderBreadcrumb(breadcrumbLevels);

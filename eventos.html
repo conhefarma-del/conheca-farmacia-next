@@ -26,6 +26,26 @@
     />
   </head>
   <body class="antialiased text-brand-deep bg-brand-bg">
+    <!-- Utility Bar -->
+    <div class="utility-bar">
+      <div class="utility-bar-container">
+        <div class="utility-search">
+          <svg class="utility-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" class="utility-search-input" id="utility-search-input" data-i18n="search.placeholder" placeholder="Pesquisar artigos, eventos, lives...">
+        </div>
+        <div class="utility-lang">
+          <button class="lang-toggle" id="lang-toggle" aria-expanded="false" aria-haspopup="true" aria-label="Alterar idioma">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span id="lang-current">PT</span>
+          </button>
+          <div class="lang-dropdown" id="lang-dropdown" role="menu">
+            <button class="lang-option active" data-lang="pt" role="menuitem">Portugues</button>
+            <button class="lang-option" data-lang="en" role="menuitem">English</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Header -->
     <header class="header">
       <nav class="nav-container">
@@ -40,11 +60,11 @@
 
         <div class="header-right">
           <ul class="nav-links">
-            <li><a href="index.html#inicio">Início</a></li>
-            <li><a href="artigos.html">Artigos</a></li>
-            <li><a href="eventos.html">Eventos</a></li>
-            <li><a href="lives-list.html">Lives</a></li>
-            <li><a href="sobre.html">Sobre Nós</a></li>
+            <li><a href="index.html#inicio" data-i18n="nav.inicio">Início</a></li>
+            <li><a href="artigos.html" data-i18n="nav.artigos">Artigos</a></li>
+            <li><a href="eventos.html" data-i18n="nav.eventos">Eventos</a></li>
+            <li><a href="lives-list.html" data-i18n="nav.lives">Lives</a></li>
+            <li><a href="sobre.html" data-i18n="nav.sobre">Sobre Nós</a></li>
           </ul>
           <!-- Theme Toggle Button -->
           <button
@@ -113,11 +133,11 @@
 
       <!-- Drawer Navigation Links -->
       <ul class="drawer-links" id="drawer-links">
-        <li><a href="index.html#inicio">Início</a></li>
-        <li><a href="artigos.html">Artigos</a></li>
-        <li><a href="eventos.html">Eventos</a></li>
-        <li><a href="lives-list.html">Lives</a></li>
-        <li><a href="sobre.html">Sobre Nós</a></li>
+        <li><a href="index.html#inicio" data-i18n="nav.inicio">Início</a></li>
+        <li><a href="artigos.html" data-i18n="nav.artigos">Artigos</a></li>
+        <li><a href="eventos.html" data-i18n="nav.eventos">Eventos</a></li>
+        <li><a href="lives-list.html" data-i18n="nav.lives">Lives</a></li>
+        <li><a href="sobre.html" data-i18n="nav.sobre">Sobre Nós</a></li>
       </ul>
 
       <!-- Drawer Footer: Theme Toggle + Social Icons -->
@@ -204,10 +224,10 @@
       <section class="events-hero">
         <div class="container-center">
           <div class="text-center py-12 md:py-16">
-            <h1 class="text-5xl md:text-7xl font-bold text-brand-deep mb-6">
+            <h1 class="text-5xl md:text-7xl font-bold text-brand-deep mb-6" data-i18n="eventos_page.hero_title">
               Próximos Eventos
             </h1>
-            <p class="hero-subtitle">
+            <p class="hero-subtitle text-center" data-i18n="eventos_page.hero_subtitle">
               Participe em workshops, palestras e eventos exclusivos da nossa
               comunidade de farmacêuticos.
             </p>
@@ -225,10 +245,11 @@
                 <button
                   class="temporal-btn temporal-btn-active"
                   data-status="upcoming"
+                  data-i18n="eventos_page.filter_upcoming"
                 >
                   Próximos Eventos
                 </button>
-                <button class="temporal-btn" data-status="past">
+                <button class="temporal-btn" data-status="past" data-i18n="eventos_page.filter_past">
                   Eventos Passados
                 </button>
               </div>
@@ -240,22 +261,23 @@
                 <button
                   class="filter-btn active"
                   data-category="all"
+                  data-i18n="eventos_page.filter_all"
                 >
                   Todos
                 </button>
-                <button class="filter-btn" data-category="workshop">
+                <button class="filter-btn" data-category="workshop" data-i18n="eventos_page.filter_workshop">
                   Workshop
                 </button>
-                <button class="filter-btn" data-category="palestra">
+                <button class="filter-btn" data-category="palestra" data-i18n="eventos_page.filter_palestra">
                   Palestra
                 </button>
-                <button class="filter-btn" data-category="congresso">
+                <button class="filter-btn" data-category="congresso" data-i18n="eventos_page.filter_congresso">
                   Congresso
                 </button>
-                <button class="filter-btn" data-category="seminario">
+                <button class="filter-btn" data-category="seminario" data-i18n="eventos_page.filter_seminario">
                   Seminário
                 </button>
-                <button class="filter-btn" data-category="outro">
+                <button class="filter-btn" data-category="outro" data-i18n="eventos_page.filter_outro">
                   Outro
                 </button>
               </div>
@@ -274,10 +296,10 @@
           <!-- No Results State -->
           <div id="no-results" class="hidden text-center py-20">
             <div class="text-6xl mb-4">🔍</div>
-            <h3 class="text-xl font-bold text-brand-deep">
+            <h3 class="text-xl font-bold text-brand-deep" data-i18n="eventos_page.no_results_title">
               Nenhum evento encontrado
             </h3>
-            <p class="text-brand-deep/60">
+            <p class="text-brand-deep/60" data-i18n="eventos_page.no_results_text">
               Tente mudar os filtros ou volte em breve para novos eventos!
             </p>
           </div>
@@ -288,10 +310,10 @@
       <section class="newsletter-section">
         <div class="container-center">
           <div class="max-w-2xl mx-auto text-center">
-            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4" data-i18n="eventos_page.newsletter_title">
               Fique Atualizado
             </h2>
-            <p class="text-white/80 mb-8">
+            <p class="text-white/80 mb-8" data-i18n="eventos_page.newsletter_subtitle">
               Receba notificações sobre novos artigos, eventos, palestras e webinars
               diretamente na sua caixa de entrada.
             </p>
@@ -308,15 +330,16 @@
                 type="email"
                 id="newsletter-email"
                 placeholder="Seu email"
+                data-i18n="eventos_page.newsletter_email_placeholder"
                 class="flex-1 min-w-[250px] px-4 py-3 rounded-lg border border-white/30 focus:outline-none focus:ring-2 focus:ring-white/50"
                 required
               />
-              <button type="submit" class="btn btn-primary whitespace-nowrap">
+              <button type="submit" class="btn btn-primary whitespace-nowrap" data-i18n="eventos_page.newsletter_submit">
                 Subscrever
               </button>
             </form>
             <div id="newsletter-feedback" class="hidden mt-4 rounded-lg px-4 py-3 text-sm text-center"></div>
-            <p class="text-white/60 text-sm mt-4">
+            <p class="text-white/60 text-sm mt-4" data-i18n="eventos_page.newsletter_privacy">
               Respeitamos sua privacidade!
             </p>
           </div>
@@ -334,7 +357,7 @@
               src="/logo/logo-principal-branco.svg"
               alt="Conheça Farmácia Logo"
             />
-            <p class="text-white/70 text-sm mt-4">
+            <p class="text-white/70 text-sm mt-4" data-i18n="footer.descricao">
               Conhecimento que conecta. Formação que transforma. Saúde que
               evolui.
             </p>
@@ -342,21 +365,21 @@
 
           <!-- Quick Links -->
           <div class="footer-links">
-            <h4>Navegação</h4>
+            <h4 data-i18n="footer.navegacao">Navegação</h4>
             <ul>
-              <li><a href="index.html#inicio">Início</a></li>
-              <li><a href="artigos.html">Artigos</a></li>
-              <li><a href="eventos.html">Eventos</a></li>
-              <li><a href="lives-list.html">Lives</a></li>
-              <li><a href="sobre.html">Sobre Nós</a></li>
+              <li><a href="index.html#inicio" data-i18n="nav.inicio">Início</a></li>
+              <li><a href="artigos.html" data-i18n="nav.artigos">Artigos</a></li>
+              <li><a href="eventos.html" data-i18n="nav.eventos">Eventos</a></li>
+              <li><a href="lives-list.html" data-i18n="nav.lives">Lives</a></li>
+              <li><a href="sobre.html" data-i18n="nav.sobre">Sobre Nós</a></li>
             </ul>
           </div>
 
           <!-- Contact -->
           <div class="footer-links">
-            <h4>Contato</h4>
+            <h4 data-i18n="footer.contacto">Contato</h4>
             <ul class="text-sm text-white/70">
-              <li>Luanda, Angola</li>
+              <li data-i18n="footer.localizacao">Luanda, Angola</li>
               <li>
                 <a
                   href="mailto:conhecerfarmacia@gmail.com"
@@ -376,7 +399,7 @@
 
           <!-- Social Media -->
           <div class="footer-links">
-            <h4>Redes Sociais</h4>
+            <h4 data-i18n="footer.redes_sociais">Redes Sociais</h4>
             <ul class="text-sm">
               <li>
                 <a
@@ -413,7 +436,7 @@
         <div class="footer-divider"></div>
 
         <div class="footer-bottom">
-          <p>&copy; 2026 Conheça Farmácia. Todos os direitos reservados.</p>
+          <p data-i18n="footer.direitos">&copy; 2026 Conheça Farmácia. Todos os direitos reservados.</p>
         </div>
 
         <!-- Admin Access (discreet) -->
@@ -431,5 +454,11 @@
     <script type="module" src="/main.js"></script>
     <script type="module" src="/src/events-logic.js"></script>
     <script type="module" src="/src/inscription-handler.js"></script>
+    <script type="module">
+      import { initI18n } from '/src/i18n.js';
+      document.addEventListener('DOMContentLoaded', () => {
+        initI18n();
+      });
+    </script>
   </body>
 </html>

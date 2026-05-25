@@ -27,6 +27,26 @@
     <link rel="stylesheet" href="./dist/output.css" />
   </head>
   <body class="antialiased text-brand-deep bg-brand-bg">
+    <!-- Utility Bar -->
+    <div class="utility-bar">
+      <div class="utility-bar-container">
+        <div class="utility-search">
+          <svg class="utility-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" class="utility-search-input" id="utility-search-input" data-i18n="search.placeholder" placeholder="Pesquisar artigos, eventos, lives...">
+        </div>
+        <div class="utility-lang">
+          <button class="lang-toggle" id="lang-toggle" aria-expanded="false" aria-haspopup="true" aria-label="Alterar idioma">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span id="lang-current">PT</span>
+          </button>
+          <div class="lang-dropdown" id="lang-dropdown" role="menu">
+            <button class="lang-option active" data-lang="pt" role="menuitem">Portugues</button>
+            <button class="lang-option" data-lang="en" role="menuitem">English</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Header -->
     <header class="header">
       <nav class="nav-container">
@@ -41,11 +61,11 @@
 
         <div class="header-right">
           <ul class="nav-links">
-            <li><a href="index.html#inicio">Início</a></li>
-            <li><a href="artigos.html">Artigos</a></li>
-            <li><a href="eventos.html">Eventos</a></li>
-            <li><a href="lives-list.html">Lives</a></li>
-            <li><a href="sobre.html">Sobre Nós</a></li>
+            <li><a href="index.html#inicio" data-i18n="nav.inicio">Início</a></li>
+            <li><a href="artigos.html" data-i18n="nav.artigos">Artigos</a></li>
+            <li><a href="eventos.html" data-i18n="nav.eventos">Eventos</a></li>
+            <li><a href="lives-list.html" data-i18n="nav.lives">Lives</a></li>
+            <li><a href="sobre.html" data-i18n="nav.sobre">Sobre Nós</a></li>
           </ul>
           <!-- Theme Toggle Button -->
           <button
@@ -114,11 +134,11 @@
 
       <!-- Drawer Navigation Links -->
       <ul class="drawer-links" id="drawer-links">
-        <li><a href="index.html#inicio">Início</a></li>
-        <li><a href="artigos.html">Artigos</a></li>
-        <li><a href="eventos.html">Eventos</a></li>
-        <li><a href="lives-list.html">Lives</a></li>
-        <li><a href="sobre.html">Sobre Nós</a></li>
+        <li><a href="index.html#inicio" data-i18n="nav.inicio">Início</a></li>
+        <li><a href="artigos.html" data-i18n="nav.artigos">Artigos</a></li>
+        <li><a href="eventos.html" data-i18n="nav.eventos">Eventos</a></li>
+        <li><a href="lives-list.html" data-i18n="nav.lives">Lives</a></li>
+        <li><a href="sobre.html" data-i18n="nav.sobre">Sobre Nós</a></li>
       </ul>
 
       <!-- Drawer Footer: Theme Toggle + Social Icons -->
@@ -205,8 +225,8 @@
       <section class="hero">
         <div class="container-center">
           <div class="text-center py-12 md:py-16">
-            <h1 class="hero-title">Sobre Nós</h1>
-            <p class="hero-subtitle">
+            <h1 class="hero-title" data-i18n="sobre.hero_title">Sobre Nós</h1>
+            <p class="hero-subtitle text-center" data-i18n="sobre.hero_subtitle">
               A Conheça Farmácia é uma organização dedicada a promover a
               excelência na prática farmacêutica através da partilha de
               conteúdos informativos, criação de formações, conexão entre
@@ -221,15 +241,15 @@
       <section class="section-padding bg-brand-bg-alt">
         <div class="container-center">
           <div class="mission-section">
-            <h2 class="section-title">Nossa Missão</h2>
-            <div class="mission-text">
-              <p class="mb-6">
+            <h2 class="section-title" data-i18n="sobre.missao_title">Nossa Missão</h2>
+            <div class="mission-text text-center">
+              <p class="mb-6" data-i18n="sobre.missao_p1">
                 Conectar conhecimento, pessoas e práticas em saúde para
                 fortalecer a atuação profissional, melhorar o cuidado ao
                 paciente e impulsionar o desenvolvimento do setor farmacêutico
                 em Angola.
               </p>
-              <p>
+              <p data-i18n="sobre.missao_p2">
                 Capacitamos profissionais de farmácia a nível nacional com
                 conhecimentos atualizados e formações contínuas — presenciais e
                 online — que os ajudam a desempenhar o seu papel de forma
@@ -246,7 +266,7 @@
       <!-- Section 3: O Que Fazemos -->
       <section class="section-padding bg-brand-bg">
         <div class="container-center">
-          <h2 class="section-title">O Que Fazemos</h2>
+          <h2 class="section-title" data-i18n="sobre.oque_title">O Que Fazemos</h2>
           <div class="what-we-do-grid">
             <!-- Card 1 -->
             <div class="what-we-do-card">
@@ -255,10 +275,10 @@
                 alt="Partilha de Conteúdos"
                 class="icon-wrapper"
               />
-              <h3 class="text-xl font-bold text-brand-deep mb-3">
+              <h3 class="text-xl font-bold text-brand-deep mb-3" data-i18n="sobre.card1_title">
                 Partilha de Conteúdos Informativos
               </h3>
-              <p class="text-brand-deep/70 text-sm leading-relaxed">
+              <p class="text-brand-deep/70 text-sm leading-relaxed" data-i18n="sobre.card1_text">
                 Partilhamos regularmente conteúdos sobre a área farmacêutica
                 através das redes sociais, rádio, televisão e campanhas de
                 educação em saúde — com informações atualizadas e dicas práticas
@@ -273,10 +293,10 @@
                 alt="Formações Especializadas"
                 class="icon-wrapper"
               />
-              <h3 class="text-xl font-bold text-brand-deep mb-3">
+              <h3 class="text-xl font-bold text-brand-deep mb-3" data-i18n="sobre.card2_title">
                 Formações Especializadas
               </h3>
-              <p class="text-brand-deep/70 text-sm leading-relaxed">
+              <p class="text-brand-deep/70 text-sm leading-relaxed" data-i18n="sobre.card2_text">
                 Organizamos formações em diversas áreas da farmácia, capacitando
                 profissionais e estudantes por meio de educação contínua e
                 eventos científicos de qualidade — promovendo atuação ética,
@@ -290,7 +310,7 @@
       <!-- Section 4: Público-Alvo -->
       <section class="section-padding bg-brand-bg-alt">
         <div class="container-center">
-          <h2 class="section-title">A Quem Nos Dirigimos</h2>
+          <h2 class="section-title" data-i18n="sobre.publico_title">A Quem Nos Dirigimos</h2>
           <div class="audience-grid">
             <!-- Item 1 -->
             <div class="audience-item">
@@ -299,7 +319,7 @@
                 alt="Profissionais"
                 class="audience-icon"
               />
-              <span class="audience-label">Profissionais de Saúde</span>
+              <span class="audience-label" data-i18n="sobre.publico_profissionais">Profissionais de Saúde</span>
             </div>
 
             <!-- Item 2 -->
@@ -309,7 +329,7 @@
                 alt="Estudantes"
                 class="audience-icon"
               />
-              <span class="audience-label">Estudantes das Áreas da Saúde</span>
+              <span class="audience-label" data-i18n="sobre.publico_estudantes">Estudantes das Áreas da Saúde</span>
             </div>
 
             <!-- Item 3 -->
@@ -319,7 +339,7 @@
                 alt="Instituições"
                 class="audience-icon"
               />
-              <span class="audience-label">Instituições de Ensino</span>
+              <span class="audience-label" data-i18n="sobre.publico_instituicoes">Instituições de Ensino</span>
             </div>
 
             <!-- Item 4 -->
@@ -329,7 +349,7 @@
                 alt="Clínicas e Hospitais"
                 class="audience-icon"
               />
-              <span class="audience-label"
+              <span class="audience-label" data-i18n="sobre.publico_clinicas"
                 >Clínicas, Hospitais e Organizações</span
               >
             </div>
@@ -340,7 +360,7 @@
       <!-- Section 5: Pull Quote -->
       <section class="pull-quote-section">
         <div class="pull-quote-container">
-          <p class="pull-quote-text">
+          <p class="pull-quote-text" data-i18n="sobre.pull_quote">
             "Conhecimento que conecta. Formação que transforma. Saúde que
             evolui."
           </p>
@@ -358,7 +378,7 @@
               src="/logo/logo-principal-branco.svg"
               alt="Conheça Farmácia Logo"
             />
-            <p class="text-white/70 text-sm mt-4">
+            <p class="text-white/70 text-sm mt-4" data-i18n="footer.descricao">
               Conhecimento que conecta. Formação que transforma. Saúde que
               evolui.
             </p>
@@ -366,21 +386,21 @@
 
           <!-- Quick Links -->
           <div class="footer-links">
-            <h4>Navegação</h4>
+            <h4 data-i18n="footer.navegacao">Navegação</h4>
             <ul>
-              <li><a href="index.html#inicio">Início</a></li>
-              <li><a href="artigos.html">Artigos</a></li>
-              <li><a href="eventos.html">Eventos</a></li>
-              <li><a href="lives-list.html">Lives</a></li>
-              <li><a href="sobre.html">Sobre Nós</a></li>
+              <li><a href="index.html#inicio" data-i18n="nav.inicio">Início</a></li>
+              <li><a href="artigos.html" data-i18n="nav.artigos">Artigos</a></li>
+              <li><a href="eventos.html" data-i18n="nav.eventos">Eventos</a></li>
+              <li><a href="lives-list.html" data-i18n="nav.lives">Lives</a></li>
+              <li><a href="sobre.html" data-i18n="nav.sobre">Sobre Nós</a></li>
             </ul>
           </div>
 
           <!-- Contact -->
           <div class="footer-links">
-            <h4>Contato</h4>
+            <h4 data-i18n="footer.contacto">Contato</h4>
             <ul class="text-sm text-white/70">
-              <li>Luanda, Angola</li>
+              <li data-i18n="footer.localizacao">Luanda, Angola</li>
               <li>
                 <a
                   href="mailto:conhecerfarmacia@gmail.com"
@@ -400,7 +420,7 @@
 
           <!-- Social Media -->
           <div class="footer-links">
-            <h4>Redes Sociais</h4>
+            <h4 data-i18n="footer.redes_sociais">Redes Sociais</h4>
             <ul class="text-sm">
               <li>
                 <a
@@ -437,7 +457,7 @@
         <div class="footer-divider"></div>
 
         <div class="footer-bottom">
-          <p>&copy; 2026 Conheça Farmácia. Todos os direitos reservados.</p>
+          <p data-i18n="footer.direitos">&copy; 2026 Conheça Farmácia. Todos os direitos reservados.</p>
         </div>
 
         <!-- Admin Access (discreet) -->
@@ -453,5 +473,11 @@
     </footer>
 
     <script type="module" src="/main.js"></script>
+    <script type="module">
+      import { initI18n } from '/src/i18n.js';
+      document.addEventListener('DOMContentLoaded', () => {
+        initI18n();
+      });
+    </script>
   </body>
 </html>

@@ -2,6 +2,7 @@
 import { supabaseClient } from "./config.js";
 import { getEvents, getEventBySlug } from './lib/api.js';
 import { renderBreadcrumb } from "./breadcrumb.js";
+import { t } from "./i18n.js";
 import { createPolling } from "./lib/polling.js";
 import { getCachedCapacity, setCapacityCache, clearCapacityCache } from "./lib/capacity-cache.js";
 import { escapeHtml, validateUrl } from "./lib/security.js";
@@ -75,8 +76,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Breadcrumb
     renderBreadcrumb([
-      { label: "Início", href: "/" },
-      { label: "Eventos", href: "/eventos.html" },
+      { label: "Início", href: "/", i18nKey: "nav.inicio" },
+      { label: "Eventos", href: "/eventos.html", i18nKey: "nav.eventos" },
       { label: event.title },
     ]);
 
@@ -188,18 +189,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     registrationBtn.setAttribute("data-event-slug", event.slug);
 
     if (eventStatus === "past") {
-      registrationBtn.textContent = "Ver Gravação";
+      registrationBtn.textContent = t("evento_detail.recording_btn");
+      registrationBtn.setAttribute("data-i18n", "evento_detail.recording_btn");
       registrationBtn.classList.remove("btn-primary");
       registrationBtn.classList.add("btn-secondary");
       registrationBtn.disabled = true;
     } else if (spotsLeft <= 0) {
       // BLOQUEAR SE CAPACIDADE ATINGIDA
-      registrationBtn.textContent = "Evento Completo";
+      registrationBtn.textContent = t("evento_detail.full_btn");
+      registrationBtn.setAttribute("data-i18n", "evento_detail.full_btn");
       registrationBtn.disabled = true;
       registrationBtn.classList.add("btn-disabled");
       logger.log("🚫 Inscrições fechadas - Capacidade máxima atingida");
     } else {
-      registrationBtn.textContent = "Inscrever-me";
+      registrationBtn.textContent = t("evento_detail.register_btn");
+      registrationBtn.setAttribute("data-i18n", "evento_detail.register_btn");
       registrationBtn.disabled = false;
     }
 

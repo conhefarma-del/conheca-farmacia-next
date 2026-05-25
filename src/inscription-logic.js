@@ -1,5 +1,6 @@
 import { supabaseClient } from "./config.js";
 import { renderBreadcrumb } from "./breadcrumb.js";
+import { t } from "./i18n.js";
 import eventsData from "./content/events-catalog.json";
 import { initInlineValidation } from "./inscription-validation.js";
 import { logger } from "./lib/logger.js";
@@ -81,10 +82,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         ? eventForBreadcrumb.title
         : eventoSlug;
       renderBreadcrumb([
-        { label: "Início", href: "/" },
-        { label: "Eventos", href: "/eventos.html" },
+        { label: "Início", href: "/", i18nKey: "nav.inicio" },
+        { label: "Eventos", href: "/eventos.html", i18nKey: "nav.eventos" },
         { label: eventTitle, href: "/evento.html?id=" + eventoSlug },
-        { label: "Inscrição" },
+        { label: "Inscrição", i18nKey: "inscricao.title" },
       ]);
     } else {
       // BAI-04: Redirecionar se não há evento especificado
@@ -596,5 +597,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Initialize on page load
   initInlineValidation();
   initializeForm();
+
+  // "Tentar Novamente" button — CSP-safe (no inline onclick)
+  const tryAgainBtn = document.getElementById("try-again-btn");
+  if (tryAgainBtn) {
+    tryAgainBtn.addEventListener("click", () => {
+      window.location.reload();
+    });
+  }
+
   logger.log("✓ Sistema de inscrição pronto");
 });

@@ -5,3 +5,7 @@ import "./src/input.css";
 import "./src/script.js";
 import "./src/dark-mode.js";
 import "./src/lib/analytics.js";
+
+// i18n
+import { initI18n } from "./src/i18n.js";
+await initI18n();

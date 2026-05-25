@@ -45,6 +45,26 @@
     </style>
   </head>
   <body class="antialiased text-brand-deep bg-brand-bg">
+    <!-- Utility Bar -->
+    <div class="utility-bar">
+      <div class="utility-bar-container">
+        <div class="utility-search">
+          <svg class="utility-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" class="utility-search-input" id="utility-search-input" data-i18n="search.placeholder" placeholder="Pesquisar artigos, eventos, lives...">
+        </div>
+        <div class="utility-lang">
+          <button class="lang-toggle" id="lang-toggle" aria-expanded="false" aria-haspopup="true" aria-label="Alterar idioma">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span id="lang-current">PT</span>
+          </button>
+          <div class="lang-dropdown" id="lang-dropdown" role="menu">
+            <button class="lang-option active" data-lang="pt" role="menuitem">Portugues</button>
+            <button class="lang-option" data-lang="en" role="menuitem">English</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Header -->
     <header class="header">
       <nav class="nav-container">
@@ -59,11 +79,11 @@
 
         <div class="header-right">
           <ul class="nav-links">
-            <li><a href="index.html#inicio">Início</a></li>
-            <li><a href="artigos.html">Artigos</a></li>
-            <li><a href="eventos.html">Eventos</a></li>
-            <li><a href="lives-list.html">Lives</a></li>
-            <li><a href="sobre.html">Sobre Nós</a></li>
+            <li><a href="index.html#inicio" data-i18n="nav.inicio">Início</a></li>
+            <li><a href="artigos.html" data-i18n="nav.artigos">Artigos</a></li>
+            <li><a href="eventos.html" data-i18n="nav.eventos">Eventos</a></li>
+            <li><a href="lives-list.html" data-i18n="nav.lives">Lives</a></li>
+            <li><a href="sobre.html" data-i18n="nav.sobre">Sobre Nós</a></li>
           </ul>
           <!-- Theme Toggle Button -->
           <button
@@ -132,11 +152,11 @@
 
       <!-- Drawer Navigation Links -->
       <ul class="drawer-links" id="drawer-links">
-        <li><a href="index.html#inicio">Início</a></li>
-        <li><a href="artigos.html">Artigos</a></li>
-        <li><a href="eventos.html">Eventos</a></li>
-        <li><a href="lives-list.html">Lives</a></li>
-        <li><a href="sobre.html">Sobre Nós</a></li>
+        <li><a href="index.html#inicio" data-i18n="nav.inicio">Início</a></li>
+        <li><a href="artigos.html" data-i18n="nav.artigos">Artigos</a></li>
+        <li><a href="eventos.html" data-i18n="nav.eventos">Eventos</a></li>
+        <li><a href="lives-list.html" data-i18n="nav.lives">Lives</a></li>
+        <li><a href="sobre.html" data-i18n="nav.sobre">Sobre Nós</a></li>
       </ul>
 
       <!-- Drawer Footer: Theme Toggle + Social Icons -->
@@ -227,8 +247,8 @@
             <!-- Form Container -->
             <div id="form-container" class="inscription-form-wrapper">
               <div class="inscription-header mb-12">
-                <h1 class="inscription-title">Inscrição em Evento</h1>
-                <p class="inscription-subtitle">
+                <h1 class="inscription-title" data-i18n="inscricao.title">Inscrição em Evento</h1>
+                <p class="inscription-subtitle" data-i18n="inscricao.subtitle">
                   Preencha o formulário abaixo para confirmar sua participação
                 </p>
               </div>
@@ -245,17 +265,18 @@
                 <!-- ======================== -->
                 <!-- SECÇÃO: Identidade       -->
                 <!-- ======================== -->
-                <div class="form-section-label">Identidade</div>
+                <div class="form-section-label" data-i18n="inscricao.identidade">Identidade</div>
 
                 <!-- Nome Completo -->
                 <div class="form-group">
-                  <label for="nome" class="form-label">Nome Completo *</label>
+                  <label for="nome" class="form-label" data-i18n="inscricao.nome_label">Nome Completo *</label>
                   <input
                     type="text"
                     id="nome"
                     data-validate="true"
                     name="nome"
                     placeholder="Seu nome completo"
+                    data-i18n="inscricao.nome_placeholder"
                     class="form-input"
                     maxlength="255"
                     minlength="3"
@@ -265,21 +286,21 @@
 
                 <!-- Género -->
                 <div class="form-group">
-                  <label for="genero" class="form-label">Género</label>
+                  <label for="genero" class="form-label" data-i18n="inscricao.genero_label">Género</label>
                   <select
                     id="genero"
                     name="genero"
                     class="form-input form-select"
                   >
-                    <option value="">Selecione o seu género</option>
-                    <option value="masculino">Masculino</option>
-                    <option value="feminino">Feminino</option>
+                    <option value="" data-i18n="inscricao.genero_select">Selecione o seu género</option>
+                    <option value="masculino" data-i18n="inscricao.genero_masc">Masculino</option>
+                    <option value="feminino" data-i18n="inscricao.genero_fem">Feminino</option>
                   </select>
                 </div>
 
                 <!-- Faixa Etária -->
                 <div class="form-group">
-                  <label for="faixa_etaria" class="form-label"
+                  <label for="faixa_etaria" class="form-label" data-i18n="inscricao.faixa_etaria_label"
                     >Faixa Etária</label
                   >
                   <select
@@ -287,29 +308,30 @@
                     name="faixa_etaria"
                     class="form-input form-select"
                   >
-                    <option value="">Selecione a sua faixa etária</option>
-                    <option value="18-24">18 – 24 anos</option>
-                    <option value="25-34">25 – 34 anos</option>
-                    <option value="35-44">35 – 44 anos</option>
-                    <option value="45-54">45 – 54 anos</option>
-                    <option value="55+">55+ anos</option>
+                    <option value="" data-i18n="inscricao.faixa_etaria_select">Selecione a sua faixa etária</option>
+                    <option value="18-24" data-i18n="inscricao.faixa_18_24">18 – 24 anos</option>
+                    <option value="25-34" data-i18n="inscricao.faixa_25_34">25 – 34 anos</option>
+                    <option value="35-44" data-i18n="inscricao.faixa_35_44">35 – 44 anos</option>
+                    <option value="45-54" data-i18n="inscricao.faixa_45_54">45 – 54 anos</option>
+                    <option value="55+" data-i18n="inscricao.faixa_55_plus">55+ anos</option>
                   </select>
                 </div>
 
                 <!-- ======================== -->
                 <!-- SECÇÃO: Contacto         -->
                 <!-- ======================== -->
-                <div class="form-section-label">Contacto</div>
+                <div class="form-section-label" data-i18n="inscricao.contacto">Contacto</div>
 
                 <!-- Email -->
                 <div class="form-group">
-                  <label for="email" class="form-label">Email *</label>
+                  <label for="email" class="form-label" data-i18n="inscricao.email_label">Email *</label>
                   <input
                     type="email"
                     id="email"
                     data-validate="true"
                     name="email"
                     placeholder="seu.email@exemplo.com"
+                    data-i18n="inscricao.email_placeholder"
                     class="form-input"
                     maxlength="255"
                     required
@@ -318,13 +340,14 @@
 
                 <!-- Telefone -->
                 <div class="form-group">
-                  <label for="telefone" class="form-label">Telefone *</label>
+                  <label for="telefone" class="form-label" data-i18n="inscricao.telefone_label">Telefone *</label>
                   <input
                     type="tel"
                     id="telefone"
                     data-validate="true"
                     name="telefone"
                     placeholder="+244 925 696 002"
+                    data-i18n="inscricao.telefone_placeholder"
                     class="form-input"
                     maxlength="20"
                     pattern="[+\d\s]{10,20}"
@@ -335,45 +358,45 @@
                 <!-- ======================== -->
                 <!-- SECÇÃO: Qualificação     -->
                 <!-- ======================== -->
-                <div class="form-section-label">Qualificação Profissional</div>
+                <div class="form-section-label" data-i18n="inscricao.qualificacao">Qualificação Profissional</div>
 
                 <!-- Profissão -->
                 <div class="form-group">
-                  <label for="profissao" class="form-label">Profissão *</label>
+                  <label for="profissao" class="form-label" data-i18n="inscricao.profissao_label">Profissão *</label>
                   <select
                     id="profissao"
                     name="profissao"
                     class="form-input form-select"
                     required
                   >
-                    <option value="">Selecione a sua profissão</option>
-                    <option value="enfermeiro">Enfermeiro(a)</option>
-                    <option value="medico">Médico(a)</option>
-                    <option value="farmaceutico">Farmacêutico(a)</option>
-                    <option value="estudante-saude">Estudante (Saúde)</option>
-                    <option value="tecnico-medio-saude">
+                    <option value="" data-i18n="inscricao.profissao_select">Selecione a sua profissão</option>
+                    <option value="enfermeiro" data-i18n="inscricao.prof_enfermeiro">Enfermeiro(a)</option>
+                    <option value="medico" data-i18n="inscricao.prof_medico">Médico(a)</option>
+                    <option value="farmaceutico" data-i18n="inscricao.prof_farmaceutico">Farmacêutico(a)</option>
+                    <option value="estudante-saude" data-i18n="inscricao.prof_estudante">Estudante (Saúde)</option>
+                    <option value="tecnico-medio-saude" data-i18n="inscricao.prof_tecnico_medio">
                       Técnico Médio de Saúde
                     </option>
-                    <option value="tecnico-radiologia">
+                    <option value="tecnico-radiologia" data-i18n="inscricao.prof_tecnico_radio">
                       Técnico de Radiologia
                     </option>
-                    <option value="tecnico-analises-clinicas">
+                    <option value="tecnico-analises-clinicas" data-i18n="inscricao.prof_tecnico_analises">
                       Técnico de Análises Clínicas
                     </option>
-                    <option value="medico-dentista">Médico(a) Dentista</option>
-                    <option value="biologo-analista">
+                    <option value="medico-dentista" data-i18n="inscricao.prof_dentista">Médico(a) Dentista</option>
+                    <option value="biologo-analista" data-i18n="inscricao.prof_biologo">
                       Biólogo(a) / Analista Clínico
                     </option>
-                    <option value="psicologo">Psicólogo(a)</option>
-                    <option value="nutricionista">Nutricionista</option>
-                    <option value="fisioterapeuta">Fisioterapeuta</option>
-                    <option value="outro">Outro</option>
+                    <option value="psicologo" data-i18n="inscricao.prof_psicologo">Psicólogo(a)</option>
+                    <option value="nutricionista" data-i18n="inscricao.prof_nutricionista">Nutricionista</option>
+                    <option value="fisioterapeuta" data-i18n="inscricao.prof_fisioterapeuta">Fisioterapeuta</option>
+                    <option value="outro" data-i18n="inscricao.prof_outro">Outro</option>
                   </select>
                 </div>
 
                 <!-- Nível de Escolaridade -->
                 <div class="form-group">
-                  <label for="nivel_escolaridade" class="form-label"
+                  <label for="nivel_escolaridade" class="form-label" data-i18n="inscricao.escolaridade_label"
                     >Nível de Escolaridade</label
                   >
                   <select
@@ -381,28 +404,28 @@
                     name="nivel_escolaridade"
                     class="form-input form-select"
                   >
-                    <option value="">
+                    <option value="" data-i18n="inscricao.escolaridade_select">
                       Selecione o seu nível de escolaridade
                     </option>
-                    <option value="tecnico-profissional">
+                    <option value="tecnico-profissional" data-i18n="inscricao.esc_tecnico">
                       Técnico Profissional
                     </option>
-                    <option value="licenciatura">Licenciatura</option>
-                    <option value="pos-graduacao-mestrado">
+                    <option value="licenciatura" data-i18n="inscricao.esc_licenciatura">Licenciatura</option>
+                    <option value="pos-graduacao-mestrado" data-i18n="inscricao.esc_mestrado">
                       Pós-graduação / Mestrado
                     </option>
-                    <option value="doutoramento">Doutoramento</option>
+                    <option value="doutoramento" data-i18n="inscricao.esc_doutoramento">Doutoramento</option>
                   </select>
                 </div>
 
                 <!-- ======================== -->
                 <!-- SECÇÃO: Marketing        -->
                 <!-- ======================== -->
-                <div class="form-section-label">Contexto e Marketing</div>
+                <div class="form-section-label" data-i18n="inscricao.origem_label">Contexto e Marketing</div>
 
                 <!-- Como ouviu sobre o evento -->
                 <div class="form-group">
-                  <label for="origem_evento" class="form-label"
+                  <label for="origem_evento" class="form-label" data-i18n="inscricao.como_conheceu_label"
                     >Como ouviu falar do evento? *</label
                   >
                   <select
@@ -411,14 +434,14 @@
                     class="form-input form-select"
                     required
                   >
-                    <option value="">Selecione uma opção</option>
-                    <option value="instagram">Instagram</option>
-                    <option value="whatsapp">WhatsApp</option>
-                    <option value="facebook">Facebook</option>
-                    <option value="tiktok">TikTok</option>
-                    <option value="linkedin">LinkedIn</option>
-                    <option value="amigo-indicacao">Amigo / Indicação</option>
-                    <option value="outro">Outro</option>
+                    <option value="" data-i18n="inscricao.como_conheceu_select">Selecione uma opção</option>
+                    <option value="instagram" data-i18n="inscricao.como_instagram">Instagram</option>
+                    <option value="whatsapp" data-i18n="inscricao.como_whatsapp">WhatsApp</option>
+                    <option value="facebook" data-i18n="inscricao.como_facebook">Facebook</option>
+                    <option value="tiktok" data-i18n="inscricao.como_tiktok">TikTok</option>
+                    <option value="linkedin" data-i18n="inscricao.como_linkedin">LinkedIn</option>
+                    <option value="amigo-indicacao" data-i18n="inscricao.como_amigo">Amigo / Indicação</option>
+                    <option value="outro" data-i18n="inscricao.como_outro">Outro</option>
                   </select>
                 </div>
 
@@ -439,18 +462,18 @@
                   id="submit-btn"
                   class="btn btn-primary inscription-btn w-full"
                 >
-                  <span id="btn-text">Confirmar Inscrição</span>
+                  <span id="btn-text" data-i18n="inscricao.submit">Confirmar Inscrição</span>
                 </button>
 
-                <p class="form-note">* Campos obrigatórios</p>
+                <p class="form-note" data-i18n="inscricao.campo_obrigatorio">* Campos obrigatórios</p>
               </form>
             </div>
 
             <!-- Success Message -->
             <div id="success-container" class="inscription-success hidden">
               <div class="success-icon">✓</div>
-              <h2 class="success-title">Inscrição Confirmada!</h2>
-              <p class="success-message">
+              <h2 class="success-title" data-i18n="inscricao_success.title">Inscrição Confirmada!</h2>
+              <p class="success-message" data-i18n="inscricao_success.message">
                 Obrigado pela sua inscrição. Entraremos em contacto brevemente
                 com todos os detalhes do evento.
               </p>
@@ -463,6 +486,7 @@
               <a
                 href="eventos.html"
                 class="btn btn-primary inscription-btn mt-8"
+                data-i18n="inscricao.back_to_events"
               >
                 Voltar para Eventos
               </a>
@@ -471,13 +495,14 @@
             <!-- Error Message -->
             <div id="error-container" class="inscription-error hidden">
               <div class="error-icon">⚠</div>
-              <h2 class="error-title">Erro na Inscrição</h2>
+              <h2 class="error-title" data-i18n="inscricao_error.title">Erro na Inscrição</h2>
               <p id="error-message" class="error-message">
                 Ocorreu um erro. Por favor, tente novamente.
               </p>
               <button
-                onclick="location.reload()"
+                id="try-again-btn"
                 class="btn btn-primary inscription-btn mt-6"
+                data-i18n="inscricao.try_again"
               >
                 Tentar Novamente
               </button>
@@ -497,7 +522,7 @@
               src="/logo/logo-principal-branco.svg"
               alt="Conheça Farmácia Logo"
             />
-            <p class="text-white/70 text-sm mt-4">
+            <p class="text-white/70 text-sm mt-4" data-i18n="footer.descricao">
               Conhecimento que conecta. Formação que transforma. Saúde que
               evolui.
             </p>
@@ -505,21 +530,21 @@
 
           <!-- Quick Links -->
           <div class="footer-links">
-            <h4>Navegação</h4>
+            <h4 data-i18n="footer.navegacao">Navegação</h4>
             <ul>
-              <li><a href="index.html#inicio">Início</a></li>
-              <li><a href="artigos.html">Artigos</a></li>
-              <li><a href="eventos.html">Eventos</a></li>
-              <li><a href="lives-list.html">Lives</a></li>
-              <li><a href="sobre.html">Sobre Nós</a></li>
+              <li><a href="index.html#inicio" data-i18n="nav.inicio">Início</a></li>
+              <li><a href="artigos.html" data-i18n="nav.artigos">Artigos</a></li>
+              <li><a href="eventos.html" data-i18n="nav.eventos">Eventos</a></li>
+              <li><a href="lives-list.html" data-i18n="nav.lives">Lives</a></li>
+              <li><a href="sobre.html" data-i18n="nav.sobre">Sobre Nós</a></li>
             </ul>
           </div>
 
           <!-- Contact -->
           <div class="footer-links">
-            <h4>Contato</h4>
+            <h4 data-i18n="footer.contacto">Contato</h4>
             <ul class="text-sm text-white/70">
-              <li>Luanda, Angola</li>
+              <li data-i18n="footer.localizacao">Luanda, Angola</li>
               <li>
                 <a
                   href="mailto:conhecerfarmacia@gmail.com"
@@ -539,7 +564,7 @@
 
           <!-- Social Media -->
           <div class="footer-links">
-            <h4>Redes Sociais</h4>
+            <h4 data-i18n="footer.redes_sociais">Redes Sociais</h4>
             <ul class="text-sm">
               <li>
                 <a
@@ -576,7 +601,7 @@
         <div class="footer-divider"></div>
 
         <div class="footer-bottom">
-          <p>&copy; 2026 Conheça Farmácia. Todos os direitos reservados.</p>
+          <p data-i18n="footer.direitos">&copy; 2026 Conheça Farmácia. Todos os direitos reservados.</p>
         </div>
       </div>
     </footer>
@@ -584,5 +609,11 @@
     <script type="module" src="/main.js"></script>
     <script type="module" src="/src/config.js"></script>
     <script type="module" src="/src/inscription-logic.js"></script>
+    <script type="module">
+      import { initI18n } from '/src/i18n.js';
+      document.addEventListener('DOMContentLoaded', () => {
+        initI18n();
+      });
+    </script>
   </body>
 </html>

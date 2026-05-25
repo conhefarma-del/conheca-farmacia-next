@@ -31,6 +31,26 @@
 </head>
 <body class="antialiased text-brand-deep bg-brand-bg">
 
+<!-- Utility Bar -->
+<div class="utility-bar">
+  <div class="utility-bar-container">
+    <div class="utility-search">
+      <svg class="utility-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" class="utility-search-input" id="utility-search-input" data-i18n="search.placeholder" placeholder="Pesquisar artigos, eventos, lives...">
+    </div>
+    <div class="utility-lang">
+      <button class="lang-toggle" id="lang-toggle" aria-expanded="false" aria-haspopup="true" aria-label="Alterar idioma">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        <span id="lang-current">PT</span>
+      </button>
+      <div class="lang-dropdown" id="lang-dropdown" role="menu">
+        <button class="lang-option active" data-lang="pt" role="menuitem">Portugues</button>
+        <button class="lang-option" data-lang="en" role="menuitem">English</button>
+      </div>
+    </div>
+  </div>
+</div>
+
  <!-- Header -->
  <header class="header">
  <nav class="nav-container">
@@ -42,11 +62,11 @@
 
  <div class="header-right">
 <ul class="nav-links">
-<li><a href="index.html#inicio">Início</a></li>
-<li><a href="artigos.html">Artigos</a></li>
-<li><a href="eventos.html">Eventos</a></li>
-<li><a href="lives-list.html">Lives</a></li>
-<li><a href="sobre.html">Sobre Nós</a></li>
+<li><a href="index.html#inicio" data-i18n="nav.inicio">Início</a></li>
+<li><a href="artigos.html" data-i18n="nav.artigos">Artigos</a></li>
+<li><a href="eventos.html" data-i18n="nav.eventos">Eventos</a></li>
+<li><a href="lives-list.html" data-i18n="nav.lives">Lives</a></li>
+<li><a href="sobre.html" data-i18n="nav.sobre">Sobre Nós</a></li>
 </ul>
 <!-- Theme Toggle Button -->
 <button class="theme-toggle" aria-label="Alternar modo escuro">
@@ -97,11 +117,11 @@
 
  <!-- Drawer Navigation Links -->
  <ul class="drawer-links" id="drawer-links">
- <li><a href="index.html#inicio">Início</a></li>
- <li><a href="artigos.html">Artigos</a></li>
- <li><a href="eventos.html">Eventos</a></li>
- <li><a href="lives-list.html">Lives</a></li>
- <li><a href="sobre.html">Sobre Nós</a></li>
+ <li><a href="index.html#inicio" data-i18n="nav.inicio">Início</a></li>
+ <li><a href="artigos.html" data-i18n="nav.artigos">Artigos</a></li>
+ <li><a href="eventos.html" data-i18n="nav.eventos">Eventos</a></li>
+ <li><a href="lives-list.html" data-i18n="nav.lives">Lives</a></li>
+ <li><a href="sobre.html" data-i18n="nav.sobre">Sobre Nós</a></li>
  </ul>
 
  <!-- Drawer Footer: Theme Toggle + Social Icons -->
@@ -158,10 +178,10 @@
 
       <!-- Left Column: Text and CTA -->
       <div class="hero-content">
-        <h1 class="hero-title">Excelência no Cuidado Farmacêutico</h1>
-        <p class="hero-subtitle">Acompanhamento clínico especializado para garantir a eficácia e segurança do tratamento. Valorizando a saúde através do conhecimento farmacêutico.</p>
+        <h1 class="hero-title" data-i18n="hero.title">Excelência no Cuidado Farmacêutico</h1>
+        <p class="hero-subtitle" data-i18n="hero.subtitle">Acompanhamento clínico especializado para garantir a eficácia e segurança do tratamento. Valorizando a saúde através do conhecimento farmacêutico.</p>
         <div class="hero-actions">
-          <a href="https://wa.me/244925696002?text=Olá,%20Conheça%20Farmácia" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Fale Connosco</a>
+          <a href="https://wa.me/244925696002?text=Olá,%20Conheça%20Farmácia" target="_blank" rel="noopener noreferrer" class="btn btn-primary" data-i18n="hero.cta">Fale Connosco</a>
         </div>
       </div>
 
@@ -170,7 +190,7 @@
         <div class="hero-ticker-top" aria-hidden="true"></div>
         <div class="hero-animated-card">
           <img src="/assets/icons/Asset 1-branco.svg" alt="" class="hero-animated-icon" aria-hidden="true">
-          <span class="hero-animated-text">Atenção Farmacêutica</span>
+          <span class="hero-animated-text" data-i18n="hero.animated_text">Atenção Farmacêutica</span>
         </div>
         <div class="hero-ticker-bottom" aria-hidden="true"></div>
       </div>
@@ -181,7 +201,7 @@
  <!-- 1. Artigos em Destaque -->
  <section id="artigos" class="section-padding bg-brand-bg-alt">
  <div class="container-center">
- <h2 class="section-title">Artigos em Destaque</h2>
+ <h2 class="section-title" data-i18n="home.artigos_destaque">Artigos em Destaque</h2>
  <div id="home-articles-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
  <!-- Artigos serão renderizados via JavaScript -->
  </div>
@@ -191,7 +211,7 @@
  <!-- 2. Eventos em Destaque -->
  <section id="eventos" class="section-padding bg-brand-bg">
  <div class="container-center">
- <h2 class="section-title">Eventos em Destaque</h2>
+ <h2 class="section-title" data-i18n="home.eventos_destaque">Eventos em Destaque</h2>
  <div id="home-events-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8">
  <!-- Eventos serão renderizados via JavaScript -->
  </div>
@@ -201,7 +221,7 @@
 <!-- 3. Lives e Webinars em Destaque -->
  <section id="lives" class="section-padding bg-brand-bg-alt">
  <div class="container-center">
- <h2 class="section-title">Lives e Webinars</h2>
+ <h2 class="section-title" data-i18n="home.lives_webinars">Lives e Webinars</h2>
  <div id="home-lives-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8">
  <!-- Lives serão renderizados via JavaScript -->
  </div>
@@ -214,19 +234,19 @@
  <div class="stats-grid">
  <div class="stat-item">
  <span class="stat-number">30+</span>
- <span class="stat-label">Profissionais Formados</span>
+ <span class="stat-label" data-i18n="home.stats_profissionais">Profissionais Formados</span>
  </div>
  <div class="stat-item">
  <span class="stat-number">10+</span>
- <span class="stat-label">Entrevistas de Especialistas</span>
+ <span class="stat-label" data-i18n="home.stats_entrevistas">Entrevistas de Especialistas</span>
  </div>
  <div class="stat-item">
  <span class="stat-number">3+</span>
- <span class="stat-label">Eventos por Ano</span>
+ <span class="stat-label" data-i18n="home.stats_eventos">Eventos por Ano</span>
  </div>
  <div class="stat-item">
  <span class="stat-number">2k+</span>
- <span class="stat-label">Leitores Mensais</span>
+ <span class="stat-label" data-i18n="home.stats_leitores">Leitores Mensais</span>
  </div>
  </div>
  </div>
@@ -239,26 +259,26 @@
  <!-- Brand Info -->
  <div class="footer-logo">
  <img src="/logo/logo-principal-branco.svg" alt="Conheça Farmácia Logo">
- <p class="text-white/70 text-sm mt-4">Conhecimento que conecta. Formação que transforma. Saúde que evolui.</p>
+ <p class="text-white/70 text-sm mt-4" data-i18n="footer.descricao">Conhecimento que conecta. Formação que transforma. Saúde que evolui.</p>
  </div>
 
  <!-- Quick Links -->
  <div class="footer-links">
- <h4>Navegação</h4>
+ <h4 data-i18n="footer.navegacao">Navegação</h4>
  <ul>
- <li><a href="index.html#inicio">Início</a></li>
- <li><a href="artigos.html">Artigos</a></li>
- <li><a href="eventos.html">Eventos</a></li>
- <li><a href="lives-list.html">Lives</a></li>
- <li><a href="sobre.html">Sobre Nós</a></li>
+ <li><a href="index.html#inicio" data-i18n="nav.inicio">Início</a></li>
+ <li><a href="artigos.html" data-i18n="nav.artigos">Artigos</a></li>
+ <li><a href="eventos.html" data-i18n="nav.eventos">Eventos</a></li>
+ <li><a href="lives-list.html" data-i18n="nav.lives">Lives</a></li>
+ <li><a href="sobre.html" data-i18n="nav.sobre">Sobre Nós</a></li>
 
  </div>
 
  <!-- Contact -->
  <div class="footer-links">
- <h4>Contato</h4>
+ <h4 data-i18n="footer.contacto">Contato</h4>
  <ul class="text-sm text-white/70">
- <li>Luanda, Angola</li>
+ <li data-i18n="footer.localizacao">Luanda, Angola</li>
  <li><a href="mailto:conhecerfarmacia@gmail.com" class="text-white/70 hover:text-brand-accent">conhecerfarmacia@gmail.com</a></li>
  <li><a href="https://wa.me/244925696002?text=Olá,%20Conheça%20Farmácia" target="_blank" rel="noopener noreferrer" class="text-white/70 hover:text-brand-accent">+244 925 696 002</a></li>
  </ul>
@@ -266,7 +286,7 @@
 
  <!-- Social Media -->
  <div class="footer-links">
- <h4>Redes Sociais</h4>
+ <h4 data-i18n="footer.redes_sociais">Redes Sociais</h4>
  <ul class="text-sm">
  <li><a href="https://www.facebook.com/conhecafarmacia" target="_blank" rel="noopener noreferrer">Facebook</a></li>
  <li><a href="https://www.instagram.com/conhecafarmacia" target="_blank" rel="noopener noreferrer">Instagram</a></li>
@@ -279,7 +299,7 @@
  <div class="footer-divider"></div>
 
  <div class="footer-bottom">
- <p>&copy; 2026 Conheça Farmácia. Todos os direitos reservados.</p>
+ <p data-i18n="footer.direitos">&copy; 2026 Conheça Farmácia. Todos os direitos reservados.</p>
  </div>
 
  <!-- Admin Access (discreet) -->

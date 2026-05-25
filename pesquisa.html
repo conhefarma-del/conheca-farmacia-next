@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pesquisa — Conheça Farmácia</title>
+    <meta name="description" content="Pesquise artigos, eventos e lives sobre farmácia, medicamentos e saúde na Conheça Farmácia.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Pesquisa — Conheça Farmácia">
+    <meta property="og:description" content="Pesquise artigos, eventos e lives sobre farmácia, medicamentos e saúde.">
+    <meta property="og:image" content="/logo/3.png">
+    <meta property="og:url" content="">
+    <meta property="og:site_name" content="Conheça Farmácia">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Pesquisa — Conheça Farmácia">
+    <meta name="twitter:description" content="Pesquise artigos, eventos e lives sobre farmácia, medicamentos e saúde.">
+    <meta name="twitter:image" content="/logo/3.png">
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="antialiased text-brand-deep bg-brand-bg">
+    <!-- Utility Bar -->
+    <div class="utility-bar">
+      <div class="utility-bar-container">
+        <div class="utility-search">
+          <svg class="utility-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" class="utility-search-input" id="utility-search-input" data-i18n="search.placeholder" placeholder="Pesquisar artigos, eventos, lives...">
+        </div>
+        <div class="utility-lang">
+          <button class="lang-toggle" id="lang-toggle" aria-expanded="false" aria-haspopup="true" aria-label="Alterar idioma">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span id="lang-current">PT</span>
+          </button>
+          <div class="lang-dropdown" id="lang-dropdown" role="menu">
+            <button class="lang-option active" data-lang="pt" role="menuitem">Portugues</button>
+            <button class="lang-option" data-lang="en" role="menuitem">English</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+      <nav class="nav-container">
+        <div class="logo">
+          <a href="index.html">
+            <img
+              src="/logo/logo-principal-verde.svg"
+              alt="Conheça Farmácia Logo"
+            />
+          </a>
+        </div>
+
+        <div class="header-right">
+          <ul class="nav-links">
+            <li><a href="index.html#inicio" data-i18n="nav.inicio">Início</a></li>
+            <li><a href="artigos.html" data-i18n="nav.artigos">Artigos</a></li>
+            <li><a href="eventos.html" data-i18n="nav.eventos">Eventos</a></li>
+            <li><a href="lives-list.html" data-i18n="nav.lives">Lives</a></li>
+            <li><a href="sobre.html" data-i18n="nav.sobre">Sobre Nós</a></li>
+          </ul>
+          <!-- Theme Toggle Button -->
+          <button class="theme-toggle" aria-label="Alternar modo escuro">
+            <svg class="sun-icon" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <svg class="moon-icon" viewBox="0 0 24 24">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+          <!-- Hamburger Menu -->
+          <button class="hamburger" id="hamburger" aria-label="Abrir menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Mobile Drawer -->
+    <div class="drawer-overlay" id="drawer-overlay"></div>
+    <aside class="mobile-drawer" id="mobile-drawer">
+      <button class="drawer-close" id="drawer-close" aria-label="Fechar menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="drawer-logo">
+        <a href="index.html">
+          <img src="/logo/logo-principal-verde.svg" alt="Conheça Farmácia Logo" />
+        </a>
+      </div>
+      <ul class="drawer-links" id="drawer-links">
+        <li><a href="index.html#inicio" data-i18n="nav.inicio">Início</a></li>
+        <li><a href="artigos.html" data-i18n="nav.artigos">Artigos</a></li>
+        <li><a href="eventos.html" data-i18n="nav.eventos">Eventos</a></li>
+        <li><a href="lives-list.html" data-i18n="nav.lives">Lives</a></li>
+        <li><a href="sobre.html" data-i18n="nav.sobre">Sobre Nós</a></li>
+      </ul>
+      <div class="drawer-footer">
+        <button class="drawer-theme-toggle" aria-label="Alternar modo escuro">
+          <svg class="sun-icon" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+        <div class="drawer-social">
+          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          </a>
+          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          </a>
+          <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15a6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.6a8.2 8.2 0 0 0 4.76 1.5v-3.4a4.85 4.85 0 0 1-1-.01z"/></svg>
+          </a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main>
+      <section class="search-page">
+        <div class="search-container">
+          <!-- Search Input -->
+          <div class="search-hero">
+            <h1 class="search-title" data-i18n="search.pesquisa">Pesquisa</h1>
+            <div class="search-input-wrapper">
+              <svg class="search-input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="text" class="search-input" id="search-input" data-i18n="search.placeholder" placeholder="Pesquisar artigos, eventos, lives...">
+              <button type="button" class="search-btn" id="search-btn" aria-label="Pesquisar">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Result count -->
+          <div class="search-count" id="search-count"></div>
+
+          <!-- Filters -->
+          <div class="search-filters">
+            <div class="search-type-filters">
+              <button class="filter-btn active" data-filter="todos" aria-pressed="true" data-i18n="search.todos">Todos</button>
+              <button class="filter-btn" data-filter="artigos" aria-pressed="false" data-i18n="search.artigos">Artigos</button>
+              <button class="filter-btn" data-filter="eventos" aria-pressed="false" data-i18n="search.eventos">Eventos</button>
+              <button class="filter-btn" data-filter="lives" aria-pressed="false" data-i18n="search.lives">Lives & Webinars</button>
+            </div>
+            <div class="search-sort">
+              <select id="search-sort" class="search-sort-select">
+                <option value="recente" data-i18n="search.mais_recente">Mais Recente</option>
+                <option value="antigo" data-i18n="search.mais_antigo">Mais Antigo</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Empty state -->
+          <div class="search-empty" id="search-empty" style="display:none;"></div>
+
+          <!-- Results -->
+          <div class="search-results" id="search-results">
+            <!-- Results will be rendered here by JS -->
+          </div>
+
+          <!-- Pagination -->
+          <div id="search-pagination">
+            <!-- Pagination will be rendered here by JS -->
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container-center">
+        <div class="footer-grid">
+          <!-- Brand Info -->
+          <div class="footer-logo">
+            <img
+              src="/logo/logo-principal-branco.svg"
+              alt="Conheça Farmácia Logo"
+            />
+            <p class="text-white/70 text-sm mt-4" data-i18n="footer.descricao">
+              Conhecimento que conecta. Formação que transforma. Saúde que
+              evolui.
+            </p>
+          </div>
+
+          <!-- Quick Links -->
+          <div class="footer-links">
+            <h4 data-i18n="footer.navegacao">Navegação</h4>
+            <ul>
+              <li><a href="index.html#inicio" data-i18n="nav.inicio">Início</a></li>
+              <li><a href="artigos.html" data-i18n="nav.artigos">Artigos</a></li>
+              <li><a href="eventos.html" data-i18n="nav.eventos">Eventos</a></li>
+              <li><a href="lives-list.html" data-i18n="nav.lives">Lives</a></li>
+              <li><a href="sobre.html" data-i18n="nav.sobre">Sobre Nós</a></li>
+            </ul>
+          </div>
+
+          <!-- Contact -->
+          <div class="footer-links">
+            <h4 data-i18n="footer.contacto">Contato</h4>
+            <ul class="text-sm text-white/70">
+              <li data-i18n="footer.localizacao">Luanda, Angola</li>
+              <li>
+                <a
+                  href="mailto:conhecerfarmacia@gmail.com"
+                  class="text-white/70 hover:text-brand-accent"
+                  >conhecerfarmacia@gmail.com</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://wa.me/244925696002"
+                  class="text-white/70 hover:text-brand-accent"
+                  >+244 925 696 002</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <!-- Social Media -->
+          <div class="footer-links">
+            <h4 data-i18n="footer.redes_sociais">Redes Sociais</h4>
+            <ul class="text-sm">
+              <li>
+                <a
+                  href="https://www.facebook.com/conhecafarmacia"
+                  target="_blank"
+                  rel="noopener noreferrer">Facebook</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://www.instagram.com/conhecafarmacia"
+                  target="_blank"
+                  rel="noopener noreferrer">Instagram</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://www.tiktok.com/conhecafarmaciaofficial"
+                  target="_blank"
+                  rel="noopener noreferrer">TikTok</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://www.linkedin.com/company/conhecafarmacia"
+                  target="_blank"
+                  rel="noopener noreferrer">LinkedIn</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="footer-divider"></div>
+
+        <div class="footer-bottom">
+          <p data-i18n="footer.direitos">&copy; 2026 Conheça Farmácia. Todos os direitos reservados.</p>
+        </div>
+
+        <!-- Admin Access (discreet) -->
+        <div class="footer-admin-access">
+          <button id="admin-gate-btn" class="footer-admin-btn" aria-label="Acesso administrativo" title="Acesso administrativo">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </footer>
+
+    <script type="module" src="/main.js"></script>
+    <script type="module" src="/src/pesquisa-logic.js"></script>
+  </body>
+</html>

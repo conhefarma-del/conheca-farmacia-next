@@ -1,8 +1,11 @@
+import { t, applyTranslations } from "./i18n.js";
+
 /**
  * renderBreadcrumb — renderiza navegação breadcrumb semântica.
- * @param {Array<{label: string, href?: string}>} levels
+ * @param {Array<{label: string, href?: string, i18nKey?: string}>} levels
  *   - levels com `href` → link clicável
  *   - último nível sem `href` → página atual (não clicável)
+ *   - `i18nKey` (opcional) → chave de tradução para o label
  */
 export function renderBreadcrumb(levels) {
   const nav = document.getElementById("breadcrumb");
@@ -16,22 +19,27 @@ export function renderBreadcrumb(levels) {
     li.className = "breadcrumb-item";
 
     const isLast = i === levels.length - 1;
+    const displayLabel = level.i18nKey ? t(level.i18nKey) : level.label;
 
     if (isLast) {
-      // Página atual — não clicável
       const span = document.createElement("span");
       span.className = "breadcrumb-current";
       span.setAttribute("aria-current", "page");
-      span.textContent = level.label;
+      span.textContent = displayLabel;
+      if (level.i18nKey) {
+        span.setAttribute("data-i18n", level.i18nKey);
+      }
       li.appendChild(span);
     } else {
       const a = document.createElement("a");
       a.className = "breadcrumb-link";
       a.href = level.href;
-      a.textContent = level.label;
+      a.textContent = displayLabel;
+      if (level.i18nKey) {
+        a.setAttribute("data-i18n", level.i18nKey);
+      }
       li.appendChild(a);
 
-      // Separador ">"
       const sep = document.createElement("span");
       sep.className = "breadcrumb-separator";
       sep.setAttribute("aria-hidden", "true");
