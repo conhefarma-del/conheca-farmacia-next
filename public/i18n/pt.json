@@ -11,7 +11,11 @@
     "subtitle": "Acompanhamento clínico especializado para garantir a eficácia e segurança do tratamento. Valorizando a saúde através do conhecimento farmacêutico.",
     "cta": "Fale Connosco",
     "animated_label": "Serviços principais",
-    "animated_text": "Atenção Farmacêutica"
+    "animated_text": "Atenção Farmacêutica",
+    "animated_eventos": "Eventos Especializados",
+    "animated_conteudo": "Conteúdo de Qualidade",
+    "animated_artigos": "Artigos Científicos",
+    "animated_lives": "Lives & Webinars"
   },
   "search": {
     "placeholder": "Pesquisar artigos, eventos, lives...",

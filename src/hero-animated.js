@@ -1,9 +1,11 @@
+import { t } from "./i18n.js";
+
 const HERO_PHRASES = [
-  { text: 'Atenção Farmacêutica', icon: '/assets/icons/Asset 1-branco.svg' },
-  { text: 'Eventos Especializados', icon: '/assets/icons/Asset 7-branco.svg' },
-  { text: 'Conteúdo de Qualidade', icon: '/assets/icons/Asset 11-branco.svg' },
-  { text: 'Artigos Científicos', icon: '/assets/icons/Asset 15-branco.svg' },
-  { text: 'Lives & Webinars', icon: '/assets/icons/Asset 20-branco.svg' }
+  { textKey: 'hero.animated_text', icon: '/assets/icons/Asset 1-branco.svg' },
+  { textKey: 'hero.animated_eventos', icon: '/assets/icons/Asset 7-branco.svg' },
+  { textKey: 'hero.animated_conteudo', icon: '/assets/icons/Asset 11-branco.svg' },
+  { textKey: 'hero.animated_artigos', icon: '/assets/icons/Asset 15-branco.svg' },
+  { textKey: 'hero.animated_lives', icon: '/assets/icons/Asset 20-branco.svg' }
 ];
 
 const CYCLE_INTERVAL = 2500;
@@ -12,6 +14,10 @@ const ANIMATION_DURATION = 300;
 let currentIndex = 0;
 let exitHistory = [];
 let intervalId = null;
+
+function getPhraseText(phrase) {
+  return t(phrase.textKey);
+}
 
 function initHeroAnimated() {
   const container = document.querySelector('.hero-animated');
@@ -125,7 +131,7 @@ function cycle() {
     currentIndex = (currentIndex + 1) % HERO_PHRASES.length;
 
     // 7. Update card content
-    cardText.textContent = HERO_PHRASES[currentIndex].text;
+    cardText.textContent = getPhraseText(HERO_PHRASES[currentIndex]);
     cardIcon.src = HERO_PHRASES[currentIndex].icon;
 
     // 8. Slide card text + icon IN from bottom (using rAF double instead of offsetHeight)
@@ -176,7 +182,7 @@ function renderTickerTop() {
   // Update elements in place (no innerHTML clear = no layout shift)
   reversed.forEach((phrase, i) => {
     const isRecent = i === reversed.length - 1;
-    lines[i].textContent = phrase.text;
+    lines[i].textContent = getPhraseText(phrase);
     lines[i].className = 'hero-ticker-text' + (isRecent ? ' hero-ticker-text--prominent' : '');
     // Reset animation styles (transition: none first to prevent flash)
     lines[i].style.transition = 'none';
@@ -194,7 +200,7 @@ function renderTickerBottom() {
 
   // Update Line 1 (next phrase, prominent)
   const idx1 = (currentIndex + 1) % HERO_PHRASES.length;
-  lines[0].textContent = HERO_PHRASES[idx1].text;
+  lines[0].textContent = getPhraseText(HERO_PHRASES[idx1]);
   lines[0].className = 'hero-ticker-text hero-ticker-text--prominent';
   // Reset animation styles (transition: none first to prevent flash)
   lines[0].style.transition = 'none';
@@ -203,7 +209,7 @@ function renderTickerBottom() {
 
   // Update Line 2 (phrase after next, not prominent)
   const idx2 = (currentIndex + 2) % HERO_PHRASES.length;
-  lines[1].textContent = HERO_PHRASES[idx2].text;
+  lines[1].textContent = getPhraseText(HERO_PHRASES[idx2]);
   lines[1].className = 'hero-ticker-text';
   // Reset animation styles
   lines[1].style.transition = 'none';
@@ -216,7 +222,7 @@ const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)
 if (prefersReducedMotion.matches) {
   document.addEventListener('DOMContentLoaded', () => {
     const cardText = document.querySelector('.hero-animated-text');
-    if (cardText) cardText.textContent = HERO_PHRASES[0].text;
+    if (cardText) cardText.textContent = getPhraseText(HERO_PHRASES[0]);
   });
 } else {
   document.addEventListener('DOMContentLoaded', initHeroAnimated);

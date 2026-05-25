@@ -11,7 +11,11 @@
     "subtitle": "Specialized clinical monitoring to ensure treatment efficacy and safety. Valuing health through pharmaceutical knowledge.",
     "cta": "Contact Us",
     "animated_label": "Main services",
-    "animated_text": "Pharmaceutical Care"
+    "animated_text": "Pharmaceutical Care",
+    "animated_eventos": "Specialized Events",
+    "animated_conteudo": "Quality Content",
+    "animated_artigos": "Scientific Articles",
+    "animated_lives": "Lives & Webinars"
   },
   "search": {
     "placeholder": "Search articles, events, lives...",
