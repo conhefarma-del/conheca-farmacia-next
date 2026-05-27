@@ -53,8 +53,14 @@ Converter de `'use client'` para `'use server'`. Todas as funções usam `create
 | EventViewTracker | localStorage | `cf_view_event_{slug}` | 24h | Unique Daily Users |
 | LiveViewTracker | localStorage | `cf_view_live_{slug}` | 24h | Unique Daily Users |
 
-**Função helper em `lib/api/analytics.js`:**
+**Função helper — `lib/analytics-dedup.js` (Client Module):**
+
+NOTA: `localStorage` é API do browser — não pode estar em ficheiro `'use server'`. Os helpers de dedup ficam num módulo client-side separado que os trackers importam.
+
 ```js
+// lib/analytics-dedup.js
+'use client'
+
 export function hasTracked(key) {
   try {
     const raw = localStorage.getItem(key)
@@ -337,24 +343,25 @@ export default function robots() {
 
 ## 5. Inventário de Ficheiros
 
-### Ficheiros a CRIAR (11)
+### Ficheiros a CRIAR (15)
 
 | # | Ficheiro | Sub-fase |
 |---|----------|----------|
-| 1 | `components/content/PageViewTracker.jsx` | 5.1 |
-| 2 | `app/[lang]/(public)/loading.jsx` | 5.2 |
-| 3 | `app/[lang]/(public)/error.jsx` | 5.2 |
-| 4 | `app/[lang]/(public)/artigos/loading.jsx` | 5.2 |
-| 5 | `app/[lang]/(public)/artigos/[slug]/loading.jsx` | 5.2 |
-| 6 | `app/[lang]/(public)/artigos/error.jsx` | 5.2 |
-| 7 | `app/[lang]/(public)/eventos/loading.jsx` | 5.2 |
-| 8 | `app/[lang]/(public)/eventos/[slug]/loading.jsx` | 5.2 |
-| 9 | `app/[lang]/(public)/eventos/error.jsx` | 5.2 |
-| 10 | `app/[lang]/(public)/lives/loading.jsx` | 5.2 |
-| 11 | `app/[lang]/(public)/lives/[slug]/loading.jsx` | 5.2 |
-| 12 | `app/[lang]/(public)/lives/error.jsx` | 5.2 |
-| 13 | `app/sitemap.js` | 5.3 |
-| 14 | `app/robots.js` | 5.3 |
+| 1 | `lib/analytics-dedup.js` | 5.1 |
+| 2 | `components/content/PageViewTracker.jsx` | 5.1 |
+| 3 | `app/[lang]/(public)/loading.jsx` | 5.2 |
+| 4 | `app/[lang]/(public)/error.jsx` | 5.2 |
+| 5 | `app/[lang]/(public)/artigos/loading.jsx` | 5.2 |
+| 6 | `app/[lang]/(public)/artigos/[slug]/loading.jsx` | 5.2 |
+| 7 | `app/[lang]/(public)/artigos/error.jsx` | 5.2 |
+| 8 | `app/[lang]/(public)/eventos/loading.jsx` | 5.2 |
+| 9 | `app/[lang]/(public)/eventos/[slug]/loading.jsx` | 5.2 |
+| 10 | `app/[lang]/(public)/eventos/error.jsx` | 5.2 |
+| 11 | `app/[lang]/(public)/lives/loading.jsx` | 5.2 |
+| 12 | `app/[lang]/(public)/lives/[slug]/loading.jsx` | 5.2 |
+| 13 | `app/[lang]/(public)/lives/error.jsx` | 5.2 |
+| 14 | `app/sitemap.js` | 5.3 |
+| 15 | `app/robots.js` | 5.3 |
 
 ### Ficheiros a MODIFICAR (15)
 
@@ -385,7 +392,7 @@ export default function robots() {
 | 3 | `components/content/LiveAnalytics.jsx` | 5.1 |
 | 4 | `hooks/useAnalytics.js` | 5.1 |
 
-**Total: 30 operações** (14 criar, 15 modificar, 4 eliminar)
+**Total: 34 operações** (15 criar, 15 modificar, 4 eliminar)
 
 ---
 
@@ -393,6 +400,7 @@ export default function robots() {
 
 ### 5.1 Analytics
 - [ ] `lib/api/analytics.js` tem `'use server'` e usa `createClient()` do servidor
+- [ ] `lib/analytics-dedup.js` existe com `'use client'`, `hasTracked()` e `markTracked()`
 - [ ] Todas as 8 funções existem (7 existentes + `trackPageView`)
 - [ ] `PageViewTracker` existe, usa `usePathname()` + `useSearchParams()`, envolto em `<Suspense>`
 - [ ] ViewCountTracker, EventViewTracker, LiveViewTracker usam `lib/api/analytics.js` com localStorage 24h
