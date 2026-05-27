@@ -15,7 +15,9 @@ const nextConfig = {
     ],
   },
   webpack(config) {
-    config.resolve.alias['@'] = resolve(__dirname)
+    config.resolve.alias['@'] = __dirname
+    config.resolve.modules = [__dirname, 'node_modules']
+    config.resolve.extensions = ['.js', '.jsx', '.json', '.ts', '.tsx', '...']
     return config
   },
   async headers() {
