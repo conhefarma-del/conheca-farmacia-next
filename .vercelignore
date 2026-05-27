@@ -52,5 +52,14 @@ conheca_farmacia_style_guide.html
 # Lock files (optional - Vercel handles)
 package-lock.json
 
-# Source files
+# Source files (legacy)
 src/input.css
+
+# Removed Vite/Netlify artifacts
+nextjs-temp/
+next-temp/
+netlify.toml
+.netlify/
+
+# Playwright MCP
+.playwright-mcp/
