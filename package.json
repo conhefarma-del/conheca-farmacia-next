@@ -4,8 +4,8 @@
   "description": "Portal de saúde e farmácia — Next.js App Router",
   "main": "index.js",
   "scripts": {
-    "dev": "next dev --webpack",
-    "build": "next build --webpack",
+    "dev": "next dev",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "format": "npx prettier --write ."
