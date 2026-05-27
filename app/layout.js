@@ -5,7 +5,7 @@ import PageViewTracker from '@/components/content/PageViewTracker'
 import '@/styles/globals.css'
 
 export const metadata = {
-  metadataBase: new URL('https://conhecafarmacia.netlify.app'),
+  metadataBase: new URL('https://conhecafarmacia.vercel.app'),
   title: 'Conheça Farmácia',
   description: 'Portal de saúde e farmácia',
 }

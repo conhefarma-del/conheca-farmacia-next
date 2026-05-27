@@ -7,6 +7,6 @@ export default function robots() {
         disallow: ['/admin/', '/api/'],
       },
     ],
-    sitemap: 'https://conhecafarmacia.netlify.app/sitemap.xml',
+    sitemap: 'https://conhecafarmacia.vercel.app/sitemap.xml',
   }
 }

@@ -24,7 +24,7 @@ const CONTENT_TYPES = [
   { value: 'live', label: 'Live' },
 ]
 
-const BASE_URL = 'https://conhecafarmacia.netlify.app'
+const BASE_URL = 'https://conhecafarmacia.vercel.app'
 
 function buildContentUrl(type, slug) {
   if (type === 'article') return `${BASE_URL}/artigo.html?id=${slug}`
