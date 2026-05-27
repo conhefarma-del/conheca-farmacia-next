@@ -1,3 +1,8 @@
+import { resolve, dirname } from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -8,6 +13,10 @@ const nextConfig = {
         pathname: '/storage/v1/object/public/**',
       },
     ],
+  },
+  webpack(config) {
+    config.resolve.alias['@'] = resolve(__dirname)
+    return config
   },
   async headers() {
     return [
