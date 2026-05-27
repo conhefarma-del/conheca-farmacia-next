@@ -1,7 +1,6 @@
-import { resolve, dirname } from 'path'
-import { fileURLToPath } from 'url'
+import { resolve } from 'path'
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
+const root = process.cwd()
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -15,9 +14,10 @@ const nextConfig = {
     ],
   },
   webpack(config) {
-    config.resolve.alias['@'] = __dirname
-    config.resolve.modules = [__dirname, 'node_modules']
-    config.resolve.extensions = ['.js', '.jsx', '.json', '.ts', '.tsx', '...']
+    config.resolve.alias['@'] = root
+    if (!config.resolve.modules.includes(root)) {
+      config.resolve.modules.push(root)
+    }
     return config
   },
   async headers() {
