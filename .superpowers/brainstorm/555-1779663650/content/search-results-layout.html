@@ -1,0 +1,164 @@
+<h2>Como mostrar os resultados de pesquisa?</h2>
+<p class="subtitle">Clica na opção que preferires</p>
+
+<div class="options">
+  <div class="option" data-choice="cards" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Cards com imagem</h3>
+      <p>Cada resultado mostra imagem, título, excerpt, tipo e data — como os cards de artigos existentes no site</p>
+    </div>
+  </div>
+  <div class="option" data-choice="list" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Lista compacta</h3>
+      <p>Lista com ícone do tipo, título, excerpt e data — mais resultados visíveis no ecrã</p>
+    </div>
+  </div>
+  <div class="option" data-choice="grid" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Grid de cards</h3>
+      <p>Grid 3 colunas com cards visuais — mais rico visualmente, como Pinterest</p>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 2rem;">
+  <h3>Pré-visualização de cada opção</h3>
+</div>
+
+<div class="split" style="gap: 1.5rem;">
+  <!-- Option A: Cards com imagem -->
+  <div class="mockup">
+    <div class="mockup-header">A — Cards com imagem</div>
+    <div class="mockup-body" style="padding: 1rem; font-family: system-ui; font-size: 13px;">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;gap:12px;padding:10px;border:1px solid #e0e0e0;border-radius:10px;background:#fff;">
+          <div style="width:80px;height:60px;background:linear-gradient(135deg,#00493a,#006171);border-radius:8px;flex-shrink:0;"></div>
+          <div style="flex:1;">
+            <div style="font-weight:600;font-size:14px;color:#1a1a1a;">Atenção Farmacêutica no Hospital</div>
+            <div style="font-size:12px;color:#666;margin-top:4px;">Artigo sobre o papel do farmacêutico clínico...</div>
+            <div style="font-size:11px;color:#999;margin-top:4px;">📄 Artigo · 15 Mai 2026</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;padding:10px;border:1px solid #e0e0e0;border-radius:10px;background:#fff;">
+          <div style="width:80px;height:60px;background:linear-gradient(135deg,#7c3aed,#a855f7);border-radius:8px;flex-shrink:0;"></div>
+          <div style="flex:1;">
+            <div style="font-weight:600;font-size:14px;color:#1a1a1a;">Congresso de Farmácia 2026</div>
+            <div style="font-size:12px;color:#666;margin-top:4px;">Evento anual com os melhores especialistas...</div>
+            <div style="font-size:11px;color:#999;margin-top:4px;">📅 Evento · 20 Jun 2026</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;padding:10px;border:1px solid #e0e0e0;border-radius:10px;background:#fff;">
+          <div style="width:80px;height:60px;background:linear-gradient(135deg,#dc2626,#f87171);border-radius:8px;flex-shrink:0;"></div>
+          <div style="flex:1;">
+            <div style="font-weight:600;font-size:14px;color:#1a1a1a;">Live: Farmácia Clínica</div>
+            <div style="font-size:12px;color:#666;margin-top:4px;">Sessão ao vivo sobre acompanhamento farmacêutico...</div>
+            <div style="font-size:11px;color:#999;margin-top:4px;">🎬 Live · 10 Jul 2026</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option B: Lista compacta -->
+  <div class="mockup">
+    <div class="mockup-header">B — Lista compacta</div>
+    <div class="mockup-body" style="padding: 1rem; font-family: system-ui; font-size: 13px;">
+      <div style="display:flex;flex-direction:column;gap:0;">
+        <div style="display:flex;align-items:center;gap:10px;padding:12px 10px;border-bottom:1px solid #eee;">
+          <span style="font-size:18px;">📄</span>
+          <div style="flex:1;">
+            <div style="font-weight:600;font-size:14px;color:#1a1a1a;">Atenção Farmacêutica no Hospital</div>
+            <div style="font-size:12px;color:#666;">Artigo sobre o papel do farmacêutico clínico...</div>
+          </div>
+          <span style="font-size:11px;color:#999;white-space:nowrap;">15 Mai 2026</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:12px 10px;border-bottom:1px solid #eee;">
+          <span style="font-size:18px;">📅</span>
+          <div style="flex:1;">
+            <div style="font-weight:600;font-size:14px;color:#1a1a1a;">Congresso de Farmácia 2026</div>
+            <div style="font-size:12px;color:#666;">Evento anual com os melhores especialistas...</div>
+          </div>
+          <span style="font-size:11px;color:#999;white-space:nowrap;">20 Jun 2026</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:12px 10px;border-bottom:1px solid #eee;">
+          <span style="font-size:18px;">🎬</span>
+          <div style="flex:1;">
+            <div style="font-weight:600;font-size:14px;color:#1a1a1a;">Live: Farmácia Clínica</div>
+            <div style="font-size:12px;color:#666;">Sessão ao vivo sobre acompanhamento...</div>
+          </div>
+          <span style="font-size:11px;color:#999;white-space:nowrap;">10 Jul 2026</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:12px 10px;border-bottom:1px solid #eee;">
+          <span style="font-size:18px;">📄</span>
+          <div style="flex:1;">
+            <div style="font-weight:600;font-size:14px;color:#1a1a1a;">Guia de Interações Medicamentosas</div>
+            <div style="font-size:12px;color:#666;">Referência rápida para farmacêuticos...</div>
+          </div>
+          <span style="font-size:11px;color:#999;white-space:nowrap;">01 Mai 2026</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:12px 10px;">
+          <span style="font-size:18px;">📅</span>
+          <div style="flex:1;">
+            <div style="font-weight:600;font-size:14px;color:#1a1a1a;">Workshop de Farmacovigilância</div>
+            <div style="font-size:12px;color:#666;">Formação prática em efeitos adversos...</div>
+          </div>
+          <span style="font-size:11px;color:#999;white-space:nowrap;">15 Abr 2026</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mockup" style="margin-top: 1.5rem;">
+  <div class="mockup-header">C — Grid de cards (3 colunas desktop, 1 coluna mobile)</div>
+  <div class="mockup-body" style="padding: 1rem; font-family: system-ui; font-size: 13px;">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+      <div style="border:1px solid #e0e0e0;border-radius:10px;overflow:hidden;background:#fff;">
+        <div style="height:80px;background:linear-gradient(135deg,#00493a,#006171);"></div>
+        <div style="padding:10px;">
+          <div style="font-weight:600;font-size:13px;color:#1a1a1a;">Atenção Farmacêutica</div>
+          <div style="font-size:11px;color:#666;margin-top:3px;">Artigo · 15 Mai 2026</div>
+        </div>
+      </div>
+      <div style="border:1px solid #e0e0e0;border-radius:10px;overflow:hidden;background:#fff;">
+        <div style="height:80px;background:linear-gradient(135deg,#7c3aed,#a855f7);"></div>
+        <div style="padding:10px;">
+          <div style="font-weight:600;font-size:13px;color:#1a1a1a;">Congresso 2026</div>
+          <div style="font-size:11px;color:#666;margin-top:3px;">Evento · 20 Jun 2026</div>
+        </div>
+      </div>
+      <div style="border:1px solid #e0e0e0;border-radius:10px;overflow:hidden;background:#fff;">
+        <div style="height:80px;background:linear-gradient(135deg,#dc2626,#f87171);"></div>
+        <div style="padding:10px;">
+          <div style="font-weight:600;font-size:13px;color:#1a1a1a;">Live: Farmácia Clínica</div>
+          <div style="font-size:11px;color:#666;margin-top:3px;">Live · 10 Jul 2026</div>
+        </div>
+      </div>
+      <div style="border:1px solid #e0e0e0;border-radius:10px;overflow:hidden;background:#fff;">
+        <div style="height:80px;background:linear-gradient(135deg,#00493a,#006171);"></div>
+        <div style="padding:10px;">
+          <div style="font-weight:600;font-size:13px;color:#1a1a1a;">Interações Medicamentosas</div>
+          <div style="font-size:11px;color:#666;margin-top:3px;">Artigo · 01 Mai 2026</div>
+        </div>
+      </div>
+      <div style="border:1px solid #e0e0e0;border-radius:10px;overflow:hidden;background:#fff;">
+        <div style="height:80px;background:linear-gradient(135deg,#7c3aed,#a855f7);"></div>
+        <div style="padding:10px;">
+          <div style="font-weight:600;font-size:13px;color:#1a1a1a;">Workshop Farmacovigilância</div>
+          <div style="font-size:11px;color:#666;margin-top:3px;">Evento · 15 Abr 2026</div>
+        </div>
+      </div>
+      <div style="border:1px solid #e0e0e0;border-radius:10px;overflow:hidden;background:#fff;">
+        <div style="height:80px;background:linear-gradient(135deg,#dc2626,#f87171);"></div>
+        <div style="padding:10px;">
+          <div style="font-weight:600;font-size:13px;color:#1a1a1a;">Live: Farmacêuticos</div>
+          <div style="font-size:11px;color:#666;margin-top:3px;">Live · 05 Mar 2026</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

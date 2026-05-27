@@ -1,0 +1,120 @@
+<h2>Hero Card Animado — Conceito</h2>
+<p class="subtitle">Mostra como o texto cicla dentro do card, com o anterior a sair por cima</p>
+
+<div class="mockup">
+  <div class="mockup-header">Simulação: Card com texto ciclico (5 segundos por ciclo)</div>
+  <div class="mockup-body" style="background: #f9f9f9; padding: 40px; min-height: 300px; display: flex; flex-direction: column; align-items: center; gap: 16px;">
+
+    <!-- Textos que saíram do card (acumulam por cima) -->
+    <div id="exit-texts" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-height: 60px;">
+    </div>
+
+    <!-- O Card principal -->
+    <div style="background: #00493a; color: white; border-radius: 16px; padding: 32px 40px; display: flex; align-items: center; gap: 24px; width: 100%; max-width: 600px; min-height: 100px; position: relative; overflow: hidden; box-shadow: 0 4px 20px rgba(0,42,50,0.1);">
+      <!-- Ícone -->
+      <div style="flex-shrink: 0; width: 48px; height: 48px; background: rgba(255,255,255,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2L12 22M2 12L22 12"/></svg>
+      </div>
+      <!-- Texto animado -->
+      <div style="position: relative; overflow: hidden; flex: 1; height: 40px;">
+        <div id="card-text" style="font-size: 1.5rem; font-weight: 700; position: absolute; width: 100%; transition: transform 0.6s ease, opacity 0.6s ease;">
+          ATENÇÃO FARMACÊUTICA
+        </div>
+      </div>
+    </div>
+
+    <!-- Indicador de ciclo -->
+    <div style="display: flex; gap: 8px; margin-top: 8px;">
+      <div id="dot-0" style="width: 8px; height: 8px; border-radius: 50%; background: #00493a;"></div>
+      <div id="dot-1" style="width: 8px; height: 8px; border-radius: 50%; background: #ddd;"></div>
+      <div id="dot-2" style="width: 8px; height: 8px; border-radius: 50%; background: #ddd;"></div>
+      <div id="dot-3" style="width: 8px; height: 8px; border-radius: 50%; background: #ddd;"></div>
+      <div id="dot-4" style="width: 8px; height: 8px; border-radius: 50%; background: #ddd;"></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section" style="margin-top: 24px;">
+  <h3>Como funciona a animação</h3>
+  <div class="options">
+    <div class="option" data-choice="slide-up" onclick="toggleSelect(this)">
+      <div class="letter">A</div>
+      <div class="content">
+        <h3>Slide Up (recomendado)</h3>
+        <p>O texto atual sobe e desaparece por cima do card. O novo texto entra por baixo. O texto que saiu aparece acima do card em maiúsculas com menos destaque.</p>
+      </div>
+    </div>
+    <div class="option" data-choice="fade" onclick="toggleSelect(this)">
+      <div class="letter">B</div>
+      <div class="content">
+        <h3>Fade Cross</h3>
+        <p>O texto atual faz fade out e o novo faz fade in. Mais simples mas menos dramático.</p>
+      </div>
+    </div>
+    <div class="option" data-choice="typewriter" onclick="toggleSelect(this)">
+      <div class="letter">C</div>
+      <div class="content">
+        <h3>Typewriter</h3>
+        <p>O texto aparece letra a letra, como se estivesse a ser digitado. Efeito mais tecnológico.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const phrases = [
+    'ATENÇÃO FARMACÊUTICA',
+    'EVENTOS ESPECIALIZADOS',
+    'CONTEÚDO DE QUALIDADE',
+    'ARTIGOS CIENTÍFICOS',
+    'LIVES & WEBINARS'
+  ];
+  let current = 0;
+  const cardText = document.getElementById('card-text');
+  const exitTexts = document.getElementById('exit-texts');
+
+  function updateDots() {
+    for (let i = 0; i < 5; i++) {
+      document.getElementById('dot-' + i).style.background = i === current ? '#00493a' : '#ddd';
+    }
+  }
+
+  function cycle() {
+    // Slide current text up and out
+    cardText.style.transform = 'translateY(-100%)';
+    cardText.style.opacity = '0';
+
+    setTimeout(() => {
+      // Add exited text above card
+      const exitLine = document.createElement('div');
+      exitLine.textContent = phrases[current];
+      exitLine.style.cssText = 'font-size: 0.85rem; font-weight: 500; color: #666; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0; transform: translateY(10px); transition: all 0.4s ease;';
+      exitTexts.appendChild(exitLine);
+      requestAnimationFrame(() => {
+        exitLine.style.opacity = '1';
+        exitLine.style.transform = 'translateY(0)';
+      });
+
+      // Move to next phrase
+      current = (current + 1) % phrases.length;
+      cardText.textContent = phrases[current];
+      cardText.style.transform = 'translateY(100%)';
+      cardText.style.opacity = '0';
+
+      requestAnimationFrame(() => {
+        cardText.style.transform = 'translateY(0)';
+        cardText.style.opacity = '1';
+      });
+
+      updateDots();
+
+      // Keep only last 3 exit texts
+      while (exitTexts.children.length > 3) {
+        exitTexts.removeChild(exitTexts.firstChild);
+      }
+    }, 600);
+  }
+
+  setInterval(cycle, 2500);
+</script>

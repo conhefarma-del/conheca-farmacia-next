@@ -1,0 +1,151 @@
+<h2>Hero Card Animado v4 — Hierarquia corrigida</h2>
+<p class="subtitle">Mais destaque no texto mais próximo do card, menos destaque no mais afastado.</p>
+
+<div class="mockup">
+  <div class="mockup-header">Simulação: Hierarquia visual correta + card mais alto</div>
+  <div class="mockup-body" style="background: #f9f9f9; padding: 40px 20px; min-height: 560px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0;">
+
+    <!-- ACIMA DO CARD (máx 2) -->
+    <!-- Linha 1: frase que acabou de sair (MAIS destaque) -->
+    <!-- Linha 2: penúltima a sair (MENOS destaque) -->
+    <div id="ticker-top" style="display: flex; flex-direction: column; align-items: center; gap: 3px; margin-bottom: 14px; min-height: 68px;">
+    </div>
+
+    <!-- O CARD PRINCIPAL (MAIS ALTO) -->
+    <div style="background: linear-gradient(135deg, #00493a, #006171); color: white; border-radius: 20px; padding: 40px 48px; display: flex; align-items: center; gap: 28px; width: 100%; max-width: 640px; min-height: 130px; position: relative; overflow: hidden; box-shadow: 0 8px 32px rgba(0,42,50,0.18); z-index: 2;">
+      <!-- Ícone -->
+      <div id="card-icon" style="flex-shrink: 0; width: 60px; height: 60px; background: rgba(255,255,255,0.15); border-radius: 14px; display: flex; align-items: center; justify-content: center; transition: opacity 0.3s;">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2L12 22M2 12L22 12"/></svg>
+      </div>
+      <!-- Texto animado -->
+      <div style="position: relative; overflow: hidden; flex: 1; height: 48px;">
+        <div id="card-text" style="font-size: 1.75rem; font-weight: 700; position: absolute; width: 100%; transition: transform 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease; white-space: nowrap; letter-spacing: 0.02em;">
+          ATENÇÃO FARMACÊUTICA
+        </div>
+      </div>
+    </div>
+
+    <!-- ABAIXO DO CARD (máx 2) -->
+    <!-- Linha 1: frase que vai entrar (MAIS destaque) -->
+    <!-- Linha 2: próxima depois dessa (MENOS destaque) -->
+    <div id="ticker-bottom" style="display: flex; flex-direction: column; align-items: center; gap: 3px; margin-top: 14px; min-height: 68px;">
+    </div>
+
+    <!-- Indicadores -->
+    <div style="display: flex; gap: 6px; margin-top: 20px;">
+      <div id="dot-0" style="width: 8px; height: 8px; border-radius: 50%; background: #00493a; transition: background 0.3s;"></div>
+      <div id="dot-1" style="width: 8px; height: 8px; border-radius: 50%; background: #ddd; transition: background 0.3s;"></div>
+      <div id="dot-2" style="width: 8px; height: 8px; border-radius: 50%; background: #ddd; transition: background 0.3s;"></div>
+      <div id="dot-3" style="width: 8px; height: 8px; border-radius: 50%; background: #ddd; transition: background 0.3s;"></div>
+      <div id="dot-4" style="width: 8px; height: 8px; border-radius: 50%; background: #ddd; transition: background 0.3s;"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const phrases = [
+    'ATENÇÃO FARMACÊUTICA',
+    'EVENTOS ESPECIALIZADOS',
+    'CONTEÚDO DE QUALIDADE',
+    'ARTIGOS CIENTÍFICOS',
+    'LIVES & WEBINARS'
+  ];
+  let current = 0;
+  const cardText = document.getElementById('card-text');
+  const tickerTop = document.getElementById('ticker-top');
+  const tickerBottom = document.getElementById('ticker-bottom');
+  let exitHistory = []; // [most recent, older]
+
+  function initQueues() {
+    // Below: line 1 = next to enter (more prominent), line 2 = after that (less)
+    tickerBottom.innerHTML = '';
+    for (let i = 1; i <= 2; i++) {
+      const idx = (current + i) % phrases.length;
+      const el = document.createElement('div');
+      el.textContent = phrases[idx];
+      // i=1 = next to enter = MORE prominent
+      const opacity = i === 1 ? 0.7 : 0.35;
+      const size = i === 1 ? '0.9rem' : '0.7rem';
+      const weight = i === 1 ? '600' : '400';
+      el.style.cssText = `font-size: ${size}; font-weight: ${weight}; color: #777; text-transform: uppercase; letter-spacing: 0.08em; opacity: ${opacity}; transition: all 0.4s ease;`;
+      tickerBottom.appendChild(el);
+    }
+    // Top: empty at start
+    tickerTop.innerHTML = '';
+  }
+
+  function updateDots() {
+    for (let i = 0; i < 5; i++) {
+      document.getElementById('dot-' + i).style.background = i === current ? '#00493a' : '#ddd';
+    }
+  }
+
+  function cycle() {
+    // 1. Current text slides UP and out
+    cardText.style.transform = 'translateY(-120%)';
+    cardText.style.opacity = '0';
+
+    setTimeout(() => {
+      // 2. Add exited phrase to history (most recent first)
+      exitHistory.unshift(phrases[current]);
+      if (exitHistory.length > 2) exitHistory.pop();
+
+      // 3. Rebuild ticker TOP
+      // Line 1 (closest to card): most recent exit = MORE prominent
+      // Line 2 (further): older exit = LESS prominent
+      tickerTop.innerHTML = '';
+      exitHistory.forEach((text, i) => {
+        const el = document.createElement('div');
+        el.textContent = text;
+        const opacity = i === 0 ? 0.7 : 0.35;
+        const size = i === 0 ? '0.9rem' : '0.7rem';
+        const weight = i === 0 ? '600' : '400';
+        el.style.cssText = `font-size: ${size}; font-weight: ${weight}; color: #777; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0; transform: translateY(10px); transition: all 0.4s ease;`;
+        tickerTop.appendChild(el);
+        requestAnimationFrame(() => {
+          el.style.opacity = opacity;
+          el.style.transform = 'translateY(0)';
+        });
+      });
+
+      // 4. Move to next phrase
+      current = (current + 1) % phrases.length;
+
+      // 5. Rebuild ticker BOTTOM
+      // Line 1 (closest to card): next to enter = MORE prominent
+      // Line 2 (further): the one after = LESS prominent
+      tickerBottom.innerHTML = '';
+      for (let i = 1; i <= 2; i++) {
+        const idx = (current + i) % phrases.length;
+        const el = document.createElement('div');
+        el.textContent = phrases[idx];
+        const opacity = i === 1 ? 0.7 : 0.35;
+        const size = i === 1 ? '0.9rem' : '0.7rem';
+        const weight = i === 1 ? '600' : '400';
+        el.style.cssText = `font-size: ${size}; font-weight: ${weight}; color: #777; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0; transform: translateY(-10px); transition: all 0.4s ease;`;
+        tickerBottom.appendChild(el);
+        requestAnimationFrame(() => {
+          el.style.opacity = opacity;
+          el.style.transform = 'translateY(0)';
+        });
+      }
+
+      // 6. Animate new text into card
+      cardText.textContent = phrases[current];
+      cardText.style.transition = 'none';
+      cardText.style.transform = 'translateY(120%)';
+      cardText.style.opacity = '0';
+      requestAnimationFrame(() => {
+        cardText.style.transition = 'transform 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease';
+        cardText.style.transform = 'translateY(0)';
+        cardText.style.opacity = '1';
+      });
+
+      updateDots();
+    }, 500);
+  }
+
+  initQueues();
+  setInterval(cycle, 2500);
+</script>

@@ -1,0 +1,113 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - img [ref=e5] [cursor=pointer]
+      - textbox "Pesquisar artigos, eventos, lives..." [ref=e8]
+    - button "Alterar idioma" [ref=e10] [cursor=pointer]:
+      - img [ref=e11]
+      - generic [ref=e14]: PT
+  - banner [ref=e15]:
+    - navigation [ref=e16]:
+      - link "Conheça Farmácia Logo" [ref=e18] [cursor=pointer]:
+        - /url: /
+        - img "Conheça Farmácia Logo" [ref=e19]
+      - generic [ref=e20]:
+        - list [ref=e21]:
+          - listitem [ref=e22]:
+            - link "Início" [ref=e23] [cursor=pointer]:
+              - /url: /#inicio
+          - listitem [ref=e24]:
+            - link "Artigos" [ref=e25] [cursor=pointer]:
+              - /url: /artigos
+          - listitem [ref=e26]:
+            - link "Eventos" [ref=e27] [cursor=pointer]:
+              - /url: /eventos
+          - listitem [ref=e28]:
+            - link "Lives" [ref=e29] [cursor=pointer]:
+              - /url: /lives-list
+          - listitem [ref=e30]:
+            - link "Sobre Nós" [ref=e31] [cursor=pointer]:
+              - /url: /sobre
+        - button "Alternar modo escuro" [ref=e32]:
+          - img [ref=e33]
+  - main [ref=e35]:
+    - generic [ref=e37]:
+      - generic [ref=e38]:
+        - heading "Excelência no Cuidado Farmacêutico" [level=1] [ref=e39]
+        - paragraph [ref=e40]: Acompanhamento clínico especializado para garantir a eficácia e segurança do tratamento. Valorizando a saúde através do conhecimento farmacêutico.
+        - link "Fale Connosco" [ref=e42] [cursor=pointer]:
+          - /url: https://wa.me/244925696002?text=Olá,%20Conheça%20Farmácia
+      - generic "Serviços principais" [ref=e43]:
+        - generic [ref=e44]:
+          - img [ref=e45]
+          - generic [ref=e46]: Atenção Farmacêutica
+        - generic [ref=e47]:
+          - generic [ref=e48]: Eventos Especializados
+          - generic [ref=e49]: Conteúdo de Qualidade
+    - heading "Artigos em Destaque" [level=2] [ref=e52]
+    - heading "Eventos em Destaque" [level=2] [ref=e55]
+    - heading "Lives e Webinars" [level=2] [ref=e58]
+    - generic [ref=e61]:
+      - generic [ref=e62]:
+        - generic [ref=e63]: 30+
+        - text: Profissionais Formados
+      - generic [ref=e64]:
+        - generic [ref=e65]: 10+
+        - text: Entrevistas de Especialistas
+      - generic [ref=e66]:
+        - generic [ref=e67]: 3+
+        - text: Eventos por Ano
+      - generic [ref=e68]:
+        - generic [ref=e69]: 2k+
+        - text: Leitores Mensais
+    - generic [ref=e71]:
+      - generic [ref=e72]:
+        - generic [ref=e73]:
+          - img "Conheça Farmácia Logo" [ref=e74]
+          - paragraph [ref=e75]: Conhecimento que conecta. Formação que transforma. Saúde que evolui.
+        - generic [ref=e76]:
+          - heading "Navegação" [level=4] [ref=e77]
+          - list [ref=e78]:
+            - listitem [ref=e79]:
+              - link "Início" [ref=e80] [cursor=pointer]:
+                - /url: /#inicio
+            - listitem [ref=e81]:
+              - link "Artigos" [ref=e82] [cursor=pointer]:
+                - /url: /artigos
+            - listitem [ref=e83]:
+              - link "Eventos" [ref=e84] [cursor=pointer]:
+                - /url: /eventos
+            - listitem [ref=e85]:
+              - link "Lives" [ref=e86] [cursor=pointer]:
+                - /url: /lives-list
+            - listitem [ref=e87]:
+              - link "Sobre Nós" [ref=e88] [cursor=pointer]:
+                - /url: /sobre
+        - generic [ref=e89]:
+          - heading "Contato" [level=4] [ref=e90]
+          - list [ref=e91]:
+            - listitem [ref=e92]: Luanda, Angola
+            - listitem [ref=e93]:
+              - link "conhecerfarmacia@gmail.com" [ref=e94] [cursor=pointer]:
+                - /url: mailto:conhecerfarmacia@gmail.com
+            - listitem [ref=e95]:
+              - link "+244 925 696 002" [ref=e96] [cursor=pointer]:
+                - /url: https://wa.me/244925696002?text=Olá,%20Conheça%20Farmácia
+        - generic [ref=e97]:
+          - heading "Redes Sociais" [level=4] [ref=e98]
+          - list [ref=e99]:
+            - listitem [ref=e100]:
+              - link "Facebook" [ref=e101] [cursor=pointer]:
+                - /url: https://www.facebook.com/conhecafarmacia
+            - listitem [ref=e102]:
+              - link "Instagram" [ref=e103] [cursor=pointer]:
+                - /url: https://www.instagram.com/conhecafarmacia
+            - listitem [ref=e104]:
+              - link "TikTok" [ref=e105] [cursor=pointer]:
+                - /url: https://www.tiktok.com/conhecafarmaciaofficial
+            - listitem [ref=e106]:
+              - link "LinkedIn" [ref=e107] [cursor=pointer]:
+                - /url: https://www.linkedin.com/company/conhecafarmacia
+      - paragraph [ref=e110]: © 2026 Conheça Farmácia. Todos os direitos reservados.
+      - button "Acesso administrativo" [ref=e112] [cursor=pointer]:
+        - img [ref=e113]

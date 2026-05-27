@@ -1,0 +1,142 @@
+<h2>Hero Card Animado v3 — Ajustes</h2>
+<p class="subtitle">Texto sai para baixo, empurra os anteriores para cima. Card maior.</p>
+
+<div class="mockup">
+  <div class="mockup-header">Simulação: Card maior + fluxo corrigido (sai para baixo)</div>
+  <div class="mockup-body" style="background: #f9f9f9; padding: 40px 20px; min-height: 500px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0;">
+
+    <!-- Saídas por cima (máx 2, empurrados para cima) -->
+    <div id="ticker-top" style="display: flex; flex-direction: column; align-items: center; gap: 4px; margin-bottom: 12px; min-height: 60px;">
+    </div>
+
+    <!-- O Card principal (MAIOR) -->
+    <div style="background: linear-gradient(135deg, #00493a, #006171); color: white; border-radius: 20px; padding: 36px 44px; display: flex; align-items: center; gap: 24px; width: 100%; max-width: 620px; min-height: 110px; position: relative; overflow: hidden; box-shadow: 0 8px 32px rgba(0,42,50,0.15); z-index: 2;">
+      <!-- Ícone (maior) -->
+      <div style="flex-shrink: 0; width: 56px; height: 56px; background: rgba(255,255,255,0.15); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2L12 22M2 12L22 12"/></svg>
+      </div>
+      <!-- Texto animado (maior) -->
+      <div style="position: relative; overflow: hidden; flex: 1; height: 44px;">
+        <div id="card-text" style="font-size: 1.6rem; font-weight: 700; position: absolute; width: 100%; transition: transform 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease; white-space: nowrap; letter-spacing: 0.02em;">
+          ATENÇÃO FARMACÊUTICA
+        </div>
+      </div>
+    </div>
+
+    <!-- Entradas por baixo (máx 2) — O QUE SAI VAI AQUI -->
+    <div id="ticker-bottom" style="display: flex; flex-direction: column; align-items: center; gap: 4px; margin-top: 12px; min-height: 60px;">
+    </div>
+
+    <!-- Indicadores -->
+    <div style="display: flex; gap: 6px; margin-top: 20px;">
+      <div id="dot-0" style="width: 8px; height: 8px; border-radius: 50%; background: #00493a; transition: background 0.3s;"></div>
+      <div id="dot-1" style="width: 8px; height: 8px; border-radius: 50%; background: #ddd; transition: background 0.3s;"></div>
+      <div id="dot-2" style="width: 8px; height: 8px; border-radius: 50%; background: #ddd; transition: background 0.3s;"></div>
+      <div id="dot-3" style="width: 8px; height: 8px; border-radius: 50%; background: #ddd; transition: background 0.3s;"></div>
+      <div id="dot-4" style="width: 8px; height: 8px; border-radius: 50%; background: #ddd; transition: background 0.3s;"></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section" style="margin-top: 24px;">
+  <h3>Fluxo do texto</h3>
+  <p class="subtitle">O texto que sai do card vai para baixo. Os que já estão são empurrados para cima.</p>
+</div>
+
+<script>
+  const phrases = [
+    'ATENÇÃO FARMACÊUTICA',
+    'EVENTOS ESPECIALIZADOS',
+    'CONTEÚDO DE QUALIDADE',
+    'ARTIGOS CIENTÍFICOS',
+    'LIVES & WEBINARS'
+  ];
+  let current = 0;
+  const cardText = document.getElementById('card-text');
+  const tickerTop = document.getElementById('ticker-top');
+  const tickerBottom = document.getElementById('ticker-bottom');
+  let bottomHistory = [];
+
+  function initQueues() {
+    // Show next 2 below the card
+    tickerBottom.innerHTML = '';
+    for (let i = 1; i <= 2; i++) {
+      const idx = (current + i) % phrases.length;
+      const el = document.createElement('div');
+      el.textContent = phrases[idx];
+      const opacity = i === 1 ? 0.6 : 0.35;
+      const size = i === 1 ? '0.85rem' : '0.7rem';
+      el.style.cssText = `font-size: ${size}; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.08em; opacity: ${opacity}; transition: all 0.4s ease;`;
+      tickerBottom.appendChild(el);
+    }
+  }
+
+  function updateDots() {
+    for (let i = 0; i < 5; i++) {
+      document.getElementById('dot-' + i).style.background = i === current ? '#00493a' : '#ddd';
+    }
+  }
+
+  function cycle() {
+    // 1. Current text slides UP and out
+    cardText.style.transform = 'translateY(-120%)';
+    cardText.style.opacity = '0';
+
+    setTimeout(() => {
+      // 2. The exited text goes to BOTTOM (newest at bottom)
+      bottomHistory.push(phrases[current]);
+      if (bottomHistory.length > 2) bottomHistory.shift();
+
+      // 3. Animate ticker bottom — slide up effect
+      tickerBottom.innerHTML = '';
+      bottomHistory.forEach((text, i) => {
+        const el = document.createElement('div');
+        el.textContent = text;
+        const isNew = i === bottomHistory.length - 1;
+        const opacity = isNew ? 0.6 : 0.35;
+        const size = isNew ? '0.85rem' : '0.7rem';
+        el.style.cssText = `font-size: ${size}; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0; transform: translateY(16px); transition: all 0.4s ease;`;
+        tickerBottom.appendChild(el);
+        requestAnimationFrame(() => {
+          el.style.opacity = opacity;
+          el.style.transform = 'translateY(0)';
+        });
+      });
+
+      // 4. Update ticker top (texts that were pushed up from bottom)
+      tickerTop.innerHTML = '';
+      const topTexts = [];
+      for (let i = 1; i <= 2; i++) {
+        const idx = (current + i) % phrases.length;
+        topTexts.push(phrases[idx]);
+      }
+      topTexts.forEach((text, i) => {
+        const el = document.createElement('div');
+        el.textContent = text;
+        const opacity = i === 0 ? 0.5 : 0.25;
+        const size = i === 0 ? '0.75rem' : '0.65rem';
+        el.style.cssText = `font-size: ${size}; font-weight: 500; color: #aaa; text-transform: uppercase; letter-spacing: 0.08em; opacity: ${opacity}; transition: all 0.4s ease;`;
+        tickerTop.appendChild(el);
+      });
+
+      // 5. Move to next phrase
+      current = (current + 1) % phrases.length;
+      cardText.textContent = phrases[current];
+      cardText.style.transition = 'none';
+      cardText.style.transform = 'translateY(120%)';
+      cardText.style.opacity = '0';
+
+      requestAnimationFrame(() => {
+        cardText.style.transition = 'transform 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease';
+        cardText.style.transform = 'translateY(0)';
+        cardText.style.opacity = '1';
+      });
+
+      updateDots();
+    }, 500);
+  }
+
+  initQueues();
+  setInterval(cycle, 2500);
+</script>

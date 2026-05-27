@@ -43,7 +43,8 @@
     "live": "Live",
     "ler_mais": "Read more",
     "ver_mais": "View more",
-    "inscrever": "Register",
+    "saber_mais": "Learn More",
+    "inscrever": "Sign Up",
     "ver_todos": "View all",
     "proximos": "Upcoming",
     "passados": "Past",
@@ -108,13 +109,17 @@
     "filter_voce_sabia": "Did You Know?",
     "filter_curiosidades": "Curiosities",
     "filter_saude": "Health & Information",
+    "filter_legislacao": "Legislation",
     "no_results_title": "No articles found",
     "no_results_text": "Try different terms or remove the filters.",
     "newsletter_title": "Stay Updated",
     "newsletter_subtitle": "Receive notifications about new articles, events, lectures and webinars directly in your inbox.",
     "newsletter_email_placeholder": "Your email",
     "newsletter_submit": "Subscribe",
-    "newsletter_privacy": "We respect your privacy!"
+    "newsletter_privacy": "We respect your privacy!",
+    "newsletter_success": "Successfully subscribed!",
+    "newsletter_exists": "This email is already subscribed.",
+    "newsletter_error": "An error occurred. Please try again."
   },
   "eventos_page": {
     "hero_title": "Upcoming Events",
@@ -129,6 +134,8 @@
     "filter_outro": "Other",
     "no_results_title": "No events found",
     "no_results_text": "Try changing the filters or come back soon for new events!",
+    "evento_completo": "Full",
+    "ver_gravacao": "Watch Recording",
     "newsletter_title": "Stay Updated",
     "newsletter_subtitle": "Receive notifications about new articles, events, lectures and webinars directly in your inbox.",
     "newsletter_email_placeholder": "Your email",
@@ -146,6 +153,8 @@
     "filter_entrevista": "Interview",
     "no_results_title": "No lives found",
     "no_results_text": "Try changing the filters or come back soon for new lives!",
+    "ver_gravacao": "Watch Recording",
+    "aceder_live": "Join Live",
     "newsletter_title": "Stay Updated",
     "newsletter_subtitle": "Receive notifications about new articles, events, lectures and webinars directly in your inbox.",
     "newsletter_email_placeholder": "Your email",
@@ -156,6 +165,7 @@
     "references": "References",
     "share_title": "Share this article",
     "share_btn": "Share",
+    "link_copied": "Link copied!",
     "related_articles": "Related Articles",
     "back_to_articles": "← Back to Articles"
   },
@@ -185,7 +195,8 @@
     "support_materials": "Support Materials",
     "not_found_title": "Live not found",
     "not_found_text": "Sorry, we couldn't find the live you're looking for.",
-    "back_to_home": "Back to Home"
+    "back_to_home": "Back to Home",
+    "related_lives": "Related Lives"
   },
   "inscricao": {
     "title": "Event Registration",

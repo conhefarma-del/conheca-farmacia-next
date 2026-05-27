@@ -305,3 +305,32 @@ A utility bar usa um único botão com globo (`.lang-toggle`) com dropdown (`.la
 - Pesquisa dispara apenas com Enter ou clique no botão (sem pesquisa em tempo real)
 - Destaque de termos: `escapeHtml()` primeiro, depois `highlightTerms()` envolve em `<mark>`
 - Busca por Enter/botão em todas as páginas: redirect da utility bar para `pesquisa.html`
+
+### 30. NUNCA Usar Top-Level await em main.js
+
+**CRÍTICO**: Um `await` no topo de `main.js` bloqueia TODA a execução de módulos em TODAS as páginas do site. Isto destruiu o site em produção (2026-05-25).
+
+**Causa**: `await initI18n()` no `main.js` era um top-level await. Como `main.js` é importado por todas as páginas como `<script type="module">`, o await bloqueava:
+- `script.js` (utility bar, nav, lang dropdown)
+- `dark-mode.js` (theme toggle)
+- `home-articles-logic.js`, `home-events-logic.js` (cards na homepage)
+- `hero-animated.js` (ticker animation)
+- `articles-logic.js`, `events-logic.js`, `lives-logic.js` (listagens)
+
+**Padrão correto** (non-blocking i18n):
+```js
+// main.js — NUNCA usar await
+import { i18nReady } from "./src/i18n.js";
+i18nReady; // bare expression — não bloqueia
+
+// src/i18n.js
+export const i18nReady = initI18n().catch(console.error);
+
+// Módulos que precisam de traduções:
+document.addEventListener('DOMContentLoaded', async () => {
+  await i18nReady;
+  // usar t() aqui
+});
+```
+
+**Regra**: `main.js` NUNCA pode conter `await`. Se um módulo precisa de async init, exportar uma promise e fazer `await` dentro de handlers (DOMContentLoaded, click, etc.).

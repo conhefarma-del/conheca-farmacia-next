@@ -43,7 +43,8 @@
     "live": "Live",
     "ler_mais": "Ler mais",
     "ver_mais": "Ver mais",
-    "inscrever": "Inscrever-se",
+    "saber_mais": "Saber Mais",
+    "inscrever": "Inscrever-me",
     "ver_todos": "Ver todos",
     "proximos": "Próximos",
     "passados": "Passados",
@@ -108,13 +109,17 @@
     "filter_voce_sabia": "Você Sabia?",
     "filter_curiosidades": "Curiosidades",
     "filter_saude": "Saúde e Informação",
+    "filter_legislacao": "Legislação",
     "no_results_title": "Nenhum artigo encontrado",
     "no_results_text": "Tente termos diferentes ou remova os filtros.",
     "newsletter_title": "Fique Atualizado",
     "newsletter_subtitle": "Receba notificações sobre novos artigos, eventos, palestras e webinars diretamente na sua caixa de entrada.",
     "newsletter_email_placeholder": "Seu email",
     "newsletter_submit": "Subscrever",
-    "newsletter_privacy": "Respeitamos sua privacidade!"
+    "newsletter_privacy": "Respeitamos sua privacidade!",
+    "newsletter_success": "Subscrição realizada com sucesso!",
+    "newsletter_exists": "Este email já está subscrito.",
+    "newsletter_error": "Ocorreu um erro. Tente novamente."
   },
   "eventos_page": {
     "hero_title": "Próximos Eventos",
@@ -129,6 +134,8 @@
     "filter_outro": "Outro",
     "no_results_title": "Nenhum evento encontrado",
     "no_results_text": "Tente mudar os filtros ou volte em breve para novos eventos!",
+    "evento_completo": "Completo",
+    "ver_gravacao": "Ver Gravação",
     "newsletter_title": "Fique Atualizado",
     "newsletter_subtitle": "Receba notificações sobre novos artigos, eventos, palestras e webinars diretamente na sua caixa de entrada.",
     "newsletter_email_placeholder": "Seu email",
@@ -146,6 +153,8 @@
     "filter_entrevista": "Entrevista",
     "no_results_title": "Nenhuma live encontrada",
     "no_results_text": "Tente mudar os filtros ou volte em breve para novas lives!",
+    "ver_gravacao": "Ver Gravação",
+    "aceder_live": "Aceder Live",
     "newsletter_title": "Fique Atualizado",
     "newsletter_subtitle": "Receba notificações sobre novos artigos, eventos, palestras e webinars diretamente na sua caixa de entrada.",
     "newsletter_email_placeholder": "Seu email",
@@ -156,6 +165,7 @@
     "references": "Referências",
     "share_title": "Partilhar este artigo",
     "share_btn": "Partilhar",
+    "link_copied": "Link copiado!",
     "related_articles": "Artigos Relacionados",
     "back_to_articles": "← Voltar para Artigos"
   },
@@ -185,7 +195,8 @@
     "support_materials": "Materiais de Apoio",
     "not_found_title": "Live não encontrada",
     "not_found_text": "Desculpe, não conseguimos encontrar a live que procura.",
-    "back_to_home": "Voltar ao Início"
+    "back_to_home": "Voltar ao Início",
+    "related_lives": "Lives Relacionadas"
   },
   "inscricao": {
     "title": "Inscrição em Evento",

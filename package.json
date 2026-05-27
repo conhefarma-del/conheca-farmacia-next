@@ -1,12 +1,13 @@
 {
   "name": "conheca-farmacia",
   "version": "1.0.0",
-  "description": "",
+  "description": "Portal de saúde e farmácia — Next.js App Router",
   "main": "index.js",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build && cp -r dist/src/admin dist/admin && rm -rf dist/src && node src/lib/sitemap.js",
-    "preview": "vite preview",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
+    "start": "next start",
+    "lint": "next lint",
     "format": "npx prettier --write ."
   },
   "keywords": [],
@@ -14,16 +15,20 @@
   "license": "ISC",
   "dependencies": {
     "@supabase/supabase-js": "^2.103.3",
-    "@tailwindcss/cli": "^4.2.2",
+    "@supabase/ssr": "^0.6.0",
+    "chart.js": "^4.0.0",
+    "isomorphic-dompurify": "^2.0.0",
+    "lucide-react": "^0.500.0",
+    "marked": "^15.0.0",
+    "next": "16.2.6",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
     "tailwindcss": "^4.2.2"
   },
   "devDependencies": {
-    "@resvg/resvg-js": "^2.6.2",
-    "@tailwindcss/vite": "^4.2.4",
-    "dotenv": "^17.4.2",
-    "jest": "^30.4.2",
-    "prettier": "3.8.3",
-    "supabase": "^2.100.1",
-    "vite": "^8.0.10"
+    "@tailwindcss/postcss": "^4",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.6",
+    "prettier": "3.8.3"
   }
 }

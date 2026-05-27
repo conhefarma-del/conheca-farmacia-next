@@ -1,0 +1,128 @@
+<h2>Arquitetura Admin — Fase 4 Next.js</h2>
+<p class="subtitle">Estrutura de componentes e páginas para o painel administrativo</p>
+
+<div class="section">
+  <h3>Mapa de Páginas (14 total)</h3>
+  <p>Layout partilhado: Sidebar + TopBar + AuthGuard em <code>[lang]/(admin)/layout.js</code></p>
+</div>
+
+<div class="mockup">
+  <div class="mockup-header">Admin Layout — Componentes Partilhados</div>
+  <div class="mockup-body" style="font-family: monospace; font-size: 13px; line-height: 1.8;">
+    <div style="display: flex; gap: 0; min-height: 400px;">
+      <!-- Sidebar -->
+      <div style="width: 200px; background: linear-gradient(160deg, #002a32, #00493a, #006171); color: white; padding: 16px; border-radius: 8px 0 0 8px; flex-shrink: 0;">
+        <div style="font-weight: 700; margin-bottom: 4px; font-size: 14px;">conheceFarma</div>
+        <div style="font-size: 11px; opacity: 0.6; margin-bottom: 20px;">Painel Administrativo</div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <div style="padding: 8px 12px; border-radius: 6px; background: rgba(255,255,255,0.1); font-size: 12px;">&#x1F3E0; Dashboard</div>
+          <div style="padding: 8px 12px; border-radius: 6px; font-size: 12px; opacity: 0.7;">&#x1F4C4; Artigos</div>
+          <div style="padding: 8px 12px; border-radius: 6px; font-size: 12px; opacity: 0.7;">&#x1F4C5; Eventos</div>
+          <div style="padding: 8px 12px; border-radius: 6px; font-size: 12px; opacity: 0.7;">&#x1F4F9; Lives</div>
+          <div style="padding: 8px 12px; border-radius: 6px; font-size: 12px; opacity: 0.7;">&#x2709; Newsletter</div>
+          <div style="padding: 8px 12px; border-radius: 6px; font-size: 12px; opacity: 0.7;">&#x2699; Definições</div>
+        </div>
+        <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 11px; opacity: 0.5;">
+          &#x1F319; Dark Mode | &#x1F6AA; Sair
+        </div>
+      </div>
+      <!-- Main -->
+      <div style="flex: 1; background: #f8f9fa; padding: 16px; border-radius: 0 8px 8px 0;">
+        <!-- TopBar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
+          <div style="display: flex; align-items: center; gap: 8px; background: white; padding: 8px 12px; border-radius: 8px; border: 1px solid #e5e7eb; width: 300px; font-size: 12px; color: #9ca3af;">
+            &#x1F50D; Pesquisar artigos, eventos, lives...
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: #00493a; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">A</div>
+            <div style="font-size: 12px;">
+              <div style="font-weight: 600;">Administrador</div>
+              <div style="color: #9ca3af; font-size: 11px;">admin@conhecefarmacia.pt</div>
+            </div>
+          </div>
+        </div>
+        <!-- Content Area -->
+        <div style="background: white; border-radius: 8px; padding: 20px; border: 1px solid #e5e7eb; min-height: 300px;">
+          <div style="color: #9ca3af; text-align: center; padding-top: 80px;">
+            <div style="font-size: 32px; margin-bottom: 8px;">&#x1F4CB;</div>
+            <div style="font-size: 14px;">Conteúdo da página aqui</div>
+            <div style="font-size: 12px; margin-top: 4px;">(Dashboard / Artigos / Eventos / Lives / Newsletter / Definições)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Componentes React por Página</h3>
+</div>
+
+<div class="cards">
+  <div class="card" data-choice="login" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>&#x1F511; Login + Gate</h3>
+      <p><code>app/[lang]/(admin)/page.js</code></p>
+      <p style="font-size: 12px; color: #6b7280;">
+        <strong>Components:</strong> SecurityGate, LoginForm, MFAForm<br>
+        <strong>Flow:</strong> Gate questions &rarr; Email/Password &rarr; Optional TOTP 2FA &rarr; Dashboard<br>
+        <strong>Layout:</strong> Split-screen (brand left, form right) — NO sidebar
+      </p>
+    </div>
+  </div>
+  <div class="card" data-choice="dashboard" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>&#x1F4CA; Dashboard</h3>
+      <p><code>app/[lang]/(admin)/dashboard/page.js</code></p>
+      <p style="font-size: 12px; color: #6b7280;">
+        <strong>Components:</strong> StatsGrid (6 cards), ActivityTimeline, ActivityChart, CategoryChart<br>
+        <strong>Data:</strong> RPCs for counts, audit_logs for timeline, page_views for charts<br>
+        <strong>Charts:</strong> Chart.js (client component, lazy loaded)
+      </p>
+    </div>
+  </div>
+  <div class="card" data-choice="lists" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>&#x1F4CB; List Pages (x3)</h3>
+      <p><code>artigos/</code>, <code>eventos/</code>, <code>lives/</code></p>
+      <p style="font-size: 12px; color: #6b7280;">
+        <strong>Components:</strong> StatsGrid (3+1), AnalyticsCard, ListFilters, ContentTable<br>
+        <strong>Shared:</strong> ContentTable component for all 3 types<br>
+        <strong>Filters:</strong> sort, status, time (events/lives only)
+      </p>
+    </div>
+  </div>
+  <div class="card" data-choice="forms" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>&#x270F; Form Pages (x6)</h3>
+      <p><code>new/</code> + <code>[id]/</code> for each type</p>
+      <p style="font-size: 12px; color: #6b7280;">
+        <strong>Components:</strong> ContentForm (shared), ImageUpload, HostEditor, ReferenceEditor, MarkdownEditor, MarkdownPreview<br>
+        <strong>Shared:</strong> ContentForm adapts fields by content type<br>
+        <strong>Special:</strong> Editor overlay + Preview modal
+      </p>
+    </div>
+  </div>
+  <div class="card" data-choice="newsletter" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>&#x2709; Newsletter</h3>
+      <p><code>app/[lang]/(admin)/newsletter/page.js</code></p>
+      <p style="font-size: 12px; color: #6b7280;">
+        <strong>Components:</strong> StatsGrid (4), SendAlertForm, SubscribersTable, RemoveModal<br>
+        <strong>Features:</strong> Send mode (all/manual/random), filter buttons, soft/hard delete<br>
+        <strong>Edge Function:</strong> sendContentAlert for email delivery
+      </p>
+    </div>
+  </div>
+  <div class="card" data-choice="settings" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>&#x2699; Definições</h3>
+      <p><code>app/[lang]/(admin)/definicoes/page.js</code></p>
+      <p style="font-size: 12px; color: #6b7280;">
+        <strong>Components:</strong> ProfileSection, PasswordSection, TwoFactorSection, GateQuestionsSection, ConfirmModal<br>
+        <strong>Features:</strong> Inline edit pattern (pencil button), QR code display, TOTP setup/teardown<br>
+        <strong>No search bar</strong> — top bar shows page title instead
+      </p>
+    </div>
+  </div>
+</div>
