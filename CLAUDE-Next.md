@@ -1,21 +1,27 @@
 # CLAUDE-Next.md
 
-Guia Next.js App Router para o projeto "Conheça Farmácia". Este ficheiro documenta a arquitetura, comandos e padrões específicos do Next.js durante a migração gradual.
+Guia Next.js App Router para o projeto "Conheça Farmácia". Migração Vite → Next.js concluída (Fase 6).
 
 ## Development Commands
 
 ```bash
-# Next.js dev server (webpack — Turbopack bug com acentos no path no Windows)
-npm run dev:next
-
-# Next.js production build (webpack — Turbopack bug com acentos no path no Windows)
-npm run build:next
-
-# Vite dev server (site original, http://localhost:5173) — durante migração
+# Dev server (http://localhost:3000)
 npm run dev
 
-# Vite production build — durante migração
+# Production build
 npm run build
+
+# Start production server
+npm run start
+
+# Lint
+npm run lint
+
+# Vercel deploy (preview)
+npx vercel
+
+# Vercel deploy (production)
+npx vercel --prod
 ```
 
 ## Core Technologies
@@ -454,7 +460,7 @@ O ThemeToggle gerencia o seu próprio estado (localStorage + `document.documentE
 NEXT_PUBLIC_SUPABASE_URL=https://tbqsazriorqzexjwhekw.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
 ```
-Usar `.env.local` para Next.js. O `.env` com `VITE_` permanece para o Vite.
+Usar `.env.local` para Next.js.
 
 ## Migration Phases
 
@@ -466,7 +472,7 @@ Usar `.env.local` para Next.js. O `.env` com `VITE_` permanece para o Vite.
 | Fase 3 | ✅ COMPLETA | Search, forms, newsletter, sobre, 404, unsubscribe |
 | Fase 4 | ✅ COMPLETA | Admin CMS: auth (gate+MFA), dashboard, lists, forms, newsletter, settings; 14 rotas admin, 39 total; 8/8 SEC passaram |
 | Fase 5 | ✅ COMPLETA | Performance (loading skeletons, error boundaries, image optimization), SEO (sitemap, robots, JSON-LD, hreflang), Analytics (server actions, dedup, PageViewTracker) |
-| Fase 6 | PENDENTE | Cutover: remove Vite, deploy Next.js |
+| Fase 6 | ✅ COMPLETA | Cutover: Vite removido, Vercel configurado, docs atualizados |
 
 ## Lições Aprendidas (Next.js)
 
@@ -635,3 +641,48 @@ O middleware faz tripla proteção para rotas admin:
 1. Rota `/admin` (login): se autenticado + admin_users → redirect para dashboard
 2. Rotas `/admin/*`: verifica `getUser()` + `admin_users`. Se falha, faz `signOut()` + redirect para login
 3. Todas as rotas: injeta header `x-lang` para o root layout
+
+### 27. Vercel — Deploy Automático
+
+Vercel deteta Next.js automaticamente. Não precisa de configuração de build:
+- **Framework**: auto-detectado como Next.js
+- **Build command**: `next build` (automático)
+- **Output**: `.next` (automático)
+- **Security headers**: `vercel.json` (HSTS, CSP, X-Frame-Options, etc.)
+- **Env vars**: Configurar no dashboard Vercel (NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY)
+- **Deploy**: `npx vercel` (preview) ou `npx vercel --prod` (produção)
+- **Branch previews**: Automático — cada push gera preview URL
+
+## Vercel Deployment
+
+### Variáveis de Ambiente
+
+Configurar no dashboard Vercel → Settings → Environment Variables:
+
+| Variable | Environment |
+|----------|-------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Production, Preview, Development |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Production, Preview, Development |
+
+### Security Headers
+
+Os security headers estão definidos em `vercel.json`:
+- HSTS (2 anos, includeSubDomains, preload)
+- X-Frame-Options: DENY
+- X-Content-Type-Options: nosniff
+- Referrer-Policy: strict-origin-when-cross-origin
+- Permissions-Policy: camera=(), microphone=(), geolocation=()
+- CSP: default-src 'self'; script-src com CDN whitelist
+
+### Deploy Commands
+
+```bash
+# Preview deploy (qualquer branch)
+npx vercel
+
+# Production deploy (main branch)
+npx vercel --prod
+
+# Ver logs
+npx vercel logs <url>
+```
