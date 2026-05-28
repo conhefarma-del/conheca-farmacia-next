@@ -10,6 +10,8 @@ import MaterialLink from '@/components/content/MaterialLink'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 
+export const dynamic = 'force-dynamic'
+
 export async function generateStaticParams() {
   try {
     const lives = await getLives()

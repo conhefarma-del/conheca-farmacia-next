@@ -12,6 +12,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
+export const dynamic = 'force-dynamic'
+
 function formatDate(dateStr, lang = 'pt') {
   try {
     const date = new Date(dateStr)
