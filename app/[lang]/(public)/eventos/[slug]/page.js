@@ -49,7 +49,7 @@ export async function generateMetadata({ params }) {
       title: event.title,
       description: event.excerpt,
       url: eventUrl,
-      type: 'event',
+      type: 'website',
       images: event.image ? [{ url: event.image }] : [],
     },
     twitter: {
