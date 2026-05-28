@@ -34,7 +34,12 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }) {
   const { lang, slug } = await params
   const safeLang = SUPPORTED_LANGS.includes(lang) ? lang : DEFAULT_LANG
-  const article = await getArticleBySlug(slug)
+  let article
+  try {
+    article = await getArticleBySlug(slug)
+  } catch {
+    return { title: 'Artigo — Conheça Farmácia' }
+  }
 
   if (!article) {
     return { title: 'Artigo não encontrado — Conheça Farmácia' }
@@ -73,7 +78,13 @@ export default async function ArticleDetailPage({ params }) {
   const translations = loadTranslations(safeLang)
   const tFn = (keyPath) => t(translations, keyPath)
 
-  const article = await getArticleBySlug(slug)
+  let article
+  try {
+    article = await getArticleBySlug(slug)
+  } catch (err) {
+    console.error('Error fetching article:', err)
+    notFound()
+  }
   if (!article) notFound()
 
   const color = ARTICLE_CATEGORY_COLORS[article.category] || '#666'

@@ -23,7 +23,12 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }) {
   const { lang, slug } = await params
   const safeLang = SUPPORTED_LANGS.includes(lang) ? lang : DEFAULT_LANG
-  const event = await getEventBySlug(slug)
+  let event
+  try {
+    event = await getEventBySlug(slug)
+  } catch {
+    return { title: 'Evento — Conheça Farmácia' }
+  }
 
   if (!event) {
     return { title: 'Evento não encontrado — Conheça Farmácia' }
@@ -80,7 +85,13 @@ export default async function EventDetailPage({ params }) {
   const translations = loadTranslations(safeLang)
   const tFn = (keyPath) => t(translations, keyPath)
 
-  const event = await getEventBySlug(slug)
+  let event
+  try {
+    event = await getEventBySlug(slug)
+  } catch (err) {
+    console.error('Error fetching event:', err)
+    notFound()
+  }
   if (!event) notFound()
 
   const color = EVENT_CATEGORY_COLORS[event.category] || '#00493a'

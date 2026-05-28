@@ -22,7 +22,12 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }) {
   const { lang, slug } = await params
   const safeLang = SUPPORTED_LANGS.includes(lang) ? lang : DEFAULT_LANG
-  const live = await getLiveBySlug(slug)
+  let live
+  try {
+    live = await getLiveBySlug(slug)
+  } catch {
+    return { title: 'Live — Conheça Farmácia' }
+  }
 
   if (!live) {
     return { title: 'Live não encontrada — Conheça Farmácia' }

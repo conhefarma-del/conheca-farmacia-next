@@ -8,7 +8,7 @@ export default function SpeakersList({ hosts = [], categoryColor }) {
   const [showAll, setShowAll] = useState(false)
   const color = categoryColor || '#00493a'
 
-  if (!hosts.length) return null
+  if (!hosts || !hosts.length) return null
 
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
   const initialLimit = isMobile ? 2 : 3
