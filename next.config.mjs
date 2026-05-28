@@ -1,9 +1,10 @@
-import { resolve } from 'path'
-
-const root = process.cwd()
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  turbopack: {
+    resolveAlias: {
+      '@': '.',
+    },
+  },
   images: {
     remotePatterns: [
       {
@@ -12,13 +13,6 @@ const nextConfig = {
         pathname: '/storage/v1/object/public/**',
       },
     ],
-  },
-  webpack(config) {
-    config.resolve.alias['@'] = root
-    if (!config.resolve.modules.includes(root)) {
-      config.resolve.modules.push(root)
-    }
-    return config
   },
   async headers() {
     return [

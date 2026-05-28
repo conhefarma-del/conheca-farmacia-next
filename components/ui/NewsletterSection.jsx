@@ -2,7 +2,7 @@
 
 import { useState, useContext, useEffect, useRef } from 'react'
 import { LangContext } from '@/lib/contexts'
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '../../lib/supabase/client'
 
 export default function NewsletterSection({ keys = 'artigos_page' }) {
   const { t } = useContext(LangContext)

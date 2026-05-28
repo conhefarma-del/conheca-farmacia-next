@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback } from 'react'
 import { Upload, X, Check } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '../../lib/supabase/client'
 
 /**
  * ImageUpload — Client Component

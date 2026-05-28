@@ -4,7 +4,7 @@ import { useState, useEffect, useContext } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { LangContext } from '@/lib/contexts'
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '../../lib/supabase/client'
 
 export default function UnsubscribeClient({ lang }) {
   const { t } = useContext(LangContext)

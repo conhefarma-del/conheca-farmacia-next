@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useCallback } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '../lib/supabase/client'
 
 const IDLE_TIMEOUT = 30 * 60 * 1000 // 30 minutes
 

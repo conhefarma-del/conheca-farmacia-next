@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '../lib/supabase/client'
 
 const INITIAL_INTERVAL = 30000  // 30s
 const MAX_INTERVAL = 120000     // 2min
