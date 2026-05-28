@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cancelar Subscrição - Conheça Farmácia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green-900: #002a32;
+      --green-800: #00493a;
+      --green-700: #0a844f;
+      --green-100: #e6f5ec;
+      --green-50: #f0faf4;
+      --red-100: #fde8e8;
+      --red-600: #dc2626;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-400: #9ca3af;
+      --gray-500: #6b7280;
+      --gray-600: #4b5563;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-body: 'DM Sans', system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--gray-50);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      color: var(--gray-800);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Subtle background pattern */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(0, 73, 58, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(10, 132, 79, 0.03) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      max-width: 440px;
+      width: 100%;
+      background: white;
+      border-radius: 20px;
+      box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.04),
+        0 8px 32px rgba(0, 0, 0, 0.06),
+        0 0 0 1px rgba(0, 0, 0, 0.02);
+      overflow: hidden;
+    }
+
+    /* Top accent bar */
+    .card::before {
+      content: '';
+      display: block;
+      height: 4px;
+      background: linear-gradient(90deg, var(--green-800), var(--green-700), var(--green-800));
+    }
+
+    .card-body {
+      padding: 48px 40px 40px;
+      text-align: center;
+    }
+
+    @media (max-width: 480px) {
+      .card-body { padding: 36px 24px 32px; }
+    }
+
+    /* Logo area */
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--green-800), var(--green-700));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      font-weight: 700;
+      font-family: var(--font-display);
+    }
+
+    .brand-name {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--green-800);
+      letter-spacing: -0.02em;
+    }
+
+    /* States */
+    .state { display: none; }
+    .state.active { display: block; animation: fadeIn 0.4s ease; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Loading state */
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid var(--gray-200);
+      border-top-color: var(--green-700);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 24px;
+    }
+
+    .loading-text {
+      font-size: 15px;
+      color: var(--gray-500);
+      font-weight: 400;
+    }
+
+    /* Icon circles */
+    .icon-circle {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+
+    .icon-circle.success {
+      background: var(--green-100);
+      color: var(--green-700);
+    }
+
+    .icon-circle.error {
+      background: var(--red-100);
+      color: var(--red-600);
+    }
+
+    .icon-circle svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    /* Typography */
+    .state-title {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 500;
+      color: var(--gray-900);
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .state-message {
+      font-size: 15px;
+      color: var(--gray-500);
+      line-height: 1.6;
+      margin-bottom: 32px;
+      max-width: 320px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* CTA button */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 600;
+      color: white;
+      background: var(--green-800);
+      border: none;
+      border-radius: 12px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      letter-spacing: 0.01em;
+    }
+
+    .btn:hover {
+      background: var(--green-700);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(0, 73, 58, 0.2);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    /* Footer note */
+    .footer-note {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--gray-100);
+      font-size: 12px;
+      color: var(--gray-400);
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="card-body">
+      <!-- Brand -->
+      <div class="brand">
+        <img src="/logo/logo-principal-verde.png" alt="Conheça Farmácia" style="height:36px">
+      </div>
+
+      <!-- Loading State -->
+      <div id="loading" class="state active">
+        <div class="spinner"></div>
+        <p class="loading-text" data-i18n="unsubscribe.loading_text">A processar o seu pedido...</p>
+      </div>
+
+      <!-- Success State -->
+      <div id="success" class="state">
+        <div class="icon-circle success">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+        <h1 class="state-title" data-i18n="unsubscribe.success_title">Subscrição Cancelada</h1>
+        <p class="state-message" data-i18n="unsubscribe.success_message">A sua subscrição foi cancelada com sucesso. Deixará de receber os nossos emails de newsletter.</p>
+        <a href="/" class="btn">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          <span data-i18n="common.voltar_ao_site">Voltar ao Site</span>
+        </a>
+        <p class="footer-note" data-i18n="unsubscribe.success_footer">Se foi um erro, pode sempre subscrever novamente a partir do nosso site.</p>
+      </div>
+
+      <!-- Error State -->
+      <div id="error" class="state">
+        <div class="icon-circle error">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </div>
+        <h1 class="state-title" data-i18n="unsubscribe.error_title">Link Inválido</h1>
+        <p id="error-message" class="state-message" data-i18n="unsubscribe.error_message">O link de cancelamento é inválido ou já foi utilizado.</p>
+        <a href="/" class="btn">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          <span data-i18n="common.voltar_ao_site">Voltar ao Site</span>
+        </a>
+        <p class="footer-note"><span data-i18n="unsubscribe.error_footer">Se precisar de ajuda, contacte-nos em</span><br><a href="mailto:conhecerfarmacia@gmail.com" style="color: var(--green-700); text-decoration: none; font-weight: 500;">conhecerfarmacia@gmail.com</a></p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/unsubscribe.js"></script>
+  <script type="module">
+    import { initI18n } from '/src/i18n.js';
+    document.addEventListener('DOMContentLoaded', () => {
+      initI18n();
+    });
+  </script>
+</body>
+</html>

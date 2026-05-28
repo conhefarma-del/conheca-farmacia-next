@@ -33,3 +33,6 @@ check-supabase.mjs
 
 # Local Netlify folder
 .netlify
+
+# MCP config with secrets
+.claude/mcp.json

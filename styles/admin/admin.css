@@ -2651,6 +2651,19 @@ html.dark .settings-error {
   flex-wrap: wrap;
 }
 
+/* Mobile: hide stats grid when search is active, search input full width */
+@media (max-width: 768px) {
+  .admin-stats-grid.admin-search-active {
+    display: none !important;
+  }
+
+  .admin-list-filters > div:first-child {
+    max-width: 100% !important;
+    flex: 1 1 100%;
+    order: -1;
+  }
+}
+
 .admin-input-sm {
   padding: 6px 10px;
   font-size: 0.875rem;

@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
-import { KeyRound, Edit3, Save, X } from 'lucide-react'
-import { getGateQuestionsForEdit, saveGateQuestions } from '@/lib/actions/settings'
+import { KeyRound, Edit3, Save, X, ShieldCheck, ShieldOff } from 'lucide-react'
+import { getGateQuestionsForEdit, saveGateQuestions, getGateQuestionsEnabled, toggleGateQuestions } from '@/lib/actions/settings'
 
 /**
  * GateQuestionsSection — Client Component
@@ -19,6 +19,8 @@ import { getGateQuestionsForEdit, saveGateQuestions } from '@/lib/actions/settin
 export default function GateQuestionsSection() {
   const [questions, setQuestions] = useState([])
   const [loading, setLoading] = useState(true)
+  const [enabled, setEnabled] = useState(true)
+  const [toggling, setToggling] = useState(false)
 
   // Edição
   const [editMode, setEditMode] = useState(false)
@@ -30,18 +32,26 @@ export default function GateQuestionsSection() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
-  // Carregar perguntas ao montar
+  // Carregar perguntas e estado ao montar
   useEffect(() => {
     const loadQuestions = async () => {
       setLoading(true)
       try {
-        const result = await getGateQuestionsForEdit()
-        if (result.success && result.questions) {
-          setQuestions(result.questions)
-          if (result.questions.length > 0) {
-            setQ1(result.questions[0]?.question || '')
-            setQ2(result.questions[1]?.question || '')
+        const [questionsResult, enabledResult] = await Promise.all([
+          getGateQuestionsForEdit(),
+          getGateQuestionsEnabled(),
+        ])
+
+        if (questionsResult.success && questionsResult.questions) {
+          setQuestions(questionsResult.questions)
+          if (questionsResult.questions.length > 0) {
+            setQ1(questionsResult.questions[0]?.question || '')
+            setQ2(questionsResult.questions[1]?.question || '')
           }
+        }
+
+        if (enabledResult.success) {
+          setEnabled(enabledResult.enabled)
         }
       } catch {
         // Erro silencioso
@@ -51,6 +61,29 @@ export default function GateQuestionsSection() {
     }
     loadQuestions()
   }, [])
+
+  // Toggle perguntas de segurança
+  const handleToggle = useCallback(async () => {
+    setToggling(true)
+    setError('')
+    setSuccess('')
+    try {
+      const newState = !enabled
+      const result = await toggleGateQuestions(newState)
+      if (result.success) {
+        setEnabled(newState)
+        setSuccess(newState
+          ? 'Perguntas de segurança ativadas.'
+          : 'Perguntas de segurança desativadas.')
+      } else {
+        setError(result.error || 'Erro ao atualizar.')
+      }
+    } catch {
+      setError('Erro ao atualizar.')
+    } finally {
+      setToggling(false)
+    }
+  }, [enabled])
 
   // Entrar em modo edição
   const handleEdit = useCallback(() => {
@@ -127,6 +160,45 @@ export default function GateQuestionsSection() {
         Estas perguntas são mostradas antes do login como camada extra de segurança.
         As respostas são guardadas com hash SHA256 no servidor — nunca são armazenadas em texto simples.
       </p>
+
+      {/* Toggle ativar/desativar */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '14px 16px', marginBottom: 16, borderRadius: 8,
+        background: enabled ? 'rgba(10, 132, 79, 0.06)' : 'rgba(220, 38, 38, 0.06)',
+        border: `1px solid ${enabled ? 'rgba(10, 132, 79, 0.15)' : 'rgba(220, 38, 38, 0.15)'}`,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {enabled ? <ShieldCheck size={20} color="#0a844f" /> : <ShieldOff size={20} color="#dc2626" />}
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--admin-text)' }}>
+              {enabled ? 'Perguntas ativadas' : 'Perguntas desativadas'}
+            </div>
+            <div style={{ fontSize: 12, color: 'var(--admin-text-muted)', marginTop: 2 }}>
+              {enabled
+                ? 'Os administradores devem responder às perguntas antes de fazer login.'
+                : 'O login não requer respostas de segurança.'}
+            </div>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={handleToggle}
+          disabled={toggling}
+          style={{
+            position: 'relative', width: 48, height: 26, borderRadius: 13,
+            border: 'none', cursor: toggling ? 'wait' : 'pointer',
+            background: enabled ? '#0a844f' : '#ccc',
+            transition: 'background 0.2s',
+          }}
+        >
+          <span style={{
+            position: 'absolute', top: 3, left: enabled ? 25 : 3,
+            width: 20, height: 20, borderRadius: '50%', background: '#fff',
+            transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+          }} />
+        </button>
+      </div>
 
       {/* Sucesso */}
       {success && (

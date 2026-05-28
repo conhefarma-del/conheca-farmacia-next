@@ -19,6 +19,12 @@ npm run lint
 
 # Format code
 npm run format
+
+# Vercel deploy (preview)
+npx vercel
+
+# Vercel deploy (production)
+npx vercel --prod
 ```
 
 ## Project Architecture
@@ -85,10 +91,10 @@ npm run format
 ├── styles/                          # globals.css + admin/admin.css
 ├── public/                          # Static assets (i18n, logos, content)
 ├── supabase/                        # Migrations + Edge Functions
-├── middleware.js                     # Auth, i18n redirect, admin protection
+├── proxy.js                         # Auth, i18n redirect, admin protection (Next.js 16)
 ├── next.config.mjs                  # Next.js config + security headers
 ├── vercel.json                      # Vercel security headers
-└── CLAUDE-Next.md                   # Detailed Next.js guide + lessons learned
+└── CLAUDE-Next.md                   # Lessons learned (Next.js specific)
 ```
 
 ### Data Flow
@@ -96,7 +102,7 @@ npm run format
 1. **Server Components**: Fetch data directly from Supabase via `lib/supabase/server.js`
 2. **Server Actions**: Mutations via `lib/actions/` (create, update, delete)
 3. **Client Components**: Use `createBrowserClient()` for real-time features
-4. **Middleware**: Handles auth, i18n redirect (`/` → `/pt`), admin protection
+4. **Proxy**: Handles auth, i18n redirect (`/` → `/pt`), admin protection
 5. **i18n**: Server-side via `lib/i18n.js` + `public/i18n/*.json`
 
 ### Key Patterns
@@ -104,103 +110,121 @@ npm run format
 - **Server vs Client**: `'use server'` for actions, `'use client'` for interactive components
 - **i18n**: `const dict = await getDictionary(lang)` in Server Components, `useLang()` context in Client Components
 - **Dark Mode**: `html.dark` class, CSS variables, `ThemeProvider` in root layout
-- **Admin**: Protected by middleware (session + admin_users table check)
+- **Admin**: Protected by proxy (session + admin_users table check)
 - **Security Headers**: `vercel.json` (primary) + `next.config.mjs` (fallback)
 
-## Lições Aprendidas (Erros a Evitar)
+### Supabase SSR Clients
 
-### 1. Edição de Ficheiros JavaScript
+3 clients with different scopes:
 
-**Problema**: Quando editar funções em ficheiros JS, garantir que todas as chaves de abertura têm correspondente de fecho e não deixar código incompleto.
+**Server** (`lib/supabase/server.js`):
+```js
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 
-**Solução**: Após qualquer edição, validar com build:
-```bash
-npm run build 2>&1 | tail -20
+export async function createClient() {
+  const cookieStore = await cookies()
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    {
+      cookies: {
+        getAll() { return cookieStore.getAll() },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options))
+          } catch { /* Server Component */ }
+        },
+      },
+    }
+  )
+}
 ```
 
-### 2. Substituição de Funções em Ficheiros Existentes
+**Browser** (`lib/supabase/client.js`):
+```js
+'use client'
+import { createBrowserClient } from '@supabase/ssr'
 
-**Problema**: Ao substituir funções inteiras, o padrão de busca pode não ser exato devido a diferenças de whitespace, linhas em branco, ou comentários adjacentes.
-
-**Solução**: Ler o ficheiro completo primeiro, identificar marcadores únicos, usar Python para substituições complexas.
-
-### 3. Validação de Sintaxe Após Edição
-
-**Problema**: Ficheiros JS com erro de sintaxe causam build failures.
-
-**Solução**: Após qualquer edição, validar com build:
-```bash
-npm run build 2>&1 | tail -20
+export function createClient() {
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  )
+}
 ```
 
-### 4. Git - Lidar com Line Endings (CRLF vs LF)
-
-No Windows, Git converte LF para CRLF automaticamente. Warnings são normais — não alterar manualmente.
-
-### 5. Debounce em Event Listeners
-
-**Problema**: Event listeners como `input` disparam a cada caractere, causando múltiplas chamadas de API.
-
-**Solução**:
-```javascript
-let debounceTimer;
-searchInput.addEventListener('input', (e) => {
-  clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(async () => { /* ... */ }, 300);
-});
+**Proxy** (`lib/supabase/middleware.js`):
+```js
+// updateSession(request) — cookie proxy pattern para refresh de sessão
 ```
 
-### 6. XSS Protection em User Input
+### i18n Strategy (Server-Side)
 
-**Problema**: Mostrar conteúdo de pesquisa (títulos, nomes) pode injetar HTML malicioso.
+O i18n é server-side. As traduções são carregadas no layout `[lang]/layout.js` e disponibilizadas via `LangContext`:
 
-**Solução**: Usar `escapeHtml()` de `lib/security.js` antes de inserir no DOM.
+```js
+// lib/i18n.js
+import fs from 'fs'
+import path from 'path'
 
-### 7. Edição de Ficheiros JSON
+const SUPPORTED_LANGS = ['pt', 'en']
+const DEFAULT_LANG = 'pt'
 
-**Problema**: Ficheiros JSON são sensíveis a aspas duplas, trailing commas, e não suportam comentários.
+export function loadTranslations(lang) {
+  const safeLang = SUPPORTED_LANGS.includes(lang) ? lang : DEFAULT_LANG
+  const filePath = path.join(process.cwd(), 'public', 'i18n', `${safeLang}.json`)
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'))
+}
 
-**Solução**: Validar com `JSON.parse()`:
-```bash
-node -e "JSON.parse(require('fs').readFileSync('package.json'))"
+export function t(translations, keyPath) {
+  // Dot-notation lookup: "nav.inicio" → "Início"
+  // Fallback: retorna keyPath se não encontrar
+}
 ```
 
-### 8. CSP — No Inline Scripts
+**Flow:**
+1. `app/[lang]/layout.js` → `loadTranslations(lang)` → `LangProvider` com `{ lang, translations, t }`
+2. Client Components usam `useContext(LangContext)` para aceder a `t()`
+3. **NUNCA passar `t` como prop de Server Component para Client Component** — funções não podem atravessar a fronteira Server→Client
 
-Nunca usar `onclick=`, `onsubmit=`, inline `<script>` sem `type="module"`, ou `style=""`. Sempre usar `.addEventListener()`. CSP bloqueia handlers inline.
+### Proxy (Next.js 16)
 
-### 9. Dark Mode Toggle Classes
+O proxy (anteriormente middleware) faz tripla proteção para rotas admin:
+1. **Root redirect**: `pathname === '/'` → redirect para `/pt`
+2. **Session refresh**: Para todos os requests com lang válido, cria Supabase client e chama `getUser()`
+3. **Admin protection**:
+   - `/{lang}/admin` (login): se autenticado + admin_users → redirect para dashboard
+   - `/{lang}/admin/*`: verificar session + admin_users; redirect para login se não autenticado
+4. **x-lang header**: Injeta o lang para o root layout saber o idioma
 
-SVG icons devem usar `class="sun-icon"` e `class="moon-icon"` (nunca `theme-icon-light`/`theme-icon-dark`). O drawer toggle é `<button class="drawer-theme-toggle">` diretamente.
+### Drawer State Pattern
 
-### 10. i18n — Nunca Hardcoded Strings
+O drawer mobile usa **callback lifting** — o estado vive no `PublicLayout`:
 
-Todas as strings visíveis devem usar `data-i18n` (MPA) ou `t('key')` (Next.js). Traduções ficam em `public/i18n/`.
-
-### 11. Next.js — params é Promise
-
-Em Server Components, `params` é uma Promise. Sempre fazer `const { lang } = await params`.
-
-### 12. Next.js — cookies() é Async
-
-Em middleware e Server Components, `cookies()` é async. Sempre `const cookieStore = await cookies()`.
-
-### 13. Next.js — Server vs Client Components
-
-- `'use server'` no topo = Server Action (pode aceder a Supabase, não pode usar hooks)
-- `'use client'` no topo = Client Component (pode usar hooks, não pode aceder diretamente a Supabase server)
-- Server Components são o padrão — só adicionar `'use client'` quando necessário
-
-### 14. Next.js — Security Headers
-
-Security headers estão em `vercel.json` (Vercel) e `next.config.mjs` (fallback para outros hosts). Não duplicar no middleware.
-
-### 15. Next.js — Build Verification
-
-Após qualquer alteração, verificar build:
-```bash
-npm run build 2>&1 | tail -20
+```jsx
+// app/[lang]/(public)/layout.js
+const [drawerOpen, setDrawerOpen] = useState(false)
+<Header onToggleDrawer={() => setDrawerOpen(!drawerOpen)} />
+<MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 ```
-O build Next.js valida syntax, imports, e routes automaticamente.
 
-> Para lições detalhadas sobre Next.js (Server Components, drawer state, i18n, etc.), ver `CLAUDE-Next.md`.
+**NUNCA** criar estado local `drawerOpen` no Header — isso quebra o drawer.
+
+### Image Upload
+
+`ImageUpload` valida MIME type (`image/jpeg`, `image/png`, `image/webp`, `image/gif`) e tamanho (5MB) antes de fazer upload. Usa canvas para comprimir (max 1200px width, quality 0.85). Upload para Supabase Storage com nome sanitizado (`replace(/[^a-zA-Z0-9._-]/g, '_')`).
+
+### Auth & Security
+
+- **Auth Guard**: `AuthGuard` component que envolve todas as rotas admin
+- **Idle Timeout**: 30 minutos de inatividade → auto-logout
+- **2FA**: TOTP implementation em `definicoes/`
+- **RLS**: Row Level Security em todas as tabelas
+- **XSS Protection**: `escapeHtml()` em user input
+- **CSP**: No inline scripts, usar `.addEventListener()`
+
+## Lessons Learned
+
+For Next.js-specific lessons and detailed patterns, see `CLAUDE-Next.md`.

@@ -1,6 +1,4 @@
 import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
-import Breadcrumb from '@/components/ui/Breadcrumb'
-
 import Image from 'next/image'
 
 export async function generateMetadata({ params }) {
@@ -22,18 +20,8 @@ export default async function SobrePage({ params }) {
   const translations = loadTranslations(safeLang)
   const tFn = (key) => t(translations, key)
 
-  const breadcrumbItems = [
-    { label: tFn('nav.inicio'), href: `/${safeLang}` },
-    { label: tFn('sobre.hero_title') },
-  ]
-
   return (
     <>
-      {/* Breadcrumb — outside hero, below header */}
-      <nav id="breadcrumb" aria-label="Breadcrumb">
-        <Breadcrumb items={breadcrumbItems} />
-      </nav>
-
       {/* Section 1: Hero */}
       <section className="hero">
         <div className="container-center">

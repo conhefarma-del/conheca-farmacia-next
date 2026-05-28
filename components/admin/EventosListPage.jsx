@@ -3,7 +3,7 @@
 import { useState, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Pencil, Trash2, Plus } from 'lucide-react'
+import { Pencil, Trash2, Plus, Search } from 'lucide-react'
 import { escapeHtml } from '@/lib/security'
 import { deleteEvent, toggleEventStatus } from '@/lib/actions/content'
 import AnalyticsCard from '@/components/admin/AnalyticsCard'
@@ -136,23 +136,25 @@ export default function EventosListPage({ events = [], stats, lang = 'pt', topEv
       </div>
 
       {/* Stats + Analytics */}
-      <div className="admin-stats-grid admin-stats-grid-4" style={{ marginBottom: 24 }}>
-        <div className="admin-stat-card stat-purple">
-          <div>
-            <div className="admin-stat-card-value">{safeStats.total}</div>
-            <div className="admin-stat-card-label">Total</div>
+      <div className={`admin-stats-grid admin-stats-grid-4${searchQuery ? ' admin-search-active' : ''}`} style={{ marginBottom: 24 }}>
+        <div className="admin-stats-scroll">
+          <div className="admin-stat-card stat-purple">
+            <div>
+              <div className="admin-stat-card-value">{safeStats.total}</div>
+              <div className="admin-stat-card-label">Total</div>
+            </div>
           </div>
-        </div>
-        <div className="admin-stat-card stat-blue">
-          <div>
-            <div className="admin-stat-card-value">{safeStats.published}</div>
-            <div className="admin-stat-card-label">Publicados</div>
+          <div className="admin-stat-card stat-blue">
+            <div>
+              <div className="admin-stat-card-value">{safeStats.published}</div>
+              <div className="admin-stat-card-label">Publicados</div>
+            </div>
           </div>
-        </div>
-        <div className="admin-stat-card stat-orange">
-          <div>
-            <div className="admin-stat-card-value">{safeStats.drafts}</div>
-            <div className="admin-stat-card-label">Rascunhos</div>
+          <div className="admin-stat-card stat-orange">
+            <div>
+              <div className="admin-stat-card-value">{safeStats.drafts}</div>
+              <div className="admin-stat-card-label">Rascunhos</div>
+            </div>
           </div>
         </div>
         <AnalyticsCard
@@ -165,6 +167,17 @@ export default function EventosListPage({ events = [], stats, lang = 'pt', topEv
 
       {/* Filters */}
       <div className="admin-list-filters" style={{ marginBottom: 16 }}>
+        <div style={{ position: 'relative', flex: 1, minWidth: 180, maxWidth: 280 }}>
+          <Search size={16} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--admin-text-muted)', pointerEvents: 'none' }} />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Pesquisar por título..."
+            className="admin-select"
+            style={{ width: '100%', paddingLeft: 32 }}
+          />
+        </div>
         <select className="admin-select" value={sortField} onChange={(e) => setSortField(e.target.value)}>
           <option value="date-desc">Mais recentes</option>
           <option value="date-asc">Mais antigos</option>

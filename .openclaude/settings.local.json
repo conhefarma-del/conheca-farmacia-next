@@ -158,7 +158,10 @@
       "Bash(TURBOPACK=0 npx next build)",
       "Bash(cat \"C:/Users/bapti/Documents/Criação de WebSites/Conheça Farmácia/app/[lang]/\\(public\\)/page.js\")",
       "Bash(grep -n \"Organization\\\\|WebSite\\\\|orgSchema\\\\|siteSchema\" app/[lang]/\\\\\\(public\\\\\\)/page.js)",
-      "Bash(grep -n \"breadcrumbSchema\\\\|BreadcrumbList\\\\|buildBreadcrumbSchema\" app/[lang]/\\\\\\(public\\\\\\)/lives/[slug]/page.js)"
+      "Bash(grep -n \"breadcrumbSchema\\\\|BreadcrumbList\\\\|buildBreadcrumbSchema\" app/[lang]/\\\\\\(public\\\\\\)/lives/[slug]/page.js)",
+      "WebFetch(domain:conheca-farmacia-next.vercel.app)",
+      "Bash(npx vercel:*)",
+      "Bash(git diff:*)"
     ]
   }
 }

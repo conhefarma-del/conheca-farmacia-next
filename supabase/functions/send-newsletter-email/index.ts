@@ -22,8 +22,8 @@ interface EmailRequest {
 }
 
 // Logo URLs — usar URLs externas (base64 é bloqueado por Gmail/Outlook)
-const LOGO_LIGHT = "https://conhecafarmacia.netlify.app/logo/3.png";
-const LOGO_DARK = "https://conhecafarmacia.netlify.app/logo/3_2.png";
+const LOGO_LIGHT = "https://conheca-farmacia-next.vercel.app/logo/3.png";
+const LOGO_DARK = "https://conheca-farmacia-next.vercel.app/logo/3_2.png";
 
 /**
  * Welcome — Minimalista premium
@@ -80,7 +80,7 @@ Obrigado por fazer parte de uma comunidade dedicada à excelência no cuidado fa
 </table>
 
 <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:40px"><tr><td align="center">
-<a href="https://conhecafarmacia.netlify.app" style="display:inline-block;background:linear-gradient(135deg,#00493a 0%,#0a844f 100%);color:#ffffff;padding:16px 40px;text-decoration:none;border-radius:8px;font-size:14px;font-weight:600;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;letter-spacing:0.3px">Explorar Conteúdo</a>
+<a href="https://conheca-farmacia-next.vercel.app" style="display:inline-block;background:linear-gradient(135deg,#00493a 0%,#0a844f 100%);color:#ffffff;padding:16px 40px;text-decoration:none;border-radius:8px;font-size:14px;font-weight:600;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;letter-spacing:0.3px">Explorar Conteúdo</a>
 </td></tr></table>
 </td></tr>
 
@@ -362,9 +362,9 @@ serve(async (req) => {
     let htmlContent: string;
     let subject: string;
 
-    const fallbackUrl = "https://conhecafarmacia.netlify.app";
+    const fallbackUrl = "https://conheca-farmacia-next.vercel.app";
     const unsubUrl = unsubscribeToken
-      ? `https://conhecafarmacia.netlify.app/unsubscribe.html?token=${unsubscribeToken}`
+      ? `https://conheca-farmacia-next.vercel.app/pt/unsubscribe?token=${unsubscribeToken}`
       : "";
 
     if (type === "welcome") {

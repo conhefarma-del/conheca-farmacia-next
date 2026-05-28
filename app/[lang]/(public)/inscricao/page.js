@@ -1,5 +1,5 @@
 import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
-import { getEventBySlug } from '@/lib/api/events'
+import { getEventBySlug, getInscriptionCount } from '@/lib/api/events'
 import InscricaoPageClient from '@/components/pages/InscricaoPageClient'
 
 export const dynamic = 'force-dynamic'
@@ -24,14 +24,26 @@ export default async function InscricaoPage({ params, searchParams }) {
   const safeLang = SUPPORTED_LANGS.includes(lang) ? lang : DEFAULT_LANG
 
   let eventTitle = null
+  let capacity = null
+  let initialCount = 0
   if (evento) {
     try {
       const event = await getEventBySlug(evento)
-      if (event) eventTitle = event.title
-    } catch {
-      // fallback: use slug as label
-    }
+      if (event) {
+        eventTitle = event.title
+        capacity = event.capacity || null
+        initialCount = await getInscriptionCount(event.slug)
+      }
+    } catch {}
   }
 
-  return <InscricaoPageClient lang={safeLang} eventoSlug={evento || null} eventTitle={eventTitle} />
+  return (
+    <InscricaoPageClient
+      lang={safeLang}
+      eventoSlug={evento || null}
+      eventTitle={eventTitle}
+      capacity={capacity}
+      initialInscriptionCount={initialCount}
+    />
+  )
 }

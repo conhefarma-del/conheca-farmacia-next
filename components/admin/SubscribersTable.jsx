@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useCallback, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
 import { RotateCcw, Trash2 } from 'lucide-react'
 import { escapeHtml } from '@/lib/security'
 import { unsubscribeSubscriber, reactivateSubscriber } from '@/lib/actions/newsletter'
@@ -21,6 +20,7 @@ import RemoveSubscriberModal from '@/components/admin/RemoveSubscriberModal'
  *   - sendMode: 'all' | 'manual' | 'random'
  *   - selectedEmails: Set
  *   - onSelectionChange: (emails: Set) => void
+ *   - onRefresh: () => void — chamado após ações para re-buscar dados
  */
 
 function formatDate(dateStr) {
@@ -35,8 +35,8 @@ export default function SubscribersTable({
   sendMode = 'all',
   selectedEmails = new Set(),
   onSelectionChange,
+  onRefresh,
 }) {
-  const router = useRouter()
   const [statusFilter, setStatusFilter] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [actionLoading, setActionLoading] = useState(null)
@@ -80,14 +80,14 @@ export default function SubscribersTable({
     try {
       const result = await unsubscribeSubscriber(id)
       if (!result.success) alert(result.error)
-      else router.refresh()
+      else onRefresh?.()
     } catch {
       alert('Erro ao cancelar inscrição.')
     } finally {
       setActionLoading(null)
       setRemoveTarget(null)
     }
-  }, [router])
+  }, [onRefresh])
 
   // Reativar subscritor
   const handleReactivate = useCallback(async (id) => {
@@ -95,13 +95,13 @@ export default function SubscribersTable({
     try {
       const result = await reactivateSubscriber(id)
       if (!result.success) alert(result.error)
-      else router.refresh()
+      else onRefresh?.()
     } catch {
       alert('Erro ao reativar subscritor.')
     } finally {
       setActionLoading(null)
     }
-  }, [router])
+  }, [onRefresh])
 
   const showCheckbox = sendMode === 'manual'
 
@@ -188,16 +188,25 @@ export default function SubscribersTable({
                     </span>
                   </td>
                   <td style={{ fontSize: 13, color: 'var(--admin-text-muted)' }}>{formatDate(sub.created_at)}</td>
-                  <td style={{ textAlign: 'center' }}>
+                  <td style={{ textAlign: 'center', display: 'flex', gap: 4, justifyContent: 'center' }}>
                     {sub.status === 'unsubscribed' ? (
-                      <button
-                        onClick={() => handleReactivate(sub.id)}
-                        disabled={actionLoading === `reactivate-${sub.id}`}
-                        title="Reativar subscrição"
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#16a34a', padding: 4 }}
-                      >
-                        <RotateCcw size={16} />
-                      </button>
+                      <>
+                        <button
+                          onClick={() => handleReactivate(sub.id)}
+                          disabled={actionLoading === `reactivate-${sub.id}`}
+                          title="Reativar subscrição"
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#16a34a', padding: 4 }}
+                        >
+                          <RotateCcw size={16} />
+                        </button>
+                        <button
+                          onClick={() => setRemoveTarget(sub)}
+                          title="Eliminar subscritor"
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#dc2626', padding: 4 }}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </>
                     ) : (
                       <button
                         onClick={() => setRemoveTarget(sub)}
@@ -220,7 +229,7 @@ export default function SubscribersTable({
         isOpen={!!removeTarget}
         subscriber={removeTarget}
         onClose={() => setRemoveTarget(null)}
-        onComplete={() => router.refresh()}
+        onComplete={() => onRefresh?.()}
       />
     </>
   )

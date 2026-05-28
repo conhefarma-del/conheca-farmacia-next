@@ -186,6 +186,7 @@ export default function NewsletterPage() {
           sendMode={sendMode}
           selectedEmails={selectedEmails}
           onSelectionChange={setSelectedEmails}
+          onRefresh={handleRefresh}
         />
       </div>
     </>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { User, Lock, Edit3, Save, X } from 'lucide-react'
 import { getAdminProfile, updateProfile, changePassword } from '@/lib/actions/settings'
 import TwoFactorSection from '@/components/admin/TwoFactorSection'
@@ -39,6 +40,7 @@ export default function DefinicoesPage() {
 // ============================================================
 
 function ProfileSection() {
+  const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -98,6 +100,8 @@ function ProfileSection() {
         setRecoveryEmail(editRecoveryEmail)
         setEditMode(false)
         setSuccess('Perfil atualizado com sucesso!')
+        // Atualizar o header com o novo nome
+        router.refresh()
       } else {
         setError(result.error || 'Erro ao atualizar perfil.')
       }

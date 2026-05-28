@@ -3,6 +3,7 @@
 import { useState, useContext, useEffect, useRef } from 'react'
 import { LangContext } from '@/lib/contexts'
 import { createClient } from '../../lib/supabase/client'
+import { sendWelcomeEmail } from '@/lib/actions/newsletter'
 
 export default function NewsletterSection({ keys = 'artigos_page' }) {
   const { t } = useContext(LangContext)
@@ -43,6 +44,8 @@ export default function NewsletterSection({ keys = 'artigos_page' }) {
       } else {
         setStatus('success')
         setEmail('')
+        // Enviar email de boas-vindas (fire-and-forget)
+        sendWelcomeEmail(email.toLowerCase().trim()).catch(() => {})
       }
     } catch {
       setStatus('error')

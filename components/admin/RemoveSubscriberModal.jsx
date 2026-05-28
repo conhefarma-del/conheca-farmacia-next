@@ -80,6 +80,8 @@ export default function RemoveSubscriberModal({
 
   if (!isOpen || !subscriber) return null
 
+  const isAlreadyUnsubscribed = subscriber.status === 'unsubscribed'
+
   return (
     <div
       className="admin-modal-overlay"
@@ -103,7 +105,7 @@ export default function RemoveSubscriberModal({
           color: 'var(--admin-text)', marginBottom: 8,
           fontFamily: "'Fraunces', serif",
         }}>
-          Remover Subscritor
+          {isAlreadyUnsubscribed ? 'Eliminar Subscritor' : 'Remover Subscritor'}
         </h3>
 
         {/* Email */}
@@ -111,9 +113,10 @@ export default function RemoveSubscriberModal({
           textAlign: 'center', fontSize: 14, color: 'var(--admin-text-muted)',
           marginBottom: 24, lineHeight: 1.6,
         }}>
-          Pretende remover <strong style={{ color: 'var(--admin-text)' }}>
-            {escapeHtml(subscriber.email)}
-          </strong>?
+          {isAlreadyUnsubscribed
+            ? <>Pretende eliminar permanentemente <strong style={{ color: 'var(--admin-text)' }}>{escapeHtml(subscriber.email)}</strong>?</>
+            : <>Pretende remover <strong style={{ color: 'var(--admin-text)' }}>{escapeHtml(subscriber.email)}</strong>?</>
+          }
         </p>
 
         {/* Erro */}
@@ -129,15 +132,17 @@ export default function RemoveSubscriberModal({
 
         {/* Opções */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
-          <button
-            type="button"
-            className="admin-btn admin-btn-secondary"
-            onClick={handleUnsubscribe}
-            disabled={loading}
-            style={{ width: '100%', justifyContent: 'center' }}
-          >
-            {loading ? 'A processar...' : 'Cancelar inscrição'}
-          </button>
+          {!isAlreadyUnsubscribed && (
+            <button
+              type="button"
+              className="admin-btn admin-btn-secondary"
+              onClick={handleUnsubscribe}
+              disabled={loading}
+              style={{ width: '100%', justifyContent: 'center' }}
+            >
+              {loading ? 'A processar...' : 'Cancelar inscrição'}
+            </button>
+          )}
           <button
             type="button"
             className="admin-btn admin-btn-danger"

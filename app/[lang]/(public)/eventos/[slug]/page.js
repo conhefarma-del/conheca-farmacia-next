@@ -4,6 +4,7 @@ import { buildEventSchema, buildBreadcrumbSchema } from '@/lib/seo'
 import { EVENT_CATEGORY_COLORS, SITE_URL } from '@/lib/constants'
 import Breadcrumb from '@/components/ui/Breadcrumb'
 import CapacityBar from '@/components/content/CapacityBar'
+import RegistrationButton from '@/components/content/RegistrationButton'
 import SpeakersList from '@/components/content/SpeakersList'
 import SimilarEvents from '@/components/content/SimilarEvents'
 import EventViewTracker from '@/components/content/EventViewTracker'
@@ -131,40 +132,6 @@ export default async function EventDetailPage({ params }) {
       href: l.href ? `${SITE_URL}${l.href}` : undefined,
     }))
   )
-
-  // Registration button content
-  let registrationBtn
-  if (isPast) {
-    registrationBtn = (
-      <button
-        className="btn btn-lg btn-inscrever btn-secondary"
-        disabled
-        data-i18n="evento_detail.recording_btn"
-      >
-        {tFn('evento_detail.recording_btn') || 'Evento passado'}
-      </button>
-    )
-  } else if (isFull) {
-    registrationBtn = (
-      <button
-        className="btn btn-primary btn-lg btn-inscrever btn-disabled"
-        disabled
-        data-i18n="evento_detail.full_btn"
-      >
-        {tFn('evento_detail.full_btn') || 'Evento Completo'}
-      </button>
-    )
-  } else {
-    registrationBtn = (
-      <Link
-        href={`/${safeLang}/inscricao?evento=${event.slug}`}
-        className="btn btn-primary btn-lg btn-inscrever"
-        data-i18n="evento_detail.register_btn"
-      >
-        {tFn('evento_detail.register_btn') || 'Inscrever-me'}
-      </Link>
-    )
-  }
 
   return (
     <>
@@ -317,7 +284,13 @@ export default async function EventDetailPage({ params }) {
 
                 {/* Registration CTA */}
                 <div className="mt-12">
-                  {registrationBtn}
+                  <RegistrationButton
+                    eventSlug={event.slug}
+                    capacity={event.capacity}
+                    initialCount={inscriptionCount}
+                    isPast={isPast}
+                    lang={safeLang}
+                  />
                 </div>
               </div>
 

@@ -115,7 +115,7 @@ html.dark .form-note {
   }
 
   .header {
-    @apply sticky top-0 z-50 bg-brand-bg shadow-sm;
+    @apply bg-brand-bg shadow-sm;
   }
 
   .header {

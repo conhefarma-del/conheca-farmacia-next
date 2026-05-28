@@ -4,15 +4,21 @@ import { useState, useRef, useContext, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { LangContext } from '@/lib/contexts'
 import { validateField, submitInscription } from '@/lib/api/inscription'
+import { useCapacityPolling } from '@/hooks/useCapacityPolling'
 import Breadcrumb from '@/components/ui/Breadcrumb'
+import { AlertCircle } from 'lucide-react'
 
 const RATE_LIMIT_MS = 5000
 
-export default function InscricaoPageClient({ lang, eventoSlug, eventTitle }) {
+export default function InscricaoPageClient({ lang, eventoSlug, eventTitle, capacity, initialInscriptionCount = 0 }) {
   const { t } = useContext(LangContext)
   const router = useRouter()
   const lastSubmitRef = useRef(0)
   const honeypotRef = useRef('')
+
+  // Verificar capacidade em tempo real
+  const { inscriptionCount } = useCapacityPolling(eventoSlug, initialInscriptionCount)
+  const isEventFull = capacity && inscriptionCount >= capacity
 
   const [form, setForm] = useState({
     nome: '',
@@ -195,7 +201,26 @@ export default function InscricaoPageClient({ lang, eventoSlug, eventTitle }) {
                 <p className="inscription-subtitle" data-i18n="inscricao.subtitle">{t('inscricao.subtitle')}</p>
               </div>
 
-              <form id="inscription-form" className="inscription-form" onSubmit={handleSubmit} noValidate>
+              {/* Evento completo — aviso */}
+              {isEventFull && (
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 12, padding: '16px 20px',
+                  borderRadius: 10, marginBottom: 24,
+                  background: 'rgba(220, 38, 38, 0.08)', border: '1px solid rgba(220, 38, 38, 0.2)',
+                  color: '#dc2626', fontSize: 15, fontWeight: 500,
+                }}>
+                  <AlertCircle size={20} />
+                  <span>Evento completo — sem vagas disponíveis</span>
+                </div>
+              )}
+
+              <form
+                id="inscription-form"
+                className="inscription-form"
+                onSubmit={handleSubmit}
+                noValidate
+                style={isEventFull ? { opacity: 0.5, pointerEvents: 'none' } : undefined}
+              >
                 {/* Honeypot */}
                 <input
                   type="text"
@@ -415,11 +440,16 @@ export default function InscricaoPageClient({ lang, eventoSlug, eventTitle }) {
                 <button
                   id="submit-btn"
                   type="submit"
-                  className={`btn btn-primary inscription-btn w-full ${status === 'submitting' ? 'btn-loading' : ''}`}
-                  disabled={status === 'submitting'}
+                  className={`btn btn-primary inscription-btn w-full ${isEventFull ? 'btn-disabled' : ''} ${status === 'submitting' ? 'btn-loading' : ''}`}
+                  disabled={status === 'submitting' || isEventFull}
                 >
                   <span id="btn-text" data-i18n="inscricao.submit">
-                    {status === 'submitting' ? t('inscricao.submitting') || 'A verificar...' : t('inscricao.submit')}
+                    {isEventFull
+                      ? 'Evento completo'
+                      : status === 'submitting'
+                        ? t('inscricao.submitting') || 'A verificar...'
+                        : t('inscricao.submit')
+                    }
                   </span>
                 </button>
 

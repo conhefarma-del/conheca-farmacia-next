@@ -48,7 +48,7 @@ export default function AnalyticsCard({
   const format = valueFormatter || defaultFormatter
 
   return (
-    <div className="admin-stat-card" style={{ background: 'var(--admin-card-bg)', color: 'var(--admin-text)' }}>
+    <div className="admin-stat-card stat-cyan">
       <div className="admin-analytics-card">
         <div className="admin-analytics-filters" id="analytics-filters">
           {metrics.map(({ key, label }) => (
