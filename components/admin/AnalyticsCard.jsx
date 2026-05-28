@@ -74,7 +74,7 @@ export default function AnalyticsCard({
                 : activeMetric === 'reading'
                   ? 'total_reading_time'
                   : activeMetric === 'fill'
-                    ? 'capacity'
+                    ? 'fill_percentage'
                     : activeMetric === 'access'
                       ? 'access_count'
                       : activeMetric === 'downloads'
@@ -84,7 +84,11 @@ export default function AnalyticsCard({
                 <div key={item.slug || i} className="admin-analytics-item">
                   <span className="admin-analytics-rank">{i + 1}</span>
                   <span className="admin-analytics-title">{escapeHtml(item.title)}</span>
-                  <span className="admin-analytics-value">{format(item[valueKey], activeMetric)}</span>
+                  <span className="admin-analytics-value">
+                    {activeMetric === 'fill'
+                      ? `${item[valueKey] || 0}%`
+                      : format(item[valueKey], activeMetric)}
+                  </span>
                 </div>
               )
             })

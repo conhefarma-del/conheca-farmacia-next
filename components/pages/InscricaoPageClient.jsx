@@ -109,7 +109,7 @@ export default function InscricaoPageClient({ lang, eventoSlug, eventTitle }) {
         setErrorMsg(t('inscricao_error.duplicate'))
       } else {
         setStatus('error')
-        setErrorMsg(err.message || t('inscricao.error_default'))
+        setErrorMsg('custom_whatsapp')
       }
     }
   }
@@ -194,23 +194,6 @@ export default function InscricaoPageClient({ lang, eventoSlug, eventTitle }) {
                 <h1 className="inscription-title" data-i18n="inscricao.title">{t('inscricao.title')}</h1>
                 <p className="inscription-subtitle" data-i18n="inscricao.subtitle">{t('inscricao.subtitle')}</p>
               </div>
-
-              {/* Error/Warning banner */}
-              {(status === 'error' || status === 'duplicate') && (
-                <div id="error-container" className="inscription-error mb-8">
-                  <div className="error-icon">⚠</div>
-                  <h2 className="error-title" data-i18n="inscricao_error.title">{t('inscricao_error.title')}</h2>
-                  <p className="error-message" id="error-message">{errorMsg}</p>
-                  <button
-                    type="button"
-                    className="btn btn-primary inscription-btn mt-6"
-                    data-i18n="inscricao.try_again"
-                    onClick={() => { setStatus('idle'); setErrorMsg('') }}
-                  >
-                    {t('inscricao.try_again')}
-                  </button>
-                </div>
-              )}
 
               <form id="inscription-form" className="inscription-form" onSubmit={handleSubmit} noValidate>
                 {/* Honeypot */}
@@ -403,8 +386,8 @@ export default function InscricaoPageClient({ lang, eventoSlug, eventTitle }) {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="origem_evento" className="form-label" data-i18n="inscricao.origem_evento_label">
-                    {t('inscricao.origem_evento_label')}
+                  <label htmlFor="origem_evento" className="form-label" data-i18n="inscricao.como_conheceu_label">
+                    {t('inscricao.como_conheceu_label')}
                   </label>
                   <select
                     id="origem_evento"
@@ -413,7 +396,7 @@ export default function InscricaoPageClient({ lang, eventoSlug, eventTitle }) {
                     value={form.origem_evento}
                     onChange={(e) => handleChange('origem_evento', e.target.value)}
                   >
-                    <option value="">{t('inscricao.origem_evento_select')}</option>
+                    <option value="">{t('inscricao.como_conheceu_select')}</option>
                     <option value="instagram">{t('inscricao.como_instagram')}</option>
                     <option value="whatsapp">{t('inscricao.como_whatsapp')}</option>
                     <option value="facebook">{t('inscricao.como_facebook')}</option>
@@ -439,6 +422,38 @@ export default function InscricaoPageClient({ lang, eventoSlug, eventTitle }) {
                     {status === 'submitting' ? t('inscricao.submitting') || 'A verificar...' : t('inscricao.submit')}
                   </span>
                 </button>
+
+                {/* Error/Warning banner — below submit button */}
+                {(status === 'error' || status === 'duplicate') && (
+                  <div id="error-container" className="inscription-error mt-8">
+                    <div className="error-icon">⚠</div>
+                    <h2 className="error-title" data-i18n="inscricao_error.title">{t('inscricao_error.title')}</h2>
+                    {errorMsg === 'custom_whatsapp' ? (
+                      <p className="error-message" id="error-message">
+                        Não foi possível registrar a sua inscrição, entre em contacto connosco via{' '}
+                        <a
+                          href={`https://wa.me/244925696002?text=${encodeURIComponent(`Olá, estou com dificuldades no processo da inscrição do evento ${eventTitle || ''}`)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: 'inherit', textDecoration: 'underline', fontWeight: 600 }}
+                        >
+                          WhatsApp (+244 925 696 002)
+                        </a>
+                        {' '}para resolver.
+                      </p>
+                    ) : (
+                      <p className="error-message" id="error-message">{errorMsg}</p>
+                    )}
+                    <button
+                      type="button"
+                      className="btn btn-primary inscription-btn mt-6"
+                      data-i18n="inscricao.try_again"
+                      onClick={() => { setStatus('idle'); setErrorMsg('') }}
+                    >
+                      {t('inscricao.try_again')}
+                    </button>
+                  </div>
+                )}
               </form>
             </div>
           </div>

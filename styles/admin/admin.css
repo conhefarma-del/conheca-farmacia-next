@@ -480,14 +480,14 @@ body {
   height: 12px;
 }
 
-/* Gradient Variants */
-.stat-green { background: linear-gradient(135deg, var(--stat-green) 0%, var(--stat-green-light) 100%); }
-.stat-purple { background: linear-gradient(135deg, var(--stat-purple) 0%, var(--stat-purple-light) 100%); }
-.stat-orange { background: linear-gradient(135deg, var(--stat-orange) 0%, var(--stat-orange-light) 100%); }
-.stat-blue { background: linear-gradient(135deg, var(--stat-blue) 0%, var(--stat-blue-light) 100%); }
-.stat-black { background: linear-gradient(135deg, var(--stat-black) 0%, var(--stat-black-light) 100%); }
-.stat-pink { background: linear-gradient(135deg, var(--stat-pink) 0%, var(--stat-pink-light) 100%); }
-.stat-cyan { background: linear-gradient(135deg, var(--stat-cyan) 0%, var(--stat-cyan-light) 100%); }
+/* Gradient Variants — higher specificity to override any base card bg */
+.admin-stat-card.stat-green { background: linear-gradient(135deg, var(--stat-green) 0%, var(--stat-green-light) 100%); }
+.admin-stat-card.stat-purple { background: linear-gradient(135deg, var(--stat-purple) 0%, var(--stat-purple-light) 100%); }
+.admin-stat-card.stat-orange { background: linear-gradient(135deg, var(--stat-orange) 0%, var(--stat-orange-light) 100%); }
+.admin-stat-card.stat-blue { background: linear-gradient(135deg, var(--stat-blue) 0%, var(--stat-blue-light) 100%); }
+.admin-stat-card.stat-black { background: linear-gradient(135deg, var(--stat-black) 0%, var(--stat-black-light) 100%); }
+.admin-stat-card.stat-pink { background: linear-gradient(135deg, var(--stat-pink) 0%, var(--stat-pink-light) 100%); }
+.admin-stat-card.stat-cyan { background: linear-gradient(135deg, var(--stat-cyan) 0%, var(--stat-cyan-light) 100%); }
 
 /* Dashboard Layout - Stats + Activity */
 .admin-dashboard-layout {

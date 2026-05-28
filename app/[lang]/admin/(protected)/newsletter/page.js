@@ -87,19 +87,21 @@ export default function NewsletterPage() {
         <p className="admin-page-subtitle">Gerir subscritores e enviar alertas de conteúdo</p>
       </div>
 
-      {/* Stats Grid */}
-      <div className="admin-stats-grid" style={{ marginBottom: 24 }}>
-        {STAT_CARDS.map(({ key, label, icon: Icon, color }) => (
-          <div key={key} className={`admin-stat-card ${color}`}>
-            <div className="admin-stat-card-icon">
-              <Icon size={24} />
+      {/* Stats Grid — 4 cards: 3 scroll mobile + 1 full-width below */}
+      <div className="admin-stats-grid admin-stats-grid-4" style={{ marginBottom: 24 }}>
+        <div className="admin-stats-scroll">
+          {STAT_CARDS.map(({ key, label, icon: Icon, color }) => (
+            <div key={key} className={`admin-stat-card ${color}`}>
+              <div className="admin-stat-card-icon">
+                <Icon size={24} />
+              </div>
+              <div>
+                <div className="admin-stat-card-value">{formatNumber(stats[key])}</div>
+                <div className="admin-stat-card-label">{label}</div>
+              </div>
             </div>
-            <div>
-              <div className="admin-stat-card-value">{formatNumber(stats[key])}</div>
-              <div className="admin-stat-card-label">{label}</div>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
         <div className="admin-stat-card stat-cyan">
           <div className="admin-stat-card-icon">
             <Mail size={24} />

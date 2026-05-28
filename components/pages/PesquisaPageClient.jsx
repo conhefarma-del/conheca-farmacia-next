@@ -36,13 +36,13 @@ function highlightTerms(text, query) {
 
 function renderSkeletons(count = 6) {
   return Array.from({ length: count }, (_, i) => (
-    <div key={i} className="search-result-card skeleton-card">
-      <div className="search-result-image skeleton-pulse" />
-      <div className="search-result-body">
-        <span className="skeleton-pulse" style={{ width: 60, height: 14, display: 'block', borderRadius: 4, marginBottom: 8 }} />
-        <h3 className="skeleton-pulse" style={{ width: '80%', height: 20, display: 'block', borderRadius: 4, marginBottom: 8 }} />
-        <p className="skeleton-pulse" style={{ width: '100%', height: 14, display: 'block', borderRadius: 4, marginBottom: 6 }} />
-        <p className="skeleton-pulse" style={{ width: '60%', height: 14, display: 'block', borderRadius: 4 }} />
+    <div key={i} className="search-skeleton">
+      <div className="skeleton-image" />
+      <div className="skeleton-body">
+        <div className="skeleton-line" style={{ width: 60 }} />
+        <div className="skeleton-line skeleton-line-long" />
+        <div className="skeleton-line skeleton-line-long" />
+        <div className="skeleton-line skeleton-line-short" />
       </div>
     </div>
   ))
