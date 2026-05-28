@@ -14,7 +14,7 @@ const ADMIN_SECTIONS = [
   'admin/lives', 'admin/definicoes', 'admin/newsletter',
 ]
 
-export async function middleware(request) {
+export async function proxy(request) {
   const { pathname } = request.nextUrl
 
   // Root "/" → redirect to default language
