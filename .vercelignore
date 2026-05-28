@@ -23,8 +23,8 @@ INSCRIPTION_SETUP.md
 RESEND_EDGE_FUNCTIONS_SETUP.md
 GIT_SETUP_INSTRUCTIONS.md
 
-# Supabase
-supabase/
+# Supabase (apenas pasta raiz, não lib/supabase/)
+/supabase/
 SUPABASE_MIGRATION.sql
 
 # Config
