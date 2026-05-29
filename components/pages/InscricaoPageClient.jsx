@@ -43,17 +43,12 @@ export default function InscricaoPageClient({ lang, eventoSlug, eventTitle, capa
     { label: t('inscricao.title') },
   ]
 
-  // Auto-redirect after success
+  // Show redirect button after delay (gives fire-and-forget fetch time to complete)
   useEffect(() => {
     if (status !== 'success') return
-    if (countdown <= 0) {
-      const url = eventoSlug ? `/${lang}/eventos/${eventoSlug}` : `/${lang}/eventos`
-      router.push(url)
-      return
-    }
-    const timer = setTimeout(() => setCountdown(c => c - 1), 1000)
+    const timer = setTimeout(() => setCountdown(0), 3000)
     return () => clearTimeout(timer)
-  }, [status, countdown, eventoSlug, lang, router])
+  }, [status])
 
   // Validate a single field on blur
   const handleBlur = (name) => {
@@ -170,9 +165,14 @@ export default function InscricaoPageClient({ lang, eventoSlug, eventTitle, capa
                   <div className="success-details">
                     <p>Foi-lhe enviado um email de confirmação com os detalhes da inscrição.</p>
                   </div>
-                  <p className="text-sm text-brand-deep/50 mt-4">
-                    A redirecionar em {countdown}...
-                  </p>
+                  {countdown === 0 && (
+                    <a
+                      href={eventoSlug ? `/${lang}/eventos/${eventoSlug}` : `/${lang}/eventos`}
+                      className="btn btn-primary mt-4"
+                    >
+                      {t('inscricao_success.voltar_evento') || 'Voltar ao evento'}
+                    </a>
+                  )}
                 </div>
               </div>
             </div>

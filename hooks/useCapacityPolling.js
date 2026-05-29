@@ -24,7 +24,9 @@ export function useCapacityPolling(eventSlug, initialCount = 0) {
       setLoading(true)
       const supabase = createClient()
       const { count, error } = await supabase
-        .rpc('get_inscription_count', { event_slug: eventSlug })
+        .from('inscricoes')
+        .select('*', { count: 'exact', head: true })
+        .eq('evento_slug', eventSlug)
 
       if (error) throw error
 
