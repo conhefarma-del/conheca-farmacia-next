@@ -278,6 +278,7 @@ export default async function EventDetailPage({ params }) {
                       eventSlug={event.slug}
                       capacity={event.capacity}
                       initialCount={inscriptionCount}
+                      isPast={isPast}
                     />
                   </div>
                 )}

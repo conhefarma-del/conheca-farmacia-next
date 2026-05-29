@@ -4,9 +4,11 @@ import { useContext } from 'react'
 import { LangContext } from '@/lib/contexts'
 import { useCapacityPolling } from '@/hooks/useCapacityPolling'
 
-export default function CapacityBar({ eventSlug, capacity, initialCount = 0 }) {
+export default function CapacityBar({ eventSlug, capacity, initialCount = 0, isPast = false }) {
   const { t } = useContext(LangContext)
   const { inscriptionCount } = useCapacityPolling(eventSlug, initialCount)
+
+  if (isPast) return null
   const percentage = capacity > 0 ? Math.min((inscriptionCount / capacity) * 100, 100) : 0
   const isFull = inscriptionCount >= capacity
   const barColor = isFull ? '#dc2626' : '#00493a'

@@ -37,7 +37,7 @@ export default function NewsletterPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [subscribers, setSubscribers] = useState([])
-  const [stats, setStats] = useState({ total: 0, active: 0, unsubscribed: 0 })
+  const [stats, setStats] = useState({ total: 0, active: 0, unsubscribed: 0, sentThisMonth: 0 })
   const [sendMode, setSendMode] = useState('all')
   const [randomCount, setRandomCount] = useState(10)
   const [selectedEmails, setSelectedEmails] = useState(new Set())
@@ -107,7 +107,7 @@ export default function NewsletterPage() {
             <Mail size={24} />
           </div>
           <div>
-            <div className="admin-stat-card-value">-</div>
+            <div className="admin-stat-card-value">{formatNumber(stats.sentThisMonth)}</div>
             <div className="admin-stat-card-label">Enviados (mês)</div>
           </div>
         </div>
