@@ -24,12 +24,12 @@ const CONTENT_TYPES = [
   { value: 'live', label: 'Live' },
 ]
 
-const BASE_URL = 'https://conhecafarmacia.vercel.app'
+const BASE_URL = 'https://conheca-farmacia-next.vercel.app'
 
 function buildContentUrl(type, slug) {
-  if (type === 'article') return `${BASE_URL}/artigo.html?id=${slug}`
-  if (type === 'event') return `${BASE_URL}/evento.html?id=${slug}`
-  return `${BASE_URL}/lives.html?id=${slug}`
+  if (type === 'article') return `${BASE_URL}/pt/artigos/${slug}`
+  if (type === 'event') return `${BASE_URL}/pt/eventos/${slug}`
+  return `${BASE_URL}/pt/lives/${slug}`
 }
 
 export default function SendAlertForm({ sendMode = 'all', randomCount = 10, selectedEmails = new Set() }) {

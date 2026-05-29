@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -359,6 +359,14 @@ serve(async (req) => {
       );
     }
 
+    if (!RESEND_API_KEY) {
+      console.error("RESEND_API_KEY not configured");
+      return new Response(
+        JSON.stringify({ error: "Email service not configured" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     let htmlContent: string;
     let subject: string;
 
@@ -416,9 +424,10 @@ serve(async (req) => {
     });
 
     if (!resendResponse.ok) {
-      const error = await resendResponse.text();
+      const errorText = await resendResponse.text();
+      console.error(`Resend API error (${resendResponse.status}):`, errorText);
       return new Response(
-        JSON.stringify({ error: "Failed to send email", details: error }),
+        JSON.stringify({ error: "Failed to send email", details: errorText }),
         {
           status: 500,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -436,6 +445,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
+    console.error("send-newsletter-email error:", (error as Error).message, (error as Error).stack);
     return new Response(
       JSON.stringify({
         error: "Internal server error",
