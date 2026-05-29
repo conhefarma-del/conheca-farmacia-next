@@ -171,14 +171,16 @@ export default function EventosPageClient({ events, lang }) {
                       <div className="event-meta-item">
                         <span>{event.location}</span>
                       </div>
-                      {spotsLeft > 0 ? (
-                        <div className="event-meta-item">
-                          <span>{spotsLeft} vagas disponíveis</span>
-                        </div>
-                      ) : (
-                        <div className="event-meta-item" style={{ color: '#dc2626', fontWeight: 600 }}>
-                          <span>Evento completo</span>
-                        </div>
+                      {!isPast && (
+                        spotsLeft > 0 ? (
+                          <div className="event-meta-item">
+                            <span>{spotsLeft} vagas disponíveis</span>
+                          </div>
+                        ) : (
+                          <div className="event-meta-item" style={{ color: '#dc2626', fontWeight: 600 }}>
+                            <span>Evento completo</span>
+                          </div>
+                        )
                       )}
                     </div>
 
