@@ -35,6 +35,8 @@ export default function InscricaoPageClient({ lang, eventoSlug, eventTitle, capa
   const [status, setStatus] = useState('idle') // idle | submitting | success | error | duplicate
   const [errorMsg, setErrorMsg] = useState('')
   const [countdown, setCountdown] = useState(3)
+  const [emailSent, setEmailSent] = useState(true)
+  const [inscriptionId, setInscriptionId] = useState(null)
 
   const breadcrumbItems = [
     { label: t('nav.inicio'), href: `/${lang}` },
@@ -102,7 +104,9 @@ export default function InscricaoPageClient({ lang, eventoSlug, eventTitle, capa
     setErrorMsg('')
 
     try {
-      await submitInscription(form, eventoSlug)
+      const result = await submitInscription(form, eventoSlug)
+      setEmailSent(result.emailSent)
+      setInscriptionId(result.inscriptionId)
       setStatus('success')
     } catch (err) {
       if (err.message === 'duplicate') {
@@ -149,6 +153,11 @@ export default function InscricaoPageClient({ lang, eventoSlug, eventTitle, capa
 
   // Success state
   if (status === 'success') {
+    const shortRef = inscriptionId ? inscriptionId.slice(-8).toUpperCase() : null
+    const profKey = form.profissao === 'estudante-saude' ? 'estudante' : form.profissao === 'tecnico-medio-saude' ? 'tecnico_medio' : form.profissao === 'tecnico-radiologia' ? 'tecnico_radio' : form.profissao === 'tecnico-analises-clinicas' ? 'tecnico_analises' : form.profissao === 'medico-dentista' ? 'dentista' : form.profissao === 'biologo-analista' ? 'biologo' : form.profissao
+    const profLabel = form.profissao ? t('inscricao.prof_' + profKey) : ''
+    const backUrl = eventoSlug ? '/' + lang + '/eventos/' + eventoSlug : '/' + lang + '/eventos'
+
     return (
       <>
         <nav id="breadcrumb" aria-label="Breadcrumb">
@@ -163,16 +172,76 @@ export default function InscricaoPageClient({ lang, eventoSlug, eventTitle, capa
                   <h2 className="success-title">{t('inscricao_success.title')}</h2>
                   <p className="success-message">{t('inscricao_success.message')}</p>
                   <div className="success-details">
-                    <p>Foi-lhe enviado um email de confirmação com os detalhes da inscrição.</p>
+                    <p style={{ color: emailSent ? 'inherit' : '#b45309' }}>
+                      {emailSent
+                        ? t('inscricao_success.email_sent')
+                        : t('inscricao_success.email_failed')
+                      }
+                    </p>
                   </div>
-                  {countdown === 0 && (
-                    <a
-                      href={eventoSlug ? `/${lang}/eventos/${eventoSlug}` : `/${lang}/eventos`}
-                      className="btn btn-primary mt-4"
+
+                  {/* Comprovativo */}
+                  <div style={{
+                    marginTop: 24, padding: 24, borderRadius: 12,
+                    border: '1px solid var(--color-brand-divider, #e5e7eb)',
+                    background: 'var(--color-brand-bg, #ffffff)', textAlign: 'left',
+                  }}>
+                    <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, textAlign: 'center' }}>
+                      {t('inscricao_success.comprovativo')}
+                    </h3>
+                    <div style={{ display: 'grid', gap: 8, fontSize: 14 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--color-brand-divider, #f3f4f6)' }}>
+                        <span style={{ opacity: 0.6 }}>{t('inscricao.nome_label')}</span>
+                        <span style={{ fontWeight: 500 }}>{form.nome}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--color-brand-divider, #f3f4f6)' }}>
+                        <span style={{ opacity: 0.6 }}>{t('inscricao.email_label')}</span>
+                        <span style={{ fontWeight: 500 }}>{form.email}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--color-brand-divider, #f3f4f6)' }}>
+                        <span style={{ opacity: 0.6 }}>{t('inscricao.telefone_label')}</span>
+                        <span style={{ fontWeight: 500 }}>{form.telefone}</span>
+                      </div>
+                      {profLabel && (
+                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--color-brand-divider, #f3f4f6)' }}>
+                          <span style={{ opacity: 0.6 }}>{t('inscricao.profissao_label')}</span>
+                          <span style={{ fontWeight: 500 }}>{profLabel}</span>
+                        </div>
+                      )}
+                      {eventTitle && (
+                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--color-brand-divider, #f3f4f6)' }}>
+                          <span style={{ opacity: 0.6 }}>{t('nav.eventos')}</span>
+                          <span style={{ fontWeight: 500 }}>{eventTitle}</span>
+                        </div>
+                      )}
+                      {shortRef && (
+                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0' }}>
+                          <span style={{ opacity: 0.6 }}>{t('inscricao_success.referencia')}</span>
+                          <span style={{ fontWeight: 600, fontFamily: 'monospace', letterSpacing: 1 }}>{shortRef}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div style={{ display: 'flex', gap: 12, marginTop: 24, justifyContent: 'center', flexWrap: 'wrap' }}>
+                    {countdown === 0 && (
+                      <a
+                        href={backUrl}
+                        className="btn btn-primary"
+                      >
+                        {t('inscricao_success.voltar_evento')}
+                      </a>
+                    )}
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => window.print()}
+                      style={{ cursor: 'pointer' }}
                     >
-                      {t('inscricao_success.voltar_evento') || 'Voltar ao evento'}
-                    </a>
-                  )}
+                      {t('inscricao_success.print')}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

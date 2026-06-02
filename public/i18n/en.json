@@ -276,7 +276,13 @@
   },
   "inscricao_success": {
     "title": "Registration Confirmed",
-    "message": "Your registration has been successfully recorded. You will receive a confirmation email shortly."
+    "message": "Your registration has been successfully recorded.",
+    "email_sent": "A confirmation email has been sent with the registration details.",
+    "email_failed": "Your registration has been saved, but we couldn't send the confirmation email. Save this receipt as proof of registration.",
+    "comprovativo": "Registration Receipt",
+    "referencia": "Reference",
+    "print": "Print receipt",
+    "voltar_evento": "Back to event"
   },
   "inscricao_error": {
     "title": "Registration Error",

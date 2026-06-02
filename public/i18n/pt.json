@@ -276,7 +276,13 @@
   },
   "inscricao_success": {
     "title": "Inscrição Confirmada",
-    "message": "A sua inscrição foi registada com sucesso. Receberá um email de confirmação em breve."
+    "message": "A sua inscrição foi registada com sucesso.",
+    "email_sent": "Foi-lhe enviado um email de confirmação com os detalhes da inscrição.",
+    "email_failed": "A sua inscrição foi guardada, mas não foi possível enviar o email. Guarde este comprovativo como prova de inscrição.",
+    "comprovativo": "Comprovativo de Inscrição",
+    "referencia": "Referência",
+    "print": "Imprimir comprovativo",
+    "voltar_evento": "Voltar ao evento"
   },
   "inscricao_error": {
     "title": "Erro na Inscrição",
