@@ -1,5 +1,5 @@
 import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
-import { getEventBySlug, getInscriptionCount } from '@/lib/api/events'
+import { getEventBySlug, getEventInscriptionCount } from '@/lib/api/events'
 import InscricaoPageClient from '@/components/pages/InscricaoPageClient'
 
 export const dynamic = 'force-dynamic'
@@ -32,7 +32,7 @@ export default async function InscricaoPage({ params, searchParams }) {
       if (event) {
         eventTitle = event.title
         capacity = event.capacity || null
-        initialCount = await getInscriptionCount(event.slug)
+        initialCount = await getEventInscriptionCount(event.slug)
       }
     } catch {}
   }

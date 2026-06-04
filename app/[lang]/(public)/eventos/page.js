@@ -1,5 +1,5 @@
 import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
-import { getEvents, getInscriptionCount } from '@/lib/api/events'
+import { getEvents } from '@/lib/api/events'
 import EventosPageClient from '@/components/pages/EventosPageClient'
 
 export const dynamic = 'force-dynamic'
@@ -28,20 +28,9 @@ export default async function EventosPage({ params }) {
     console.error('Error fetching events:', err)
   }
 
-  const eventsWithCounts = await Promise.all(
-    events.map(async (event) => {
-      try {
-        const count = await getInscriptionCount(event.slug)
-        return { ...event, inscriptionCount: count }
-      } catch {
-        return { ...event, inscriptionCount: 0 }
-      }
-    })
-  )
-
   return (
     <EventosPageClient
-      events={eventsWithCounts}
+      events={events}
       lang={safeLang}
     />
   )

@@ -1,5 +1,5 @@
 import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
-import { getEventBySlug, getEvents, getInscriptionCount } from '@/lib/api/events'
+import { getEventBySlug, getEvents, getEventInscriptionCount } from '@/lib/api/events'
 import { buildEventSchema, buildBreadcrumbSchema } from '@/lib/seo'
 import { EVENT_CATEGORY_COLORS, SITE_URL } from '@/lib/constants'
 import Breadcrumb from '@/components/ui/Breadcrumb'
@@ -105,7 +105,7 @@ export default async function EventDetailPage({ params }) {
   // Inscription count
   let inscriptionCount = 0
   try {
-    inscriptionCount = await getInscriptionCount(event.slug)
+    inscriptionCount = await getEventInscriptionCount(event.slug)
   } catch {}
 
   const isFull = event.capacity && inscriptionCount >= event.capacity

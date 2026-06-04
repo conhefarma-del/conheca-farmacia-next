@@ -161,7 +161,11 @@
       "Bash(grep -n \"breadcrumbSchema\\\\|BreadcrumbList\\\\|buildBreadcrumbSchema\" app/[lang]/\\\\\\(public\\\\\\)/lives/[slug]/page.js)",
       "WebFetch(domain:conheca-farmacia-next.vercel.app)",
       "Bash(npx vercel:*)",
-      "Bash(git diff:*)"
+      "Bash(git diff:*)",
+      "Bash(npm list:*)",
+      "mcp__plugin_supabase_supabase__list_migrations",
+      "Bash(echo:*)",
+      "Bash(npx prettier:*)"
     ]
   }
 }
