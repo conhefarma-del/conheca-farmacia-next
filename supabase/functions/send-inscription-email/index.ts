@@ -126,12 +126,25 @@ function getInscriptionEmailTemplate(
 </html>`;
 }
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+const ALLOWED_ORIGINS = [
+  "https://conheca-farmacia-next.vercel.app",
+  "http://localhost:3000",
+];
+
+function getCorsHeaders(requestOrigin: string | null): Record<string, string> {
+  const origin = ALLOWED_ORIGINS.includes(requestOrigin || "")
+    ? requestOrigin!
+    : ALLOWED_ORIGINS[0];
+  return {
+    "Access-Control-Allow-Origin": origin,
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+  };
+}
 
 serve(async (req: Request) => {
+  const corsHeaders = getCorsHeaders(req.headers.get("origin"));
+
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
@@ -151,6 +164,20 @@ serve(async (req: Request) => {
         JSON.stringify({ error: "Campos obrigatórios: email, nome, evento_slug" }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
+    }
+
+    // Validação de input
+    const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    const SLUG_REGEX = /^[a-zA-Z0-9\-_]+$/;
+
+    if (typeof nome !== "string" || nome.length < 3 || nome.length > 255) {
+      return new Response(JSON.stringify({ error: "Nome inválido" }), { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } });
+    }
+    if (typeof email !== "string" || !EMAIL_REGEX.test(email) || email.length > 254) {
+      return new Response(JSON.stringify({ error: "Email inválido" }), { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } });
+    }
+    if (typeof evento_slug !== "string" || !SLUG_REGEX.test(evento_slug)) {
+      return new Response(JSON.stringify({ error: "Slug inválido" }), { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } });
     }
 
     // Look up event name from BD
@@ -222,7 +249,7 @@ serve(async (req: Request) => {
   } catch (error) {
     console.error("send-inscription-email error:", error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Erro desconhecido" }),
+      JSON.stringify({ error: "Erro interno do servidor" }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   }

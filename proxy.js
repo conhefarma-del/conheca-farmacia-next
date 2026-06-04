@@ -9,10 +9,6 @@ const PUBLIC_SECTIONS = [
   'pesquisa', 'sobre', 'unsubscribe',
 ]
 
-const ADMIN_SECTIONS = [
-  'admin/dashboard', 'admin/artigos', 'admin/eventos',
-  'admin/lives', 'admin/definicoes', 'admin/newsletter',
-]
 
 export async function proxy(request) {
   const { pathname } = request.nextUrl
@@ -84,7 +80,7 @@ export async function proxy(request) {
   }
 
   // Protected admin routes: /{lang}/admin/*
-  if (ADMIN_SECTIONS.some((s) => section.startsWith(s))) {
+  if (section.startsWith("admin/")) {
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {

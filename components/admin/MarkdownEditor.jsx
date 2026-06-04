@@ -4,6 +4,7 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import { Maximize2, Eye, X } from 'lucide-react'
 import { Marked } from 'marked'
 import DOMPurify from 'isomorphic-dompurify'
+import { sanitizeHtml } from '@/lib/sanitize'
 
 const marked = new Marked()
 
@@ -20,6 +21,13 @@ const marked = new Marked()
  */
 
 export default function MarkdownEditor({ value = '', onChange, placeholder = 'Escreva o conteúdo em Markdown...', onPreview }) {
+  // SEC-XSS-04: Paste handler — strip HTML, keep plain text only
+  const handlePaste = useCallback((e) => {
+    e.preventDefault()
+    const text = e.clipboardData.getData('text/plain')
+    document.execCommand('insertText', false, text)
+  }, [])
+
   const [isEditorOpen, setIsEditorOpen] = useState(false)
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   const [previewHtml, setPreviewHtml] = useState('')
@@ -97,6 +105,7 @@ export default function MarkdownEditor({ value = '', onChange, placeholder = 'Es
       <textarea
         value={value}
         onChange={(e) => onChange?.(e.target.value)}
+        onPaste={handlePaste}
         className="admin-textarea"
         placeholder={placeholder}
         style={{ minHeight: 200 }}

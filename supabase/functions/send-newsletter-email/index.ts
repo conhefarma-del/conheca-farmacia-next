@@ -2,11 +2,22 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+// CORS — origem dinâmica (whitelist)
+const ALLOWED_ORIGINS = [
+  "https://conheca-farmacia-next.vercel.app",
+  "http://localhost:3000",
+];
+
+function getCorsHeaders(requestOrigin: string | null): Record<string, string> {
+  const origin = ALLOWED_ORIGINS.includes(requestOrigin || "")
+    ? requestOrigin!
+    : ALLOWED_ORIGINS[0];
+  return {
+    "Access-Control-Allow-Origin": origin,
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+  };
+}
 
 interface EmailRequest {
   type: "welcome" | "article" | "event" | "live";
@@ -307,7 +318,7 @@ ${unsubUrl ? `<p style="margin:0 0 16px 0;font-size:12px;font-family:'Segoe UI',
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response("ok", { headers: getCorsHeaders(req.headers.get("origin")) });
   }
 
   try {
@@ -329,7 +340,7 @@ serve(async (req) => {
         JSON.stringify({ error: "Email and type are required" }),
         {
           status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: { ...getCorsHeaders(req.headers.get("origin")), "Content-Type": "application/json" },
         }
       );
     }
@@ -342,7 +353,7 @@ serve(async (req) => {
         JSON.stringify({ error: "Invalid email format" }),
         {
           status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: { ...getCorsHeaders(req.headers.get("origin")), "Content-Type": "application/json" },
         }
       );
     }
@@ -354,7 +365,7 @@ serve(async (req) => {
         JSON.stringify({ error: "Invalid email type" }),
         {
           status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: { ...getCorsHeaders(req.headers.get("origin")), "Content-Type": "application/json" },
         }
       );
     }
@@ -363,7 +374,7 @@ serve(async (req) => {
       console.error("RESEND_API_KEY not configured");
       return new Response(
         JSON.stringify({ error: "Email service not configured" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 500, headers: { ...getCorsHeaders(req.headers.get("origin")), "Content-Type": "application/json" } }
       );
     }
 
@@ -427,10 +438,10 @@ serve(async (req) => {
       const errorText = await resendResponse.text();
       console.error(`Resend API error (${resendResponse.status}):`, errorText);
       return new Response(
-        JSON.stringify({ error: "Failed to send email", details: errorText }),
+        JSON.stringify({ error: "Erro interno do servidor" }),
         {
           status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: { ...getCorsHeaders(req.headers.get("origin")), "Content-Type": "application/json" },
         }
       );
     }
@@ -441,19 +452,18 @@ serve(async (req) => {
       JSON.stringify({ success: true, id: result.id }),
       {
         status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...getCorsHeaders(req.headers.get("origin")), "Content-Type": "application/json" },
       }
     );
   } catch (error) {
     console.error("send-newsletter-email error:", (error as Error).message, (error as Error).stack);
     return new Response(
       JSON.stringify({
-        error: "Internal server error",
-        details: (error as Error).message,
+        error: "Erro interno do servidor",
       }),
       {
         status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...getCorsHeaders(req.headers.get("origin")), "Content-Type": "application/json" },
       }
     );
   }

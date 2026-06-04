@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { LangContext } from '@/lib/contexts'
 import { searchAllContent } from '@/lib/api/search'
 import { escapeHtml } from '@/lib/security'
+import { sanitizeHtml } from '@/lib/sanitize'
 import Breadcrumb from '@/components/ui/Breadcrumb'
 
 const PER_PAGE = 15
@@ -31,7 +32,8 @@ function highlightTerms(text, query) {
   const safe = escapeHtml(text)
   const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   const regex = new RegExp(`(${escaped})`, 'gi')
-  return safe.replace(regex, '<mark class="search-highlight">$1</mark>')
+  const highlighted = safe.replace(regex, '<mark class="search-highlight">$1</mark>')
+  return sanitizeHtml(highlighted)
 }
 
 function renderSkeletons(count = 6) {

@@ -1,12 +1,22 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
-// Configuração de CORS
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
+// Configuração de CORS — origem dinâmica (whitelist)
+const ALLOWED_ORIGINS = [
+  "https://conheca-farmacia-next.vercel.app",
+  "http://localhost:3000",
+];
+
+function getCorsHeaders(requestOrigin: string | null): Record<string, string> {
+  const origin = ALLOWED_ORIGINS.includes(requestOrigin || "")
+    ? requestOrigin!
+    : ALLOWED_ORIGINS[0];
+  return {
+    "Access-Control-Allow-Origin": origin,
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+  };
+}
 
 const RATE_LIMIT_WINDOW = 60000; // 60 segundos
 const RATE_LIMIT_MAX_REQUESTS = 5;
@@ -29,14 +39,14 @@ const SLUG_REGEX = /^[a-zA-Z0-9\-_]+$/;
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
+    return new Response('ok', { headers: getCorsHeaders(req.headers.get("origin")) });
   }
 
   try {
     if (req.method !== 'POST') {
       return new Response(JSON.stringify({ error: 'Method not allowed' }), {
         status: 405,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        headers: { ...getCorsHeaders(req.headers.get("origin")), 'Content-Type': 'application/json' }
       });
     }
 
@@ -56,7 +66,7 @@ Deno.serve(async (req) => {
             error: 'Muitas tentativas. Aguarde um momento antes de tentar novamente.'
           }), {
             status: 429,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            headers: { ...getCorsHeaders(req.headers.get("origin")), 'Content-Type': 'application/json' }
           });
         }
         ipRateLimit.count++;
@@ -78,7 +88,7 @@ Deno.serve(async (req) => {
         message: 'Inscrição processada com sucesso'
       }), {
         status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        headers: { ...getCorsHeaders(req.headers.get("origin")), 'Content-Type': 'application/json' }
       });
     }
 
@@ -120,7 +130,7 @@ Deno.serve(async (req) => {
         details: errors
       }), {
         status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        headers: { ...getCorsHeaders(req.headers.get("origin")), 'Content-Type': 'application/json' }
       });
     }
 
@@ -150,7 +160,7 @@ Deno.serve(async (req) => {
         error: 'Evento não encontrado'
       }), {
         status: 404,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        headers: { ...getCorsHeaders(req.headers.get("origin")), 'Content-Type': 'application/json' }
       });
     }
 
@@ -179,7 +189,7 @@ Deno.serve(async (req) => {
         error: 'Evento completo. Sem vagas disponíveis.'
       }), {
         status: 409,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        headers: { ...getCorsHeaders(req.headers.get("origin")), 'Content-Type': 'application/json' }
       });
     }
 
@@ -197,7 +207,7 @@ Deno.serve(async (req) => {
         error: 'Já está registado neste evento com este email'
       }), {
         status: 409,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        headers: { ...getCorsHeaders(req.headers.get("origin")), 'Content-Type': 'application/json' }
       });
     }
 
@@ -208,17 +218,16 @@ Deno.serve(async (req) => {
       message: 'Validação concluída. Inscrição pode ser processada.'
     }), {
       status: 200,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      headers: { ...getCorsHeaders(req.headers.get("origin")), 'Content-Type': 'application/json' }
     });
 
   } catch (error) {
     console.error('❌ Erro na Edge Function:', error);
     return new Response(JSON.stringify({
-      error: 'Erro ao processar validação',
-      message: error.message
+      error: 'Erro interno do servidor'
     }), {
       status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      headers: { ...getCorsHeaders(req.headers.get("origin")), 'Content-Type': 'application/json' }
     });
   }
 });

@@ -1,7 +1,7 @@
 # Diretrizes de Seguranca — O Sentinela
 
 > Referencia permanente para criacao e edicao de ficheiros no projeto Conheca Farmacia.
-> Gerado apos auditoria completa (32 vulnerabilidades, 2026-05-19).
+> Atualizado para **Next.js 16 App Router + Supabase + Vercel** (2026-06-02).
 > **Leia ANTES de criar ou editar qualquer ficheiro.**
 
 ---
@@ -11,260 +11,272 @@
 ### SEC-AM-01 — Identidade do Projeto
 O projeto **Conheca Farmacia** opera com anonimato tecnico. Nenhuma informacao de infraestrutura (IP, portas, stack) deve ser exposta em HTML ou respostas HTTP. As configuracoes residem em ficheiros locais protegidos por `.gitignore`.
 
-### SEC-AM-02 — Estrutura de Configuracao
-A aplicacao segue o padrao **MVC simplificado (Service Layer)**. Configuracoes sensíveis residem em ficheiros locais protegidos.
+### SEC-AM-02 — Estrutura de Configuracao (Next.js App Router)
+A aplicacao segue o padrao **App Router + Server Components + Server Actions**. Configuracoes sensiveis residem em environment variables.
 
-| Ambiente | Ficheiro | Status |
-|----------|----------|--------|
-| Producao | `.env` (Supabase + Vars) | Secreto/Local |
-| Desenvolvimento | `vite.config.js` | Publico (sem dados sensiveis) |
-| Administrativo | `src/admin/` | Exclusivo para `admin_users` |
+| Ambiente | Ficheiro/Recurso | Status |
+|----------|------------------|--------|
+| Producao | Vercel Environment Variables | Secreto/Remoto |
+| Desenvolvimento | `.env.local` | Secreto/Local |
+| Administrativo | `app/[lang]/(admin)/` | Exclusivo para `admin_users` |
+| Build/Deploy | `next.config.mjs` + `vercel.json` | Publico (sem dados sensiveis) |
 
-**Ferramentas:** Supabase (BaaS), Vite (Build), Netlify (Hosting), Node.js LTS.
+**Ferramentas:** Supabase (BaaS), Next.js 16 (Framework), Vercel (Hosting), Tailwind CSS v4.
 
 ---
 
 ## 2. Gestao de Autenticacao e Sessoes
 
-### SEC-ATH-01 — Persistencia de Sessao (Supabase)
-Para evitar o ciclo infinito de login, o cliente Supabase no frontend **deve** ter `persistSession: true`.
+### SEC-ATH-01 — Clientes Supabase SSR (3 Scopes)
+O projeto usa 3 clientes Supabase com scopes distintos. **NUNCA** criar clientes duplicados.
 
 ```javascript
-// src/config.js
-const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-  },
-});
+// lib/supabase/server.js — Server Components + Server Actions
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
+// Usa cookieStore.getAll() / setAll() — NUNCA persistSession:false
+
+// lib/supabase/client.js — Client Components (browser)
+import { createBrowserClient } from '@supabase/ssr'
+// Usar createBrowserClient() — automaticamente gerencia sessao
+
+// lib/supabase/middleware.js — Proxy (middleware)
+// Usado APENAS no proxy.js para refresh de sessao
 ```
 
-### SEC-ATH-02 — Controle de Acesso Administrativo (RLS)
-O acesso ao painel (`/src/admin/`) deve ser verificado contra a tabela `admin_users`. Funcoes `checkAuth()` locais que apenas verificam sessao sao **PROIBIDAS**.
+**PROIBIDO:** Criar `createClient()` fora destes 3 ficheiros.
+
+### SEC-ATH-02 — Controle de Acesso Administrativo (Proxy + RLS)
+O acesso admin tem **3 camadas** de protecao, por ordem de prioridade:
+
+1. **Proxy (proxy.js)** — Barreira PRIMARIA. Verifica sessao + `admin_users` ANTES de servir a pagina. Sem bypass.
+2. **AuthGuard (Client Component)** — Barreira SECUNDARIA. Redirect no cliente se o proxy falhar.
+3. **Server Actions** — Cada acao admin chama `requireAdmin()` internamente.
 
 ```javascript
-// PROIBIDO: funcao local que nao verifica admin_users
-async function checkAuth() {
-  const { data: { session } } = await supabase.auth.getSession();
-  return !!session;
+// PROIBIDO: AuthGuard como unica barreira
+// O proxy DEVE verificar todas as rotas admin antes de servir HTML
+
+// proxy.js — pattern correto:
+if (pathname.match(/\/(pt|en)\/admin(\/|$)/)) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.redirect(loginUrl)
+  const { data } = await supabase.from('admin_users')
+    .select('user_id').eq('user_id', user.id).single()
+  if (!data) return NextResponse.redirect(loginUrl)
 }
-
-// CORRETO: importar de auth.js (verifica sessao + admin_users)
-import { checkAuth, logout, initIdleTimeout } from './lib/auth.js';
 ```
-
-**Ficheiro centralizado:** `src/admin/lib/auth.js`
 
 ### SEC-ATH-03 — Timeout de Sessao por Inatividade
-Para mitigar hijacking de sessao, aplicar inactividade forçada apos 30 minutos.
+Para mitigar hijacking de sessao, aplicar inactividade forcada apos 30 minutos.
 
 ```javascript
-// src/admin/lib/auth.js
+// components/admin/AuthGuard.jsx
 const IDLE_TIMEOUT = 30 * 60 * 1000;
-let idleTimer = null;
-
-function resetIdleTimer() {
-  clearTimeout(idleTimer);
-  idleTimer = setTimeout(async () => { await logout(); }, IDLE_TIMEOUT);
-}
-
-export function initIdleTimeout() {
-  ['click', 'keydown', 'mousemove', 'scroll', 'touchstart'].forEach(evt =>
-    document.addEventListener(evt, resetIdleTimer, { passive: true })
-  );
-  resetIdleTimer();
-}
+// Iniciar idle timeout em TODAS as paginas admin
 ```
 
-**Ativo em:** Todas as 8 paginas admin (dashboard, artigos, eventos, lives — index, new, edit).
+**Ativo em:** Todas as paginas admin (dashboard, artigos, eventos, lives, newsletter, definicoes).
+
+### SEC-ATH-04 — RLS SELECT Restrito em Tabelas Admin
+Tabelas com dados administrativos (`admin_users`, `email_logs`) **NUNCA** devem ter `USING (true)` ou `qual: true` no SELECT para `authenticated`. Apenas admins podem ler.
+
+```sql
+-- PROIBIDO:
+CREATE POLICY "Admin users can read admin_users" ON admin_users
+  FOR SELECT TO authenticated USING (true);
+
+-- CORRETO:
+CREATE POLICY "Admin users can read admin_users" ON admin_users
+  FOR SELECT TO authenticated
+  USING (EXISTS (SELECT 1 FROM admin_users au WHERE au.user_id = auth.uid()));
+```
+
+**Tabelas afetadas:** `admin_users`, `email_logs`, `inscricoes`, `audit_logs`.
 
 ---
 
 ## 3. Seguranca no Cliente (OWASP Top 10)
 
-### SEC-XSS-01 — Sanitizacao de innerHTML com escapeHtml()
-Dados vindos do Supabase **NUNCA** devem ser injetados diretamente em `innerHTML`. Usar `escapeHtml()` em TODAS as interpolacoes de texto.
+### SEC-XSS-01 — Sanitizacao com escapeHtml() em JSX
+React escapa automaticamente `{expressoes}` em JSX. No entanto, `dangerouslySetInnerHTML` **REQUER** sanitizacao com DOMPurify.
 
-```javascript
-import { escapeHtml } from './lib/security.js';
+```jsx
+// SEGURO: JSX normal (React escapa automaticamente)
+<h3>{article.title}</h3>
+<p>{article.excerpt}</p>
 
-// PROIBIDO:
-card.innerHTML = `<h3>${article.title}</h3><p>${article.excerpt}</p>`;
-
-// CORRETO:
-card.innerHTML = `<h3>${escapeHtml(article.title)}</h3><p>${escapeHtml(article.excerpt)}</p>`;
-```
-
-**Campos que SEMPRE precisam escapeHtml():**
-- `title`, `titulo`, `name`
-- `excerpt`, `resumo`, `description`
-- `categoryLabel`, `categoriaLabel`
-- `location`, `platform`, `plataforma`
-- `host.name`, `host.role`, `host.organization`
-- `time`, `endTime`, `hora`
-- `ref` (referencias bibliograficas)
-- Qualquer string vinda do Supabase
-
-**Ficheiros aplicados:** `articles-logic.js`, `events-logic.js`, `lives-logic.js`, `home-events-logic.js`, `article-detail.js`, `event-detail.js`, `live-detail.js`, `dashboard.js`, `admin-articles.js`, `admin-events.js`, `admin-lives.js`, `preview.js`, `error-handler.js`.
-
-### SEC-XSS-02 — Escape de Atributos HTML com escapeAttr()
-Valores dentro de atributos HTML (`value=""`, `href=""`, `alt=""`) devem usar `escapeAttr()` para prevenir quebra de contexto.
-
-```javascript
-import { escapeAttr } from './lib/security.js';
-
-// PROIBIDO:
-newRow.innerHTML = `<input value="${nameValue}">`;
+// PROIBIDO sem DOMPurify:
+<div dangerouslySetInnerHTML={{ __html: content }} />
 
 // CORRETO:
-newRow.innerHTML = `<input value="${escapeAttr(nameValue)}">`;
+import DOMPurify from 'dompurify'
+const sanitized = DOMPurify.sanitize(content, {
+  ALLOWED_TAGS: ['h1','h2','h3','h4','p','a','ul','ol','li','blockquote',
+                  'code','pre','strong','em','img','br','hr','table',
+                  'thead','tbody','tr','th','td'],
+  ALLOWED_ATTR: ['href','src','alt','class','id','target','rel'],
+})
+<div dangerouslySetInnerHTML={{ __html: sanitized }} />
 ```
 
-**Atributos que SEMPRE precisam escapeAttr():**
-- `value=""` em inputs
-- `alt=""` em imagens
-- `title=""` em qualquer elemento
-- `data-*` attributes com dados externos
+**Ficheiros que usam dangerouslySetInnerHTML:** `ArticleContent.jsx`, `PesquisaPageClient.jsx` (highlight).
 
-**Ficheiros aplicados:** `eventos/new.html`, `eventos/edit.html`, `artigos/edit.html`.
+### SEC-XSS-02 — Sanitizacao em Highlight de Pesquisa
+A funcao `highlightText` em `PesquisaPageClient.jsx` usa `dangerouslySetInnerHTML` para destacar termos. O termo de pesquisa (user input) **DEVE** ser escapado antes de criar tags `<mark>`.
+
+```jsx
+import DOMPurify from 'dompurify'
+import { escapeHtml } from '@/lib/security'
+
+function highlightText(text, query) {
+  if (!query) return escapeHtml(text)
+  const escaped = escapeHtml(text)
+  const escapedQuery = escapeHtml(query)
+  const regex = new RegExp(
+    `(${escapedQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'
+  )
+  const highlighted = escaped.replace(regex, '<mark>$1</mark>')
+  return DOMPurify.sanitize(highlighted, { ALLOWED_TAGS: ['mark'], ALLOWED_ATTR: [] })
+}
+```
 
 ### SEC-XSS-03 — Validacao de URLs com validateUrl()
 URLs em `href` e `src` devem ser validadas para bloquear `javascript:`, `data:` e `vbscript:`.
 
 ```javascript
-import { validateUrl } from './lib/security.js';
-
-// PROIBIDO:
-accessBtn.href = live.link_acesso;
-li.innerHTML = `<a href="${material}">Link</a>`;
-
-// CORRETO:
-accessBtn.href = validateUrl(live.link_acesso);
-li.innerHTML = `<a href="${validateUrl(material)}">Link</a>`;
+import { validateUrl } from '@/lib/security'
+// Usar validateUrl() em todos os links dinamicos
 ```
 
-**Ficheiros aplicados:** `live-detail.js`, `lives-logic.js`.
+**Ficheiros aplicados:** `LiveCard.jsx`, `LiveDetailPage`, componentes com links externos.
 
 ### SEC-XSS-04 — Codificacao de Slugs em href
-Slugs usados em URLs devem ser codificados com `encodeURIComponent()` para prevenir injecao de atributos.
+Slugs usados em URLs devem ser codificados com `encodeURIComponent()`.
 
-```javascript
+```jsx
 // PROIBIDO:
-`<a href="artigo.html?id=${article.slug}">`;
+<a href={`/eventos/${event.slug}`}>
 
 // CORRETO:
-`<a href="artigo.html?id=${encodeURIComponent(article.slug)}">`;
+<a href={`/eventos/${encodeURIComponent(event.slug)}`}>
 ```
 
-### SEC-XSS-05 — Restricao de img src no DOMPurify
-O DOMPurify deve restringir `img src` a dominios confiaveis (Supabase Storage + caminhos relativos).
+### SEC-XSS-05 — DOMPurify em Todo dangerouslySetInnerHTML
+QUALQUER uso de `dangerouslySetInnerHTML` no projeto **DEVE** ser precedido por `DOMPurify.sanitize()`. Sem excecoes.
 
-```javascript
-// src/article-detail.js
-DOMPurify.addHook('afterSanitizeAttributes', function (node) {
-  if (node.tagName === 'IMG') {
-    const src = node.getAttribute('src');
-    if (src && !src.startsWith('/') && !src.startsWith('./') && !src.startsWith('data:') && !src.includes('supabase.co')) {
-      node.removeAttribute('src');
-    }
-  }
-  if (node.tagName === 'A') {
-    const href = node.getAttribute('href');
-    if (href && (href.startsWith('javascript:') || href.startsWith('data:') || href.startsWith('vbscript:'))) {
-      node.removeAttribute('href');
-    }
-  }
-});
+```bash
+# Verificar antes de commit:
+grep -r "dangerouslySetInnerHTML" components/ app/
+# Cada resultado DEVE ter DOMPurify.sanitize() no codigo proximo
 ```
 
 ---
 
 ## 4. Gestao de Dados e Endpoints
 
-### SEC-API-01 — Normalizacao e Tipagem de Dados
-A funcao de resposta da API (`src/lib/api.js`) deve converter dados do backend (Supabase) para o formato camelCase padronizado.
-
-```javascript
-// Funcao de normalizacao (exemplo de artigos)
-export function normalizeArticle(row) {
-  return {
-    id: row.id || row.slug,
-    slug: row.slug,
-    title: row.title,
-    excerpt: row.excerpt,
-    image: row.image_url,
-    // ...
-  };
-}
-```
-
-### SEC-API-02 — Funcoes Delete com Verificacao de Sessao
-Todas as funcoes de eliminacao devem verificar sessao antes de executar.
-
-```javascript
-export async function deleteArticle(id) {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) throw new Error('Unauthorized: login required');
-  const { error } = await supabaseClient.from('articles').delete().eq('id', id);
-  if (error) throw error;
-}
-```
-
-### SEC-API-03 — Restricao de Colunas em SELECT Publico
-Tabelas com campos sensiveis (senhas, meeting_ids) devem usar select explicito em vez de `select('*')`.
+### SEC-API-01 — Restricao de Colunas em SELECT Publico
+Tabelas com campos sensiveis (senhas, meeting_ids, access_links) devem usar select explicito em vez de `select('*')`.
 
 ```javascript
 // PROIBIDO:
-select('*').from('lives').eq('status', 'published')
+supabase.from('lives').select('*').eq('status', 'published')
 
 // CORRETO:
-select('id, slug, title, excerpt, category, date, time, platform, status')
-  .from('lives').eq('status', 'published')
+supabase.from('lives')
+  .select('id, slug, title, excerpt, category, date, time, platform, status')
+  .eq('status', 'published')
 ```
 
-### SEC-API-04 — Cliente Supabase Centralizado
-Nunca criar clientes Supabase duplicados com fallback hardcoded. Usar sempre o modulo partilhado.
+### SEC-API-02 — Server Actions com requireAdmin()
+Todas as Server Actions admin devem chamar `requireAdmin()` para verificar autorizacao.
+
+```javascript
+// lib/actions/content.js
+async function requireAdmin() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Unauthorized')
+  const { data } = await supabase.from('admin_users')
+    .select('user_id').eq('user_id', user.id).single()
+  if (!data) throw new Error('Forbidden')
+}
+```
+
+### SEC-API-03 — Mensagens de Erro Genericas em Server Actions
+**NUNCA** expor `error.message` do Supabase/PostgreSQL ao cliente. Estas mensagens podem conter nomes de colunas, tabelas e estrutura interna da base de dados.
 
 ```javascript
 // PROIBIDO:
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-const supabase = createClient(url, key);
+return { success: false, error: `Erro ao criar artigo: ${error.message}` }
 
 // CORRETO:
-import { supabaseClient } from '../config.js';
+console.error('Supabase error on createArticle:', error.code, error.message) // Log interno
+return { success: false, error: 'Erro ao criar artigo. Tente novamente.' } // Mensagem generica
 ```
+
+**Ficheiros afetados:** `lib/actions/content.js`, `lib/actions/settings.js`, todas as Server Actions.
+
+### SEC-API-04 — CORS Whitelist em Edge Functions
+Edge Functions **NUNCA** devem usar `Access-Control-Allow-Origin: *`. Sempre validar a origem contra uma whitelist.
+
+```typescript
+// PROIBIDO:
+'Access-Control-Allow-Origin': '*'
+
+// CORRETO:
+const allowedOrigins = [
+  'https://conheca-farmacia-next.vercel.app',
+  'https://conhecafarmacia.com',
+  'http://localhost:3000' // dev only
+]
+const origin = req.headers.get('origin') || ''
+const corsOrigin = allowedOrigins.includes(origin) ? origin : allowedOrigins[0]
+const headers = {
+  'Access-Control-Allow-Origin': corsOrigin,
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Max-Age': '86400',
+}
+```
+
+**Edge Functions afetadas:** `send-inscription-email`, `send-newsletter-email`, `validate-inscription`.
 
 ---
 
 ## 5. Hardening de Infraestrutura
 
-### SEC-HRD-01 — Headers HTTP Obrigatorios (Netlify)
-Definir politicas de conteudo restritivas no `netlify.toml`.
+### SEC-HRD-01 — Headers HTTP Obrigatorios (Vercel)
+Definir politicas de conteudo restritivas no `vercel.json` (primario) e `next.config.mjs` (fallback).
 
-```toml
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co"
+```json
+// vercel.json
+{
+  "headers": [{
+    "source": "/(.*)",
+    "headers": [
+      { "key": "X-Frame-Options", "value": "DENY" },
+      { "key": "X-XSS-Protection", "value": "1; mode=block" },
+      { "key": "X-Content-Type-Options", "value": "nosniff" },
+      { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+      { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
+    ]
+  }]
+}
 ```
 
-**Ao adicionar novos CDNs:** Atualizar o `Content-Security-Policy` no `netlify.toml`.
+**Ao adicionar novos CDNs:** Atualizar o `Content-Security-Policy` no `vercel.json` e `next.config.mjs`.
 
 ### SEC-HRD-02 — Subresource Integrity (SRI) em Scripts CDN
 Scripts externos devem ter hash criptografico para prevenir supply chain attacks.
 
 ```html
 <!-- PROIBIDO: -->
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
 
 <!-- CORRETO: -->
 <script
-  src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"
+  src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"
   integrity="sha384-HASH_AQUI"
   crossorigin="anonymous">
 </script>
@@ -275,164 +287,95 @@ Scripts externos devem ter hash criptografico para prevenir supply chain attacks
 curl -sL "URL_DO_SCRIPT" | openssl dgst -sha384 -binary | openssl base64 -A
 ```
 
-**Scripts com SRI no projeto:**
-| Script | Hash | Ficheiros |
-|--------|------|-----------|
-| marked.min.js | `sha384-948ahk...` | artigo.html |
-| dompurify@3.0.6 | `sha384-cwS6Yd...` | artigo.html, inscricao.html |
-| chart.js | `sha384-jb8JQM...` | dashboard.html |
-| lucide@latest | `sha384-ZgnJ3Z...` | 9 ficheiros admin |
+### SEC-HRD-03 — X-Frame-Options: DENY
+Definir `X-Frame-Options: DENY` para prevenir clickjacking. Ativo em `vercel.json`.
 
-### SEC-HRD-03 — Restricao de Insercao em Iframes
-Definir `X-Frame-Options: DENY` para prevenir clickjacking.
+### SEC-HRD-04 — Script Anti-FOUC e CSP
+O script inline anti-FOUC em `app/layout.js` usa `dangerouslySetInnerHTML`. Embora o conteudo seja hardcoded e seguro, deve ser migrado para ficheiro externo quando a CSP bloquear `unsafe-inline`.
 
----
+```jsx
+// ATUAL (aceitavel enquanto CSP permite unsafe-inline):
+<script dangerouslySetInnerHTML={{ __html: `(...)theme init(...)` }} />
 
-## 6. Auditoria e Logging
-
-### SEC-AUD-01 — Padrao de Colunas de Auditoria
-Todas as tabelas de dados publicos devem conter metadados de gestao.
-
-```sql
-published_at TIMESTAMPTZ,
-created_at TIMESTAMPTZ DEFAULT NOW(),
-updated_at TIMESTAMPTZ DEFAULT NOW()
-```
-
-### SEC-AUD-02 — Nao Logar Dados Sensiveis
-`console.log` com dados pessoais, queries, ou chaves e **PROIBIDO** em producao.
-
-```javascript
-// PROIBIDO:
-console.log('Email:', data.email);
-console.log('SUPABASE_URL:', SUPABASE_URL);
-
-// CORRETO: logger condicional
-if (import.meta.env.DEV) {
-  console.log('Debug info');
-}
-```
-
-### SEC-AUD-03 — Nunca Expor Chaves no Window Global
-Variaveis `window.SUPABASE_URL`, `window.SUPABASE_ANON_KEY` e `window.debug*` sao **PROIBIDAS**.
-
-```javascript
-// PROIBIDO:
-window.SUPABASE_URL = SUPABASE_URL;
-window.debugInscriptions = async function(slug) { ... };
+// FUTURO (quando CSP remover unsafe-inline):
+<script src="/scripts/theme-init.js" />
 ```
 
 ---
 
-## 7. Seguranca no Upload e Ficheiros
-
-### SEC-UPL-01 — Validacao de Upload de Imagens
-Antes de enviar para o Supabase Storage, validar tipo MIME e tamanho.
-
-```javascript
-// src/admin/lib/image-compressor.js
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-
-function validateImage(file) {
-  if (!file) throw new Error('Nenhum ficheiro selecionado.');
-  if (!ALLOWED_MIME_TYPES.includes(file.type)) {
-    throw new Error('Tipo de ficheiro nao permitido. Use apenas JPEG, PNG, WebP ou GIF.');
-  }
-  if (file.size > MAX_FILE_SIZE) {
-    throw new Error('O ficheiro e demasiado grande. Limite: 5MB.');
-  }
-  return true;
-}
-```
-
-### SEC-UPL-02 — Sanitizacao de Nomes de Ficheiros
-Nomes de ficheiros devem ser sanitizados para prevenir path traversal.
-
-```javascript
-const safeName = fileName.replace(/[^a-zA-Z0-9/._-]/g, '_');
-```
-
----
-
-## 8. Protecao de Formularios
+## 6. Protecao de Formularios
 
 ### SEC-FRM-01 — Honeypot Anti-Spam
 Todos os formularios publicos devem ter campo honeypot oculto.
 
-```html
-<form id="newsletter-form">
-  <div style="position: absolute; left: -9999px;" aria-hidden="true">
-    <input type="text" name="website" tabindex="-1" autocomplete="offline" />
-  </div>
-  <input type="email" id="newsletter-email" required />
-  <button type="submit">Subscrever</button>
-</form>
+```jsx
+<div style={{ position: 'absolute', left: '-9999px' }} aria-hidden="true">
+  <input type="text" name="website" tabIndex={-1} autoComplete="off" />
+</div>
 ```
 
 ### SEC-FRM-02 — Inputs de Senha com type="password"
 Campos de senha devem usar `type="password"`, nunca `type="text"`.
 
-```html
-<!-- PROIBIDO: -->
-<input type="text" id="password" name="password">
-
-<!-- CORRETO: -->
-<input type="password" id="password" name="password">
-```
-
 ### SEC-FRM-03 — Links com target="_blank"
 Todos os links com `target="_blank"` devem ter `rel="noopener noreferrer"`.
 
-```html
-<!-- PROIBIDO: -->
+```jsx
+// PROIBIDO:
 <a href="https://exemplo.com" target="_blank">Link</a>
 
-<!-- CORRETO: -->
+// CORRETO:
 <a href="https://exemplo.com" target="_blank" rel="noopener noreferrer">Link</a>
 ```
 
-### SEC-FRM-04 — Redirecionamento sem Contexto
-Formularios que dependem de parametros de URL devem redirecionar quando o parametro falta.
+### SEC-FRM-04 — Validacao de Input com maxLength
+Todos os campos de formulario publico **DEVEM** ter `maxLength` para prevenir insercao de dados gigantes (DoS).
 
-```javascript
-// inscricao.html — se falta ?evento=, mostrar mensagem e link para /eventos.html
-if (!eventoSlug) {
-  formContainer.innerHTML = `
-    <div style="text-align:center; padding: 3rem 1rem;">
-      <h2>Evento nao especificado</h2>
-      <p>Selecione um evento antes de se inscrever.</p>
-      <a href="/eventos.html" class="btn btn-primary">Ver Eventos</a>
-    </div>
-  `;
-}
-```
-
----
-
-## 9. Seguranca em localStorage
-
-### SEC-STR-01 — try/catch obrigatorio
-Todas as operacoes `localStorage` devem ter try/catch para lidar com quota excedida ou modo privado.
-
-```javascript
+```jsx
 // PROIBIDO:
-localStorage.setItem(key, value);
+<input type="text" name="name" required />
 
 // CORRETO:
-try {
-  localStorage.setItem(key, value);
-} catch {
-  // localStorage indisponivel
-}
+<input type="text" name="name" required maxLength={200} />
+<input type="email" name="email" required maxLength={254} />
+<input type="tel" name="phone" maxLength={20} />
+```
+
+**Limites obrigatorios:**
+| Campo | maxLength | Justificacao |
+|-------|-----------|-------------|
+| name/nome | 200 | RFC 5321 + razoavel |
+| email | 254 | RFC 5321 max |
+| phone/telefone | 20 | Internacional + formato |
+| nif | 20 | NIF empresarial |
+| organizacao | 200 | Razao social |
+
+### SEC-FRM-05 — CAPTCHA/Turnstile Anti-Bot (Recomendado)
+O honeypot e trivialmente contornavel por bots sofisticados. Implementar Cloudflare Turnstile (gratuito e privacy-friendly) como segunda camada.
+
+```jsx
+// Futuro: adicionar Turnstile nos formularios publicos
+import { Turnstile } from '@marsidev/react-turnstile'
+<Turnstile siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+  onVerify={(token) => setTurnstileToken(token)} />
+```
+
+**Prioridade:** Medio. Implementar quando houver evidencia de abuso por bots.
+
+### SEC-FRM-06 — Sanitizacao de Input no Cliente
+Campos de texto livre (name, organizacao) **DEVEM** ser sanitizados com `escapeHtml()` antes de enviar para o backend.
+
+```javascript
+import { escapeHtml } from '@/lib/security'
+const name = escapeHtml(formData.get('name')?.toString().trim() || '')
 ```
 
 ---
 
-## 10. Regras SQL (Supabase)
+## 7. Regras SQL (Supabase)
 
 ### SEC-SQL-01 — RLS Nunca USING (true) para Dados Pessoais
-Tabelas com dados pessoais devem restringir SELECT a admins.
+Tabelas com dados pessoais devem restringir SELECT a admins. NUNCA usar `USING (true)` ou `qual: true` para `authenticated`.
 
 ```sql
 -- PROIBIDO:
@@ -441,9 +384,11 @@ CREATE POLICY "public_select" ON inscricoes
 
 -- CORRETO:
 CREATE POLICY "Admins can read inscricoes" ON inscricoes
-  FOR SELECT
+  FOR SELECT TO authenticated
   USING (EXISTS (SELECT 1 FROM admin_users WHERE admin_users.user_id = auth.uid()));
 ```
+
+**Tabelas com dados pessoais:** `inscricoes`, `newsletter`, `admin_users`, `email_logs`.
 
 ### SEC-SQL-02 — RPC SECURITY DEFINER com Validacao
 Funcoes RPC devem validar input e so atualizar conteudo publicado.
@@ -456,81 +401,149 @@ BEGIN
     RAISE EXCEPTION 'Invalid slug';
   END IF;
   UPDATE articles SET view_count = view_count + 1
-    WHERE slug = article_slug AND status = 'published';
+  WHERE slug = article_slug AND status = 'published';
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 ```
 
-### SEC-SQL-03 — Constraints NOT NULL e CHECK
-Colunas obrigatorias devem ter NOT NULL. Colunas com valores fixos devem ter CHECK.
+### SEC-SQL-03 — CHECK Constraints de Comprimento em Tabelas Publicas
+Tabelas que aceitam INSERTs anonimos **DEVEM** ter CHECK constraints de comprimento para prevenir DoS por dados gigantes.
 
 ```sql
-ALTER TABLE articles ALTER COLUMN status SET NOT NULL;
-ALTER TABLE admin_users ADD CONSTRAINT admin_users_role_check
-  CHECK (role IN ('editor', 'admin', 'superadmin'));
+-- inscricoes: campos de texto livre
+ALTER TABLE public.inscricoes
+  ADD CONSTRAINT inscricoes_name_length_check CHECK (length(name) <= 200),
+  ADD CONSTRAINT inscricoes_email_length_check CHECK (length(email) <= 254);
+
+-- page_views: campos de tracking
+ALTER TABLE public.page_views
+  ADD CONSTRAINT page_views_path_length_check CHECK (length(page_path) <= 500),
+  ADD CONSTRAINT page_views_title_length_check CHECK (length(page_title) <= 500),
+  ADD CONSTRAINT page_views_referrer_length_check CHECK (length(referrer) <= 2000);
+
+-- newsletter: campo email
+ALTER TABLE public.newsletter
+  ADD CONSTRAINT newsletter_email_length_check CHECK (length(email) <= 254);
 ```
 
-### SEC-SQL-04 — INSERT Anonimo com Validacao
-Politicas de INSERT devem validar formato de email, telefone e slug.
+**Regra:** Toda tabela com `INSERT TO anon` ou `INSERT TO public` DEVE ter CHECK de comprimento em todos os campos `text`.
+
+### SEC-SQL-04 — INSERT Anonimo com Validacao na Policy
+Politicas de INSERT para roles publicos DEVEM validar formato e comprimento, nao apenas `WITH_CHECK: true`.
 
 ```sql
+-- PROIBIDO:
+CREATE POLICY "Allow anonymous inserts" ON inscricoes
+  FOR INSERT TO anon WITH CHECK (true);
+
+-- CORRETO:
 CREATE POLICY "Allow valid inscricoes" ON inscricoes
-  FOR INSERT
+  FOR INSERT TO anon
   WITH CHECK (
-    nome IS NOT NULL AND length(nome) >= 3
+    name IS NOT NULL AND length(name) <= 200
     AND email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
-    AND telefone IS NOT NULL AND length(telefone) <= 20
-    AND evento_slug ~* '^[a-zA-Z0-9\-_]+$'
+    AND length(email) <= 254
   );
 ```
 
+### SEC-SQL-05 — Sem Policies Duplicadas
+Nunca criar duas policies para o mesmo role na mesma operacao. Se existe policy para `anon` e `public` no mesmo INSERT, a policy `public` e redundante e abre vetor para utilizadores autenticados contornarem validacoes.
+
+```sql
+-- PROIBIDO: ter DUAS policies INSERT em inscricoes
+-- uma para anon e outra para public (ambas WITH_CHECK: true)
+
+-- CORRETO: uma unica policy para anon com validacao real
+CREATE POLICY "Anon can insert inscricoes" ON public.inscricoes
+  FOR INSERT TO anon WITH CHECK ( /* validacoes */ );
+```
+
+### SEC-SQL-06 — Retencao de Audit Logs
+A tabela `audit_logs` cresce indefinidamente. Implementar retencao (ex: 90 dias).
+
+```sql
+CREATE OR REPLACE FUNCTION clean_old_audit_logs()
+RETURNS void AS $$
+BEGIN
+  DELETE FROM public.audit_logs WHERE created_at < now() - interval '90 days';
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+```
+
+Executar via cron ou Edge Function periodica.
+
 ---
 
-## 11. Seguranca em CSS
+## 8. Seguranca no Upload e Ficheiros
 
-### SEC-CSS-01 — Sem Injecao Dinamica
-Nunca injetar `<style>` via innerHTML. Usar variaveis CSS.
+### SEC-UPL-01 — Validacao de Upload de Imagens
+Antes de enviar para o Supabase Storage, validar tipo MIME e tamanho.
 
 ```javascript
-// PROIBIDO:
-element.innerHTML = `<style>.card { background: ${userColor} }</style>`;
-
-// CORRETO:
-element.style.setProperty('--card-bg', userColor);
+// components/admin/ImageUpload.jsx
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 ```
 
-### SEC-CSS-02 — Variaveis CSS para Temas
-Usar variaveis CSS para cores e espacamentos, nunca valores hardcoded.
+### SEC-UPL-02 — Sanitizacao de Nomes de Ficheiros
+Nomes de ficheiros devem ser sanitizados para prevenir path traversal.
 
-```css
-:root {
-  --admin-bg: #f8fafc;
-  --admin-text: #1e293b;
-}
-html.dark {
-  --admin-bg: #0f172a;
-  --admin-text: #e2e8f0;
-}
+```javascript
+const safeName = fileName.replace(/[^a-zA-Z0-9/._-]/g, '_');
 ```
 
 ---
 
-## 12. Seguranca em JSON
+## 9. Auditoria e Logging
 
-### SEC-JSON-01 — Nunca Incluir Credenciais em Fallbacks
-Ficheiros JSON publicos nao devem conter senhas, meeting_ids ou credenciais.
+### SEC-AUD-01 — Padrao de Colunas de Auditoria
+Todas as tabelas de dados publicos devem conter metadados de gestao.
 
-```json
-// PROIBIDO:
-{ "id_reuniao": "123 456 7890", "senha": "abc123" }
-
-// CORRETO:
-{ "id_reuniao": null, "senha": null }
+```sql
+published_at TIMESTAMPTZ,
+created_at TIMESTAMPTZ DEFAULT NOW(),
+updated_at TIMESTAMPTZ DEFAULT NOW()
 ```
+
+### SEC-AUD-02 — Sem console.log em Producao
+`console.log` em producao e **PROIBIDO**. Server Components podem usar `console.error` no servidor. Client Components **NUNCA** devem logar dados sensiveis.
+
+```javascript
+// PROIBIDO em Client Components:
+console.log('User data:', user.email)
+
+// CORRETO: logger condicional
+const isDev = process.env.NODE_ENV === 'development'
+if (isDev) console.log('Debug info')
+```
+
+**Ficheiros a limpar:** `lib/actions/lists.js`, `app/[lang]/(public)/eventos/[slug]/page.js`, `app/[lang]/(public)/lives/[slug]/page.js`, `app/[lang]/(public)/artigos/[slug]/page.js`.
+
+### SEC-AUD-03 — Nunca Expor Chaves no Window Global
+Variaveis `window.SUPABASE_URL`, `window.SUPABASE_ANON_KEY` e `window.debug*` sao **PROIBIDAS**. Em Next.js, usar `process.env.NEXT_PUBLIC_*` apenas.
+
+### SEC-AUD-04 — MarkdownEditor Paste Sanitizacao
+O editor Markdown deve sanitizar conteudo colado (paste) para prevenir injecao de HTML.
+
+```javascript
+// components/admin/MarkdownEditor.jsx
+editor.addEventListener('paste', (e) => {
+  e.preventDefault()
+  const text = e.clipboardData.getData('text/plain')
+  document.execCommand('insertText', false, text)
+})
+```
+
+---
+
+## 10. Seguranca em JSON e i18n
+
+### SEC-JSON-01 — Nunca Incluir Credenciais em JSON Publico
+Ficheiros JSON publicos (`public/i18n/*.json`) nao devem conter senhas, meeting_ids ou credenciais.
 
 ### SEC-JSON-02 — Validar JSON antes de Commit
 ```bash
-node -e "JSON.parse(require('fs').readFileSync('package.json'))"
+node -e "JSON.parse(require('fs').readFileSync('public/i18n/pt.json'))"
 ```
 
 ---
@@ -539,19 +552,24 @@ node -e "JSON.parse(require('fs').readFileSync('package.json'))"
 
 Antes de commitar qualquer alteracao, verificar:
 
-- [ ] innerHTML com dados Supabase usa `escapeHtml()`? (SEC-XSS-01)
-- [ ] Atributos HTML com dados externos usam `escapeAttr()`? (SEC-XSS-02)
+- [ ] `dangerouslySetInnerHTML` usa `DOMPurify.sanitize()`? (SEC-XSS-01, SEC-XSS-05)
+- [ ] Highlight de pesquisa escapa query antes de criar `<mark>`? (SEC-XSS-02)
 - [ ] URLs em href/src usam `validateUrl()`? (SEC-XSS-03)
-- [ ] Scripts CDN tem `integrity` + `crossorigin`? (SEC-HRD-02)
 - [ ] Links `target="_blank"` tem `rel="noopener noreferrer"`? (SEC-FRM-03)
+- [ ] Inputs publicos tem `maxLength`? (SEC-FRM-04)
 - [ ] Nenhuma chave exposta em `window.*`? (SEC-AUD-03)
-- [ ] Nenhum `console.log` com dados sensiveis? (SEC-AUD-02)
-- [ ] Auth usa `checkAuth()` centralizado? (SEC-ATH-02)
-- [ ] localStorage com try/catch? (SEC-STR-01)
-- [ ] RLS sem `USING (true)` em dados pessoais? (SEC-SQL-01)
+- [ ] Nenhum `console.log` em Client Components? (SEC-AUD-02)
+- [ ] Server Actions usam `requireAdmin()`? (SEC-ATH-02, SEC-API-02)
+- [ ] Server Actions NAO expoem `error.message`? (SEC-API-03)
+- [ ] Edge Functions usam CORS whitelist (nao `*`)? (SEC-API-04)
+- [ ] Proxy verifica TODAS as rotas admin? (SEC-ATH-02)
+- [ ] RLS sem `USING (true)` em dados pessoais? (SEC-SQL-01, SEC-ATH-04)
+- [ ] RLS INSERT anonimo tem validacao real (nao `WITH_CHECK: true`)? (SEC-SQL-04)
+- [ ] Tabelas com INSERT anonimo tem CHECK constraints de comprimento? (SEC-SQL-03)
+- [ ] Sem policies RLS duplicadas para mesmo role+operacao? (SEC-SQL-05)
 - [ ] Upload com validacao de tipo/tamanho? (SEC-UPL-01)
 - [ ] Formularios com honeypot? (SEC-FRM-01)
-- [ ] Inputs de senha com type="password"? (SEC-FRM-02)
+- [ ] Scripts CDN tem `integrity` + `crossorigin`? (SEC-HRD-02)
 
 ---
 
@@ -560,52 +578,60 @@ Antes de commitar qualquer alteracao, verificar:
 | ID | Area | Descricao |
 |----|------|-----------|
 | SEC-AM-01 | Identidade | Anonimato tecnico, sem exposicao de infraestrutura |
-| SEC-AM-02 | Configuracao | MVC simplificado, configs em ficheiros locais |
-| SEC-ATH-01 | Auth | persistSession: true obrigatorio |
-| SEC-ATH-02 | Auth | checkAuth() centralizado via auth.js |
+| SEC-AM-02 | Configuracao | App Router + Server Components, env vars no Vercel |
+| SEC-ATH-01 | Auth | 3 clientes Supabase SSR (server/client/middleware) |
+| SEC-ATH-02 | Auth | Proxy como barreira primaria + AuthGuard + requireAdmin() |
 | SEC-ATH-03 | Auth | Timeout 30min por inatividade |
-| SEC-XSS-01 | XSS | escapeHtml() em innerHTML |
-| SEC-XSS-02 | XSS | escapeAttr() em atributos HTML |
+| SEC-ATH-04 | Auth | RLS SELECT restrito a admins em tabelas admin |
+| SEC-XSS-01 | XSS | DOMPurify em dangerouslySetInnerHTML |
+| SEC-XSS-02 | XSS | Sanitizacao em highlight de pesquisa |
 | SEC-XSS-03 | XSS | validateUrl() em href/src |
 | SEC-XSS-04 | XSS | encodeURIComponent() em slugs |
-| SEC-XSS-05 | XSS | DOMPurify img src restrito a supabase.co |
-| SEC-API-01 | API | Normalizacao camelCase |
-| SEC-API-02 | API | Delete com verificacao de sessao |
-| SEC-API-03 | API | SELECT explicito sem colunas sensiveis |
-| SEC-API-04 | API | Cliente Supabase centralizado |
-| SEC-HRD-01 | Infra | Headers HTTP obrigatorios (CSP, X-Frame, etc.) |
+| SEC-XSS-05 | XSS | Todo dangerouslySetInnerHTML requer DOMPurify |
+| SEC-API-01 | API | SELECT explicito sem colunas sensiveis |
+| SEC-API-02 | API | Server Actions com requireAdmin() |
+| SEC-API-03 | API | Mensagens de erro genericas (nunca error.message) |
+| SEC-API-04 | API | CORS whitelist em Edge Functions (nunca *) |
+| SEC-HRD-01 | Infra | Headers HTTP obrigatorios (vercel.json + next.config.mjs) |
 | SEC-HRD-02 | Infra | SRI em scripts CDN |
 | SEC-HRD-03 | Infra | X-Frame-Options: DENY |
+| SEC-HRD-04 | Infra | Script anti-FOUC deve migrar para ficheiro externo |
 | SEC-AUD-01 | Auditoria | Colunas published_at, created_at, updated_at |
-| SEC-AUD-02 | Auditoria | Sem console.log sensiveis |
+| SEC-AUD-02 | Auditoria | Sem console.log em producao |
 | SEC-AUD-03 | Auditoria | Sem window.* com chaves |
+| SEC-AUD-04 | Auditoria | MarkdownEditor paste sanitizacao |
 | SEC-UPL-01 | Upload | Validacao MIME + 5MB max |
 | SEC-UPL-02 | Upload | Sanitizacao de nomes de ficheiros |
 | SEC-FRM-01 | Forms | Honeypot anti-spam |
 | SEC-FRM-02 | Forms | type="password" em senhas |
 | SEC-FRM-03 | Forms | rel="noopener" em target="_blank" |
-| SEC-FRM-04 | Forms | Redirecionamento sem contexto |
-| SEC-STR-01 | Storage | try/catch em localStorage |
+| SEC-FRM-04 | Forms | maxLength em todos os inputs publicos |
+| SEC-FRM-05 | Forms | CAPTCHA/Turnstile anti-bot (recomendado) |
+| SEC-FRM-06 | Forms | escapeHtml() em inputs de texto livre |
 | SEC-SQL-01 | SQL | RLS sem USING (true) em dados pessoais |
 | SEC-SQL-02 | SQL | RPC SECURITY DEFINER com validacao |
-| SEC-SQL-03 | SQL | NOT NULL + CHECK constraints |
-| SEC-SQL-04 | SQL | INSERT com validacao de formato |
-| SEC-CSS-01 | CSS | Sem injecao dinamica de style |
-| SEC-CSS-02 | CSS | Variaveis CSS para temas |
-| SEC-JSON-01 | JSON | Sem credenciais em fallbacks |
+| SEC-SQL-03 | SQL | CHECK constraints de comprimento em tabelas publicas |
+| SEC-SQL-04 | SQL | INSERT anonimo com validacao real na policy |
+| SEC-SQL-05 | SQL | Sem policies RLS duplicadas |
+| SEC-SQL-06 | SQL | Retencao de audit_logs (90 dias) |
+| SEC-JSON-01 | JSON | Sem credenciais em JSON publico |
 | SEC-JSON-02 | JSON | Validar JSON antes de commit |
 
 ---
 
-## Ficheiros de Referencia
+## Ficheiros de Referencia (Next.js App Router)
 
 | Ficheiro | Funcao |
 |----------|--------|
-| `src/lib/security.js` | escapeHtml, escapeAttr, validateUrl |
-| `src/admin/lib/auth.js` | checkAuth, logout, initIdleTimeout |
-| `src/admin/lib/image-compressor.js` | validateImage (MIME + 5MB) |
-| `src/config.js` | supabaseClient (unico ponto de acesso) |
-| `netlify.toml` | Headers de seguranca (CSP, X-Frame-Options) |
-| `src/migrations/010-fix-rls-policies-security.sql` | Padrao RLS correto |
-| `src/migrations/011-fix-rpc-functions-security.sql` | Padrao RPC correto |
-| `src/migrations/012-add-constraints-security.sql` | CHECK e NOT NULL constraints |
+| `lib/security.js` | escapeHtml, escapeAttr, validateUrl |
+| `lib/supabase/server.js` | createClient() para Server Components |
+| `lib/supabase/client.js` | createBrowserClient() para Client Components |
+| `lib/supabase/middleware.js` | updateSession() para proxy |
+| `proxy.js` | Auth redirect, admin protection, i18n redirect |
+| `components/admin/AuthGuard.jsx` | Idle timeout + redirect client-side |
+| `components/admin/ImageUpload.jsx` | validateImage (MIME + 5MB) |
+| `vercel.json` | Headers de seguranca (CSP, X-Frame-Options) |
+| `next.config.mjs` | Headers fallback + config Next.js |
+| `lib/actions/content.js` | Server Actions CRUD (artigos, eventos, lives) |
+| `lib/actions/settings.js` | Server Actions (perfil, password, 2FA) |
+| `supabase/functions/` | Edge Functions (validate-inscription, send-*) |

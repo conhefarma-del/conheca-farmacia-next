@@ -9,6 +9,7 @@ import ReferenceEditor from '@/components/admin/ReferenceEditor'
 import { createArticle, updateArticle } from '@/lib/actions/content'
 import { Marked } from 'marked'
 import DOMPurify from 'isomorphic-dompurify'
+import { sanitizeHtml } from '@/lib/sanitize'
 
 const marked = new Marked()
 
@@ -105,7 +106,7 @@ export default function ArticleForm({ mode = 'create', initialData = null, lang 
       ${excerpt ? `<div class="preview-excerpt">${excerpt}</div>` : ''}
       <div class="preview-article-body">${bodyHtml}</div>
     `
-    setPreviewHtml(html)
+    setPreviewHtml(sanitizeHtml(html))
     setShowPreview(true)
     document.body.style.overflow = 'hidden'
   }, [title, category, publishedDate, readTime, content, imageUrl, authorName, authorRole, authorAvatar, authorAvatarBg, excerpt])
