@@ -2,6 +2,42 @@
 
 Lições aprendidas do projeto "Conheça Farmácia" — Next.js App Router.
 
+## Data & Supabase — Crítico
+
+### RPC com SECURITY DEFINER para Contagens Públicas
+
+**Problema**: Website público (sem autenticação) precisa mostrar contagem de inscrições em eventos. Usar `supabase.from('inscricoes').select('*', {count: 'exact'})` retorna 0 porque RLS bloqueia leituras anon na tabela `inscricoes`.
+
+**Sintoma**: `spotsLeft = capacity - (inscriptionCount || 0)` → `spotsLeft = capacity` (mostra total, não vagas restantes).
+
+**Solução**: Criar RPC `get_event_inscription_count(slug)` com `SECURITY DEFINER`:
+
+```sql
+CREATE FUNCTION get_event_inscription_count(event_slug TEXT)
+RETURNS BIGINT
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  result BIGINT;
+BEGIN
+  SELECT COUNT(*)::BIGINT INTO result
+  FROM inscricoes
+  WHERE evento_slug = event_slug;
+  RETURN COALESCE(result, 0);
+END;
+$$;
+```
+
+**Regras**:
+1. RPCs que leem tabelas com RLS restritiva → usar `SECURITY DEFINER`
+2. `SET search_path = public` sempre (previne attack vector)
+3. Chamar via `supabase.rpc()` no client
+4. Para listagens, usar RPC que já retorna counts (`get_events_with_inscription_counts`)
+
+**Princípio**: `SECURITY DEFINER` executa como owner da função, bypassando RLS. Seguro porque a função só expõe o count (não dados sensíveis).
+
 ## General Lessons
 
 ### 1. Edição de Ficheiros JavaScript
