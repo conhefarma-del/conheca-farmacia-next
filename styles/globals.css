@@ -323,18 +323,17 @@ html.dark .form-note {
   /* Mobile Drawer */
   .mobile-drawer {
     position: fixed;
-    top: 0;
+    top: 60px; /* Altura da utility bar */
     right: 0;
     width: 78%;
     max-width: 380px;
-    height: 100dvh;
+    height: calc(100dvh - 60px); /* Altura total menos utility bar */
     z-index: 55;
     background: linear-gradient(
       180deg,
       var(--color-brand-bg-alt) 0%,
       var(--color-brand-bg) 100%
     );
-    border-radius: 40px 0 0 40px;
     box-shadow: -8px 0 30px rgba(0, 42, 50, 0.12);
     display: flex;
     flex-direction: column;
