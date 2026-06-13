@@ -8,6 +8,23 @@ export const metadata = {
   metadataBase: new URL('https://conhecafarmacia.com'),
   title: 'Conheça Farmácia',
   description: 'Portal de saúde e farmácia',
+  openGraph: {
+    title: 'Conheça Farmácia',
+    description: 'Portal de saúde e farmácia',
+    url: 'https://conhecafarmacia.com',
+    siteName: 'Conheça Farmácia',
+    locale: 'pt_PT',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Conheça Farmácia',
+    description: 'Portal de saúde e farmácia',
+  },
+  icons: {
+    icon: '/icon.png',
+    apple: '/apple-icon.png',
+  },
 }
 
 export default async function RootLayout({ children }) {

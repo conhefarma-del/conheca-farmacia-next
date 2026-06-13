@@ -53,7 +53,7 @@ function getWelcomeTemplate(nome: string, unsubUrl?: string): string {
 <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:2px;overflow:hidden;border:1px solid #e8e8e8">
 
 <tr><td style="padding:48px 40px 40px 40px;text-align:center;border-bottom:1px solid #f0f0f0">
-<img src="${LOGO_LIGHT}" alt="Conheça Farmácia" style="height:32px;margin-bottom:24px;display:block;margin-left:auto;margin-right:auto">
+<img src="${LOGO_LIGHT}" alt="Conheça Farmácia" style="height:52px;margin-bottom:24px;display:block;margin-left:auto;margin-right:auto">
 <p style="margin:0;font-size:11px;color:#0a844f;text-transform:uppercase;letter-spacing:3px;font-weight:600;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Bem-vindo</p>
 </td></tr>
 
@@ -129,7 +129,7 @@ function getArticleTemplate(title: string, description: string, url: string, uns
 <tr><td style="padding:40px 40px 0 40px">
 <table width="100%" cellpadding="0" cellspacing="0"><tr>
 <td style="padding-bottom:24px;border-bottom:2px solid #1a1a1a;text-align:center">
-<img src="${LOGO_LIGHT}" alt="Conheça Farmácia" style="height:32px;display:block;margin-left:auto;margin-right:auto">
+<img src="${LOGO_LIGHT}" alt="Conheça Farmácia" style="height:52px;display:block;margin-left:auto;margin-right:auto">
 </td>
 </tr></table>
 </td></tr>
@@ -197,7 +197,7 @@ function getEventTemplate(title: string, description: string, url: string, date?
 <table width="600" cellpadding="0" cellspacing="0" style="overflow:hidden;border-radius:2px">
 
 <tr><td style="background-color:#003a2e;padding:48px 40px;text-align:center">
-<img src="${LOGO_DARK}" alt="Conheça Farmácia" style="height:32px;margin-bottom:24px;display:block;margin-left:auto;margin-right:auto">
+<img src="${LOGO_DARK}" alt="Conheça Farmácia" style="height:52px;margin-bottom:24px;display:block;margin-left:auto;margin-right:auto">
 <table width="60" cellpadding="0" cellspacing="0" align="center"><tr><td style="height:1px;background-color:rgba(255,255,255,0.15);font-size:1px;line-height:1px">&nbsp;</td></tr></table>
 </td></tr>
 
@@ -263,7 +263,7 @@ function getLiveTemplate(title: string, description: string, url: string, date?:
 <table width="600" cellpadding="0" cellspacing="0" style="overflow:hidden;border-radius:4px">
 
 <tr><td style="background:linear-gradient(135deg,#00493a 0%,#0a844f 50%,#006171 100%);padding:48px 40px;text-align:center">
-<img src="${LOGO_DARK}" alt="Conheça Farmácia" style="height:32px;margin-bottom:20px;display:block;margin-left:auto;margin-right:auto">
+<img src="${LOGO_DARK}" alt="Conheça Farmácia" style="height:52px;margin-bottom:20px;display:block;margin-left:auto;margin-right:auto">
 <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
 <span style="display:inline-block;background-color:rgba(255,255,255,0.2);color:#ffffff;padding:6px 16px;border-radius:20px;font-size:11px;font-weight:700;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;letter-spacing:2px;text-transform:uppercase">Transmissão ao Vivo</span>
 </td></tr></table>
@@ -390,7 +390,7 @@ serve(async (req) => {
 
     if (type === "welcome") {
       htmlContent = getWelcomeTemplate(nome || "Subscritor", unsubUrl);
-      subject = "Bem-vindo à Newsletter - Conheça Farmácia";
+      subject = "Bem-vindo a Newsletter - Conheca Farmacia";
     } else if (type === "article") {
       htmlContent = getArticleTemplate(
         contentTitle || "Novo artigo",
@@ -398,7 +398,7 @@ serve(async (req) => {
         contentUrl || fallbackUrl,
         unsubUrl
       );
-      subject = "Novo Artigo - Conheça Farmácia";
+      subject = "Novo Artigo - Conheca Farmacia";
     } else if (type === "event") {
       htmlContent = getEventTemplate(
         contentTitle || "Novo evento",
@@ -408,7 +408,7 @@ serve(async (req) => {
         contentLocation,
         unsubUrl
       );
-      subject = "Novo Evento - Conheça Farmácia";
+      subject = "Novo Evento - Conheca Farmacia";
     } else {
       htmlContent = getLiveTemplate(
         contentTitle || "Nova live",
@@ -418,14 +418,16 @@ serve(async (req) => {
         contentPlatform,
         unsubUrl
       );
-      subject = "Nova Live - Conheça Farmácia";
+      subject = "Nova Live - Conheca Farmacia";
     }
 
     // From / Reply-To por tipo de email (domínio conhecafarmacia.com)
+    // Sem acentos no display name: denomailer codifica nomes com non-ASCII
+    // como =?utf-8?Q?...?=, e o Zoho Mail renderiza isso em bruto.
     const fromAddress =
       type === "welcome"
-        ? "Conheça Farmácia <newsletter@conhecafarmacia.com>"
-        : "Conheça Farmácia <info@conhecafarmacia.com>";
+        ? "Conheca Farmacia <newsletter@conhecafarmacia.com>"
+        : "Conheca Farmacia <info@conhecafarmacia.com>";
     const replyToAddress = "contato@conhecafarmacia.com";
 
     // Cabeçalhos antispam (RFC 8058 + RFC 2369)
