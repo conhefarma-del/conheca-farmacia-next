@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const SITE_URL = "https://conheca-farmacia-next.vercel.app";
+const SITE_URL = "https://conhecafarmacia.com";
 
 function getInscriptionEmailTemplate(
   nomeParticipante: string,
@@ -91,7 +91,7 @@ function getInscriptionEmailTemplate(
                         </table>
                         <p style="margin: 32px 0 0 0; font-size: 14px; color: #666666; line-height: 1.6; border-top: 1px solid #e0e0e0; padding-top: 24px;">
                             Se tiver dúvidas ou precisar de ajuda, entre em contacto connosco através de
-                            <a href="mailto:conhecerfarmacia@gmail.com" style="color: #00493a; text-decoration: none; font-weight: 600;">conhecerfarmacia@gmail.com</a>
+                            <a href="mailto:contato@conhecafarmacia.com" style="color: #00493a; text-decoration: none; font-weight: 600;">contato@conhecafarmacia.com</a>
                             ou
                             <a href="https://wa.me/244925696002" style="color: #00493a; text-decoration: none; font-weight: 600;">+244 925 696 002</a>.
                         </p>
@@ -128,6 +128,7 @@ function getInscriptionEmailTemplate(
 
 const ALLOWED_ORIGINS = [
   "https://conheca-farmacia-next.vercel.app",
+  "https://conhecafarmacia.com",
   "http://localhost:3000",
 ];
 
@@ -214,42 +215,55 @@ serve(async (req: Request) => {
       unsubscribeUrl
     );
 
-    // Send via Resend
-    const resendApiKey = Deno.env.get("RESEND_API_KEY");
-    if (!resendApiKey) {
-      throw new Error("RESEND_API_KEY não configurada");
+    // Send via SMTP (Amazon SES) com denomailer
+    const smtpUser = Deno.env.get("SMTP_USER");
+    const smtpPassword = Deno.env.get("SMTP_PASSWORD");
+    if (!smtpUser || !smtpPassword) {
+      throw new Error("SMTP_USER / SMTP_PASSWORD não configuradas");
     }
 
-    const resendResponse = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${resendApiKey}`,
+    // Cabeçalhos antispam (RFC 8058)
+    const listUnsubscribeMailto = `mailto:contato@conhecafarmacia.com?subject=unsubscribe&body=Por%20favor%2C%20remova-me%20da%20lista.`;
+    const listUnsubscribeHeaders: Record<string, string> = {
+      "List-Unsubscribe": `<${listUnsubscribeMailto}>, <${unsubscribeUrl}>`,
+      "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+    };
+
+    const { SMTPClient } = await import("denomailer/mod.ts");
+    const client = new SMTPClient({
+      connection: {
+        hostname: Deno.env.get("SMTP_HOST") ?? "email-smtp.eu-north-1.amazonaws.com",
+        port: Number(Deno.env.get("SMTP_PORT") ?? "465"),
+        tls: true,
+        auth: {
+          username: smtpUser,
+          password: smtpPassword,
+        },
       },
-      body: JSON.stringify({
-        from: "Conheça Farmácia <onboarding@resend.dev>",
+    });
+    try {
+      await client.send({
+        from: "Conheça Farmácia <inscricao@conhecafarmacia.com>",
         to: email,
         subject: "Confirmação de Inscrição - Conheça Farmácia",
+        content: htmlContent,
         html: htmlContent,
-        reply_to: "conhecerfarmacia@gmail.com",
-      }),
-    });
-
-    if (!resendResponse.ok) {
-      const errorData = await resendResponse.json();
-      throw new Error(`Resend Error: ${JSON.stringify(errorData)}`);
+        replyTo: "contato@conhecafarmacia.com",
+        headers: listUnsubscribeHeaders,
+      });
+    } finally {
+      await client.close();
     }
 
-    const resendData = await resendResponse.json();
-
     return new Response(
-      JSON.stringify({ success: true, resend_id: resendData.id }),
+      JSON.stringify({ success: true }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   } catch (error) {
-    console.error("send-inscription-email error:", error);
+    const e = error as Error;
+    console.error("send-inscription-email error:", e.message, e.stack);
     return new Response(
-      JSON.stringify({ error: "Erro interno do servidor" }),
+      JSON.stringify({ error: "Erro interno do servidor", debug: e.message }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   }

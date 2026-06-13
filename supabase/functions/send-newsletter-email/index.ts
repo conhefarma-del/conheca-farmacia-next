@@ -1,10 +1,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "";
-
 // CORS — origem dinâmica (whitelist)
 const ALLOWED_ORIGINS = [
   "https://conheca-farmacia-next.vercel.app",
+  "https://conhecafarmacia.com",
   "http://localhost:3000",
 ];
 
@@ -33,8 +32,8 @@ interface EmailRequest {
 }
 
 // Logo URLs — usar URLs externas (base64 é bloqueado por Gmail/Outlook)
-const LOGO_LIGHT = "https://conheca-farmacia-next.vercel.app/logo/3.png";
-const LOGO_DARK = "https://conheca-farmacia-next.vercel.app/logo/3_2.png";
+const LOGO_LIGHT = "https://conhecafarmacia.com/logo/3.png";
+const LOGO_DARK = "https://conhecafarmacia.com/logo/3_2.png";
 
 /**
  * Welcome — Minimalista premium
@@ -54,7 +53,7 @@ function getWelcomeTemplate(nome: string, unsubUrl?: string): string {
 <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:2px;overflow:hidden;border:1px solid #e8e8e8">
 
 <tr><td style="padding:48px 40px 40px 40px;text-align:center;border-bottom:1px solid #f0f0f0">
-<img src="${LOGO_LIGHT}" alt="Conheça Farmácia" style="height:52px;margin-bottom:24px">
+<img src="${LOGO_LIGHT}" alt="Conheça Farmácia" style="height:32px;margin-bottom:24px;display:block;margin-left:auto;margin-right:auto">
 <p style="margin:0;font-size:11px;color:#0a844f;text-transform:uppercase;letter-spacing:3px;font-weight:600;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Bem-vindo</p>
 </td></tr>
 
@@ -91,7 +90,7 @@ Obrigado por fazer parte de uma comunidade dedicada à excelência no cuidado fa
 </table>
 
 <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:40px"><tr><td align="center">
-<a href="https://conheca-farmacia-next.vercel.app" style="display:inline-block;background:linear-gradient(135deg,#00493a 0%,#0a844f 100%);color:#ffffff;padding:16px 40px;text-decoration:none;border-radius:8px;font-size:14px;font-weight:600;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;letter-spacing:0.3px">Explorar Conteúdo</a>
+<a href="https://conhecafarmacia.com" style="display:inline-block;background:linear-gradient(135deg,#00493a 0%,#0a844f 100%);color:#ffffff;padding:16px 40px;text-decoration:none;border-radius:8px;font-size:14px;font-weight:600;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;letter-spacing:0.3px">Explorar Conteúdo</a>
 </td></tr></table>
 </td></tr>
 
@@ -129,8 +128,8 @@ function getArticleTemplate(title: string, description: string, url: string, uns
 
 <tr><td style="padding:40px 40px 0 40px">
 <table width="100%" cellpadding="0" cellspacing="0"><tr>
-<td style="padding-bottom:24px;border-bottom:2px solid #1a1a1a">
-<img src="${LOGO_LIGHT}" alt="Conheça Farmácia" style="height:36px">
+<td style="padding-bottom:24px;border-bottom:2px solid #1a1a1a;text-align:center">
+<img src="${LOGO_LIGHT}" alt="Conheça Farmácia" style="height:32px;display:block;margin-left:auto;margin-right:auto">
 </td>
 </tr></table>
 </td></tr>
@@ -198,7 +197,7 @@ function getEventTemplate(title: string, description: string, url: string, date?
 <table width="600" cellpadding="0" cellspacing="0" style="overflow:hidden;border-radius:2px">
 
 <tr><td style="background-color:#003a2e;padding:48px 40px;text-align:center">
-<img src="${LOGO_DARK}" alt="Conheça Farmácia" style="height:52px;margin-bottom:24px">
+<img src="${LOGO_DARK}" alt="Conheça Farmácia" style="height:32px;margin-bottom:24px;display:block;margin-left:auto;margin-right:auto">
 <table width="60" cellpadding="0" cellspacing="0" align="center"><tr><td style="height:1px;background-color:rgba(255,255,255,0.15);font-size:1px;line-height:1px">&nbsp;</td></tr></table>
 </td></tr>
 
@@ -264,7 +263,7 @@ function getLiveTemplate(title: string, description: string, url: string, date?:
 <table width="600" cellpadding="0" cellspacing="0" style="overflow:hidden;border-radius:4px">
 
 <tr><td style="background:linear-gradient(135deg,#00493a 0%,#0a844f 50%,#006171 100%);padding:48px 40px;text-align:center">
-<img src="${LOGO_DARK}" alt="Conheça Farmácia" style="height:48px;margin-bottom:20px">
+<img src="${LOGO_DARK}" alt="Conheça Farmácia" style="height:32px;margin-bottom:20px;display:block;margin-left:auto;margin-right:auto">
 <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
 <span style="display:inline-block;background-color:rgba(255,255,255,0.2);color:#ffffff;padding:6px 16px;border-radius:20px;font-size:11px;font-weight:700;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;letter-spacing:2px;text-transform:uppercase">Transmissão ao Vivo</span>
 </td></tr></table>
@@ -370,8 +369,11 @@ serve(async (req) => {
       );
     }
 
-    if (!RESEND_API_KEY) {
-      console.error("RESEND_API_KEY not configured");
+    // Validação SMTP (Amazon SES)
+    const smtpUser = Deno.env.get("SMTP_USER");
+    const smtpPassword = Deno.env.get("SMTP_PASSWORD");
+    if (!smtpUser || !smtpPassword) {
+      console.error("SMTP_USER / SMTP_PASSWORD não configuradas");
       return new Response(
         JSON.stringify({ error: "Email service not configured" }),
         { status: 500, headers: { ...getCorsHeaders(req.headers.get("origin")), "Content-Type": "application/json" } }
@@ -381,10 +383,10 @@ serve(async (req) => {
     let htmlContent: string;
     let subject: string;
 
-    const fallbackUrl = "https://conheca-farmacia-next.vercel.app";
+    const fallbackUrl = "https://conhecafarmacia.com";
     const unsubUrl = unsubscribeToken
-      ? `https://conheca-farmacia-next.vercel.app/pt/unsubscribe?token=${unsubscribeToken}`
-      : "";
+      ? `https://conhecafarmacia.com/pt/unsubscribe?token=${unsubscribeToken}`
+      : "https://conhecafarmacia.com/pt/unsubscribe";
 
     if (type === "welcome") {
       htmlContent = getWelcomeTemplate(nome || "Subscritor", unsubUrl);
@@ -419,47 +421,62 @@ serve(async (req) => {
       subject = "Nova Live - Conheça Farmácia";
     }
 
-    const resendResponse = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${RESEND_API_KEY}`,
+    // From / Reply-To por tipo de email (domínio conhecafarmacia.com)
+    const fromAddress =
+      type === "welcome"
+        ? "Conheça Farmácia <newsletter@conhecafarmacia.com>"
+        : "Conheça Farmácia <info@conhecafarmacia.com>";
+    const replyToAddress = "contato@conhecafarmacia.com";
+
+    // Cabeçalhos antispam (RFC 8058 + RFC 2369)
+    // List-Unsubscribe-Post: List-Unsubscribe=One-Click (mailto) para Gmail/Outlook
+    const listUnsubscribeMailto = `mailto:${replyToAddress}?subject=unsubscribe&body=Por%20favor%2C%20remova-me%20da%20lista.`;
+    const listUnsubscribeHeaders: Record<string, string> = {
+      "List-Unsubscribe": `<${listUnsubscribeMailto}>, <${unsubUrl}>`,
+      "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+    };
+
+    // Envio via SMTP (Amazon SES) com denomailer
+    const { SMTPClient } = await import("denomailer/mod.ts");
+    const client = new SMTPClient({
+      connection: {
+        hostname: Deno.env.get("SMTP_HOST") ?? "email-smtp.eu-north-1.amazonaws.com",
+        port: Number(Deno.env.get("SMTP_PORT") ?? "465"),
+        tls: true,
+        auth: {
+          username: smtpUser,
+          password: smtpPassword,
+        },
       },
-      body: JSON.stringify({
-        from: "Conheça Farmácia <onboarding@resend.dev>",
+    });
+    try {
+      await client.send({
+        from: fromAddress,
         to: email,
         subject,
+        content: htmlContent,
         html: htmlContent,
-        reply_to: "conhecerfarmacia@gmail.com",
-      }),
-    });
-
-    if (!resendResponse.ok) {
-      const errorText = await resendResponse.text();
-      console.error(`Resend API error (${resendResponse.status}):`, errorText);
-      return new Response(
-        JSON.stringify({ error: "Erro interno do servidor" }),
-        {
-          status: 500,
-          headers: { ...getCorsHeaders(req.headers.get("origin")), "Content-Type": "application/json" },
-        }
-      );
+        replyTo: replyToAddress,
+        headers: listUnsubscribeHeaders,
+      });
+    } finally {
+      await client.close();
     }
 
-    const result = await resendResponse.json();
-
     return new Response(
-      JSON.stringify({ success: true, id: result.id }),
+      JSON.stringify({ success: true }),
       {
         status: 200,
         headers: { ...getCorsHeaders(req.headers.get("origin")), "Content-Type": "application/json" },
       }
     );
   } catch (error) {
-    console.error("send-newsletter-email error:", (error as Error).message, (error as Error).stack);
+    const e = error as Error;
+    console.error("send-newsletter-email error:", e.message, e.stack);
     return new Response(
       JSON.stringify({
         error: "Erro interno do servidor",
+        debug: e.message,
       }),
       {
         status: 500,
