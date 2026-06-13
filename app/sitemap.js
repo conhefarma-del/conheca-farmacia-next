@@ -4,7 +4,7 @@ import { getLives } from '@/lib/api/lives'
 
 export const revalidate = 43200 // 12 horas
 
-const SITE_URL = 'https://conhecafarmacia.vercel.app'
+const SITE_URL = 'https://conhecafarmacia.com'
 const LOCALES = ['pt', 'en']
 
 export default async function sitemap() {

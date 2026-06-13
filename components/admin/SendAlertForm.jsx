@@ -24,7 +24,7 @@ const CONTENT_TYPES = [
   { value: 'live', label: 'Live' },
 ]
 
-const BASE_URL = 'https://conheca-farmacia-next.vercel.app'
+const BASE_URL = 'https://conhecafarmacia.com'
 
 function buildContentUrl(type, slug) {
   if (type === 'article') return `${BASE_URL}/pt/artigos/${slug}`
