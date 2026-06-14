@@ -189,7 +189,6 @@ html.dark .form-note {
     text-transform: uppercase;
     white-space: nowrap;
     will-change: transform, opacity;
-    /* Transition managed by JS to avoid CSS/JS conflicts */
   }
 
   .hero-ticker-top,
@@ -210,7 +209,6 @@ html.dark .form-note {
     letter-spacing: 0.08em;
     opacity: 0.35;
     will-change: transform, opacity;
-    transition: transform 0.4s ease, opacity 0.4s ease;
   }
 
   .hero-ticker-text--prominent {
@@ -2587,4 +2585,61 @@ html.dark .page-btn.active {
   .search-title {
     font-size: 1.5rem;
   }
+}
+
+/* =============================================
+   TRANSLATION FALLBACK BANNER (public pages)
+   - Shown on /en/* when the requested content has no EN translation.
+   - Visually understated: thin amber band at top of content.
+   ============================================= */
+.translation-fallback-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: #fff7e6;
+  border: 1px solid #f0b429;
+  border-left: 4px solid #f0b429;
+  border-radius: 6px;
+  padding: 0.875rem 1rem;
+  margin: 0 0 1.5rem 0;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: #5a3a00;
+}
+
+.translation-fallback-banner__icon {
+  font-size: 1.125rem;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 0.05rem;
+}
+
+.translation-fallback-banner__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.translation-fallback-banner__link {
+  color: #5a3a00;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.translation-fallback-banner__link:hover {
+  color: #2e1d00;
+}
+
+html.dark .translation-fallback-banner {
+  background: #3a2c0f;
+  border-color: #c08a1c;
+  border-left-color: #c08a1c;
+  color: #f5d68a;
+}
+
+html.dark .translation-fallback-banner__link {
+  color: #f5d68a;
+}
+
+html.dark .translation-fallback-banner__link:hover {
+  color: #fff;
 }

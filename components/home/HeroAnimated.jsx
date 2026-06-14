@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useRef, useContext } from 'react'
+import { useLayoutEffect, useRef, useContext } from 'react'
+import gsap from 'gsap'
 import { LangContext } from '@/lib/contexts'
 
 const PHRASES = [
@@ -11,264 +12,247 @@ const PHRASES = [
   { key: 'hero.animated_lives', icon: '/assets/icons/Asset 20-branco.svg' },
 ]
 
-const CYCLE_INTERVAL = 2500
-const ANIMATION_DURATION = 300
+const EXIT_DURATION = 0.3
+const SLIDE_IN_DURATION = 0.4
+const HOLD_DURATION = 0.5
+const CYCLE_INTERVAL = 2.0
+const REPEAT_DELAY = CYCLE_INTERVAL - EXIT_DURATION - SLIDE_IN_DURATION - HOLD_DURATION
 
+/**
+ * Ticker vertical que mostra, em cada momento, o estado passado/futuro do card.
+ *
+ * Layout (de cima para baixo):
+ *   [t2] histórico distante  (opacity 0.35)
+ *   [t1] histórico recente   (opacity 0.7 + scale 1.28)
+ *   [card] actual
+ *   [b1] próximo              (opacity 0.7 + scale 1.28)
+ *   [b2] a seguir             (opacity 0.35)
+ *
+ * Em cada ciclo (a cada CYCLE_INTERVAL):
+ *   1. EXIT (0.3s): card sobe e sai pela 1ª linha do top.
+ *      t1 do top sobe uma posição (vira t2, perde scale).
+ *      t2 do top sobe e desaparece.
+ *      b1 do bottom sobe e vira o novo card.
+ *      b2 do bottom sobe e vira t1 (ganha scale + opacity 0.7).
+ *   2. SWAP: actualizar DOM (textos, ícones, classes).
+ *   3. SLIDE-IN (0.4s): card novo aparece (fade-in) na sua posição central.
+ *   4. HOLD (0.5s): card fica parado, visível.
+ *   5. REPEAT_DELAY: pausa até CYCLE_INTERVAL.
+ */
 export default function HeroAnimated() {
   const { t } = useContext(LangContext)
-
-  // Refs for imperative DOM manipulation (matches original hero-animated.js)
-  const containerRef = useRef(null)
+  const t2Ref = useRef(null)
+  const t1Ref = useRef(null)
   const cardIconRef = useRef(null)
   const cardTextRef = useRef(null)
-  const tickerTopRef = useRef(null)
-  const tickerBottomRef = useRef(null)
+  const b1Ref = useRef(null)
+  const b2Ref = useRef(null)
 
-  const stateRef = useRef({
-    currentIndex: 0,
-    exitHistory: [],
-    intervalId: null,
-  })
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined') return
 
-  // Store t() in a ref so the interval callback always has the latest translations
-  const tRef = useRef(t)
-  tRef.current = t
+    const prefersReducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    ).matches
 
-  useEffect(() => {
-    const container = containerRef.current
-    if (!container) return
+    const t2 = t2Ref.current
+    const t1 = t1Ref.current
+    const cardIcon = cardIconRef.current
+    const cardText = cardTextRef.current
+    const b1 = b1Ref.current
+    const b2 = b2Ref.current
+    if (!t2 || !t1 || !cardIcon || !cardText || !b1 || !b2) return
 
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const total = PHRASES.length
+    let currentIndex = 0
 
-    function getPhraseText(index) {
-      return tRef.current(PHRASES[index].key)
+    function getText(idx) {
+      return t(PHRASES[idx].key)
     }
 
-    function renderTickerTop() {
-      const tickerTop = tickerTopRef.current
-      if (!tickerTop) return
-      const { exitHistory } = stateRef.current
-      const reversed = [...exitHistory].reverse()
-      let lines = tickerTop.querySelectorAll('.hero-ticker-text')
-
-      // Add or remove elements to match
-      while (lines.length < reversed.length) {
-        const el = document.createElement('span')
-        el.className = 'hero-ticker-text'
-        tickerTop.appendChild(el)
-        lines = tickerTop.querySelectorAll('.hero-ticker-text')
-      }
-      while (lines.length > reversed.length) {
-        lines[lines.length - 1].remove()
-        lines = tickerTop.querySelectorAll('.hero-ticker-text')
-      }
-
-      // Update in place (no innerHTML clear)
-      reversed.forEach((idx, i) => {
-        const isRecent = i === reversed.length - 1
-        lines[i].textContent = getPhraseText(idx)
-        lines[i].className = 'hero-ticker-text' + (isRecent ? ' hero-ticker-text--prominent' : '')
-        lines[i].style.transition = 'none'
-        lines[i].style.transform = ''
-        lines[i].style.opacity = ''
-      })
+    function applySlotContent(el, idx, prominent) {
+      el.textContent = getText(idx)
+      el.classList.toggle('hero-ticker-text--prominent', !!prominent)
     }
 
-    function renderTickerBottom() {
-      const tickerBottom = tickerBottomRef.current
-      if (!tickerBottom) return
-      const { currentIndex } = stateRef.current
-      const lines = tickerBottom.querySelectorAll('.hero-ticker-text')
-      if (lines.length < 2) return
+    function render() {
+      const prev = (currentIndex - 1 + total) % total
+      const prev2 = (currentIndex - 2 + total) % total
+      const next = (currentIndex + 1) % total
+      const next2 = (currentIndex + 2) % total
 
-      // Line 1 = next phrase (prominent)
-      const idx1 = (currentIndex + 1) % PHRASES.length
-      lines[0].textContent = getPhraseText(idx1)
-      lines[0].className = 'hero-ticker-text hero-ticker-text--prominent'
-      lines[0].style.transition = 'none'
-      lines[0].style.transform = ''
-      lines[0].style.opacity = ''
-
-      // Line 2 = phrase after next
-      const idx2 = (currentIndex + 2) % PHRASES.length
-      lines[1].textContent = getPhraseText(idx2)
-      lines[1].className = 'hero-ticker-text'
-      lines[1].style.transition = 'none'
-      lines[1].style.transform = ''
-      lines[1].style.opacity = ''
+      applySlotContent(t2, prev2, false)
+      applySlotContent(t1, prev, true)
+      cardText.textContent = getText(currentIndex)
+      cardIcon.src = PHRASES[currentIndex].icon
+      applySlotContent(b1, next, true)
+      applySlotContent(b2, next2, false)
     }
 
-    function cycle() {
-      const cardText = cardTextRef.current
-      const cardIcon = cardIconRef.current
-      const tickerBottom = tickerBottomRef.current
-      const tickerTop = tickerTopRef.current
-      if (!cardText || !cardIcon) return
-
-      // --- BATCH ALL READS (before any writes) ---
-      let bottomDistance = 0
-      let topDistance = 0
-      let topLine2Height = 0
-
-      const bottomLines = tickerBottom ? tickerBottom.querySelectorAll('.hero-ticker-text') : []
-      if (bottomLines.length >= 2) {
-        const rect1 = bottomLines[0].getBoundingClientRect()
-        const rect2 = bottomLines[1].getBoundingClientRect()
-        bottomDistance = rect2.top - rect1.top
-      }
-
-      const topLines = tickerTop ? tickerTop.querySelectorAll('.hero-ticker-text') : []
-      if (topLines.length >= 2) {
-        // prominent is the last child (closest to card)
-        const line1 = topLines[topLines.length - 1]
-        const line2 = topLines[0]
-        const rect1 = line1.getBoundingClientRect()
-        const rect2 = line2.getBoundingClientRect()
-        topDistance = rect2.top - rect1.top
-        topLine2Height = rect2.height
-      }
-
-      // --- BATCH ALL WRITES ---
-
-      // 1. Ticker bottom: Line 2 → Line 1, Line 1 slides up and disappears
-      if (bottomLines.length >= 2) {
-        const line1 = bottomLines[0]
-        const line2 = bottomLines[1]
-
-        line1.style.transition = 'transform 0.4s ease, opacity 0.4s ease'
-        line1.style.transform = `translateY(-${bottomDistance}px)`
-        line1.style.opacity = '0'
-
-        line2.style.transition = 'transform 0.4s ease, opacity 0.4s ease'
-        line2.style.transform = `translateY(-${bottomDistance}px)`
-        line2.classList.add('hero-ticker-text--prominent')
-      }
-
-      // 2. Ticker top: Line 1 → Line 2, Line 2 slides up and disappears
-      if (topLines.length >= 2) {
-        const line1 = topLines[topLines.length - 1]
-        const line2 = topLines[0]
-
-        line2.style.transition = 'transform 0.4s ease, opacity 0.4s ease'
-        line2.style.transform = `translateY(-${topLine2Height + 10}px)`
-        line2.style.opacity = '0'
-
-        line1.style.transition = 'transform 0.4s ease, opacity 0.4s ease'
-        line1.style.transform = `translateY(${topDistance}px)`
-        line1.classList.remove('hero-ticker-text--prominent')
-      }
-
-      // 3. Slide card text + icon UP and out
-      cardText.style.transition = 'transform 0.3s ease, opacity 0.3s ease'
-      cardText.style.transform = 'translateY(-120%)'
-      cardText.style.opacity = '0'
-
-      cardIcon.style.transition = 'transform 0.3s ease, opacity 0.3s ease'
-      cardIcon.style.transform = 'translateY(-120%)'
-      cardIcon.style.opacity = '0'
-
-      setTimeout(() => {
-        // 4. Add exited phrase to history
-        stateRef.current.exitHistory.unshift(stateRef.current.currentIndex)
-        if (stateRef.current.exitHistory.length > 2) stateRef.current.exitHistory.pop()
-
-        // 5. Update ticker top
-        renderTickerTop()
-
-        // 6. Move to next phrase
-        stateRef.current.currentIndex = (stateRef.current.currentIndex + 1) % PHRASES.length
-
-        // 7. Update card content
-        cardText.textContent = getPhraseText(stateRef.current.currentIndex)
-        cardIcon.src = PHRASES[stateRef.current.currentIndex].icon
-
-        // 8. Slide card IN from bottom (rAF double — no offsetHeight forced reflow)
-        cardText.style.transition = 'none'
-        cardText.style.transform = 'translateY(120%)'
-        cardText.style.opacity = '0'
-
-        cardIcon.style.transition = 'none'
-        cardIcon.style.transform = 'translateY(120%)'
-        cardIcon.style.opacity = '0'
-
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            cardText.style.transition = 'transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease'
-            cardText.style.transform = 'translateY(0)'
-            cardText.style.opacity = '1'
-
-            cardIcon.style.transition = 'transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease'
-            cardIcon.style.transform = 'translateY(0)'
-            cardIcon.style.opacity = '1'
-          })
-        })
-
-        // 9. Update ticker bottom
-        renderTickerBottom()
-      }, ANIMATION_DURATION)
-    }
-
-    function startCycle() {
-      if (stateRef.current.intervalId) return
-      stateRef.current.intervalId = setInterval(cycle, CYCLE_INTERVAL)
-    }
-
-    function stopCycle() {
-      if (stateRef.current.intervalId) {
-        clearInterval(stateRef.current.intervalId)
-        stateRef.current.intervalId = null
-      }
-    }
-
-    // Initialize: set initial card content
-    cardTextRef.current.textContent = getPhraseText(0)
-    cardIconRef.current.src = PHRASES[0].icon
-
-    // Create 2 ticker-bottom lines
-    for (let i = 0; i < 2; i++) {
-      const el = document.createElement('span')
-      el.className = 'hero-ticker-text' + (i === 0 ? ' hero-ticker-text--prominent' : '')
-      tickerBottomRef.current.appendChild(el)
-    }
-
-    renderTickerBottom()
+    render()
 
     if (prefersReducedMotion) return
 
-    startCycle()
+    // Distância vertical entre duas linhas consecutivas (altura + gap).
+    // Usamos t1 e t2, ambos já renderizados e em row no flex column do tickerTop.
+    const r1 = t1.getBoundingClientRect()
+    const r2 = t2.getBoundingClientRect()
+    const lineStep = Math.abs(r2.top - r1.top)
+    const lineHeight = r1.height
 
-    const handleVisibility = () => {
-      if (document.hidden) stopCycle()
-      else startCycle()
+    const tl = gsap.timeline({ repeat: -1, repeatDelay: REPEAT_DELAY, paused: true })
+
+    function buildIteration() {
+      // --- EXIT: tudo sobe `lineStep` px em paralelo ---
+      // Translação vertical de todos os 5 elementos
+      tl.to(
+        [t2, t1, cardText, cardIcon, b1, b2],
+        { y: -lineStep, duration: EXIT_DURATION, ease: 'power2.inOut' },
+        0
+      )
+
+      // Card perde opacidade (vai sair de cena)
+      tl.to(
+        [cardText, cardIcon],
+        { opacity: 0, duration: EXIT_DURATION, ease: 'power2.in' },
+        0
+      )
+
+      // t2 (histórico distante) continua a subir e desaparece
+      tl.to(
+        t2,
+        {
+          y: -lineStep - lineHeight,
+          opacity: 0,
+          duration: EXIT_DURATION,
+          ease: 'power2.in',
+        },
+        0
+      )
+
+      // t1 (recente) sobe para a posição de t2 e perde a prominent
+      tl.to(
+        t1,
+        {
+          opacity: 0.35,
+          scale: 1,
+          duration: EXIT_DURATION,
+          ease: 'power2.inOut',
+          onStart() {
+            t1.classList.remove('hero-ticker-text--prominent')
+          },
+        },
+        0
+      )
+
+      // b1 (próximo) sobe para a posição do card e perde a prominent
+      tl.to(
+        b1,
+        {
+          opacity: 0.35,
+          scale: 1,
+          duration: EXIT_DURATION,
+          ease: 'power2.inOut',
+          onStart() {
+            b1.classList.remove('hero-ticker-text--prominent')
+          },
+        },
+        0
+      )
+
+      // b2 (a seguir) sobe para a posição de t1 e ganha prominent
+      tl.to(
+        b2,
+        {
+          opacity: 0.7,
+          scale: 1.28,
+          duration: EXIT_DURATION,
+          ease: 'power2.inOut',
+          onStart() {
+            b2.classList.add('hero-ticker-text--prominent')
+          },
+        },
+        0
+      )
+
+      // --- SWAP: a meio do exit, reposiciona e actualiza DOM ---
+      tl.add(() => {
+        currentIndex = (currentIndex + 1) % total
+        // Reposiciona todos os elementos na sua posição original
+        gsap.set([t2, t1, cardText, cardIcon, b1, b2], {
+          y: 0,
+          scale: 1,
+          opacity: 0,
+        })
+        // Actualiza o conteúdo de cada slot
+        render()
+        // Reaplica as opacidades correctas (render() também mexe nas classes
+        // prominent, mas o opacity inline ficou a 0 acima; restauramos aqui)
+        gsap.set(t2, { opacity: 0.35 })
+        gsap.set(t1, { opacity: 0.7, scale: 1.28 })
+        gsap.set(b1, { opacity: 0.7, scale: 1.28 })
+        gsap.set(b2, { opacity: 0.35 })
+        // O card precisa de ficar a 0 para fazer fade-in a seguir
+        gsap.set([cardText, cardIcon], { opacity: 0 })
+      })
+
+      // --- SLIDE-IN: card novo aparece com fade-in ---
+      tl.to(
+        [cardText, cardIcon],
+        { opacity: 1, duration: SLIDE_IN_DURATION, ease: 'power2.out' }
+      )
+
+      // --- HOLD: card fica parado e visível ---
+      if (HOLD_DURATION > 0) {
+        tl.to({}, { duration: HOLD_DURATION })
+      }
     }
-    document.addEventListener('visibilitychange', handleVisibility)
+
+    buildIteration()
+    tl.play(0)
+
+    const onRepeat = () => {
+      tl.clear()
+      buildIteration()
+      tl.play(0)
+    }
+    tl.eventCallback('onRepeat', onRepeat)
+
+    const onVis = () => {
+      if (document.hidden) tl.pause()
+      else tl.resume()
+    }
+    document.addEventListener('visibilitychange', onVis)
 
     return () => {
-      stopCycle()
-      document.removeEventListener('visibilitychange', handleVisibility)
+      tl.kill()
+      tl.eventCallback('onRepeat', null)
+      document.removeEventListener('visibilitychange', onVis)
     }
-  }, [])
+  }, [t])
 
   return (
-    <div className="hero-animated" ref={containerRef} aria-label="Serviços principais">
-      {/* Ticker top (above card) */}
-      <div className="hero-ticker-top" ref={tickerTopRef} aria-hidden="true" />
-
-      {/* Card */}
+    <div className="hero-animated" aria-label="Serviços principais">
+      <div className="hero-ticker-top" aria-hidden="true">
+        <span ref={t2Ref} className="hero-ticker-text"></span>
+        <span ref={t1Ref} className="hero-ticker-text hero-ticker-text--prominent"></span>
+      </div>
       <div className="hero-animated-card">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           ref={cardIconRef}
-          src="/assets/icons/Asset 1-branco.svg"
+          src={PHRASES[0].icon}
           alt=""
           className="hero-animated-icon"
           aria-hidden="true"
         />
-        <span ref={cardTextRef} className="hero-animated-text" />
+        <span ref={cardTextRef} className="hero-animated-text">
+          {t(PHRASES[0].key)}
+        </span>
       </div>
-
-      {/* Ticker bottom (below card) */}
-      <div className="hero-ticker-bottom" ref={tickerBottomRef} aria-hidden="true" />
+      <div className="hero-ticker-bottom" aria-hidden="true">
+        <span ref={b1Ref} className="hero-ticker-text hero-ticker-text--prominent"></span>
+        <span ref={b2Ref} className="hero-ticker-text"></span>
+      </div>
     </div>
   )
 }

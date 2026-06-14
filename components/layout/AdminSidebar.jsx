@@ -8,6 +8,7 @@ import {
   FileText,
   Calendar,
   Video,
+  Languages,
   Mail,
   Settings,
   Sun,
@@ -27,6 +28,7 @@ export default function AdminSidebar({ lang, user, onLogout }) {
     { href: `/${lang}/admin/artigos`, label: 'Artigos', icon: FileText },
     { href: `/${lang}/admin/eventos`, label: 'Eventos', icon: Calendar },
     { href: `/${lang}/admin/lives`, label: 'Lives', icon: Video },
+    { href: `/${lang}/admin/traducoes`, label: 'Traduções EN', icon: Languages },
     { href: `/${lang}/admin/newsletter`, label: 'Newsletter', icon: Mail },
     { href: `/${lang}/admin/definicoes`, label: 'Definições', icon: Settings },
   ]
