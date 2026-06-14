@@ -1,6 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import ArticleForm from '@/components/admin/ArticleForm'
+import BilingualTabs from '@/components/admin/BilingualTabs'
+import { getTranslationByEntityId } from '@/lib/api/translations'
+import { saveTranslationAction } from '@/lib/actions/translation'
 
 export default async function EditArticlePage({ params }) {
   const { lang, id } = await params
@@ -17,6 +20,9 @@ export default async function EditArticlePage({ params }) {
 
   if (!article) redirect(`/${lang}/admin/artigos`)
 
+  // Carrega tradução EN (pode ser null) para o BilingualTabs
+  const translation = await getTranslationByEntityId('article', id, 'en')
+
   return (
     <>
       <div className="admin-page-header">
@@ -24,6 +30,36 @@ export default async function EditArticlePage({ params }) {
         <p className="admin-page-subtitle">{article.title}</p>
       </div>
       <ArticleForm mode="edit" initialData={article} lang={lang} />
+
+      <section
+        className="admin-section"
+        style={{
+          marginTop: '48px',
+          padding: '24px',
+          background: '#f9fafb',
+          borderRadius: '8px',
+          border: '1px solid #e5e7eb',
+        }}
+      >
+        <h2 style={{ marginTop: 0 }}>Tradução EN</h2>
+        <BilingualTabs
+          entityType="article"
+          entityId={id}
+          translation={translation}
+          fields={[
+            { key: 'title', label: 'Title' },
+            { key: 'slug', label: 'Slug' },
+            { key: 'excerpt', label: 'Excerpt', type: 'textarea', rows: 3 },
+            { key: 'content', label: 'Content (markdown)', type: 'textarea', rows: 12 },
+            { key: 'category_label', label: 'Category label' },
+            { key: 'author_role', label: 'Author role' },
+            { key: 'author_bio', label: 'Author bio', type: 'textarea', rows: 3 },
+            { key: 'meta_description', label: 'Meta description', type: 'textarea', rows: 2 },
+          ]}
+          onSave={(values) => saveTranslationAction('article', id, values)}
+          lang={lang}
+        />
+      </section>
     </>
   )
 }
