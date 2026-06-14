@@ -103,7 +103,7 @@ export default function PesquisaPageClient({ lang }) {
     setLoading(true)
     setPage(1)
     try {
-      const results = await searchAllContent(q, tVal || tipo, o || ordem)
+      const results = await searchAllContent(q, lang, tVal || tipo, o || ordem)
       setAllResults(results)
       updateUrl(q, tVal || tipo, o || ordem, 1)
     } catch (err) {

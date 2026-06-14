@@ -23,7 +23,7 @@ export default async function EventosPage({ params }) {
 
   let events = []
   try {
-    events = await getEvents()
+    events = await getEvents(safeLang)
   } catch (err) {
     console.error('Error fetching events:', err)
   }

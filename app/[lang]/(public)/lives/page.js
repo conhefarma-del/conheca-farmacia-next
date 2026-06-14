@@ -24,7 +24,7 @@ export default async function LivesPage({ params }) {
 
   let lives = []
   try {
-    lives = await getLives()
+    lives = await getLives(safeLang)
   } catch (err) {
     console.error('Error fetching lives:', err)
   }

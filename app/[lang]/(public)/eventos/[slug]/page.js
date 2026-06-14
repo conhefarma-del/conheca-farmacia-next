@@ -2,12 +2,15 @@ import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
 import { getEventBySlug, getEvents, getEventInscriptionCount } from '@/lib/api/events'
 import { buildEventSchema, buildBreadcrumbSchema } from '@/lib/seo'
 import { EVENT_CATEGORY_COLORS, SITE_URL } from '@/lib/constants'
+import { createClient } from '@/lib/supabase/server'
+import { findTranslationByEntityId } from '@/lib/api/translations'
 import Breadcrumb from '@/components/ui/Breadcrumb'
 import CapacityBar from '@/components/content/CapacityBar'
 import RegistrationButton from '@/components/content/RegistrationButton'
 import SpeakersList from '@/components/content/SpeakersList'
 import SimilarEvents from '@/components/content/SimilarEvents'
 import EventViewTracker from '@/components/content/EventViewTracker'
+import TranslationFallbackBanner from '@/components/i18n/TranslationFallbackBanner'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -28,13 +31,29 @@ export async function generateMetadata({ params }) {
   const safeLang = SUPPORTED_LANGS.includes(lang) ? lang : DEFAULT_LANG
   let event
   try {
-    event = await getEventBySlug(slug)
+    event = await getEventBySlug(slug, safeLang)
   } catch {
     return { title: 'Evento — Conheça Farmácia' }
   }
 
   if (!event) {
     return { title: 'Evento não encontrado — Conheça Farmácia' }
+  }
+
+  // Build hreflang with the correct slug for each language
+  const langs = { 'pt': `/pt/eventos/${event.slug}` }
+  if (safeLang === 'en' && event.hasOwnProperty('event_id')) {
+    // We came in via EN translation; the base row is the PT row above,
+    // so event.slug IS the PT slug and we just need the EN slug.
+    const enSlug = slug
+    langs['en'] = `/en/eventos/${enSlug}`
+  } else {
+    // We came in via PT (or PT fallback). Look up the EN slug.
+    try {
+      const supabase = await createClient()
+      const enTr = await findTranslationByEntityId(supabase, 'event', event.id, 'en')
+      if (enTr) langs['en'] = `/en/eventos/${enTr.slug}`
+    } catch { /* leave out */ }
   }
 
   const eventUrl = `${SITE_URL}/${safeLang}/eventos/${event.slug}`
@@ -44,7 +63,7 @@ export async function generateMetadata({ params }) {
     description: event.excerpt || event.title,
     alternates: {
       canonical: eventUrl,
-      languages: { 'pt': `/pt/eventos/${event.slug}`, 'en': `/en/eventos/${event.slug}` },
+      languages: langs,
     },
     openGraph: {
       title: event.title,
@@ -90,7 +109,7 @@ export default async function EventDetailPage({ params }) {
 
   let event
   try {
-    event = await getEventBySlug(slug)
+    event = await getEventBySlug(slug, safeLang)
   } catch (err) {
     console.error('Error fetching event:', err)
     notFound()
@@ -113,7 +132,7 @@ export default async function EventDetailPage({ params }) {
   // Similar events
   let similarEvents = []
   try {
-    const allEvents = await getEvents()
+    const allEvents = await getEvents(safeLang)
     similarEvents = allEvents
       .filter((e) => e.category === event.category && e.slug !== event.slug)
       .slice(0, 3)
@@ -145,6 +164,18 @@ export default async function EventDetailPage({ params }) {
       />
 
       <EventViewTracker eventSlug={event.slug} />
+
+      {/* Translation fallback banner (EN visitors on PT-fallback content) */}
+      {safeLang === 'en' && !event.has_translation && (
+        <div className="container-center">
+          <TranslationFallbackBanner
+            entityType="event"
+            ptSlug={event.slug}
+            entityId={event.id}
+            lang={safeLang}
+          />
+        </div>
+      )}
 
       <nav id="breadcrumb" aria-label="Breadcrumb">
         <Breadcrumb items={breadcrumbLevels} />

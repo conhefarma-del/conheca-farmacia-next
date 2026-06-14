@@ -3,10 +3,13 @@ import { getLiveBySlug, getLives } from '@/lib/api/lives'
 import { buildBreadcrumbSchema, buildLiveSchema } from '@/lib/seo'
 import { LIVE_CATEGORY_COLORS, SITE_URL } from '@/lib/constants'
 import { validateUrl } from '@/lib/security'
+import { createClient } from '@/lib/supabase/server'
+import { findTranslationByEntityId } from '@/lib/api/translations'
 import Breadcrumb from '@/components/ui/Breadcrumb'
 import LiveViewTracker from '@/components/content/LiveViewTracker'
 import LiveAccessButton from '@/components/content/LiveAccessButton'
 import MaterialLink from '@/components/content/MaterialLink'
+import TranslationFallbackBanner from '@/components/i18n/TranslationFallbackBanner'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 
@@ -26,13 +29,29 @@ export async function generateMetadata({ params }) {
   const safeLang = SUPPORTED_LANGS.includes(lang) ? lang : DEFAULT_LANG
   let live
   try {
-    live = await getLiveBySlug(slug)
+    live = await getLiveBySlug(slug, safeLang)
   } catch {
     return { title: 'Live — Conheça Farmácia' }
   }
 
   if (!live) {
     return { title: 'Live não encontrada — Conheça Farmácia' }
+  }
+
+  // Build hreflang with the correct slug for each language
+  const langs = { 'pt': `/pt/lives/${live.slug}` }
+  if (safeLang === 'en' && live.hasOwnProperty('live_id')) {
+    // We came in via EN translation; the base row is the PT row above,
+    // so live.slug IS the PT slug and we just need the EN slug.
+    const enSlug = slug
+    langs['en'] = `/en/lives/${enSlug}`
+  } else {
+    // We came in via PT (or PT fallback). Look up the EN slug.
+    try {
+      const supabase = await createClient()
+      const enTr = await findTranslationByEntityId(supabase, 'live', live.id, 'en')
+      if (enTr) langs['en'] = `/en/lives/${enTr.slug}`
+    } catch { /* leave out */ }
   }
 
   const liveUrl = `${SITE_URL}/${safeLang}/lives/${live.slug}`
@@ -42,7 +61,7 @@ export async function generateMetadata({ params }) {
     description: live.resumo || live.titulo,
     alternates: {
       canonical: liveUrl,
-      languages: { 'pt': `/pt/lives/${live.slug}`, 'en': `/en/lives/${live.slug}` },
+      languages: langs,
     },
     openGraph: {
       title: live.titulo,
@@ -106,7 +125,7 @@ export default async function LiveDetailPage({ params }) {
 
   let live
   try {
-    live = await getLiveBySlug(slug)
+    live = await getLiveBySlug(slug, safeLang)
   } catch (err) {
     console.error('Error fetching live:', err)
   }
@@ -155,6 +174,18 @@ export default async function LiveDetailPage({ params }) {
       />
 
       <LiveViewTracker liveSlug={slug} />
+
+      {/* Translation fallback banner (EN visitors on PT-fallback content) */}
+      {safeLang === 'en' && !live.has_translation && (
+        <div className="container-center">
+          <TranslationFallbackBanner
+            entityType="live"
+            ptSlug={live.slug}
+            entityId={live.id}
+            lang={safeLang}
+          />
+        </div>
+      )}
 
       {/* Breadcrumb — outside main, before hero */}
       <nav id="breadcrumb" aria-label="Breadcrumb">

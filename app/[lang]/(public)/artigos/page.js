@@ -23,7 +23,7 @@ export default async function ArtigosPage({ params }) {
 
   let articles = []
   try {
-    articles = await getArticles()
+    articles = await getArticles(safeLang)
   } catch (err) {
     console.error('Error fetching articles:', err)
   }

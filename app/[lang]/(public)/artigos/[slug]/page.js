@@ -2,12 +2,15 @@ import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
 import { getArticleBySlug, getArticles } from '@/lib/api/articles'
 import { buildArticleSchema, buildBreadcrumbSchema } from '@/lib/seo'
 import { ARTICLE_CATEGORY_COLORS, SITE_URL } from '@/lib/constants'
+import { createClient } from '@/lib/supabase/server'
+import { findTranslationByEntityId } from '@/lib/api/translations'
 import Breadcrumb from '@/components/ui/Breadcrumb'
 import ArticleContent from '@/components/content/ArticleContent'
 import ShareSection from '@/components/content/ShareSection'
 import RelatedArticles from '@/components/content/RelatedArticles'
 import ReadingTimeTracker from '@/components/content/ReadingTimeTracker'
 import ViewCountTracker from '@/components/content/ViewCountTracker'
+import TranslationFallbackBanner from '@/components/i18n/TranslationFallbackBanner'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -38,13 +41,29 @@ export async function generateMetadata({ params }) {
   const safeLang = SUPPORTED_LANGS.includes(lang) ? lang : DEFAULT_LANG
   let article
   try {
-    article = await getArticleBySlug(slug)
+    article = await getArticleBySlug(slug, safeLang)
   } catch {
     return { title: 'Artigo — Conheça Farmácia' }
   }
 
   if (!article) {
     return { title: 'Artigo não encontrado — Conheça Farmácia' }
+  }
+
+  // Build hreflang with the correct slug for each language
+  const langs = { 'pt': `/pt/artigos/${article.slug}` }
+  if (safeLang === 'en' && article.hasOwnProperty('article_id')) {
+    // We came in via EN translation; the base row is the PT row above,
+    // so article.slug IS the PT slug and we just need the EN slug.
+    const enSlug = slug
+    langs['en'] = `/en/artigos/${enSlug}`
+  } else {
+    // We came in via PT (or PT fallback). Look up the EN slug.
+    try {
+      const supabase = await createClient()
+      const enTr = await findTranslationByEntityId(supabase, 'article', article.id, 'en')
+      if (enTr) langs['en'] = `/en/artigos/${enTr.slug}`
+    } catch { /* leave out */ }
   }
 
   const articleUrl = `${SITE_URL}/${safeLang}/artigos/${article.slug}`
@@ -54,7 +73,7 @@ export async function generateMetadata({ params }) {
     description: article.metaDescription || article.excerpt || article.title,
     alternates: {
       canonical: articleUrl,
-      languages: { 'pt': `/pt/artigos/${article.slug}`, 'en': `/en/artigos/${article.slug}` },
+      languages: langs,
     },
     openGraph: {
       title: article.title,
@@ -82,7 +101,7 @@ export default async function ArticleDetailPage({ params }) {
 
   let article
   try {
-    article = await getArticleBySlug(slug)
+    article = await getArticleBySlug(slug, safeLang)
   } catch (err) {
     console.error('Error fetching article:', err)
     notFound()
@@ -95,7 +114,7 @@ export default async function ArticleDetailPage({ params }) {
   // Get related articles
   let relatedArticles = []
   try {
-    const allArticles = await getArticles()
+    const allArticles = await getArticles(safeLang)
     relatedArticles = allArticles
       .filter((a) => a.category === article.category && a.slug !== article.slug)
       .slice(0, 4)
@@ -140,6 +159,18 @@ export default async function ArticleDetailPage({ params }) {
       {/* Analytics trackers */}
       <ViewCountTracker articleSlug={article.slug} />
       <ReadingTimeTracker articleId={article.id} />
+
+      {/* Translation fallback banner (EN visitors on PT-fallback content) */}
+      {safeLang === 'en' && !article.has_translation && (
+        <div className="container-center">
+          <TranslationFallbackBanner
+            entityType="article"
+            ptSlug={article.slug}
+            entityId={article.id}
+            lang={safeLang}
+          />
+        </div>
+      )}
 
       {/* Breadcrumb */}
       <nav id="breadcrumb" aria-label="Breadcrumb">
