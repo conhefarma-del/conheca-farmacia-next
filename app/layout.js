@@ -23,11 +23,16 @@ const fraunces = Fraunces({
 
 export const metadata = {
   metadataBase: new URL('https://conhecafarmacia.com'),
-  title: 'Conheça Farmácia',
-  description: 'Portal de saúde e farmácia',
+  title: {
+    default: 'Conheça Farmácia — Artigos, eventos e lives sobre saúde',
+    template: '%s | Conheça Farmácia',
+  },
+  description:
+    'Artigos, eventos e lives sobre saúde, farmácia e bem-estar em Angola. Conteúdo validado por profissionais de saúde, com inscrição online e newsletter gratuita.',
   openGraph: {
-    title: 'Conheça Farmácia',
-    description: 'Portal de saúde e farmácia',
+    title: 'Conheça Farmácia — Artigos, eventos e lives sobre saúde',
+    description:
+      'Artigos, eventos e lives sobre saúde, farmácia e bem-estar em Angola. Conteúdo validado por profissionais de saúde, com inscrição online e newsletter gratuita.',
     url: 'https://conhecafarmacia.com',
     siteName: 'Conheça Farmácia',
     locale: 'pt_PT',
@@ -35,8 +40,9 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Conheça Farmácia',
-    description: 'Portal de saúde e farmácia',
+    title: 'Conheça Farmácia — Artigos, eventos e lives sobre saúde',
+    description:
+      'Artigos, eventos e lives sobre saúde, farmácia e bem-estar em Angola. Conteúdo validado por profissionais de saúde, com inscrição online e newsletter gratuita.',
   },
   icons: {
     icon: '/icon.png',
