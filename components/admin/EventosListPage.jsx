@@ -3,11 +3,12 @@
 import { useState, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Pencil, Trash2, Plus, Search } from 'lucide-react'
+import { Pencil, Trash2, Plus, Search, Archive, ArchiveRestore } from 'lucide-react'
 import { escapeHtml } from '@/lib/security'
-import { deleteEvent, toggleEventStatus } from '@/lib/actions/content'
+import { deleteEvent, toggleEventStatus, archiveEvent, restoreEvent } from '@/lib/actions/content'
 import AnalyticsCard from '@/components/admin/AnalyticsCard'
 import { getTopEvents } from '@/lib/actions/lists'
+import ConfirmModal from '@/components/admin/ConfirmModal'
 
 /**
  * EventosListPage — Client Component
@@ -39,12 +40,13 @@ const ANALYTICS_METRICS = [
   { key: 'upcoming', label: 'Prox.' },
 ]
 
-export default function EventosListPage({ events = [], stats, lang = 'pt', topEvents = [] }) {
+export default function EventosListPage({ events = [], stats, lang = 'pt', topEvents = [], currentUserRole }) {
   const router = useRouter()
   const [sortField, setSortField] = useState('date-desc')
   const [statusFilter, setStatusFilter] = useState('all')
   const [timeFilter, setTimeFilter] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
+  const [confirmAction, setConfirmAction] = useState(null) // { type: 'archive' | 'delete', id, title }
   const [actionLoading, setActionLoading] = useState(null)
 
   const filteredEvents = useMemo(() => {
@@ -53,7 +55,13 @@ export default function EventosListPage({ events = [], stats, lang = 'pt', topEv
 
     let filtered = events.filter((event) => {
       // Status filter
-      if (statusFilter !== 'all' && event.status !== statusFilter) return false
+      if (statusFilter === 'archived') {
+        if (!event.is_archived) return false
+      } else if (statusFilter !== 'all' && event.status !== statusFilter) {
+        return false
+      } else if (statusFilter === 'all' && event.is_archived) {
+        return false  // default 'all' esconde arquivados (parity com público)
+      }
 
       // Time filter
       if (timeFilter !== 'all' && event.date) {
@@ -107,9 +115,7 @@ export default function EventosListPage({ events = [], stats, lang = 'pt', topEv
     }
   }, [router])
 
-  const handleDelete = useCallback(async (id, title) => {
-    if (!confirm(`Tem certeza que deseja excluir o evento "${title}"?`)) return
-
+  const handleDelete = useCallback(async (id) => {
     setActionLoading(`delete-${id}`)
     try {
       const result = await deleteEvent(id)
@@ -156,6 +162,14 @@ export default function EventosListPage({ events = [], stats, lang = 'pt', topEv
               <div className="admin-stat-card-label">Rascunhos</div>
             </div>
           </div>
+          {safeStats.archived > 0 && (
+            <div className="admin-stat-card stat-purple">
+              <div>
+                <div className="admin-stat-card-value">{safeStats.archived}</div>
+                <div className="admin-stat-card-label">Arquivados</div>
+              </div>
+            </div>
+          )}
         </div>
         <AnalyticsCard
           metrics={ANALYTICS_METRICS}
@@ -188,6 +202,7 @@ export default function EventosListPage({ events = [], stats, lang = 'pt', topEv
           <option value="all">Todos os status</option>
           <option value="published">Publicados</option>
           <option value="draft">Rascunhos</option>
+          <option value="archived">Arquivados</option>
         </select>
         <select className="admin-select" value={timeFilter} onChange={(e) => setTimeFilter(e.target.value)}>
           <option value="all">Todos os tempos</option>
@@ -237,15 +252,62 @@ export default function EventosListPage({ events = [], stats, lang = 'pt', topEv
                       >
                         {event.status === 'published' ? 'Publicado' : 'Rascunho'}
                       </button>
+                      {event.is_archived && (
+                        <span
+                          className="admin-badge admin-badge-archived"
+                          title={`Arquivado em ${new Date(event.archived_at).toLocaleDateString('pt-PT')}${event.archived_by ? ' por ' + event.archived_by : ''}`}
+                        >
+                          <Archive size={12} /> Arquivado
+                        </span>
+                      )}
                     </td>
                     <td>
                       <div className="admin-actions">
                         <Link href={`/${lang}/admin/eventos/${event.id}`} className="admin-btn admin-btn-secondary">
                           <Pencil size={14} /> Editar
                         </Link>
-                        <button className="admin-btn admin-btn-danger" onClick={() => handleDelete(event.id, event.title)} disabled={actionLoading === `delete-${event.id}`}>
-                          <Trash2 size={14} /> Excluir
-                        </button>
+                        {!event.is_archived ? (
+                          <button
+                            type="button"
+                            onClick={() => setConfirmAction({ type: 'archive', id: event.id, title: event.title })}
+                            className="admin-btn admin-btn-warning"
+                            disabled={actionLoading === `archive-${event.id}`}
+                          >
+                            <Archive size={14} /> Arquivar
+                          </button>
+                        ) : (
+                          currentUserRole === 'superadmin' && (
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                setActionLoading(`restore-${event.id}`)
+                                try {
+                                  const result = await restoreEvent(event.id)
+                                  if (!result.success) alert(result.error)
+                                  else router.refresh()
+                                } catch {
+                                  alert('Erro ao restaurar evento.')
+                                } finally {
+                                  setActionLoading(null)
+                                }
+                              }}
+                              className="admin-btn admin-btn-secondary"
+                              disabled={actionLoading === `restore-${event.id}`}
+                            >
+                              <ArchiveRestore size={14} /> Restaurar
+                            </button>
+                          )
+                        )}
+                        {currentUserRole === 'superadmin' && (
+                          <button
+                            type="button"
+                            onClick={() => setConfirmAction({ type: 'delete', id: event.id, title: event.title })}
+                            className="admin-btn admin-btn-danger"
+                            disabled={actionLoading === `delete-${event.id}`}
+                          >
+                            <Trash2 size={14} /> Eliminar
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -255,6 +317,36 @@ export default function EventosListPage({ events = [], stats, lang = 'pt', topEv
           </div>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={!!confirmAction}
+        onClose={() => setConfirmAction(null)}
+        onConfirm={async () => {
+          if (!confirmAction) return
+          setActionLoading(`${confirmAction.type}-${confirmAction.id}`)
+          try {
+            const result = confirmAction.type === 'archive'
+              ? await archiveEvent(confirmAction.id)
+              : await deleteEvent(confirmAction.id)
+            if (!result.success) alert(result.error)
+            else router.refresh()
+          } catch {
+            alert(confirmAction.type === 'archive' ? 'Erro ao arquivar evento.' : 'Erro ao excluir evento.')
+          } finally {
+            setActionLoading(null)
+            setConfirmAction(null)
+          }
+        }}
+        title={confirmAction?.type === 'delete' ? 'Eliminar definitivamente?' : 'Arquivar?'}
+        message={
+          confirmAction?.type === 'delete'
+            ? `"${confirmAction?.title}" será removido permanentemente. Esta ação não pode ser revertida.`
+            : `"${confirmAction?.title}" ficará oculto do público mas pode ser restaurado depois.`
+        }
+        confirmLabel={confirmAction?.type === 'delete' ? 'Eliminar' : 'Arquivar'}
+        variant={confirmAction?.type === 'delete' ? 'danger' : 'warning'}
+        loading={!!actionLoading && actionLoading.startsWith(confirmAction?.type ?? '')}
+      />
     </>
   )
 }
