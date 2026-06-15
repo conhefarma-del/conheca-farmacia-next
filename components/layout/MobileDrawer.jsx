@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { getSectionHref } from '@/lib/i18n-routes'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 
 export default function MobileDrawer({ lang, t, open, onClose }) {
@@ -32,10 +33,10 @@ export default function MobileDrawer({ lang, t, open, onClose }) {
 
   const navLinks = [
     { href: `/${lang}`, label: t('nav.inicio'), path: '' },
-    { href: `/${lang}/artigos`, label: t('nav.artigos'), path: 'artigos' },
-    { href: `/${lang}/eventos`, label: t('nav.eventos'), path: 'eventos' },
-    { href: `/${lang}/lives`, label: t('nav.lives'), path: 'lives' },
-    { href: `/${lang}/sobre`, label: t('nav.sobre'), path: 'sobre' },
+    { href: getSectionHref(lang, 'artigos'), label: t('nav.artigos'), path: 'artigos' },
+    { href: getSectionHref(lang, 'eventos'), label: t('nav.eventos'), path: 'eventos' },
+    { href: getSectionHref(lang, 'lives'), label: t('nav.lives'), path: 'lives' },
+    { href: getSectionHref(lang, 'sobre'), label: t('nav.sobre'), path: 'sobre' },
   ]
 
   const handleClose = () => {

@@ -18,18 +18,17 @@
  *   - entityId:   UUID
  *   - translation: { title, slug, excerpt, content, ... } | null
  *   - fields:     Array<{ key, label, type?, rows? }> — fields to render in EN tab
- *   - onSave:     async (values) => { ok, error? } — server action wrapper
  *   - lang:       'pt' | 'en' (URL segment)
  *
- * Server actions used:
- *   - autoTranslateEntity (from @/lib/actions/translation)
- *   - onSave prop (typically wraps saveTranslationAction)
+ * Server actions used (imported directly — no `onSave` prop):
+ *   - autoTranslateEntity
+ *   - saveTranslationAction
  */
 
 import { useContext, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { LangContext } from '@/lib/contexts'
-import { autoTranslateEntity } from '@/lib/actions/translation'
+import { autoTranslateEntity, saveTranslationAction } from '@/lib/actions/translation'
 
 function useT() {
   const ctx = useContext(LangContext)
@@ -47,7 +46,6 @@ export default function BilingualTabs({
   entityId,
   translation,
   fields,
-  onSave,
   lang = 'pt',
 }) {
   const t = useT()
@@ -87,6 +85,9 @@ export default function BilingualTabs({
       try {
         const result = await autoTranslateEntity(entityType, entityId)
         if (result?.ok) {
+          if (result.translation) {
+            setEnValues(result.translation)
+          }
           setSuccess(t('translation.auto_success', 'Tradução gerada com sucesso. Reveja e guarde.'))
           router.refresh()
         } else if (result?.rateLimited) {
@@ -114,7 +115,7 @@ export default function BilingualTabs({
     setSuccess(null)
     setIsSaving(true)
     try {
-      const result = await onSave(enValues)
+      const result = await saveTranslationAction(entityType, entityId, enValues)
       if (result?.ok) {
         setSuccess(t('translation.save_success', 'Tradução guardada com sucesso.'))
         router.refresh()

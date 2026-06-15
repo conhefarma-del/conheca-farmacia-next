@@ -2,6 +2,7 @@
 
 import { useRouter, usePathname } from 'next/navigation'
 import { useState, useEffect, useRef } from 'react'
+import { getLocalizedPath } from '@/lib/i18n-routes'
 
 export default function LanguageSwitcher({ currentLang }) {
   const router = useRouter()
@@ -20,9 +21,7 @@ export default function LanguageSwitcher({ currentLang }) {
   }, [])
 
   const switchLang = (newLang) => {
-    const segments = pathname.split('/')
-    segments[1] = newLang
-    router.push(segments.join('/'))
+    router.push(getLocalizedPath(pathname, newLang))
     setOpen(false)
   }
 

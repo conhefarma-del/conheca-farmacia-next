@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import ThemeToggle from '@/components/ui/ThemeToggle'
+import { getSectionHref } from '@/lib/i18n-routes'
 
 export default function Header({ lang, t, onToggleDrawer }) {
   const pathname = usePathname()
@@ -21,10 +22,10 @@ export default function Header({ lang, t, onToggleDrawer }) {
 
   const navLinks = [
     { href: `/${lang}`, label: t('nav.inicio'), path: '' },
-    { href: `/${lang}/artigos`, label: t('nav.artigos'), path: 'artigos' },
-    { href: `/${lang}/eventos`, label: t('nav.eventos'), path: 'eventos' },
-    { href: `/${lang}/lives`, label: t('nav.lives'), path: 'lives' },
-    { href: `/${lang}/sobre`, label: t('nav.sobre'), path: 'sobre' },
+    { href: getSectionHref(lang, 'artigos'), label: t('nav.artigos'), path: 'artigos' },
+    { href: getSectionHref(lang, 'eventos'), label: t('nav.eventos'), path: 'eventos' },
+    { href: getSectionHref(lang, 'lives'), label: t('nav.lives'), path: 'lives' },
+    { href: getSectionHref(lang, 'sobre'), label: t('nav.sobre'), path: 'sobre' },
   ]
 
   return (

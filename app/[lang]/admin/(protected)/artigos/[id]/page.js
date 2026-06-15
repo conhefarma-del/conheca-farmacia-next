@@ -3,7 +3,6 @@ import { redirect } from 'next/navigation'
 import ArticleForm from '@/components/admin/ArticleForm'
 import BilingualTabs from '@/components/admin/BilingualTabs'
 import { getTranslationByEntityId } from '@/lib/api/translations'
-import { saveTranslationAction } from '@/lib/actions/translation'
 
 export default async function EditArticlePage({ params }) {
   const { lang, id } = await params
@@ -56,7 +55,6 @@ export default async function EditArticlePage({ params }) {
             { key: 'author_bio', label: 'Author bio', type: 'textarea', rows: 3 },
             { key: 'meta_description', label: 'Meta description', type: 'textarea', rows: 2 },
           ]}
-          onSave={(values) => saveTranslationAction('article', id, values)}
           lang={lang}
         />
       </section>

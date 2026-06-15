@@ -3,6 +3,7 @@
 import { useContext } from 'react'
 import Link from 'next/link'
 import { LangContext } from '@/lib/contexts'
+import { getSectionHref } from '@/lib/i18n-routes'
 
 export default function Footer({ lang }) {
   const { t } = useContext(LangContext)
@@ -24,10 +25,10 @@ export default function Footer({ lang }) {
             <h4>{t('footer.navegacao')}</h4>
             <ul>
               <li><Link href={`/${lang}`}>{t('nav.inicio')}</Link></li>
-              <li><Link href={`/${lang}/artigos`}>{t('nav.artigos')}</Link></li>
-              <li><Link href={`/${lang}/eventos`}>{t('nav.eventos')}</Link></li>
-              <li><Link href={`/${lang}/lives`}>{t('nav.lives')}</Link></li>
-              <li><Link href={`/${lang}/sobre`}>{t('nav.sobre')}</Link></li>
+              <li><Link href={getSectionHref(lang, 'artigos')}>{t('nav.artigos')}</Link></li>
+              <li><Link href={getSectionHref(lang, 'eventos')}>{t('nav.eventos')}</Link></li>
+              <li><Link href={getSectionHref(lang, 'lives')}>{t('nav.lives')}</Link></li>
+              <li><Link href={getSectionHref(lang, 'sobre')}>{t('nav.sobre')}</Link></li>
             </ul>
           </div>
 

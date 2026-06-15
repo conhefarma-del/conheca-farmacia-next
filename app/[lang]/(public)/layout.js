@@ -41,13 +41,30 @@ export default function PublicLayout({ children }) {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Mirror utilityBarVisible to <body> class so the mobile drawer can adjust
+  // its top offset (utility bar hidden → drawer sits below the header only).
+  useEffect(() => {
+    if (utilityBarVisible) {
+      document.body.classList.remove('utility-hidden')
+    } else {
+      document.body.classList.add('utility-hidden')
+    }
+    return () => document.body.classList.remove('utility-hidden')
+  }, [utilityBarVisible])
+
+  // utility=60 + header=80 (h-20)
+  const HEADER_OFFSET = utilityBarVisible ? 60 : 0
+  const MAIN_PADDING_TOP = utilityBarVisible ? 140 : 80
+
   return (
     <>
       <div
         className="utility-bar-wrapper"
         style={{
-          position: 'sticky',
+          position: 'fixed',
           top: 0,
+          left: 0,
+          right: 0,
           zIndex: 60,
           transform: utilityBarVisible ? 'translateY(0)' : 'translateY(-100%)',
           transition: 'transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
@@ -55,14 +72,26 @@ export default function PublicLayout({ children }) {
       >
         <UtilityBar lang={lang} t={t} />
       </div>
-      <Header lang={lang} t={t} onToggleDrawer={() => setDrawerOpen(!drawerOpen)} />
+      <div
+        className="header-wrapper"
+        style={{
+          position: 'fixed',
+          top: HEADER_OFFSET,
+          left: 0,
+          right: 0,
+          zIndex: 50,
+          transition: 'top 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
+        }}
+      >
+        <Header lang={lang} t={t} onToggleDrawer={() => setDrawerOpen(!drawerOpen)} />
+      </div>
       <MobileDrawer
         lang={lang}
         t={t}
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
       />
-      <main>{children}</main>
+      <main style={{ paddingTop: MAIN_PADDING_TOP }}>{children}</main>
       <Footer lang={lang} t={t} />
     </>
   )

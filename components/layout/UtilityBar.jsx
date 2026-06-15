@@ -2,22 +2,23 @@
 
 import { useRouter } from 'next/navigation'
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher'
+import { getSectionHref } from '@/lib/i18n-routes'
 
 export default function UtilityBar({ lang, t }) {
   const router = useRouter()
 
   const handleSearch = (e) => {
     if (e.key === 'Enter' && e.target.value.trim()) {
-      router.push(`/${lang}/pesquisa?q=${encodeURIComponent(e.target.value.trim())}`)
+      router.push(`${getSectionHref(lang, 'pesquisa')}?q=${encodeURIComponent(e.target.value.trim())}`)
     }
   }
 
   const handleSearchClick = () => {
     const input = document.querySelector('.utility-search-input')
     if (input && input.value.trim()) {
-      router.push(`/${lang}/pesquisa?q=${encodeURIComponent(input.value.trim())}`)
+      router.push(`${getSectionHref(lang, 'pesquisa')}?q=${encodeURIComponent(input.value.trim())}`)
     } else {
-      router.push(`/${lang}/pesquisa`)
+      router.push(`${getSectionHref(lang, 'pesquisa')}`)
     }
   }
 

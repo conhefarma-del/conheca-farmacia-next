@@ -114,12 +114,10 @@ html.dark .form-note {
     @apply h-12 md:h-14 w-auto object-contain;
   }
 
+  /* The header wrapper is what is fixed (see PublicLayout JSX). The wrapper's
+     `top` animates from 60 → 0 as the utility bar slides out. */
   .header {
     @apply bg-brand-bg shadow-sm;
-  }
-
-  .header {
-    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .hero {
@@ -536,6 +534,13 @@ html.dark .form-note {
 
     body.drawer-open {
       overflow: hidden;
+    }
+
+    /* When the utility bar is hidden (scrolled down), the drawer starts
+       right below the header (h-20 = 80px) instead of at 60. */
+    body.utility-hidden .mobile-drawer {
+      top: 80px;
+      height: calc(100dvh - 80px);
     }
   }
 

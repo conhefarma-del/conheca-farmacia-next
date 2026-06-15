@@ -3,7 +3,6 @@ import { redirect } from 'next/navigation'
 import LiveForm from '@/components/admin/LiveForm'
 import BilingualTabs from '@/components/admin/BilingualTabs'
 import { getTranslationByEntityId } from '@/lib/api/translations'
-import { saveTranslationAction } from '@/lib/actions/translation'
 
 export default async function EditLivePage({ params }) {
   const { lang, id } = await params
@@ -54,7 +53,6 @@ export default async function EditLivePage({ params }) {
             { key: 'topic', label: 'Topic' },
             { key: 'meta_description', label: 'Meta description', type: 'textarea', rows: 2 },
           ]}
-          onSave={(values) => saveTranslationAction('live', id, values)}
           lang={lang}
         />
       </section>
