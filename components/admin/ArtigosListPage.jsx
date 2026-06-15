@@ -3,11 +3,12 @@
 import { useState, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Pencil, Trash2, Plus, Search } from 'lucide-react'
+import { Pencil, Trash2, Plus, Search, Archive, ArchiveRestore } from 'lucide-react'
 import { escapeHtml } from '@/lib/security'
-import { deleteArticle, toggleArticleStatus } from '@/lib/actions/content'
+import { deleteArticle, toggleArticleStatus, archiveArticle, restoreArticle } from '@/lib/actions/content'
 import AnalyticsCard from '@/components/admin/AnalyticsCard'
 import { getTopArticles } from '@/lib/actions/lists'
+import ConfirmModal from '@/components/admin/ConfirmModal'
 
 /**
  * ArtigosListPage — Client Component
@@ -40,19 +41,25 @@ const ANALYTICS_METRICS = [
   { key: 'reading', label: 'Leitura' },
 ]
 
-export default function ArtigosListPage({ articles = [], stats, lang = 'pt', topArticles = [] }) {
+export default function ArtigosListPage({ articles = [], stats, lang = 'pt', topArticles = [], currentUserRole }) {
   const router = useRouter()
   const [sortField, setSortField] = useState('date-desc')
   const [statusFilter, setStatusFilter] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
-  const [deleteConfirm, setDeleteConfirm] = useState(null)
+  const [confirmAction, setConfirmAction] = useState(null) // { type: 'archive' | 'delete', id, title }
   const [actionLoading, setActionLoading] = useState(null)
 
   // Filtrar e ordenar artigos
   const filteredArticles = useMemo(() => {
     let filtered = articles.filter((article) => {
       // Status filter
-      if (statusFilter !== 'all' && article.status !== statusFilter) return false
+      if (statusFilter === 'archived') {
+        if (!article.is_archived) return false
+      } else if (statusFilter !== 'all' && article.status !== statusFilter) {
+        return false
+      } else if (statusFilter === 'all' && article.is_archived) {
+        return false  // default 'all' esconde arquivados (parity com público)
+      }
 
       // Search filter
       if (searchQuery) {
@@ -101,9 +108,7 @@ export default function ArtigosListPage({ articles = [], stats, lang = 'pt', top
   }, [router])
 
   // Delete
-  const handleDelete = useCallback(async (id, title) => {
-    if (!confirm(`Tem certeza que deseja excluir o artigo "${title}"?`)) return
-
+  const handleDelete = useCallback(async (id) => {
     setActionLoading(`delete-${id}`)
     try {
       const result = await deleteArticle(id)
@@ -113,7 +118,6 @@ export default function ArtigosListPage({ articles = [], stats, lang = 'pt', top
       alert('Erro ao excluir artigo.')
     } finally {
       setActionLoading(null)
-      setDeleteConfirm(null)
     }
   }, [router])
 
@@ -152,6 +156,14 @@ export default function ArtigosListPage({ articles = [], stats, lang = 'pt', top
               <div className="admin-stat-card-label">Rascunhos</div>
             </div>
           </div>
+          {safeStats.archived > 0 && (
+            <div className="admin-stat-card stat-purple">
+              <div>
+                <div className="admin-stat-card-value">{safeStats.archived}</div>
+                <div className="admin-stat-card-label">Arquivados</div>
+              </div>
+            </div>
+          )}
         </div>
         <AnalyticsCard
           metrics={ANALYTICS_METRICS}
@@ -196,6 +208,7 @@ export default function ArtigosListPage({ articles = [], stats, lang = 'pt', top
           <option value="all">Todos os status</option>
           <option value="published">Publicados</option>
           <option value="draft">Rascunhos</option>
+          <option value="archived">Arquivados</option>
         </select>
       </div>
 
@@ -244,6 +257,14 @@ export default function ArtigosListPage({ articles = [], stats, lang = 'pt', top
                       >
                         {article.status === 'published' ? 'Publicado' : 'Rascunho'}
                       </button>
+                      {article.is_archived && (
+                        <span
+                          className="admin-badge admin-badge-archived"
+                          title={`Arquivado em ${new Date(article.archived_at).toLocaleDateString('pt-PT')}${article.archived_by ? ' por ' + article.archived_by : ''}`}
+                        >
+                          <Archive size={12} /> Arquivado
+                        </span>
+                      )}
                     </td>
                     <td>{formatDate(article.published_date)}</td>
                     <td>{escapeHtml(article.author_name || '-')}</td>
@@ -256,14 +277,48 @@ export default function ArtigosListPage({ articles = [], stats, lang = 'pt', top
                           <Pencil size={14} />
                           Editar
                         </Link>
-                        <button
-                          className="admin-btn admin-btn-danger"
-                          onClick={() => handleDelete(article.id, article.title)}
-                          disabled={actionLoading === `delete-${article.id}`}
-                        >
-                          <Trash2 size={14} />
-                          Excluir
-                        </button>
+                        {!article.is_archived ? (
+                          <button
+                            type="button"
+                            onClick={() => setConfirmAction({ type: 'archive', id: article.id, title: article.title })}
+                            className="admin-btn admin-btn-warning"
+                            disabled={actionLoading === `archive-${article.id}`}
+                          >
+                            <Archive size={14} /> Arquivar
+                          </button>
+                        ) : (
+                          currentUserRole === 'superadmin' && (
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                setActionLoading(`restore-${article.id}`)
+                                try {
+                                  const result = await restoreArticle(article.id)
+                                  if (!result.success) alert(result.error)
+                                  else router.refresh()
+                                } catch {
+                                  alert('Erro ao restaurar artigo.')
+                                } finally {
+                                  setActionLoading(null)
+                                }
+                              }}
+                              className="admin-btn admin-btn-secondary"
+                              disabled={actionLoading === `restore-${article.id}`}
+                            >
+                              <ArchiveRestore size={14} /> Restaurar
+                            </button>
+                          )
+                        )}
+                        {currentUserRole === 'superadmin' && (
+                          <button
+                            type="button"
+                            onClick={() => setConfirmAction({ type: 'delete', id: article.id, title: article.title })}
+                            className="admin-btn admin-btn-danger"
+                            disabled={actionLoading === `delete-${article.id}`}
+                          >
+                            <Trash2 size={14} /> Eliminar
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -273,6 +328,36 @@ export default function ArtigosListPage({ articles = [], stats, lang = 'pt', top
           </div>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={!!confirmAction}
+        onClose={() => setConfirmAction(null)}
+        onConfirm={async () => {
+          if (!confirmAction) return
+          setActionLoading(`${confirmAction.type}-${confirmAction.id}`)
+          try {
+            const result = confirmAction.type === 'archive'
+              ? await archiveArticle(confirmAction.id)
+              : await deleteArticle(confirmAction.id)
+            if (!result.success) alert(result.error)
+            else router.refresh()
+          } catch {
+            alert(confirmAction.type === 'archive' ? 'Erro ao arquivar artigo.' : 'Erro ao excluir artigo.')
+          } finally {
+            setActionLoading(null)
+            setConfirmAction(null)
+          }
+        }}
+        title={confirmAction?.type === 'delete' ? 'Eliminar definitivamente?' : 'Arquivar?'}
+        message={
+          confirmAction?.type === 'delete'
+            ? `"${confirmAction?.title}" será removido permanentemente. Esta ação não pode ser revertida.`
+            : `"${confirmAction?.title}" ficará oculto do público mas pode ser restaurado depois.`
+        }
+        confirmLabel={confirmAction?.type === 'delete' ? 'Eliminar' : 'Arquivar'}
+        variant={confirmAction?.type === 'delete' ? 'danger' : 'warning'}
+        loading={!!actionLoading && actionLoading.startsWith(confirmAction?.type ?? '')}
+      />
     </>
   )
 }
