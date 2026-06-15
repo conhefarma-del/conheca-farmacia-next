@@ -3,11 +3,12 @@
 import { useState, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Pencil, Trash2, Plus, Search } from 'lucide-react'
+import { Pencil, Trash2, Plus, Search, Archive, ArchiveRestore } from 'lucide-react'
 import { escapeHtml } from '@/lib/security'
-import { deleteLive, toggleLiveStatus } from '@/lib/actions/content'
+import { deleteLive, toggleLiveStatus, archiveLive, restoreLive } from '@/lib/actions/content'
 import AnalyticsCard from '@/components/admin/AnalyticsCard'
 import { getTopLives } from '@/lib/actions/lists'
+import ConfirmModal from '@/components/admin/ConfirmModal'
 
 /**
  * LivesListPage — Client Component
@@ -33,12 +34,13 @@ const ANALYTICS_METRICS = [
   { key: 'downloads', label: 'Downloads' },
 ]
 
-export default function LivesListPage({ lives = [], stats, lang = 'pt', topLives = [] }) {
+export default function LivesListPage({ lives = [], stats, lang = 'pt', topLives = [], currentUserRole }) {
   const router = useRouter()
   const [sortField, setSortField] = useState('date-desc')
   const [statusFilter, setStatusFilter] = useState('all')
   const [timeFilter, setTimeFilter] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
+  const [confirmAction, setConfirmAction] = useState(null) // { type: 'archive' | 'delete', id, title }
   const [actionLoading, setActionLoading] = useState(null)
 
   const filteredLives = useMemo(() => {
@@ -46,7 +48,13 @@ export default function LivesListPage({ lives = [], stats, lang = 'pt', topLives
     today.setHours(0, 0, 0, 0)
 
     let filtered = lives.filter((live) => {
-      if (statusFilter !== 'all' && live.status !== statusFilter) return false
+      if (statusFilter === 'archived') {
+        if (!live.is_archived) return false
+      } else if (statusFilter !== 'all' && live.status !== statusFilter) {
+        return false
+      } else if (statusFilter === 'all' && live.is_archived) {
+        return false  // default 'all' esconde arquivados (parity com público)
+      }
 
       if (timeFilter !== 'all' && live.date) {
         const liveDate = new Date(live.date)
@@ -97,9 +105,7 @@ export default function LivesListPage({ lives = [], stats, lang = 'pt', topLives
     }
   }, [router])
 
-  const handleDelete = useCallback(async (id, title) => {
-    if (!confirm(`Tem certeza que deseja excluir a live "${title}"?`)) return
-
+  const handleDelete = useCallback(async (id) => {
     setActionLoading(`delete-${id}`)
     try {
       const result = await deleteLive(id)
@@ -146,6 +152,14 @@ export default function LivesListPage({ lives = [], stats, lang = 'pt', topLives
               <div className="admin-stat-card-label">Rascunhos</div>
             </div>
           </div>
+          {safeStats.archived > 0 && (
+            <div className="admin-stat-card stat-purple">
+              <div>
+                <div className="admin-stat-card-value">{safeStats.archived}</div>
+                <div className="admin-stat-card-label">Arquivados</div>
+              </div>
+            </div>
+          )}
         </div>
         <AnalyticsCard
           metrics={ANALYTICS_METRICS}
@@ -178,6 +192,7 @@ export default function LivesListPage({ lives = [], stats, lang = 'pt', topLives
           <option value="all">Todos os status</option>
           <option value="published">Publicados</option>
           <option value="draft">Rascunhos</option>
+          <option value="archived">Arquivados</option>
         </select>
         <select className="admin-select" value={timeFilter} onChange={(e) => setTimeFilter(e.target.value)}>
           <option value="all">Todos os tempos</option>
@@ -227,15 +242,62 @@ export default function LivesListPage({ lives = [], stats, lang = 'pt', topLives
                       >
                         {live.status === 'published' ? 'Publicado' : 'Rascunho'}
                       </button>
+                      {live.is_archived && (
+                        <span
+                          className="admin-badge admin-badge-archived"
+                          title={`Arquivado em ${new Date(live.archived_at).toLocaleDateString('pt-PT')}${live.archived_by ? ' por ' + live.archived_by : ''}`}
+                        >
+                          <Archive size={12} /> Arquivado
+                        </span>
+                      )}
                     </td>
                     <td>
                       <div className="admin-actions">
                         <Link href={`/${lang}/admin/lives/${live.id}`} className="admin-btn admin-btn-secondary">
                           <Pencil size={14} /> Editar
                         </Link>
-                        <button className="admin-btn admin-btn-danger" onClick={() => handleDelete(live.id, live.title)} disabled={actionLoading === `delete-${live.id}`}>
-                          <Trash2 size={14} /> Excluir
-                        </button>
+                        {!live.is_archived ? (
+                          <button
+                            type="button"
+                            onClick={() => setConfirmAction({ type: 'archive', id: live.id, title: live.title })}
+                            className="admin-btn admin-btn-warning"
+                            disabled={actionLoading === `archive-${live.id}`}
+                          >
+                            <Archive size={14} /> Arquivar
+                          </button>
+                        ) : (
+                          currentUserRole === 'superadmin' && (
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                setActionLoading(`restore-${live.id}`)
+                                try {
+                                  const result = await restoreLive(live.id)
+                                  if (!result.success) alert(result.error)
+                                  else router.refresh()
+                                } catch {
+                                  alert('Erro ao restaurar live.')
+                                } finally {
+                                  setActionLoading(null)
+                                }
+                              }}
+                              className="admin-btn admin-btn-secondary"
+                              disabled={actionLoading === `restore-${live.id}`}
+                            >
+                              <ArchiveRestore size={14} /> Restaurar
+                            </button>
+                          )
+                        )}
+                        {currentUserRole === 'superadmin' && (
+                          <button
+                            type="button"
+                            onClick={() => setConfirmAction({ type: 'delete', id: live.id, title: live.title })}
+                            className="admin-btn admin-btn-danger"
+                            disabled={actionLoading === `delete-${live.id}`}
+                          >
+                            <Trash2 size={14} /> Eliminar
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -245,6 +307,36 @@ export default function LivesListPage({ lives = [], stats, lang = 'pt', topLives
           </div>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={!!confirmAction}
+        onClose={() => setConfirmAction(null)}
+        onConfirm={async () => {
+          if (!confirmAction) return
+          setActionLoading(`${confirmAction.type}-${confirmAction.id}`)
+          try {
+            const result = confirmAction.type === 'archive'
+              ? await archiveLive(confirmAction.id)
+              : await deleteLive(confirmAction.id)
+            if (!result.success) alert(result.error)
+            else router.refresh()
+          } catch {
+            alert(confirmAction.type === 'archive' ? 'Erro ao arquivar live.' : 'Erro ao excluir live.')
+          } finally {
+            setActionLoading(null)
+            setConfirmAction(null)
+          }
+        }}
+        title={confirmAction?.type === 'delete' ? 'Eliminar definitivamente?' : 'Arquivar?'}
+        message={
+          confirmAction?.type === 'delete'
+            ? `"${confirmAction?.title}" será removido permanentemente. Esta ação não pode ser revertida.`
+            : `"${confirmAction?.title}" ficará oculto do público mas pode ser restaurado depois.`
+        }
+        confirmLabel={confirmAction?.type === 'delete' ? 'Eliminar' : 'Arquivar'}
+        variant={confirmAction?.type === 'delete' ? 'danger' : 'warning'}
+        loading={!!actionLoading && actionLoading.startsWith(confirmAction?.type ?? '')}
+      />
     </>
   )
 }
