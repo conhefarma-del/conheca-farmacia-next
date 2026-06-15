@@ -1,10 +1,25 @@
 import { Suspense } from 'react'
 import { headers } from 'next/headers'
+import { Inter, Fraunces } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import ThemeProvider from '@/components/providers/ThemeProvider'
 import PageViewTracker from '@/components/content/PageViewTracker'
 import '@/styles/globals.css'
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  adjustFontFallback: true,
+  variable: '--font-inter',
+})
+
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  display: 'swap',
+  adjustFontFallback: true,
+  variable: '--font-fraunces',
+})
 
 export const metadata = {
   metadataBase: new URL('https://conhecafarmacia.com'),
@@ -34,14 +49,8 @@ export default async function RootLayout({ children }) {
   const lang = headersList.get('x-lang') || 'pt'
 
   return (
-    <html lang={lang} suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning className={`${inter.variable} ${fraunces.variable}`}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Inter:wght@100..900&display=swap"
-          rel="stylesheet"
-        />
         {/* Anti-FOUC: set dark class before hydration */}
         <script
           dangerouslySetInnerHTML={{
@@ -49,7 +58,7 @@ export default async function RootLayout({ children }) {
           }}
         />
       </head>
-      <body>
+      <body className={inter.className}>
         <ThemeProvider>
           <Suspense fallback={null}>
             <PageViewTracker />
