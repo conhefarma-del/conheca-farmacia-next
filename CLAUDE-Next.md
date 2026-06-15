@@ -539,3 +539,98 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 - Em Vercel Hobby: Analytics incluído; Speed Insights incluído. Em Pro/Enterprise: mais features
 
 **Posição no layout:** depois de `{children}` para garantir que os componentes só mountam após a árvore React estar hidratada (algumas métricas dependem disso).
+
+## Segurança (2026-06-15, Sentinela audit)
+
+### 55. Rate Limit Atómico via RPC: INSERT ... ON CONFLICT
+
+Quando o rate limit é um contador "X chars por dia", NUNCA fazer `SELECT count; if < limit; INSERT;` em Node — há uma janela TOCTOU entre o check e o insert. Dois requests paralelos ambos leem `< limit`, ambos inserem, e o total real excede o limite.
+
+Solução canónica (Postgres): uma tabela com PK = dia, e uma função `SECURITY DEFINER` que faz tudo num statement:
+
+```sql
+INSERT INTO translation_quota (usage_date, chars_used)
+VALUES (v_today, p_chars)
+ON CONFLICT (usage_date) DO UPDATE
+  SET chars_used = translation_quota.chars_used + EXCLUDED.chars_used
+RETURNING chars_used INTO v_new_total;
+
+IF v_new_total > p_limit THEN
+  UPDATE translation_quota SET chars_used = chars_used - p_chars ...;
+  RETURN FALSE;
+END IF;
+RETURN TRUE;
+```
+
+**Porquê `SECURITY DEFINER` + `SET search_path = public`:** o RPC é o único writer, e a tabela fica acessível só a admins via RLS. Sem `search_path` fixo, a função pode ser "shadowed" por uma tabela com o mesmo nome no schema de um utilizador malicioso — CVE conhecido do Postgres.
+
+Implementação: `supabase/migrations/019_atomic_translation_rate_limit.sql` + `checkAndReserveQuota()` em `lib/actions/translation.js`. **Fail-closed**: se o RPC der erro, **recusar** o request (não "fail open" — um migration em falta não pode silenciosamente levantar o cap diário).
+
+### 56. validateUrl Regex Estrito: /^https?:\/\//i
+
+`url.startsWith('http')` aceita `httpfoo://evil`, `https.evil.example/`, `http://` (sem path), e muitos outros. A regex `^https?:\/\//i` força o delimiter `://` correcto, que é o que distingue uma URL web de qualquer outro esquema.
+
+```js
+const SAFE_URL_REGEX = /^https?:\/\//i
+export function validateUrl(url) {
+  if (!url || typeof url !== 'string' || !SAFE_URL_REGEX.test(url)) return '#'
+  return url
+}
+```
+
+**Porquê isto importa:** `validateUrl` é a última barreira antes de renderizar `<a href={...}>`. Se aceitar `javascript:alert(1)`, o click executa o script. `data:` schemes também devem ser bloqueados se o destino for um link (DOMPurify já os trata em `sanitizeHtml`).
+
+### 57. Page View Tracker: pathname Only, Nunca Querystring
+
+`components/content/PageViewTracker.jsx` envia `page_path` para o backend de analytics. **Nunca** inclua `window.location.search` — a querystring pode conter emails (newsletter prefill), tokens de unsubscribe, tokens de partilha, etc.
+
+```js
+// ERRADO: pathname + searchParams
+const url = pathname + (searchParams.toString() ? `?${searchParams}` : '')
+// CERTO: pathname only
+const url = pathname
+```
+
+**Porquê:** analytics é um sink de dados menos protegido que o resto do sistema. Se uma URL de admin vazada (com um token one-off na querystring) for visitada, a querystring acaba na DB de analytics — uma exposição lateral que normalmente ninguém lembra de auditar. `pathname` é suficiente para tráfego-por-rota.
+
+### 58. CSP Sem unsafe-eval em Next.js 16
+
+Next.js 16 (App Router + Fluid Compute) **não** precisa de `eval()` no runtime. O CSP herdado muitas vezes tem `'unsafe-eval'` por defeito (ex.: para alguns polyfills legados), mas o `next start` e o `next build` de hoje rodam sem ele.
+
+**Pode manter `'unsafe-inline'`** se houver um script anti-FOUC (no nosso caso, `app/layout.js:46-50` define `<html class="dark">` antes da hidratação para evitar flash de tema). Mover esse script para `useEffect` reintroduz o flash. `'unsafe-eval'` é o que pode sair sem regressão.
+
+CSP activo em `vercel.json:35`:
+```
+script-src 'self' 'unsafe-inline' https://vercel.live
+```
+
+### 59. Proxy try/catch no getUser: Degradação Graciosa
+
+O proxy (anteriormente middleware) chama `supabase.auth.getUser()` em cada request para refrescar a sessão. **Se o Supabase auth estiver offline** (5xx, timeout DNS, etc.) o proxy não pode crashar — caso contrário, **todo o site** cai junto.
+
+```js
+try {
+  await supabase.auth.getUser()
+} catch (proxyErr) {
+  console.error('[proxy] getUser failed, continuing without session refresh', { lang, path: pathname })
+}
+```
+
+Padrão geral: **um erro de um sub-sistema (auth, DB) só pode derrubar a feature que dele depende** (rotas admin), não a plataforma inteira. Rotas públicas continuam a servir mesmo com Supabase offline.
+
+### 60. SECURITY.md + Política 2FA
+
+O projecto não tinha `SECURITY.md` antes do audit de 2026-06-15. Criado em `SECURITY.md` na raiz, com:
+
+- Email de disclosure (`security@conhecafarmacia.com`) + SLA
+- Threat model e modelo de autenticação (público + admin)
+- **Política de 2FA: enforced on first admin login** (decisão confirmada pelo user)
+  - Novo admin tem de ter factor TOTP verificado antes de conseguir login
+  - Admin existente (com password válida) é guiado para enrollment no próximo login
+  - SMS não é aceite como segundo factor (NIST 800-63B §5.1.2)
+- Inventário completo dos headers activos (incluindo o admin-only `Cache-Control: no-store` e `X-Robots-Tag: noindex, nofollow`)
+- Classificação de env vars por risco (🟢 público vs 🔴 server-only)
+- Histórico de advisories em `docs/security/audits/`
+- **Advisories em defer:** postcss transitivo (GHSA-qx2v-qp2m-jg93) — fix do `npm audit fix --force` requer Next 9, que seria breaking. Monitor release notes do Next para bump.
+
+A **política de 2FA é enforced** porque o `try/catch` que estava em `lib/actions/auth.js:91-93` engole silenciosamente o `getAuthenticatorAssuranceLevel` — qualquer falha (network, factor não enrolled, AAL abaixo de 2) resultava em `success: true`. Isto permitia login com password sem TOTP, independentemente da configuração do utilizador. A refactorização (commit 3.2 do PR security) fecha o bypass: se a chamada falhar, `signOut()` + erro genérico; se AAL < 2 sem factor, `signOut()` + `requiresTwoFactorEnrollment: true`.
