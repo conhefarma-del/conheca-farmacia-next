@@ -68,18 +68,21 @@ npx vercel --prod
 │   │   │   └── unsubscribe/         # Shared token-based unsubscribe
 │   │   └── (admin)/                 # Admin routes (protected)
 │   │       ├── layout.js            # Admin layout (sidebar, auth check)
-│   │       ├── login/               # Login page
+│   │       ├── login/               # Login page (with 2FA challenge)
 │   │       ├── dashboard/           # Dashboard
-│   │       ├── artigos/             # CRUD articles (PT)
-│   │       ├── eventos/             # CRUD events (PT)
-│   │       ├── lives/               # CRUD lives (PT)
+│   │       ├── artigos/             # CRUD articles (PT) — list/editor with archive
+│   │       ├── eventos/             # CRUD events (PT) — list/editor with archive
+│   │       ├── lives/               # CRUD lives (PT) — list/editor with archive
 │   │       ├── newsletter/          # Newsletter management
 │   │       ├── traducoes/           # Bulk translation page
-│   │       └── definicoes/          # Settings (2FA, profile, password)
+│   │       └── definicoes/          # Settings (2FA enrollment, profile, password)
 │
 ├── components/
 │   ├── layout/                      # Public layout: Header, Footer, UtilityBar, MobileDrawer
-│   ├── admin/                       # Admin-only: BilingualTabs, forms, lists, AuthGuard
+│   ├── admin/                       # Admin-only: BilingualTabs, forms, lists, AuthGuard,
+│   │                                #   AnalyticsCard, ConfirmModal, ImageUpload,
+│   │                                #   ArtigosListPage, EventosListPage, LivesListPage
+│   │                                #   (ListPages: archive/restore/delete + filter archived)
 │   ├── ui/                          # Reusable: ArticleCard, EventCard, LiveCard,
 │   │                                #         LanguageSwitcher, ThemeToggle, Breadcrumb,
 │   │                                #         NewsletterSection, HeroSection
@@ -245,16 +248,26 @@ const [drawerOpen, setDrawerOpen] = useState(false)
 
 - **Auth Guard**: `AuthGuard` component que envolve todas as rotas admin
 - **Idle Timeout**: 30 minutos de inatividade → auto-logout
-- **2FA**: TOTP implementation em `definicoes/`
+- **2FA**: TOTP implementation em `definicoes/` — **enforced** no primeiro login admin (2026-06-15)
 - **RLS**: Row Level Security em todas as tabelas
 - **XSS Protection**: `escapeHtml()` em user input
 - **CSP**: No inline scripts, usar `.addEventListener()`
 
+### Admin Role System (RBAC)
+
+Hierarquia simples de 2 níveis: `admin` (archive) + `superadmin` (archive + restore + hard delete + 2FA reset). `currentUserRole` prop é passado do `page.js` parent (Server Component) para os 3 ListPages (Client Components). Permissões são enforced em 3 camadas:
+
+1. **Server Action** (`lib/actions/content.js`): `archiveArticle/Event/Live`, `restoreArticle/Event/Live`, `deleteArticle/Event/Live` — só superadmin para restore + hard delete
+2. **RLS Policy**: `FOR DELETE` restrito a superadmin; `FOR UPDATE` permite archive para admin
+3. **UI** (`components/admin/{Artigos,Eventos,Lives}ListPage.jsx`): botões Archive (admin+) / Restore (só superadmin) / Eliminar (só superadmin); filter `<option value="archived">` adicionado
+
+Tabela canónica (admin × operation) em `~/.openclaude/.../memory/user/admin-soft-hard-delete-restoration-matrix.md`. Migration `020b_archive_metadata.sql` adicionou `is_archived`, `archived_at`, `archived_by` em `articles`/`events`/`lives` + audit logging.
+
 ## Lessons Learned
 
-This file is the project entry point — it stays short and points to the details. Detailed patterns and historical bug fixes live in `CLAUDE-Next.md` (47 lições) and in `~/.openclaude/.../memory/` (working notes). As of 2026-06-15:
+This file is the project entry point — it stays short and points to the details. Detailed patterns and historical bug fixes live in `CLAUDE-Next.md` (60 lições) and in `~/.openclaude/.../memory/` (working notes, private + team). As of 2026-06-15:
 
-- `CLAUDE-Next.md` covers #1–#47: Supabase patterns, Next.js 16 specifics (proxy.js, force-dynamic, OpenGraph), Vercel/Netlify migration, security helpers
-- Newer lições #48–#54 (this session): i18n URL mirrors, sticky header sliding with utility bar, Server Actions not as wrapper props, BilingualTabs setEnValues, OpenRouter BYOK + free model switching, OpenRouter env var HMR caveat, Vercel Analytics+Speed Insights
+- `CLAUDE-Next.md` covers #1–#60: Supabase patterns, Next.js 16 specifics (proxy.js, force-dynamic, OpenGraph), Vercel/Netlify migration, security helpers, Sentinela audit fixes (rate-limit RPC, validateUrl, CSP no-unsafe-eval, 2FA policy, proxy try/catch), Admin Role UI (archive metadata, RBAC, 2FA enforced), i18n full-stack
+- Working notes (`memory/`): architectural decisions, Sentinela audit status, project-specific invariants (admin role matrix, email infrastructure, dev server patterns, parallel session rules, TDD/debugging workflows). Team-scoped memories live in `memory/team/` (currently empty — revalidate before using)
 
-When adding a new lesson, prefer memory over CLAUDE.md unless it's a project-wide invariant.
+When adding a new lesson, prefer memory over CLAUDE.md unless it's a project-wide invariant. Project-wide invariants (i18n URL mirrors, RBAC matrix, 2FA enforcement, proxy.js auth pattern) stay in CLAUDE.md; everything else goes to memory.
