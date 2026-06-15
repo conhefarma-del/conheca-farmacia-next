@@ -353,3 +353,189 @@ workshop-farmacocinética
 # ✅ Correto — slug sem acentos
 workshop-farmacocinetica
 ```
+
+## i18n Full-Stack (2026-06-15)
+
+### 48. i18n URL Slugs: Directórios Espelhados, Não Segment Swap
+
+A partir de 2026-06-15, o projecto evoluiu de um único directório por secção para directórios físicos separados PT/EN. Isto é necessário porque (a) os slugs das secções estão traduzidos (`artigos` ↔ `articles`), e (b) os slugs dos items também podem ter tradução (`workshop-farmacocinetica` ↔ `pharmacokinetics-workshop`).
+
+**Estrutura actual em `app/[lang]/(public)/`:**
+- PT: `artigos/`, `eventos/`, `sobre/`, `pesquisa/`, `inscricao/`
+- EN: `articles/`, `events/`, `about/`, `search/`, `register/`
+- Partilhados (slug único): `lives/`, `unsubscribe/`
+
+**Helper central em `lib/i18n-routes.js`:**
+
+```js
+// Para links de secção estática
+const href = getSectionHref('en', 'artigos')  // '/en/articles'
+const href = getSectionHref('pt', 'lives')    // '/pt/lives' (partilhado)
+
+// Para pathname dinâmico (LanguageSwitcher)
+const next = getLocalizedPath('/pt/artigos/abc-123', 'en')
+// → '/en/articles/abc-123'
+
+// Slug dinâmico de item SEM tradução conhecida: manter o slug actual
+const next = getLocalizedPath('/pt/artigos/abc-123', 'en')
+// → '/en/articles/abc-123' (abc-123 preservado)
+```
+
+**Regras:**
+1. **NUNCA** `\`\${lang}/artigos\`` hardcoded em componentes — não navega para o mirror EN. Usar `getSectionHref(lang, 'artigos')` em `Header`, `UtilityBar`, `MobileDrawer`, `Footer`, `LanguageSwitcher`
+2. **NUNCA** fazer segment swap manual (`pathname.replace('/pt/', '/en/')`) — falha em `artigos` vs `articles`. Usar `getLocalizedPath`
+3. Ao adicionar uma nova secção, criar AMBOS os directórios (PT + EN) e adicionar entrada em `PT_TO_EN` em `lib/i18n-routes.js`
+4. O EN mirror pode no início ser uma re-export do PT (`export { default } from '../../artigos/page'`) até a tradução estar pronta — não é aceitável omitir o ficheiro, porque o `[lang]` middleware aceita qualquer valor em `segments[2]`
+
+**Diagnóstico de "404 ao trocar para EN":** se a secção é nova, falta criar o mirror EN. Se já existe, falta entrada em `PT_TO_EN`.
+
+### 49. Sticky Header Que Desliza com Utility Bar
+
+Em 2026-06-15 refactor do `app/[lang]/(public)/layout.js` para dois wrappers fixed:
+- `.utility-bar-wrapper` — `position: fixed; top: 0; z-index: 60; transform: translateY(0 | -100%)`
+- `.header-wrapper` — `position: fixed; top: 60 | 0; z-index: 50; transition: top 0.4s`
+- `<main style={{ paddingTop: 140 | 80 }}>` — compensa o espaço dos elementos fixed
+
+**Erro típico (já aconteceu):** pôr `position: fixed; top: 60px` na classe CSS `.header` (filho). O CSS ganha sobre o `style` inline do wrapper, e o header nunca mexe. **Solução:** a classe CSS do header não deve ter `position`/`top` — o wrapper é dono desses valores.
+
+**Sincronizar com mobile drawer via `body.utility-hidden`:** o `MobileDrawer` tem `top: 60` quando utility visível, `top: 80` quando escondida. A classe é toggleada no `<body>` por um `useEffect` que observa `utilityBarVisible` no `PublicLayout` (ver `mobile-drawer-utility-bar-behavior` em memory).
+
+**Threshold de scroll:** 10px em qualquer direcção para evitar jitter no rasto de scroll. `requestAnimationFrame` throttle para evitar múltiplas render frames por scroll event.
+
+**Cuidado com `position: sticky`:** tentação inicial é `sticky`, mas como o wrapper pai é `<body>` e a stacking é feita por `position: fixed`, `sticky` não funciona correctamente. `fixed` é a escolha certa.
+
+### 50. Server Actions Não Podem Ser Embrulhadas em Arrow Function Prop
+
+Em Next.js 16, Server Actions marcadas com `'use server'` são passáveis **directamente** como props a Client Components. Se forem embrulhadas numa arrow function inline, o RSC lança:
+
+```
+Event handlers cannot be passed to Client Component props
+```
+
+**Exemplo do bug (já aconteceu no BilingualTabs em 2026-06-15):**
+
+```jsx
+// ❌ Errado — arrow function quebra a referência da Server Action
+<BilingualTabs onSave={(values) => saveTranslationAction('article', id, values)} />
+
+// ✅ Correto — passa-se a action directamente; o Client Component importa-a
+// (no page.js Server Component)
+<BilingualTabs entityType="article" entityId={id} translation={t} fields={f} />
+
+// (dentro de BilingualTabs.jsx, Client Component)
+import { saveTranslationAction, autoTranslateEntity } from '@/lib/actions/translation'
+const result = await saveTranslationAction(entityType, entityId, enValues)
+```
+
+**Regra:** se é Server Action, o Client Component deve fazer `import` directo e receber **dados**, não callbacks. Esta restrição também se aplica a `onClick={() => serverAction(...)}` — extrair a chamada para um Client Component.
+
+### 51. Server Action Que Persiste Deve Devolver o Recurso Actualizado
+
+`router.refresh()` (Next.js) só re-executa Server Components — não re-popula `useState` locais em Client Components. Se uma Server Action devolve `{ ok: true, translation: {...} }` mas o Client só faz `router.refresh()`, os inputs (controlados por `useState`) continuam vazios até F5 manual.
+
+**Padrão (BilingualTabs):**
+
+```js
+const result = await autoTranslateEntity(entityType, entityId)
+if (result?.ok) {
+  if (result.translation) {
+    setEnValues(result.translation)  // ← popula useState IMEDIATAMENTE
+  }
+  setSuccess(t('translation.auto_success', '...'))
+  router.refresh()  // re-fetch dos dados de servidor (apenas para outras partes)
+}
+```
+
+**Quando NÃO é necessário:** se o state da UI não precisa de reflectir a mutação (ex: navegação programática, toast que desaparece). **Quando É necessário:** qualquer input controlado, lista local, contador, etc. alimentado por dados que a action acabou de escrever.
+
+**Diagnóstico:** user diz "actualizei a página e aparece" → falta `setState(result.data)`. User diz "grava mas não aparece mesmo com refresh" → Server Action não está a fazer a escrita; investigar via query directa à DB primeiro (ver `investigate-before-fixing-via-direct-db-query` em memory).
+
+### 52. OpenRouter BYOK + Free Tier Quota Switching
+
+Em 2026-06-15, `meta-llama/llama-3.3-70b-instruct:free` começou a retornar 429 mesmo com API key própria do user. Investigação:
+
+**Causa:** O tier `free` no OpenRouter tem rate-limit **por-utilizador** (não global), mas é baixo (ex: 20 req/min para modelos grandes). Adicionar a key pública de demo daria quota partilhada, mas BYOK dá quota individual — esta quota esgota-se depressa com modelos 70B.
+
+**Decisão tomada:** trocar para `google/gemma-4-31b-it:free` (256K ctx, dense 30.7B, Google). Tem quota mais generosa que Llama 3.3 70B e qualidade suficiente para tradução PT→EN de artigos farmacêuticos.
+
+**Env var override pattern** (`lib/actions/translation.js`):
+
+```js
+const OPENROUTER_MODEL =
+  process.env.OPENROUTER_MODEL || 'google/gemma-4-31b-it:free'
+```
+
+E em `.env.local.example`:
+
+```
+OPENROUTER_MODEL=google/gemma-4-31b-it:free
+```
+
+**Caveat — HMR não pega em constantes no topo de `'use server'` modules.** Mudar o env var no `.env.local` requer **restart do dev server** (`npm run dev` a frio), não apenas F5. O `process.env.OPENROUTER_MODEL` é avaliado uma vez no module-load.
+
+**Próximos candidatos a testar** (se Gemma 4 também rate-limitar):
+- `nvidia/nemotron-3-ultra-550b-a55b:free` — mais capaz (MoE 55B/550B)
+- `google/gemma-4-26b-a4b-it:free` — irmão MoE mais leve (256K ctx)
+
+**Hard-cap de segurança** (tabela `translation_logs`): `TRANSLATION_DAILY_CHAR_LIMIT=1000000` caracteres PT/dia. Mesmo que a API não rate-limite, evita custos descontrolados se alguém automatizar spam de auto-translates.
+
+### 53. Server Action Falsy Check Pattern: `result?.ok` / `result?.rateLimited`
+
+Actions em `lib/actions/translation.js` devolvem objectos em vez de `throw`. Padrão consistente:
+
+```js
+// sucesso
+{ ok: true, translation: { title, slug, excerpt, content } }
+
+// falha normal
+{ ok: false, error: 'OpenRouter 500: ...' }
+
+// rate-limited (caso especial — UI mostra mensagem diferente)
+{ ok: false, rateLimited: true, error: '...' }
+
+// translation disabled (feature flag off)
+{ ok: false, disabled: true, error: 'translation disabled' }
+```
+
+**Lado do client** (`BilingualTabs.jsx`):
+
+```js
+if (result?.ok) {
+  if (result.translation) setEnValues(result.translation)
+  setSuccess(...)
+  router.refresh()
+} else if (result?.rateLimited) {
+  setError(t('translation.rate_limited', 'Limite diário...'))
+} else {
+  setError(result?.error || t('translation.auto_error', 'Erro...'))
+}
+```
+
+**Porquê não throw:** permite ao UI mostrar mensagens contextuais (rate limit vs erro genérico vs feature flag off) sem `try/catch` no callback. Throw seria melhor para erros inesperados (500 interno, DB offline) — mas a action apanha esses e devolve `{ ok: false, error }` em vez de propagar.
+
+### 54. Vercel Analytics + Speed Insights: Subpath Imports, Sem Env Vars
+
+Em 2026-06-15 adicionados:
+
+```bash
+npm i @vercel/analytics@^2.0.1 @vercel/speed-insights@^2.0.0
+```
+
+```js
+// app/layout.js (Client ou Server — funciona em ambos)
+import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
+
+// Dentro do <body>, depois de {children} (importante — ver docs)
+<Analytics />
+<SpeedInsights />
+```
+
+**Notas:**
+- Subpath `/next` para Analytics é o entry que injecta `<Script>` para o script de tracking. Existe também `@vercel/analytics/react` para client-only.
+- **NÃO** precisam de env vars — funcionam out-of-the-box via domínio do deploy
+- Em dev (localhost), os componentes renderizam mas não enviam (warnings no console sobre não-production)
+- Em prod, primeiro deploy pode ter delay de 5-10 min até os dados aparecerem no dashboard Vercel
+- Em Vercel Hobby: Analytics incluído; Speed Insights incluído. Em Pro/Enterprise: mais features
+
+**Posição no layout:** depois de `{children}` para garantir que os componentes só mountam após a árvore React estar hidratada (algumas métricas dependem disso).
