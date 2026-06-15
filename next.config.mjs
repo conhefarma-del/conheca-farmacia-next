@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  poweredByHeader: false, // LOW-02: remove X-Powered-By to reduce fingerprinting
   images: {
     remotePatterns: [
       {

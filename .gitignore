@@ -36,3 +36,12 @@ check-supabase.mjs
 
 # MCP config with secrets
 .claude/mcp.json
+
+# Secrets / certs (LOW-01)
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Vercel CLI
+.vercel
