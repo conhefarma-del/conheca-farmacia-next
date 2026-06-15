@@ -2,6 +2,7 @@
 
 import { useContext } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { LangContext } from '@/lib/contexts'
 import { getSectionHref } from '@/lib/i18n-routes'
 
@@ -14,7 +15,7 @@ export default function Footer({ lang }) {
         <div className="footer-grid">
           {/* Brand Info */}
           <div className="footer-logo">
-            <img src="/logo/logo-principal-branco.svg" alt="Conheça Farmácia" />
+            <Image src="/logo/logo-principal-branco.png" alt="Conheça Farmácia" width={120} height={40} />
             <p className="text-white/70 text-sm mt-4 max-w-xs">
               {t('footer.descricao')}
             </p>

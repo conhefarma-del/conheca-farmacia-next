@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { getSectionHref } from '@/lib/i18n-routes'
 import ThemeToggle from '@/components/ui/ThemeToggle'
@@ -58,7 +59,7 @@ export default function MobileDrawer({ lang, t, open, onClose }) {
         </button>
 
         <div className="drawer-logo">
-          <img src="/logo/3.png" alt="Conheça Farmácia" />
+          <Image src="/logo/3.png" alt="Conheça Farmácia" width={120} height={40} />
         </div>
 
         <ul className="drawer-links">

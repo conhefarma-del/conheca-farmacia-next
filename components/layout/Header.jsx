@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import { getSectionHref } from '@/lib/i18n-routes'
@@ -32,7 +33,7 @@ export default function Header({ lang, t, onToggleDrawer }) {
     <header className="header">
       <nav className="nav-container">
         <Link href={`/${lang}`} className="logo">
-          <img src="/logo/3.png" alt="Conheça Farmácia" />
+          <Image src="/logo/3.png" alt="Conheça Farmácia" width={120} height={40} priority />
         </Link>
 
         <div className="nav-links">
