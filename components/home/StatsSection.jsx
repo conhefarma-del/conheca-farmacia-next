@@ -2,26 +2,43 @@
 
 import { useContext } from 'react'
 import { LangContext } from '@/lib/contexts'
+import { BookOpen, Calendar, Video, Mail } from 'lucide-react'
+
+const FEATURES = [
+  {
+    icon: BookOpen,
+    labelKey: 'home.stats_artigos_label',
+    descKey: 'home.stats_artigos_desc',
+  },
+  {
+    icon: Calendar,
+    labelKey: 'home.stats_eventos_label',
+    descKey: 'home.stats_eventos_desc',
+  },
+  {
+    icon: Video,
+    labelKey: 'home.stats_lives_label',
+    descKey: 'home.stats_lives_desc',
+  },
+  {
+    icon: Mail,
+    labelKey: 'home.stats_newsletter_label',
+    descKey: 'home.stats_newsletter_desc',
+  },
+]
 
 export default function StatsSection() {
   const { t } = useContext(LangContext)
-  const stats = [
-    { number: '30+', labelKey: 'home.stats_profissionais' },
-    { number: '10+', labelKey: 'home.stats_entrevistas' },
-    { number: '3+', labelKey: 'home.stats_eventos' },
-    { number: '2k+', labelKey: 'home.stats_leitores' },
-  ]
 
   return (
     <section className="stats-section">
       <div className="container-center">
         <div className="stats-grid">
-          {stats.map((stat) => (
-            <div key={stat.labelKey} className="stat-item">
-              <span className="stat-number">{stat.number}</span>
-              <span className="stat-label">
-                {t(stat.labelKey)}
-              </span>
+          {FEATURES.map(({ icon: Icon, labelKey, descKey }) => (
+            <div key={labelKey} className="stat-item">
+              <Icon className="stat-icon" />
+              <span className="stat-label">{t(labelKey)}</span>
+              <span className="stat-desc">{t(descKey)}</span>
             </div>
           ))}
         </div>

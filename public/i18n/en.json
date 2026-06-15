@@ -35,7 +35,8 @@
     "resultados": "results",
     "pesquisa": "Search",
     "hero_title": "Search",
-    "hero_subtitle": "Search for articles, events and lives on our platform."
+    "hero_subtitle": "Search for articles, events and lives on our platform.",
+    "empty_hint": "Type what you want to search for."
   },
   "content": {
     "artigo": "Article",
@@ -76,10 +77,14 @@
     "artigos_destaque": "Featured Articles",
     "eventos_destaque": "Featured Events",
     "lives_webinars": "Lives & Webinars",
-    "stats_profissionais": "Trained Professionals",
-    "stats_entrevistas": "Expert Interviews",
-    "stats_eventos": "Events per Year",
-    "stats_leitores": "Monthly Readers"
+    "stats_artigos_label": "Articles",
+    "stats_artigos_desc": "We publish weekly on health and wellness",
+    "stats_eventos_label": "Events",
+    "stats_eventos_desc": "Workshops, lectures and continuing education",
+    "stats_lives_label": "Lives",
+    "stats_lives_desc": "Interviews with health specialists",
+    "stats_newsletter_label": "Newsletter",
+    "stats_newsletter_desc": "Updates directly for professionals"
   },
   "sobre": {
     "hero_title": "About Us",
@@ -162,6 +167,7 @@
     "newsletter_privacy": "We respect your privacy!"
   },
   "artigo_detail": {
+    "min_read": "min read",
     "references": "References",
     "share_title": "Share this article",
     "share_btn": "Share",

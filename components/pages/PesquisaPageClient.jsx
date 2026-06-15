@@ -281,7 +281,7 @@ export default function PesquisaPageClient({ lang }) {
           {/* Empty query state */}
           {!loading && !allResults && (
             <div className="search-empty" id="search-empty">
-              <p className="search-empty-text">Escreva o que pretende pesquisar.</p>
+              <p className="search-empty-text">{t('search.empty_hint')}</p>
             </div>
           )}
 

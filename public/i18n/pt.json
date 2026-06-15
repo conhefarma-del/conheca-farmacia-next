@@ -35,7 +35,8 @@
     "resultados": "resultados",
     "pesquisa": "Pesquisa",
     "hero_title": "Pesquisa",
-    "hero_subtitle": "Pesquise por artigos, eventos e lives na nossa plataforma."
+    "hero_subtitle": "Pesquise por artigos, eventos e lives na nossa plataforma.",
+    "empty_hint": "Escreva o que pretende pesquisar."
   },
   "content": {
     "artigo": "Artigo",
@@ -76,10 +77,14 @@
     "artigos_destaque": "Artigos em Destaque",
     "eventos_destaque": "Eventos em Destaque",
     "lives_webinars": "Lives e Webinars",
-    "stats_profissionais": "Profissionais Formados",
-    "stats_entrevistas": "Entrevistas de Especialistas",
-    "stats_eventos": "Eventos por Ano",
-    "stats_leitores": "Leitores Mensais"
+    "stats_artigos_label": "Artigos",
+    "stats_artigos_desc": "Publicamos semanalmente sobre saúde e bem-estar",
+    "stats_eventos_label": "Eventos",
+    "stats_eventos_desc": "Workshops, palestras e formação contínua",
+    "stats_lives_label": "Lives",
+    "stats_lives_desc": "Entrevistas com especialistas da área",
+    "stats_newsletter_label": "Newsletter",
+    "stats_newsletter_desc": "Atualizações directas para profissionais"
   },
   "sobre": {
     "hero_title": "Sobre Nós",
@@ -162,6 +167,7 @@
     "newsletter_privacy": "Respeitamos sua privacidade!"
   },
   "artigo_detail": {
+    "min_read": "min leitura",
     "references": "Referências",
     "share_title": "Partilhar este artigo",
     "share_btn": "Partilhar",

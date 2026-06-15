@@ -1,13 +1,15 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useContext } from 'react'
 import HeroSection from '@/components/ui/HeroSection'
 import TemporalFilter from '@/components/ui/TemporalFilter'
 import FilterButtons from '@/components/ui/FilterButtons'
 import EventCard from '@/components/ui/EventCard'
 import NewsletterSection from '@/components/ui/NewsletterSection'
+import { LangContext } from '@/lib/contexts'
 
-export default function EventosPageClient({ events, lang, t, categoryColors, categories }) {
+export default function EventosPageClient({ events, lang, categoryColors, categories }) {
+  const { t } = useContext(LangContext)
   const [currentStatus, setCurrentStatus] = useState('upcoming')
   const [currentCategory, setCurrentCategory] = useState('all')
 

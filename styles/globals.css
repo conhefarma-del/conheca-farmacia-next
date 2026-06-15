@@ -647,6 +647,23 @@ html.dark .form-note {
     @apply text-white/70 text-sm md:text-base font-medium;
   }
 
+  /* Stats Section new */
+  .stat-item {
+    @apply flex flex-col items-center gap-2;
+  }
+
+  .stat-item .stat-icon {
+    @apply w-10 h-10 text-brand-accent mb-1;
+  }
+
+  .stat-item .stat-label {
+    @apply text-white font-semibold text-base md:text-lg;
+  }
+
+  .stat-item .stat-desc {
+    @apply text-white/70 text-sm;
+  }
+
   /* Footer */
   .footer {
     @apply bg-brand-deep text-white py-16;
@@ -908,6 +925,8 @@ html.dark .form-note {
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
       padding-bottom: 4px;
+      padding-left: 1rem;
+      padding-right: 1rem;
     }
     .share-btn {
       flex-shrink: 0;
@@ -924,7 +943,7 @@ html.dark .form-note {
   }
 
   .related-carousel-container {
-    @apply flex overflow-x-auto scroll-smooth gap-6;
+    @apply flex overflow-x-auto scroll-smooth gap-6 pl-4;
     scroll-snap-type: x mandatory;
     scrollbar-width: none; /* Firefox */
   }

@@ -233,7 +233,7 @@ export default async function ArticleDetailPage({ params }) {
             <span className="text-sm text-brand-deep/60">·</span>
             {article.date && <time className="text-sm text-brand-deep/60" dateTime={article.published_date || article.date}>{formatDate(article.date, safeLang)}</time>}
             <span className="text-sm text-brand-deep/60">·</span>
-            {article.readTime && <div className="text-sm text-brand-deep/60">{article.readTime} min leitura</div>}
+            {article.readTime && <div className="text-sm text-brand-deep/60">{article.readTime} {tFn('artigo_detail.min_read')}</div>}
           </div>
         </div>
       </article>
