@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, Suspense } from 'react'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { trackPageView } from '@/lib/api/analytics'
 
 function getSessionId() {
@@ -17,7 +17,6 @@ function getSessionId() {
 
 function PageViewTrackerInner() {
   const pathname = usePathname()
-  const searchParams = useSearchParams()
 
   useEffect(() => {
     if (pathname.startsWith('/admin') || pathname.startsWith('/_next') || pathname.startsWith('/api')) return
@@ -26,10 +25,13 @@ function PageViewTrackerInner() {
     if (sessionStorage.getItem(key)) return
     sessionStorage.setItem(key, '1')
 
-    const url = pathname + (searchParams.toString() ? `?${searchParams}` : '')
+    // MED-08: do not include the querystring in page_path. Email addresses,
+    // share tokens and other PII can appear there; we only need the route
+    // shape for analytics. The pathname is already available from usePathname.
+    const url = pathname
     const sessionId = getSessionId()
     trackPageView(url, document.referrer, sessionId).catch(() => {})
-  }, [pathname, searchParams])
+  }, [pathname])
 
   return null
 }
