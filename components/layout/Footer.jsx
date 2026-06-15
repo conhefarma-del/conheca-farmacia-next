@@ -40,7 +40,7 @@ export default function Footer({ lang }) {
               <li>{t('footer.localizacao')}</li>
               <li>
                 <a href="mailto:conhecerfarmacia@gmail.com" className="text-white/70 hover:text-brand-accent">
-                  conhecerfarmacia@gmail.com
+                  geral@conhecafarmacia.com
                 </a>
               </li>
               <li>
