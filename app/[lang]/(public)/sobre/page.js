@@ -10,7 +10,7 @@ export async function generateMetadata({ params }) {
   return {
     title: `${tFn('sobre.hero_title')} | Conheça Farmácia`,
     description: tFn('sobre.hero_subtitle'),
-    alternates: { languages: { pt: '/pt/sobre', en: '/en/sobre' } },
+    alternates: { languages: { pt: '/pt/sobre', en: '/en/about' } },
   }
 }
 
