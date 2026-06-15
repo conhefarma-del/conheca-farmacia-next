@@ -52,8 +52,18 @@ export async function proxy(request) {
     }
   )
 
-  // Refresh session (necessary for Server Components)
-  await supabase.auth.getUser()
+  // HIGH-07: refresh session, but never crash the whole site if Supabase
+  // auth is unreachable. A failing getUser() must not take down public
+  // routes — only the admin protection below should depend on the result.
+  try {
+    await supabase.auth.getUser()
+  } catch (proxyErr) {
+    console.error('[proxy] getUser failed, continuing without session refresh', {
+      lang,
+      path: pathname,
+      message: proxyErr?.message,
+    })
+  }
 
   // Extract section after lang: /pt/admin/dashboard → admin/dashboard
   const section = pathname.split('/').slice(2).join('/')
