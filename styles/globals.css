@@ -924,6 +924,7 @@ html.dark .form-note {
       flex-wrap: nowrap;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
+      justify-content: flex-start;
       padding-bottom: 4px;
       padding-left: 1rem;
       padding-right: 1rem;
