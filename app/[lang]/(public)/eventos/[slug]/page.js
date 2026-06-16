@@ -221,7 +221,9 @@ export default async function EventDetailPage({ params }) {
                     className="event-meta-badge"
                     style={{ backgroundColor: `${color}20`, color }}
                   >
-                    {event.type === 'online' ? 'Online' : 'Presencial'}
+                    {(event.type || '').toLowerCase() === 'online'
+                      ? tFn('evento_detail.event_type_online')
+                      : tFn('evento_detail.event_type_presencial')}
                   </span>
                   <span className="text-sm font-semibold text-brand-deep/70">
                     {formatDate(event.date, safeLang)}
@@ -250,7 +252,7 @@ export default async function EventDetailPage({ params }) {
               <div className="event-body-wrapper">
                 {/* Event Description/Excerpt */}
                 <div className="event-body mb-12">
-                  {event.excerpt && <p>{event.excerpt}</p>}
+                {event.excerpt && <p>{event.excerpt}</p>}
                 </div>
 
                 {/* Event Details */}
@@ -265,7 +267,9 @@ export default async function EventDetailPage({ params }) {
                         {tFn('evento_detail.event_type') || 'Tipo de Evento'}
                       </h3>
                       <p className="text-base text-brand-deep font-medium">
-                        {event.type === 'online' ? 'Online' : 'Presencial'}
+                        {(event.type || '').toLowerCase() === 'online'
+                      ? tFn('evento_detail.event_type_online')
+                      : tFn('evento_detail.event_type_presencial')}
                       </p>
                     </div>
 
@@ -303,7 +307,7 @@ export default async function EventDetailPage({ params }) {
                 {event.capacity && (
                   <div className="event-capacity-section mt-12">
                     <h3 className="text-lg font-bold text-brand-deep mb-4">
-                      {tFn('evento_detail.available_spots') || 'Vagas Disponíveis'}
+                      {tFn('evento_detail.available_spots')}
                     </h3>
                     <CapacityBar
                       eventSlug={event.slug}

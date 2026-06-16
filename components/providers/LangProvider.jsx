@@ -3,7 +3,7 @@
 import { useMemo } from 'react'
 import { LangContext } from '@/lib/contexts'
 
-function lookupTranslation(translations, keyPath) {
+function lookupTranslation(translations, keyPath, params) {
   const keys = keyPath.split('.')
   let value = translations
   for (const key of keys) {
@@ -13,14 +13,18 @@ function lookupTranslation(translations, keyPath) {
       return keyPath
     }
   }
-  return typeof value === 'string' ? value : keyPath
+  if (typeof value !== 'string') return keyPath
+  if (!params) return value
+  return value.replace(/\{(\w+)\}/g, (_, k) =>
+    params[k] !== undefined ? String(params[k]) : `{${k}}`
+  )
 }
 
 export default function LangProvider({ lang, translations, children }) {
   const value = useMemo(() => ({
     lang,
     translations,
-    t: (keyPath) => lookupTranslation(translations, keyPath),
+    t: (keyPath, params) => lookupTranslation(translations, keyPath, params),
   }), [lang, translations])
 
   return (
