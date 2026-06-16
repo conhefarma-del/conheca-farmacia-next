@@ -195,14 +195,14 @@ export default function SubscribersTable({
                           onClick={() => handleReactivate(sub.id)}
                           disabled={actionLoading === `reactivate-${sub.id}`}
                           title="Reativar subscrição"
-                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#16a34a', padding: 4 }}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--admin-success, #16a34a)', padding: 4 }}
                         >
                           <RotateCcw size={16} />
                         </button>
                         <button
                           onClick={() => setRemoveTarget(sub)}
                           title="Eliminar subscritor"
-                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#dc2626', padding: 4 }}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--admin-danger, #dc2626)', padding: 4 }}
                         >
                           <Trash2 size={16} />
                         </button>

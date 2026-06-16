@@ -35,9 +35,9 @@ export default async function EditEventPage({ params }) {
         style={{
           marginTop: '48px',
           padding: '24px',
-          background: '#f9fafb',
+          background: 'var(--admin-card-bg, #f9fafb)',
           borderRadius: '8px',
-          border: '1px solid #e5e7eb',
+          border: '1px solid var(--admin-border, #e5e7eb)',
         }}
       >
         <h2 style={{ marginTop: 0 }}>Tradução EN</h2>
@@ -49,14 +49,14 @@ export default async function EditEventPage({ params }) {
             { key: 'title', label: 'Title' },
             { key: 'slug', label: 'Slug' },
             { key: 'excerpt', label: 'Excerpt', type: 'textarea', rows: 2 },
-            { key: 'description', label: 'Description', type: 'textarea', rows: 6 },
+            { key: 'type', label: 'Type' },
             { key: 'location', label: 'Location' },
+            { key: 'hosts', label: 'Hosts' },
             { key: 'category_label', label: 'Category' },
-            { key: 'host_role', label: 'Host role' },
-            { key: 'host_bio', label: 'Host bio', type: 'textarea', rows: 3 },
             { key: 'meta_description', label: 'Meta description', type: 'textarea', rows: 2 },
           ]}
           lang={lang}
+          ptHosts={event.hosts || []}
         />
       </section>
     </>

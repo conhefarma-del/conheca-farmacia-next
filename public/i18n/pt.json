@@ -121,6 +121,7 @@
     "newsletter_subtitle": "Receba notificações sobre novos artigos, eventos, palestras e webinars diretamente na sua caixa de entrada.",
     "newsletter_email_placeholder": "Seu email",
     "newsletter_submit": "Subscrever",
+    "newsletter_submitting": "A subscrever...",
     "newsletter_privacy": "Respeitamos sua privacidade!",
     "newsletter_success": "Subscrição realizada com sucesso!",
     "newsletter_exists": "Este email já está subscrito.",
@@ -145,6 +146,7 @@
     "newsletter_subtitle": "Receba notificações sobre novos artigos, eventos, palestras e webinars diretamente na sua caixa de entrada.",
     "newsletter_email_placeholder": "Seu email",
     "newsletter_submit": "Subscrever",
+    "newsletter_submitting": "A subscrever...",
     "newsletter_privacy": "Respeitamos sua privacidade!"
   },
   "lives_page": {
@@ -164,6 +166,7 @@
     "newsletter_subtitle": "Receba notificações sobre novos artigos, eventos, palestras e webinars diretamente na sua caixa de entrada.",
     "newsletter_email_placeholder": "Seu email",
     "newsletter_submit": "Subscrever",
+    "newsletter_submitting": "A subscrever...",
     "newsletter_privacy": "Respeitamos sua privacidade!"
   },
   "artigo_detail": {
@@ -187,10 +190,13 @@
     "event_location": "Localização",
     "event_type_online": "Online",
     "event_type_presencial": "Presencial",
+    "event_type_hybrid": "Híbrido",
     "available_spots": "Vagas Disponíveis",
     "spots_updated_now": "Vagas atualizadas agora",
     "spots_available_of": "{count} vagas disponíveis de {capacity}",
+    "spots_available_short": "{count} vagas disponíveis",
     "event_full_no_spots": "Evento completo - Sem vagas disponíveis",
+    "event_full": "Evento completo",
     "related_events": "Eventos Relacionados",
     "not_found_title": "Evento não encontrado",
     "not_found_text": "Desculpe, não conseguimos encontrar o evento que procura.",

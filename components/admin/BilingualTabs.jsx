@@ -47,18 +47,35 @@ export default function BilingualTabs({
   translation,
   fields,
   lang = 'pt',
+  ptHosts = [],
 }) {
   const t = useT()
   const router = useRouter()
   const [activeTab, setActiveTab] = useState('en')
+  const [enHosts, setEnHosts] = useState(() => {
+    // Hydrate hosts array from translation.hosts (JSONB) when present,
+    // otherwise mirror ptHosts so each PT host gets a blank EN slot.
+    if (Array.isArray(translation?.hosts) && translation.hosts.length > 0) {
+      return translation.hosts.map((h) => ({
+        name: h.name ?? '',
+        role: h.role ?? '',
+        organization: h.organization ?? '',
+      }))
+    }
+    return ptHosts.map((h) => ({ name: '', role: '', organization: '' }))
+  })
   const [enValues, setEnValues] = useState(() => {
     if (translation) {
       return fields.reduce((acc, f) => {
+        // Hosts live in a separate state (enHosts) because they are an
+        // array of objects, not a scalar — skip here.
+        if (f.key === 'hosts') return acc
         acc[f.key] = translation[f.key] ?? ''
         return acc
       }, {})
     }
     return fields.reduce((acc, f) => {
+      if (f.key === 'hosts') return acc
       acc[f.key] = ''
       return acc
     }, {})
@@ -76,6 +93,14 @@ export default function BilingualTabs({
 
   function updateField(key, value) {
     setEnValues((prev) => ({ ...prev, [key]: value }))
+  }
+
+  function updateHost(index, key, value) {
+    setEnHosts((prev) => {
+      const next = [...prev]
+      next[index] = { ...next[index], [key]: value }
+      return next
+    })
   }
 
   function handleAutoTranslate() {
@@ -115,7 +140,14 @@ export default function BilingualTabs({
     setSuccess(null)
     setIsSaving(true)
     try {
-      const result = await saveTranslationAction(entityType, entityId, enValues)
+      // Merge the hosts array (managed separately) into the payload
+      // before saving. Filter out empty hosts so we don't persist
+      // an array of empty objects when the admin hasn't translated them.
+      const hostsPayload = enHosts.filter(
+        (h) => h.name || h.role || h.organization
+      )
+      const payload = { ...enValues, hosts: hostsPayload }
+      const result = await saveTranslationAction(entityType, entityId, payload)
       if (result?.ok) {
         setSuccess(t('translation.save_success', 'Tradução guardada com sucesso.'))
         router.refresh()
@@ -315,8 +347,126 @@ export default function BilingualTabs({
           )}
 
           {fields.map((field) => {
+            // Special: hosts is an array rendered as N cards based on ptHosts.
+            if (field.key === 'hosts') {
+              return (
+                <div key="hosts" style={{ marginBottom: '24px' }}>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontWeight: 600,
+                      marginBottom: '6px',
+                      color: 'var(--admin-text)',
+                    }}
+                  >
+                    {field.label || 'Hosts'}
+                  </label>
+                  <p
+                    style={{
+                      fontSize: '12px',
+                      color: 'var(--admin-text-muted)',
+                      margin: '0 0 8px 0',
+                    }}
+                  >
+                    {t(
+                      'translation.hosts_hint',
+                      `${enHosts.length} host(s) — o número é fixado pela versão PT. Para alterar, edite a versão PT.`
+                    )}
+                  </p>
+                  {enHosts.map((host, index) => (
+                    <div
+                      key={index}
+                      style={{
+                        border: '1px solid var(--admin-border, #e5e7eb)',
+                        borderRadius: '6px',
+                        padding: '12px',
+                        marginBottom: '8px',
+                        background: 'var(--admin-card-bg, #f9fafb)',
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          color: 'var(--admin-text-muted)',
+                          marginBottom: '8px',
+                          textTransform: 'uppercase',
+                        }}
+                      >
+                        Host {index + 1}
+                        {ptHosts[index]?.name && (
+                          <span
+                            style={{
+                              fontWeight: 400,
+                              textTransform: 'none',
+                              marginLeft: '6px',
+                              color: 'var(--admin-text-muted)',
+                            }}
+                          >
+                            (PT: {ptHosts[index].name})
+                          </span>
+                        )}
+                      </div>
+                      <input
+                        type="text"
+                        placeholder={t('translation.host_name_placeholder', 'Nome em inglês')}
+                        value={host.name}
+                        onChange={(e) => updateHost(index, 'name', e.target.value)}
+                        style={{ ...fieldInputStyle, marginBottom: '6px' }}
+                      />
+                      <input
+                        type="text"
+                        placeholder={t('translation.host_role_placeholder', 'Cargo / papel em inglês')}
+                        value={host.role}
+                        onChange={(e) => updateHost(index, 'role', e.target.value)}
+                        style={{ ...fieldInputStyle, marginBottom: '6px' }}
+                      />
+                      <input
+                        type="text"
+                        placeholder={t('translation.host_org_placeholder', 'Organização em inglês')}
+                        value={host.organization}
+                        onChange={(e) => updateHost(index, 'organization', e.target.value)}
+                        style={fieldInputStyle}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )
+            }
+
             const value = enValues[field.key] || ''
             const isMultiline = field.type === 'textarea' || field.multiline
+
+            // Special: type is a select with 3 fixed options.
+            if (field.key === 'type') {
+              return (
+                <div key={field.key} style={{ marginBottom: '16px' }}>
+                  <label
+                    htmlFor={`en-${field.key}`}
+                    style={{
+                      display: 'block',
+                      fontWeight: 600,
+                      marginBottom: '6px',
+                      color: 'var(--admin-text)',
+                    }}
+                  >
+                    {field.label}
+                  </label>
+                  <select
+                    id={`en-${field.key}`}
+                    value={value || ''}
+                    onChange={(e) => updateField(field.key, e.target.value)}
+                    style={fieldInputStyle}
+                  >
+                    <option value="">—</option>
+                    <option value="presencial">Presencial / In Person</option>
+                    <option value="online">Online</option>
+                    <option value="hibrido">Híbrido / Hybrid</option>
+                  </select>
+                </div>
+              )
+            }
+
             return (
               <div key={field.key} style={{ marginBottom: '16px' }}>
                 <label

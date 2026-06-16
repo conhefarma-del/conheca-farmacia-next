@@ -114,7 +114,7 @@ export default function BulkTranslateClient({ groups, lang }) {
       </div>
 
       {progress.current && (
-        <p style={{ color: '#6b7280' }}>
+        <p style={{ color: 'var(--admin-text-muted, #6b7280)' }}>
           A traduzir: <strong>{progress.current}</strong>
         </p>
       )}
@@ -132,13 +132,13 @@ export default function BulkTranslateClient({ groups, lang }) {
                 <li key={item.id} style={{ marginBottom: '8px' }}>
                   <a
                     href={`/${lang}/admin/${type}s/${item.id}`}
-                    style={{ color: '#2563eb', textDecoration: 'underline' }}
+                    style={{ color: 'var(--admin-accent, #2563eb)', textDecoration: 'underline' }}
                   >
                     {item.title}
                   </a>
                   <span
                     style={{
-                      color: '#9ca3af',
+                      color: 'var(--admin-text-muted, #9ca3af)',
                       marginLeft: '8px',
                       fontSize: '12px',
                     }}
@@ -159,7 +159,7 @@ export default function BulkTranslateClient({ groups, lang }) {
           </summary>
           <pre
             style={{
-              background: '#f3f4f6',
+              background: 'var(--admin-input-bg, #f3f4f6)',
               padding: '12px',
               borderRadius: '4px',
               fontSize: '12px',
@@ -173,7 +173,7 @@ export default function BulkTranslateClient({ groups, lang }) {
       )}
 
       {all.length === 0 && (
-        <p style={{ color: '#059669', fontWeight: 600 }}>
+        <p style={{ color: 'var(--admin-success, #059669)', fontWeight: 600 }}>
           ✓ Tudo traduzido! Não há entidades pendentes.
         </p>
       )}

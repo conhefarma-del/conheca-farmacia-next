@@ -5,6 +5,7 @@ import { LangContext } from '@/lib/contexts'
 import Link from 'next/link'
 import Image from 'next/image'
 import { EVENT_CATEGORY_COLORS } from '@/lib/constants'
+import { formatEventType } from '@/lib/utils/event-type'
 import NewsletterSection from '@/components/ui/NewsletterSection'
 
 export default function EventosPageClient({ events, lang }) {
@@ -157,7 +158,10 @@ export default function EventosPageClient({ events, lang }) {
                         {event.categoryLabel}
                       </span>
                       <span className="inline-block text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider bg-slate-100 text-slate-600 border border-slate-200">
-                        {event.type === 'online' ? 'Online' : 'Presencial'}
+                        {(() => {
+                          const { icon, label } = formatEventType(event.type, t)
+                          return `${icon} ${label}`
+                        })()}
                       </span>
                     </div>
 
@@ -174,11 +178,11 @@ export default function EventosPageClient({ events, lang }) {
                       {!isPast && (
                         spotsLeft > 0 ? (
                           <div className="event-meta-item">
-                            <span>{spotsLeft} vagas disponíveis</span>
+                            <span>{t('evento_detail.spots_available_short', { count: spotsLeft })}</span>
                           </div>
                         ) : (
-                          <div className="event-meta-item" style={{ color: '#dc2626', fontWeight: 600 }}>
-                            <span>Evento completo</span>
+                          <div className="event-meta-item" style={{ color: 'var(--admin-danger, #dc2626)', fontWeight: 600 }}>
+                            <span>{t('evento_detail.event_full')}</span>
                           </div>
                         )
                       )}

@@ -38,6 +38,8 @@ npx vercel --prod
 - **SSR**: `@supabase/ssr` for server-side rendering
 - **Deploy**: Vercel
 - **i18n**: Dynamic `[lang]` route segment (PT/EN)
+- **Fonts**: `next/font/google` (Inter + Fraunces) — self-hosted, zero CLS, `adjustFontFallback: true`. CSS vars em `--font-sans` / `--font-display` (ver `styles/globals.css`). **NÃO** usar `<link>` Google Fonts
+- **Email**: SMTP via `denomailer` (eu-north-1, **Resend deprecated**) — deploys `v22`/`v20`. Headers RFC 8058 (`List-Unsubscribe` + `List-Unsubscribe-Post`) obrigatórios. From per tipo: `newsletter@/info@/inscricao@conhecafarmacia.com`, Reply-To `contato@`
 
 ### Directory Structure
 - Sempre restrinja buscas e comandos glob a subdiretórios específicos. Nunca use padrões genéricos como '**/*' na raiz do projeto.
@@ -91,7 +93,6 @@ npx vercel --prod
 │   ├── pages/                       # Page-level composite components
 │   ├── providers/                   # ThemeProvider, etc.
 │   ├── i18n/                        # i18n client helpers
-│   ├── Header.js, Footer.js         # (legacy flat layout — see components/layout/)
 │   └── ...
 │
 ├── lib/                             # Utilities
@@ -137,53 +138,7 @@ npx vercel --prod
 - **Admin**: Protected by proxy (session + admin_users table check)
 - **Security Headers**: `vercel.json` (primary) + `next.config.mjs` (fallback)
 - **Public layout state**: Utility bar + header stacking state lives in `app/[lang]/(public)/layout.js` (Client Component) — see `Public Layout Fixed Stacking` in memory
-
-### Supabase SSR Clients
-
-3 clients with different scopes:
-
-**Server** (`lib/supabase/server.js`):
-```js
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
-
-export async function createClient() {
-  const cookieStore = await cookies()
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    {
-      cookies: {
-        getAll() { return cookieStore.getAll() },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options))
-          } catch { /* Server Component */ }
-        },
-      },
-    }
-  )
-}
-```
-
-**Browser** (`lib/supabase/client.js`):
-```js
-'use client'
-import { createBrowserClient } from '@supabase/ssr'
-
-export function createClient() {
-  return createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  )
-}
-```
-
-**Proxy** (`lib/supabase/middleware.js`):
-```js
-// updateSession(request) — cookie proxy pattern para refresh de sessão
-```
+- **Supabase SSR clients**: 3 clients — `lib/supabase/server.js` (Server Components, RSC cookies via `cookies()`), `lib/supabase/client.js` (Browser, `createBrowserClient`), `lib/supabase/middleware.js` (Proxy session refresh). `createAdminClient()` em `admin.js` (Service Role) — **nunca importar em Client Component**
 
 ### i18n Strategy (Two Layers)
 
@@ -212,10 +167,7 @@ Quando adicionar uma nova secção PT, criar também o mirror EN (mesmo que re-e
 
 ### Vercel Insights
 
-- `@vercel/analytics` e `@vercel/speed-insights` integrados em `app/layout.js` (dentro de `<ThemeProvider>`, depois de `{children}`)
-- Subpath imports: `import { Analytics } from '@vercel/analytics/next'` e `import { SpeedInsights } from '@vercel/speed-insights/next'`
-- Não precisam de env vars adicionais — funcionam out-of-the-box
-- Em dev: visíveis como console warnings/headers; em produção: visíveis no dashboard Vercel
+`@vercel/analytics` + `@vercel/speed-insights` activos em `app/layout.js` (dentro de `<ThemeProvider>`, depois de `{children}`). Sem env vars adicionais.
 
 ### Proxy (Next.js 16)
 
@@ -251,7 +203,7 @@ const [drawerOpen, setDrawerOpen] = useState(false)
 - **2FA**: TOTP implementation em `definicoes/` — **enforced** no primeiro login admin (2026-06-15)
 - **RLS**: Row Level Security em todas as tabelas
 - **XSS Protection**: `escapeHtml()` em user input
-- **CSP**: No inline scripts, usar `.addEventListener()`
+- **CSP**: Anti-FOUC inline script em `app/layout.js` é a única excepção (ver Gap 8 no SEO backlog); resto usa `.addEventListener()`
 
 ### Admin Role System (RBAC)
 
@@ -265,9 +217,10 @@ Tabela canónica (admin × operation) em `~/.openclaude/.../memory/user/admin-so
 
 ## Lessons Learned
 
-This file is the project entry point — it stays short and points to the details. Detailed patterns and historical bug fixes live in `CLAUDE-Next.md` (60 lições) and in `~/.openclaude/.../memory/` (working notes, private + team). As of 2026-06-15:
+This file is the project entry point — it stays short and points to the details. Detailed patterns and historical bug fixes live in `CLAUDE-Next.md` and in `~/.openclaude/.../memory/` (working notes, private + team). As of 2026-06-15:
 
-- `CLAUDE-Next.md` covers #1–#60: Supabase patterns, Next.js 16 specifics (proxy.js, force-dynamic, OpenGraph), Vercel/Netlify migration, security helpers, Sentinela audit fixes (rate-limit RPC, validateUrl, CSP no-unsafe-eval, 2FA policy, proxy try/catch), Admin Role UI (archive metadata, RBAC, 2FA enforced), i18n full-stack
+- `CLAUDE-Next.md` — Next.js-specific lessons (Supabase patterns, proxy.js, force-dynamic, OpenGraph, security helpers, Sentinela audit fixes, Admin Role UI, i18n full-stack)
 - Working notes (`memory/`): architectural decisions, Sentinela audit status, project-specific invariants (admin role matrix, email infrastructure, dev server patterns, parallel session rules, TDD/debugging workflows). Team-scoped memories live in `memory/team/` (currently empty — revalidate before using)
+- **SEO audits & backlog** — `docs/security/audits/2026-06-15-seo-audit.md` (baseline Sprint 1) + `docs/security/audits/2026-06-15-seo-backlog.md` (Gaps 4, 8, 9, M2, M3 remanescentes)
 
-When adding a new lesson, prefer memory over CLAUDE.md unless it's a project-wide invariant. Project-wide invariants (i18n URL mirrors, RBAC matrix, 2FA enforcement, proxy.js auth pattern) stay in CLAUDE.md; everything else goes to memory.
+When adding a new lesson, prefer memory over CLAUDE.md unless it's a project-wide invariant. Project-wide invariants (i18n URL mirrors, RBAC matrix, 2FA enforcement, proxy.js auth pattern, next/font + Inter/Fraunces, Resend→SES email pipeline) stay in CLAUDE.md; everything else goes to memory.

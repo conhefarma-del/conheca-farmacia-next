@@ -4,6 +4,7 @@ import { buildEventSchema, buildBreadcrumbSchema } from '@/lib/seo'
 import { EVENT_CATEGORY_COLORS, SITE_URL } from '@/lib/constants'
 import { createClient } from '@/lib/supabase/server'
 import { findTranslationByEntityId } from '@/lib/api/translations'
+import { formatEventType } from '@/lib/utils/event-type'
 import Breadcrumb from '@/components/ui/Breadcrumb'
 import CapacityBar from '@/components/content/CapacityBar'
 import RegistrationButton from '@/components/content/RegistrationButton'
@@ -221,9 +222,10 @@ export default async function EventDetailPage({ params }) {
                     className="event-meta-badge"
                     style={{ backgroundColor: `${color}20`, color }}
                   >
-                    {(event.type || '').toLowerCase() === 'online'
-                      ? tFn('evento_detail.event_type_online')
-                      : tFn('evento_detail.event_type_presencial')}
+                    {(() => {
+                      const { icon, label } = formatEventType(event.type, tFn)
+                      return `${icon} ${label}`
+                    })()}
                   </span>
                   <span className="text-sm font-semibold text-brand-deep/70">
                     {formatDate(event.date, safeLang)}
@@ -267,9 +269,10 @@ export default async function EventDetailPage({ params }) {
                         {tFn('evento_detail.event_type') || 'Tipo de Evento'}
                       </h3>
                       <p className="text-base text-brand-deep font-medium">
-                        {(event.type || '').toLowerCase() === 'online'
-                      ? tFn('evento_detail.event_type_online')
-                      : tFn('evento_detail.event_type_presencial')}
+                        {(() => {
+                          const { icon, label } = formatEventType(event.type, tFn)
+                          return `${icon} ${label}`
+                        })()}
                       </p>
                     </div>
 

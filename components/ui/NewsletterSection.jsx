@@ -94,7 +94,7 @@ export default function NewsletterSection({ keys = 'artigos_page' }) {
               disabled={status === 'loading'}
               className="btn btn-primary whitespace-nowrap"
             >
-              {status === 'loading' ? t(`${keys}.newsletter_submitting`) || 'A subscrever...' : t(`${keys}.newsletter_submit`)}
+              {status === 'loading' ? t(`${keys}.newsletter_submitting`) : t(`${keys}.newsletter_submit`)}
             </button>
           </form>
           <div

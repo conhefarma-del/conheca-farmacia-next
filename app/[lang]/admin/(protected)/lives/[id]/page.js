@@ -35,9 +35,9 @@ export default async function EditLivePage({ params }) {
         style={{
           marginTop: '48px',
           padding: '24px',
-          background: '#f9fafb',
+          background: 'var(--admin-card-bg, #f9fafb)',
           borderRadius: '8px',
-          border: '1px solid #e5e7eb',
+          border: '1px solid var(--admin-border, #e5e7eb)',
         }}
       >
         <h2 style={{ marginTop: 0 }}>Tradução EN</h2>

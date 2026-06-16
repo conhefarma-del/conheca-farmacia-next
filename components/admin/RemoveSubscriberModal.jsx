@@ -94,7 +94,7 @@ export default function RemoveSubscriberModal({
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           margin: '0 auto 20px',
           background: 'rgba(220, 38, 38, 0.1)',
-          color: '#dc2626',
+          color: 'var(--admin-danger, #dc2626)',
         }}>
           <Trash2 size={32} />
         </div>
@@ -123,7 +123,7 @@ export default function RemoveSubscriberModal({
         {error && (
           <div style={{
             padding: '10px 16px', marginBottom: 16, borderRadius: 8,
-            background: 'rgba(220, 38, 38, 0.08)', color: '#dc2626',
+            background: 'rgba(220, 38, 38, 0.08)', color: 'var(--admin-danger, #dc2626)',
             fontSize: 14, border: '1px solid rgba(220, 38, 38, 0.2)',
           }}>
             {error}

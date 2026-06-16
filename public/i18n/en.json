@@ -121,6 +121,7 @@
     "newsletter_subtitle": "Receive notifications about new articles, events, lectures and webinars directly in your inbox.",
     "newsletter_email_placeholder": "Your email",
     "newsletter_submit": "Subscribe",
+    "newsletter_submitting": "Subscribing...",
     "newsletter_privacy": "We respect your privacy!",
     "newsletter_success": "Successfully subscribed!",
     "newsletter_exists": "This email is already subscribed.",
@@ -145,6 +146,7 @@
     "newsletter_subtitle": "Receive notifications about new articles, events, lectures and webinars directly in your inbox.",
     "newsletter_email_placeholder": "Your email",
     "newsletter_submit": "Subscribe",
+    "newsletter_submitting": "Subscribing...",
     "newsletter_privacy": "We respect your privacy!"
   },
   "lives_page": {
@@ -164,6 +166,7 @@
     "newsletter_subtitle": "Receive notifications about new articles, events, lectures and webinars directly in your inbox.",
     "newsletter_email_placeholder": "Your email",
     "newsletter_submit": "Subscribe",
+    "newsletter_submitting": "Subscribing...",
     "newsletter_privacy": "We respect your privacy!"
   },
   "artigo_detail": {
@@ -187,10 +190,13 @@
     "event_location": "Location",
     "event_type_online": "Online",
     "event_type_presencial": "In Person",
+    "event_type_hybrid": "Hybrid",
     "available_spots": "Available Spots",
     "spots_updated_now": "Spots updated now",
     "spots_available_of": "{count} spots available out of {capacity}",
+    "spots_available_short": "{count} spots available",
     "event_full_no_spots": "Event full - No spots available",
+    "event_full": "Event full",
     "related_events": "Related Events",
     "not_found_title": "Event not found",
     "not_found_text": "Sorry, we couldn't find the event you're looking for.",

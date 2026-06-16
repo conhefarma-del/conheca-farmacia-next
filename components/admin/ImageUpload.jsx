@@ -196,7 +196,7 @@ export default function ImageUpload({ value = '', onChange, bucket = 'article-im
       )}
 
       {error && (
-        <div style={{ color: '#dc2626', fontSize: 13, marginTop: 4 }}>{error}</div>
+        <div style={{ color: 'var(--admin-danger, #dc2626)', fontSize: 13, marginTop: 4 }}>{error}</div>
       )}
     </div>
   )

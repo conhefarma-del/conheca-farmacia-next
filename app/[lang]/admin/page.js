@@ -238,7 +238,7 @@ export default function AdminLoginPage() {
               {gateError && (
                 <div
                   className="py-2.5 px-4 rounded-lg text-sm"
-                  style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#fca5a5' }}
+                  style={{ background: 'rgba(239, 68, 68, 0.15)', color: 'var(--admin-danger, #fca5a5)' }}
                 >
                   {gateError}
                 </div>
@@ -267,7 +267,7 @@ export default function AdminLoginPage() {
           style={{
             minHeight: '100vh',
             fontFamily: "'DM Sans', -apple-system, sans-serif",
-            background: '#fafbfa',
+            background: 'var(--admin-bg, #fafbfa)',
           }}
         >
           {/* Left: Brand Panel */}
@@ -385,7 +385,7 @@ export default function AdminLoginPage() {
               >
                 <span
                   className="w-2 h-2 rounded-full inline-block"
-                  style={{ background: '#0a844f' }}
+                  style={{ background: 'var(--admin-success, #0a844f)' }}
                 />
                 Sistema seguro e encriptado
               </div>
@@ -405,13 +405,13 @@ export default function AdminLoginPage() {
                     <h1
                       className="mb-2"
                       style={{
-                        fontSize: 28, fontWeight: 700, color: '#002a32',
+                        fontSize: 28, fontWeight: 700, color: 'var(--admin-text, #002a32)',
                         fontFamily: "'Fraunces', serif",
                       }}
                     >
                       Bem-vindo de volta
                     </h1>
-                    <p style={{ color: '#6b7280', fontSize: 14 }}>
+                    <p style={{ color: 'var(--admin-text-muted, #6b7280)', fontSize: 14 }}>
                       Introduza as suas credenciais para aceder ao painel.
                     </p>
                   </div>
@@ -421,7 +421,7 @@ export default function AdminLoginPage() {
                       <label
                         htmlFor="email"
                         className="block mb-1.5 text-sm font-medium"
-                        style={{ color: '#374151' }}
+                        style={{ color: 'var(--admin-text, #374151)' }}
                       >
                         Email
                       </label>
@@ -435,9 +435,9 @@ export default function AdminLoginPage() {
                         autoComplete="email"
                         className="w-full px-4 py-3 rounded-xl text-sm transition-all duration-200"
                         style={{
-                          background: '#f9fafb',
-                          border: '1.5px solid #e5e7eb',
-                          color: '#002a32',
+                          background: 'var(--admin-input-bg, #f9fafb)',
+                          border: '1.5px solid var(--admin-border, #e5e7eb)',
+                          color: 'var(--admin-text, #002a32)',
                           outline: 'none',
                         }}
                       />
@@ -447,7 +447,7 @@ export default function AdminLoginPage() {
                       <label
                         htmlFor="password"
                         className="block mb-1.5 text-sm font-medium"
-                        style={{ color: '#374151' }}
+                        style={{ color: 'var(--admin-text, #374151)' }}
                       >
                         Palavra-passe
                       </label>
@@ -461,9 +461,9 @@ export default function AdminLoginPage() {
                         autoComplete="current-password"
                         className="w-full px-4 py-3 rounded-xl text-sm transition-all duration-200"
                         style={{
-                          background: '#f9fafb',
-                          border: '1.5px solid #e5e7eb',
-                          color: '#002a32',
+                          background: 'var(--admin-input-bg, #f9fafb)',
+                          border: '1.5px solid var(--admin-border, #e5e7eb)',
+                          color: 'var(--admin-text, #002a32)',
                           outline: 'none',
                         }}
                       />
@@ -472,7 +472,7 @@ export default function AdminLoginPage() {
                     {loginError && (
                       <div
                         className="py-2.5 px-4 rounded-lg text-sm"
-                        style={{ background: '#fee2e2', color: '#dc2626' }}
+                        style={{ background: 'var(--admin-danger-bg, #fee2e2)', color: 'var(--admin-danger, #dc2626)' }}
                       >
                         {loginError}
                       </div>
@@ -493,7 +493,7 @@ export default function AdminLoginPage() {
 
                   <p
                     className="text-center mt-8"
-                    style={{ color: '#9ca3af', fontSize: 12 }}
+                    style={{ color: 'var(--admin-text-muted, #9ca3af)', fontSize: 12 }}
                   >
                     Acesso restrito a administradores autorizados
                   </p>
@@ -505,21 +505,21 @@ export default function AdminLoginPage() {
                 <div className="text-center">
                   <div
                     className="mx-auto mb-5 w-16 h-16 rounded-full flex items-center justify-center"
-                    style={{ background: '#e6f4ea' }}
+                    style={{ background: 'var(--admin-success-bg, #e6f4ea)' }}
                   >
-                    <ShieldCheck size={32} style={{ color: '#0a844f' }} />
+                    <ShieldCheck size={32} style={{ color: 'var(--admin-success, #0a844f)' }} />
                   </div>
 
                   <h2
                     className="mb-2"
                     style={{
-                      fontSize: 24, fontWeight: 700, color: '#002a32',
+                      fontSize: 24, fontWeight: 700, color: 'var(--admin-text, #002a32)',
                       fontFamily: "'Fraunces', serif",
                     }}
                   >
                     Verificação de Segurança
                   </h2>
-                  <p className="mb-8" style={{ color: '#6b7280', fontSize: 14 }}>
+                  <p className="mb-8" style={{ color: 'var(--admin-text-muted, #6b7280)', fontSize: 14 }}>
                     Introduza o código de 6 dígitos da sua aplicação autenticadora.
                   </p>
 
@@ -528,7 +528,7 @@ export default function AdminLoginPage() {
                       <label
                         htmlFor="totp-code"
                         className="block mb-1.5 text-sm font-medium"
-                        style={{ color: '#374151' }}
+                        style={{ color: 'var(--admin-text, #374151)' }}
                       >
                         Código de verificação
                       </label>
@@ -545,9 +545,9 @@ export default function AdminLoginPage() {
                         placeholder="000000"
                         className="w-full px-4 py-3 rounded-xl text-center transition-all duration-200"
                         style={{
-                          background: '#f9fafb',
-                          border: '1.5px solid #e5e7eb',
-                          color: '#002a32',
+                          background: 'var(--admin-input-bg, #f9fafb)',
+                          border: '1.5px solid var(--admin-border, #e5e7eb)',
+                          color: 'var(--admin-text, #002a32)',
                           outline: 'none',
                           fontSize: 24,
                           fontFamily: "'JetBrains Mono', monospace",
@@ -559,7 +559,7 @@ export default function AdminLoginPage() {
                     {mfaError && (
                       <div
                         className="py-2.5 px-4 rounded-lg text-sm"
-                        style={{ background: '#fee2e2', color: '#dc2626' }}
+                        style={{ background: 'var(--admin-danger-bg, #fee2e2)', color: 'var(--admin-danger, #dc2626)' }}
                       >
                         {mfaError}
                       </div>
@@ -578,7 +578,7 @@ export default function AdminLoginPage() {
                     </button>
                   </form>
 
-                  <p className="mt-6" style={{ color: '#9ca3af', fontSize: 12 }}>
+                  <p className="mt-6" style={{ color: 'var(--admin-text-muted, #9ca3af)', fontSize: 12 }}>
                     Não consegue aceder à app autenticadora? Contacte o administrador.
                   </p>
                 </div>

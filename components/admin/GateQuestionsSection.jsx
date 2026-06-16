@@ -194,7 +194,7 @@ export default function GateQuestionsSection() {
         >
           <span style={{
             position: 'absolute', top: 3, left: enabled ? 25 : 3,
-            width: 20, height: 20, borderRadius: '50%', background: '#fff',
+            width: 20, height: 20, borderRadius: '50%', background: 'var(--admin-card-bg, #fff)',
             transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
           }} />
         </button>
@@ -204,7 +204,7 @@ export default function GateQuestionsSection() {
       {success && (
         <div style={{
           padding: '10px 16px', marginBottom: 16, borderRadius: 8,
-          background: 'rgba(10, 132, 79, 0.08)', color: '#0a844f',
+          background: 'rgba(10, 132, 79, 0.08)', color: 'var(--admin-success, #0a844f)',
           fontSize: 14, border: '1px solid rgba(10, 132, 79, 0.2)',
         }}>
           {success}
@@ -215,7 +215,7 @@ export default function GateQuestionsSection() {
       {error && (
         <div style={{
           padding: '10px 16px', marginBottom: 16, borderRadius: 8,
-          background: 'rgba(220, 38, 38, 0.08)', color: '#dc2626',
+          background: 'rgba(220, 38, 38, 0.08)', color: 'var(--admin-danger, #dc2626)',
           fontSize: 14, border: '1px solid rgba(220, 38, 38, 0.2)',
         }}>
           {error}

@@ -139,7 +139,7 @@ export default function MarkdownEditor({ value = '', onChange, placeholder = 'Es
             />
             <div className="admin-editor-overlay-footer">
               <span className="admin-editor-overlay-hint">
-                Pressione <kbd style={{ padding: '2px 6px', background: '#e5e7eb', borderRadius: 4, fontSize: 12 }}>Esc</kbd> para fechar
+                Pressione <kbd style={{ padding: '2px 6px', background: 'var(--admin-border, #e5e7eb)', borderRadius: 4, fontSize: 12 }}>Esc</kbd> para fechar
               </span>
             </div>
           </div>

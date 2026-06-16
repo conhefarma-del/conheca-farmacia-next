@@ -6,6 +6,7 @@ import { getSectionHref } from '@/lib/i18n-routes'
 import Link from 'next/link'
 import Image from 'next/image'
 import { EVENT_CATEGORY_COLORS } from '@/lib/constants'
+import { formatEventType } from '@/lib/utils/event-type'
 
 export default function EventCard({ event, lang = 'pt', variant = 'list' }) {
   const { t } = useContext(LangContext)
@@ -83,13 +84,14 @@ export default function EventCard({ event, lang = 'pt', variant = 'list' }) {
         >
           {event.categoryLabel}
         </span>
-        {event.type && (
-          <span className="event-type-badge">
-            {(event.type || '').toLowerCase() === 'online'
-              ? `💻 ${t('evento_detail.event_type_online')}`
-              : `📍 ${t('evento_detail.event_type_presencial')}`}
-          </span>
-        )}
+        {event.type && (() => {
+          const { icon, label } = formatEventType(event.type, t)
+          return (
+            <span className="event-type-badge">
+              {icon} {label}
+            </span>
+          )
+        })()}
       </div>
       <div className="event-card-content">
         <h3 className="event-card-title">{event.title}</h3>
