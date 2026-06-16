@@ -27,8 +27,11 @@ export default function LiveCard({ live, lang = 'pt', variant = 'list' }) {
 
   const hora = live.hora || live.time || ''
   const plataforma = live.plataforma || live.platform || ''
-  const categoriaLabel = live.categoriaLabel || live.category || live.categoria || ''
-  const resumo = live.resumo || live.summary || ''
+  // Prefer camelCase merged keys (set by mergeEntity from EN translation),
+  // fall back to PT keys for backwards compatibility.
+  const categoriaLabel = live.categoryLabel || live.categoriaLabel || live.category || live.categoria || ''
+  const resumo = live.description || live.resumo || live.summary || live.excerpt || ''
+  const titulo = live.title || live.titulo || ''
   const linkAcesso = validateUrl(live.link_acesso || live.access_link || '#')
 
   if (variant === 'home') {
@@ -42,7 +45,7 @@ export default function LiveCard({ live, lang = 'pt', variant = 'list' }) {
           {live.imagem && (
             <Image
               src={live.imagem}
-              alt={live.titulo}
+              alt={titulo}
               width={400}
               height={192}
               className="event-card-image"
@@ -52,7 +55,7 @@ export default function LiveCard({ live, lang = 'pt', variant = 'list' }) {
         </div>
         <div className="event-card-content home-card-content">
           <div className="event-date">{fullDate}</div>
-          <h3 className="event-card-title">{live.titulo}</h3>
+          <h3 className="event-card-title">{titulo}</h3>
           <p className="event-card-excerpt">{resumo}</p>
           <div className="event-card-actions mt-auto">
             <a
@@ -80,7 +83,7 @@ export default function LiveCard({ live, lang = 'pt', variant = 'list' }) {
         {live.imagem && (
           <Image
             src={live.imagem}
-            alt={live.titulo}
+            alt={titulo}
             width={400}
             height={192}
             className="event-card-image"
@@ -104,7 +107,7 @@ export default function LiveCard({ live, lang = 'pt', variant = 'list' }) {
           )}
         </div>
 
-        <h3 className="event-card-title">{live.titulo}</h3>
+        <h3 className="event-card-title">{titulo}</h3>
         <p className="event-card-excerpt">{resumo}</p>
 
         <div className="event-card-meta">

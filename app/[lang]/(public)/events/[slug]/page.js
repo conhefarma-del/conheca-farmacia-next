@@ -1,4 +1,5 @@
 import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
+import { getSectionHref } from '@/lib/i18n-routes'
 import { getEventBySlug, getEvents, getEventInscriptionCount } from '@/lib/api/events'
 import { buildEventSchema, buildBreadcrumbSchema } from '@/lib/seo'
 import { EVENT_CATEGORY_COLORS, SITE_URL } from '@/lib/constants'
@@ -61,14 +62,14 @@ export async function generateMetadata({ params }) {
 
   return {
     title: `${event.title} — Conheça Farmácia`,
-    description: event.excerpt || event.title,
+    description: event.description || event.excerpt || event.title,
     alternates: {
       canonical: eventUrl,
       languages: langs,
     },
     openGraph: {
       title: event.title,
-      description: event.excerpt,
+      description: event.description || event.excerpt,
       url: eventUrl,
       type: 'website',
       images: event.image ? [{ url: event.image }] : [],
@@ -76,7 +77,7 @@ export async function generateMetadata({ params }) {
     twitter: {
       card: 'summary_large_image',
       title: event.title,
-      description: event.excerpt,
+      description: event.description || event.excerpt,
       images: event.image ? [event.image] : [],
     },
   }
@@ -224,7 +225,9 @@ export default async function EventDetailPage({ params }) {
                     className="event-meta-badge"
                     style={{ backgroundColor: `${color}20`, color }}
                   >
-                    {event.type === 'online' ? 'Online' : 'Presencial'}
+                    {(event.type || '').toLowerCase() === 'online'
+                      ? tFn('evento_detail.event_type_online')
+                      : tFn('evento_detail.event_type_presencial')}
                   </span>
                   <span className="text-sm font-semibold text-brand-deep/70">
                     {formatDate(event.date, safeLang)}
@@ -253,7 +256,7 @@ export default async function EventDetailPage({ params }) {
               <div className="event-body-wrapper">
                 {/* Event Description/Excerpt */}
                 <div className="event-body mb-12">
-                  {event.excerpt && <p>{event.excerpt}</p>}
+                  {(event.description || event.excerpt) && <p>{event.description || event.excerpt}</p>}
                 </div>
 
                 {/* Event Details */}
@@ -268,7 +271,9 @@ export default async function EventDetailPage({ params }) {
                         {tFn('evento_detail.event_type') || 'Tipo de Evento'}
                       </h3>
                       <p className="text-base text-brand-deep font-medium">
-                        {event.type === 'online' ? 'Online' : 'Presencial'}
+                        {(event.type || '').toLowerCase() === 'online'
+                      ? tFn('evento_detail.event_type_online')
+                      : tFn('evento_detail.event_type_presencial')}
                       </p>
                     </div>
 
@@ -306,7 +311,7 @@ export default async function EventDetailPage({ params }) {
                 {event.capacity && (
                   <div className="event-capacity-section mt-12">
                     <h3 className="text-lg font-bold text-brand-deep mb-4">
-                      {tFn('evento_detail.available_spots') || 'Vagas Disponíveis'}
+                      {tFn('evento_detail.available_spots')}
                     </h3>
                     <CapacityBar
                       eventSlug={event.slug}

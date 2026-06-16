@@ -26,14 +26,17 @@ export default function CapacityBar({ eventSlug, capacity, initialCount = 0, isP
         </div>
         <p className="text-sm text-brand-deep/70 mt-3" id="event-capacity-text">
           {isFull
-            ? 'Evento completo - Sem vagas disponíveis'
-            : `${vagasRestantes} vagas disponíveis de ${capacity}`}
+            ? t('evento_detail.event_full_no_spots')
+            : t('evento_detail.spots_available_of', {
+                count: vagasRestantes,
+                capacity,
+              })}
         </p>
       </div>
       <div className="capacity-status" id="capacity-status">
         <span className="status-dot" style={{ backgroundColor: isFull ? '#dc2626' : '#0a844f' }} />
         <span className="status-text" data-i18n="evento_detail.spots_updated_now">
-          {t('evento_detail.spots_updated_now') || 'Vagas atualizadas agora'}
+          {t('evento_detail.spots_updated_now')}
         </span>
       </div>
     </>

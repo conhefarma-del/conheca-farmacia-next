@@ -2,6 +2,7 @@
 
 import { useContext } from 'react'
 import { LangContext } from '@/lib/contexts'
+import { getSectionHref } from '@/lib/i18n-routes'
 import Link from 'next/link'
 import Image from 'next/image'
 import { EVENT_CATEGORY_COLORS } from '@/lib/constants'
@@ -42,10 +43,10 @@ export default function EventCard({ event, lang = 'pt', variant = 'list' }) {
         <div className="event-card-content home-card-content">
           <div className="event-date">{fullDate}</div>
           <h3 className="event-card-title">{event.title}</h3>
-          <p className="event-card-desc">{event.excerpt}</p>
+          <p className="event-card-desc">{event.description || event.excerpt}</p>
           <div className="home-card-footer">
             <Link
-              href={`/${lang}/eventos/${event.slug}`}
+              href={`${getSectionHref(lang, 'eventos')}/${event.slug}`}
               className="btn btn-primary btn-small w-full"
             >
               {saberMais}
@@ -84,13 +85,15 @@ export default function EventCard({ event, lang = 'pt', variant = 'list' }) {
         </span>
         {event.type && (
           <span className="event-type-badge">
-            {event.type === 'Online' ? '💻 Online' : '📍 Presencial'}
+            {(event.type || '').toLowerCase() === 'online'
+              ? `💻 ${t('evento_detail.event_type_online')}`
+              : `📍 ${t('evento_detail.event_type_presencial')}`}
           </span>
         )}
       </div>
       <div className="event-card-content">
         <h3 className="event-card-title">{event.title}</h3>
-        <p className="event-card-excerpt">{event.excerpt}</p>
+        <p className="event-card-excerpt">{event.description || event.excerpt}</p>
         <div className="event-card-meta">
           {event.time && (
             <span className="event-meta-item">
@@ -106,7 +109,7 @@ export default function EventCard({ event, lang = 'pt', variant = 'list' }) {
           )}
         </div>
         <Link
-          href={`/${lang}/eventos/${event.slug}`}
+          href={`${getSectionHref(lang, 'eventos')}/${event.slug}`}
           className="event-card-cta"
         >
           {saberMais}

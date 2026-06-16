@@ -129,22 +129,38 @@ export default function BilingualTabs({
     }
   }
 
+  // Dark-mode safe: all colors reference --admin-* variables that flip under html.dark.
   const tabButtonStyle = (isActive) => ({
     padding: '10px 20px',
     border: 'none',
     background: 'none',
     cursor: 'pointer',
-    borderBottom: isActive ? '2px solid #2563eb' : '2px solid transparent',
+    borderBottom: isActive
+      ? '2px solid var(--admin-accent)'
+      : '2px solid transparent',
     marginBottom: '-2px',
     fontWeight: isActive ? 600 : 400,
-    color: isActive ? '#1e40af' : '#374151',
+    color: isActive ? 'var(--admin-accent)' : 'var(--admin-text-muted)',
   })
 
+  // Status pill colors are derived from --admin-* vars (success/warning/danger palettes).
   const statusBadge = (() => {
     const styles = {
-      manual: { bg: '#d1fae5', color: '#065f46', label: '✓ ' + t('translation.status_manual', 'Traduzido') },
-      auto: { bg: '#dbeafe', color: '#1e40af', label: '🤖 ' + t('translation.status_auto', 'Auto-traduzido') },
-      missing: { bg: '#fee2e2', color: '#991b1b', label: '⚠ ' + t('translation.status_missing', 'Por traduzir') },
+      manual: {
+        bg: 'var(--admin-success-bg, #d1fae5)',
+        color: 'var(--admin-success, #065f46)',
+        label: '✓ ' + t('translation.status_manual', 'Traduzido'),
+      },
+      auto: {
+        bg: 'var(--admin-info-bg, #dbeafe)',
+        color: 'var(--admin-accent, #1e40af)',
+        label: '🤖 ' + t('translation.status_auto', 'Auto-traduzido'),
+      },
+      missing: {
+        bg: 'var(--admin-danger-bg, #fee2e2)',
+        color: 'var(--admin-danger, #991b1b)',
+        label: '⚠ ' + t('translation.status_missing', 'Por traduzir'),
+      },
     }
     const s = styles[status]
     return (
@@ -163,13 +179,23 @@ export default function BilingualTabs({
     )
   })()
 
+  // Shared input style for the EN form fields.
+  const fieldInputStyle = {
+    width: '100%',
+    padding: '8px',
+    border: '1px solid var(--admin-border, #d1d5db)',
+    borderRadius: '4px',
+    background: 'var(--admin-input-bg, var(--admin-card-bg, #ffffff))',
+    color: 'var(--admin-text)',
+  }
+
   return (
     <div className="bilingual-tabs">
       <div
         role="tablist"
         style={{
           display: 'flex',
-          borderBottom: '2px solid #e5e7eb',
+          borderBottom: '2px solid var(--admin-border, #e5e7eb)',
           marginBottom: '16px',
         }}
       >
@@ -196,7 +222,13 @@ export default function BilingualTabs({
 
       {activeTab === 'pt' && (
         <div className="bilingual-tabs__pt" style={{ padding: '16px 0' }}>
-          <p style={{ color: '#6b7280', fontStyle: 'italic', margin: '0 0 8px 0' }}>
+          <p
+            style={{
+              color: 'var(--admin-text-muted)',
+              fontStyle: 'italic',
+              margin: '0 0 8px 0',
+            }}
+          >
             {t(
               'translation.pt_hint',
               'A versão PT é editada na página principal do artigo.'
@@ -204,7 +236,7 @@ export default function BilingualTabs({
           </p>
           <a
             href={`/${lang}/admin/${entityType}s/${entityId}`}
-            style={{ color: '#2563eb', textDecoration: 'underline' }}
+            style={{ color: 'var(--admin-accent)', textDecoration: 'underline' }}
           >
             {t('translation.edit_pt_link', 'Editar versão PT')}
           </a>
@@ -217,11 +249,12 @@ export default function BilingualTabs({
             <div
               role="alert"
               style={{
-                background: '#fee2e2',
-                color: '#991b1b',
+                background: 'var(--admin-danger-bg, #fee2e2)',
+                color: 'var(--admin-danger, #991b1b)',
                 padding: '12px',
                 borderRadius: '6px',
                 marginBottom: '16px',
+                border: '1px solid var(--admin-danger, #991b1b)',
               }}
             >
               {error}
@@ -231,11 +264,12 @@ export default function BilingualTabs({
             <div
               role="status"
               style={{
-                background: '#d1fae5',
-                color: '#065f46',
+                background: 'var(--admin-success-bg, #d1fae5)',
+                color: 'var(--admin-success, #065f46)',
                 padding: '12px',
                 borderRadius: '6px',
                 marginBottom: '16px',
+                border: '1px solid var(--admin-success, #065f46)',
               }}
             >
               {success}
@@ -245,9 +279,9 @@ export default function BilingualTabs({
           {!translation && (
             <div
               style={{
-                background: '#fff3cd',
-                border: '1px solid #ffc107',
-                color: '#856404',
+                background: 'var(--admin-warning-bg, #fff3cd)',
+                border: '1px solid var(--admin-warning, #ffc107)',
+                color: 'var(--admin-warning, #856404)',
                 padding: '16px',
                 borderRadius: '6px',
                 marginBottom: '16px',
@@ -264,7 +298,7 @@ export default function BilingualTabs({
                 onClick={handleAutoTranslate}
                 disabled={isTranslating}
                 style={{
-                  background: '#2563eb',
+                  background: 'var(--admin-accent)',
                   color: 'white',
                   border: 'none',
                   padding: '10px 20px',
@@ -287,7 +321,12 @@ export default function BilingualTabs({
               <div key={field.key} style={{ marginBottom: '16px' }}>
                 <label
                   htmlFor={`en-${field.key}`}
-                  style={{ display: 'block', fontWeight: 600, marginBottom: '6px' }}
+                  style={{
+                    display: 'block',
+                    fontWeight: 600,
+                    marginBottom: '6px',
+                    color: 'var(--admin-text)',
+                  }}
                 >
                   {field.label}
                 </label>
@@ -298,10 +337,7 @@ export default function BilingualTabs({
                     onChange={(e) => updateField(field.key, e.target.value)}
                     rows={field.rows || 6}
                     style={{
-                      width: '100%',
-                      padding: '8px',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '4px',
+                      ...fieldInputStyle,
                       fontFamily: field.key === 'content' ? 'monospace' : 'inherit',
                       resize: 'vertical',
                     }}
@@ -312,12 +348,7 @@ export default function BilingualTabs({
                     type="text"
                     value={value}
                     onChange={(e) => updateField(field.key, e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '8px',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '4px',
-                    }}
+                    style={fieldInputStyle}
                   />
                 )}
               </div>
@@ -329,7 +360,7 @@ export default function BilingualTabs({
               type="submit"
               disabled={isSaving}
               style={{
-                background: '#059669',
+                background: 'var(--admin-success, #059669)',
                 color: 'white',
                 border: 'none',
                 padding: '10px 20px',
@@ -348,7 +379,7 @@ export default function BilingualTabs({
                 onClick={handleAutoTranslate}
                 disabled={isTranslating}
                 style={{
-                  background: '#6366f1',
+                  background: 'var(--admin-indigo, #6366f1)',
                   color: 'white',
                   border: 'none',
                   padding: '10px 20px',

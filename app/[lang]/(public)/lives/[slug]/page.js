@@ -57,22 +57,22 @@ export async function generateMetadata({ params }) {
   const liveUrl = `${SITE_URL}/${safeLang}/lives/${live.slug}`
 
   return {
-    title: `${live.titulo} — Conheça Farmácia`,
-    description: live.resumo || live.titulo,
+    title: `${live.title || live.titulo} — Conheça Farmácia`,
+    description: live.description || live.resumo || live.title || live.titulo,
     alternates: {
       canonical: liveUrl,
       languages: langs,
     },
     openGraph: {
-      title: live.titulo,
-      description: live.resumo,
+      title: live.title || live.titulo,
+      description: live.description || live.resumo,
       url: liveUrl,
       images: live.imagem ? [{ url: live.imagem }] : [],
     },
     twitter: {
       card: 'summary_large_image',
-      title: live.titulo,
-      description: live.resumo,
+      title: live.title || live.titulo,
+      description: live.description || live.resumo,
       images: live.imagem ? [live.imagem] : [],
     },
   }
@@ -135,14 +135,14 @@ export default async function LiveDetailPage({ params }) {
   const breadcrumbItems = [
     { label: tFn('nav.inicio'), href: `/${safeLang}` },
     { label: tFn('nav.lives'), href: `/${safeLang}/lives` },
-    { label: live.titulo },
+    { label: live.title || live.titulo },
   ]
 
   const color = LIVE_CATEGORY_COLORS[live.categoria || live.category] || '#00493a'
   const hora = live.hora || live.time || ''
   const horaFim = getEndTime(live)
   const duracao = horaFim ? formatDuration(hora, horaFim) : null
-  const plataforma = live.plataforma || live.platform || ''
+  const plataforma = live.platform || live.plataforma || ''
   const categoriaLabel = live.categoriaLabel || live.category || live.categoria || ''
   const anfitriao = live.anfitriao || {}
   const nome = anfitriao.nome || live.host_name || ''
@@ -206,14 +206,14 @@ export default async function LiveDetailPage({ params }) {
               </span>
 
               {/* Live Title */}
-              <h1 className="event-hero-title">{live.titulo}</h1>
+              <h1 className="event-hero-title">{live.title || live.titulo}</h1>
 
               {/* Featured Image */}
               {live.imagem && (
                 <div className="event-hero-image-wrapper">
                   <Image
                     src={live.imagem}
-                    alt={live.titulo}
+                    alt={live.title || live.titulo}
                     width={1200}
                     height={675}
                     className="event-featured-image"
@@ -252,9 +252,9 @@ export default async function LiveDetailPage({ params }) {
           <div className="container-center">
             <div className="event-body-wrapper">
               {/* Description */}
-              {live.resumo && (
+              {(live.description || live.resumo) && (
                 <div className="event-body mb-12">
-                  <p>{live.resumo}</p>
+                  <p>{live.description || live.resumo}</p>
                 </div>
               )}
 

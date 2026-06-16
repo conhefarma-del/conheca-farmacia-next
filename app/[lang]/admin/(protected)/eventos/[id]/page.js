@@ -48,8 +48,10 @@ export default async function EditEventPage({ params }) {
           fields={[
             { key: 'title', label: 'Title' },
             { key: 'slug', label: 'Slug' },
+            { key: 'excerpt', label: 'Excerpt', type: 'textarea', rows: 2 },
             { key: 'description', label: 'Description', type: 'textarea', rows: 6 },
             { key: 'location', label: 'Location' },
+            { key: 'category_label', label: 'Category' },
             { key: 'host_role', label: 'Host role' },
             { key: 'host_bio', label: 'Host bio', type: 'textarea', rows: 3 },
             { key: 'meta_description', label: 'Meta description', type: 'textarea', rows: 2 },
