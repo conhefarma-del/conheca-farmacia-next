@@ -56,9 +56,14 @@ html.dark {
   --admin-text-muted: #94a3b8;
   --admin-border: #1f2927;
   --admin-divider: rgba(255, 255, 255, 0.1);
+  --admin-success: #34d399;
   --admin-success-bg: #064e3b;
+  --admin-danger: #fca5a5;
   --admin-danger-bg: #7f1d1d;
+  --admin-warning: #fcd34d;
   --admin-warning-bg: #78350f;
+  --admin-info-bg: #1e3a8a;
+  --admin-indigo: #818cf8;
 }
 
 html.dark body {
@@ -2677,6 +2682,32 @@ html.dark .settings-error {
 .admin-input-sm:focus {
   outline: none;
   border-color: var(--admin-accent);
+}
+
+/* List page filters (sort, status, time, search) — used by Artigos/Eventos/LivesListPage.
+   Dark mode safe: relies on --admin-* vars that flip under html.dark. */
+.admin-select {
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  font-family: var(--font-sans, inherit);
+  border: 1px solid var(--admin-border);
+  border-radius: 6px;
+  background: var(--admin-input-bg, var(--admin-card-bg));
+  color: var(--admin-text);
+  cursor: pointer;
+  min-width: 160px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-select:focus {
+  outline: none;
+  border-color: var(--admin-accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--admin-accent) 20%, transparent);
+}
+
+.admin-select::placeholder {
+  color: var(--admin-text-muted);
+  opacity: 1;
 }
 
 /* Featured checkbox */
