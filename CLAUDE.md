@@ -205,6 +205,20 @@ const [drawerOpen, setDrawerOpen] = useState(false)
 - **XSS Protection**: `escapeHtml()` em user input
 - **CSP**: Anti-FOUC inline script em `app/layout.js` é a única excepção (ver Gap 8 no SEO backlog); resto usa `.addEventListener()`
 
+### Server Action Error Pattern: Structured Codes + i18n
+
+Todas as Server Actions que lidam com input do utilizador (formulários, mutations públicas) seguem um padrão de 3 camadas para erros:
+
+1. **Server Action** emite `throw new Error(JSON.stringify({ code, detail }))` via helper `throwCode(code, detail)`. **Nunca** `throw new Error('Mensagem genérica em PT')` — perde a categoria semântica.
+2. **Telemetria**: antes de cada throw, `logInscriptionError(code, ctx)` regista em Vercel logs com `code` + `emailHash` (não PII raw) + `ts`. Helper `hashEmail()` é djb2 truncated 8-char hex.
+3. **Client** faz `JSON.parse(err.message)` no `catch`, mapeia `code` para `t('${feature}_error.codes.${code}')` com fallback `t('${feature}_error.message')`.
+
+**Backward-compat**: preservar `throw new Error('duplicate')` (string legacy) em paralelo com `throwCode('duplicate', ...)` para clientes que ainda não parseiam JSON.
+
+**i18n keys**: adicionar bloco `${feature}_error.codes` em `public/i18n/{pt,en}.json` com uma entrada por código semântico (não misturar com `${feature}_error.message` que é a string genérica de fallback).
+
+**Exemplo canónico**: `lib/actions/inscription.js` (apiSubmitInscription) + `components/pages/InscricaoPageClient.jsx` (catch) + `public/i18n/{pt,en}.json` (bloco `inscricao_error.codes`).
+
 ### Admin Role System (RBAC)
 
 Hierarquia simples de 2 níveis: `admin` (archive) + `superadmin` (archive + restore + hard delete + 2FA reset). `currentUserRole` prop é passado do `page.js` parent (Server Component) para os 3 ListPages (Client Components). Permissões são enforced em 3 camadas:

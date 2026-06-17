@@ -634,3 +634,34 @@ O projecto não tinha `SECURITY.md` antes do audit de 2026-06-15. Criado em `SEC
 - **Advisories em defer:** postcss transitivo (GHSA-qx2v-qp2m-jg93) — fix do `npm audit fix --force` requer Next 9, que seria breaking. Monitor release notes do Next para bump.
 
 A **política de 2FA é enforced** porque o `try/catch` que estava em `lib/actions/auth.js:91-93` engole silenciosamente o `getAuthenticatorAssuranceLevel` — qualquer falha (network, factor não enrolled, AAL abaixo de 2) resultava em `success: true`. Isto permitia login com password sem TOTP, independentemente da configuração do utilizador. A refactorização (commit 3.2 do PR security) fecha o bypass: se a chamada falhar, `signOut()` + erro genérico; se AAL < 2 sem factor, `signOut()` + `requiresTwoFactorEnrollment: true`.
+
+### 61. Server Action throwCode + i18n Error Mapping Pattern (2026-06-17)
+
+**Problema**: Server Actions que lidam com input do utilizador (formulários públicos) mostravam sempre a mesma mensagem genérica no client ("Não foi possível validar/submeter a inscrição. Tenta novamente.") independentemente da causa real — email duplicado, evento cheio, rate limit, etc. O WhatsApp CTA escondia o motivo real.
+
+**Causa raiz**: a Server Action fazia `throw new Error('Não foi possível validar a inscrição. Tenta novamente.')` em **todos** os caminhos de erro da Edge Function, perdendo o `error: "..."` descritivo que a Edge Function devolvia. Resultado: 8+ cenários de erro colapsavam no mesmo texto genérico no client.
+
+**Solução em 3 commits** (não 1):
+
+1. **Telemetria**: `logInscriptionError(code, ctx)` no topo da Server Action. Cada throw regista `[inscription.submit]` com `code` + `emailHash` (não PII) + `eventoId/slug` + `ts` em Vercel logs. Helper `hashEmail()` é djb2 truncated 8-char hex. **Sem mudança de UX** — só diagnóstico.
+
+2. **i18n mapping no client**: adicionar `${feature}_error.codes` em `public/i18n/{pt,en}.json` com chaves correspondentes aos códigos. Refactor do `catch` no Client Component para `JSON.parse(err.message)` e `t('${feature}_error.codes.${code}')` com fallback.
+
+3. **Server Action emite JSON estruturado**: `throwCode(code, detail)` helper que faz `throw new Error(JSON.stringify({ code, detail: detail || null }))`. Migrar **todos** os throws excepto legacy `'duplicate'` string (preservar para backward-compat com clients que ainda não parseiam).
+
+**Porquê 3 commits, não 1**: Commit 1 (telemetria) confirma em prod quais categorias realmente ocorrem antes de assumir o mapping i18n. Commit 2 detecta "dead code" no client parse (`t('...codes.${code}')` nunca alcançado porque Server Action emitia strings genéricas) → Commit 3 fecha o gap. **Sempre** verificar com verification subagent que a cadeia completa está ligada — caso contrário o i18n mapping fica como código morto.
+
+**Cadeia verificada** (2x PASS do verification subagent):
+```
+Server Action → throwCode(code, detail) → Error(JSON.stringify({code,detail}))
+  → err.message → client JSON.parse → code
+  → t('inscricao_error.codes.${code}') → string PT/EN
+```
+
+**Aplicar quando**: criar nova Server Action pública (newsletter, contacto, wizard) com PII ou input validado. 11 códigos no caso da inscrição: `event_not_found, event_full, duplicate, rate_limited, validation_failed, validation_unreachable, db_insert_error, db_insert_no_id, invalid_event_id, invalid_event_slug, misconfigured`.
+
+**Exemplo canónico**: `lib/actions/inscription.js:53-72` (helpers) + `:123-265` (apiSubmitInscription instrumentada) + `components/pages/InscricaoPageClient.jsx:111-145` (catch refactorizado) + `public/i18n/{pt,en}.json` (bloco `inscricao_error.codes`).
+
+**PII safety**: `hashEmail()` retorna 8-char hex djb2 truncated. **Nunca** passar `form.nome` ou `form.email` raw para logs — só `emailHash`. Mesmo com hashes, considerar se o slug do evento + emailHash é correlacionável (pode revelar inscrição de pessoa específica num evento raro) — manter logs agregados quando possível.
+
+**Status 409 com semântica dupla**: a Edge Function `validate-inscription` devolve 409 para **dois** cenários distintos — `event_full` (vagas esgotadas) e `duplicate` (email já registado). Distinguir no Server Action por inspecção da string `validation.error` (procura "já está registado" / "already"). Não confiar no status code sozinho.

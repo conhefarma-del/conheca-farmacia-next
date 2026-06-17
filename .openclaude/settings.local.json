@@ -181,7 +181,8 @@
       "Bash(ls \"C:/Users/bapti/Projects/conheca-farmacia-NEXT/app/[lang]/\\(public\\)/inscricao/\")",
       "Bash(ls \"C:/Users/bapti/Projects/conheca-farmacia-NEXT/app/[lang]/\\(public\\)/register/\")",
       "Bash(npx eslint:*)",
-      "Bash(timeout 60 npx eslint --no-warn-ignored \"app/[lang]/\\(public\\)/eventos/[slug]/page.js\" \"app/[lang]/\\(public\\)/events/[slug]/page.js\" \"app/[lang]/\\(public\\)/inscricao/page.js\" \"app/[lang]/\\(public\\)/register/page.js\" lib/api/inscription.js)"
+      "Bash(timeout 60 npx eslint --no-warn-ignored \"app/[lang]/\\(public\\)/eventos/[slug]/page.js\" \"app/[lang]/\\(public\\)/events/[slug]/page.js\" \"app/[lang]/\\(public\\)/inscricao/page.js\" \"app/[lang]/\\(public\\)/register/page.js\" lib/api/inscription.js)",
+      "Bash(tasklist /fi \"imagename eq node.exe\")"
     ]
   }
 }
