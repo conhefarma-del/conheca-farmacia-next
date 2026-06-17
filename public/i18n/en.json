@@ -209,6 +209,8 @@
     "meeting_id": "Meeting ID:",
     "password": "Password:",
     "support_materials": "Support Materials",
+    "speakers_title": "Meet the Speakers",
+    "topic_label": "Topic",
     "not_found_title": "Live not found",
     "not_found_text": "Sorry, we couldn't find the live you're looking for.",
     "back_to_home": "Back to Home",

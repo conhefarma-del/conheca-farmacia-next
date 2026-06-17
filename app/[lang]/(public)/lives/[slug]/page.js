@@ -9,6 +9,7 @@ import Breadcrumb from '@/components/ui/Breadcrumb'
 import LiveViewTracker from '@/components/content/LiveViewTracker'
 import LiveAccessButton from '@/components/content/LiveAccessButton'
 import MaterialLink from '@/components/content/MaterialLink'
+import SpeakersList from '@/components/content/SpeakersList'
 import TranslationFallbackBanner from '@/components/i18n/TranslationFallbackBanner'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
@@ -144,10 +145,8 @@ export default async function LiveDetailPage({ params }) {
   const duracao = horaFim ? formatDuration(hora, horaFim) : null
   const plataforma = live.platform || live.plataforma || ''
   const categoriaLabel = live.categoriaLabel || live.category || live.categoria || ''
-  const anfitriao = live.anfitriao || {}
-  const nome = anfitriao.nome || live.host_name || ''
-  const cargo = anfitriao.cargo || live.host_role || ''
-  const organizacao = anfitriao.organizacao || live.host_organization || ''
+  const hosts = Array.isArray(live.hosts) ? live.hosts : []
+  const topico = live.topico || live.topic || ''
   const materiais = live.materiais_apoio || live.materiais || live.materials || []
   const meetingId = live.id_reuniao || live.meeting_id || ''
   const senha = live.senha || live.password || ''
@@ -207,6 +206,9 @@ export default async function LiveDetailPage({ params }) {
 
               {/* Live Title */}
               <h1 className="event-hero-title">{live.title || live.titulo}</h1>
+
+              {/* Topic eyebrow */}
+              {topico && <p className="live-topic-eyebrow">{topico}</p>}
 
               {/* Featured Image */}
               {live.imagem && (
@@ -314,17 +316,8 @@ export default async function LiveDetailPage({ params }) {
                 </div>
               )}
 
-              {/* Host Card */}
-              {nome && (
-                <div className="host-card-event mt-8">
-                  <div className="host-card-avatar" style={{ backgroundColor: color }}>
-                    {getInitials(nome)}
-                  </div>
-                  {cargo && <div className="host-card-role">{cargo}</div>}
-                  <div className="host-card-name">{nome}</div>
-                  {organizacao && <div className="host-card-organization">{organizacao}</div>}
-                </div>
-              )}
+              {/* Speakers (multi-host) */}
+              <SpeakersList hosts={hosts} categoryColor={color} />
             </div>
           </div>
         </section>

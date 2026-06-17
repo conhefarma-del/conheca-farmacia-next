@@ -13,7 +13,7 @@ export default async function EditLivePage({ params }) {
 
   const { data: live } = await supabase
     .from('lives')
-    .select('id, slug, title, excerpt, category, category_label, date, time, end_time, platform, access_link, meeting_id, password, materials, host_name, host_role, host_organization, image_url, status, featured')
+    .select('id, slug, title, excerpt, category, category_label, date, time, end_time, platform, access_link, meeting_id, password, materials, hosts, topic, image_url, status, featured_langs')
     .eq('id', id)
     .single()
 
@@ -49,7 +49,6 @@ export default async function EditLivePage({ params }) {
             { key: 'title', label: 'Title' },
             { key: 'slug', label: 'Slug' },
             { key: 'description', label: 'Description', type: 'textarea', rows: 6 },
-            { key: 'host_role', label: 'Host role' },
             { key: 'topic', label: 'Topic' },
             { key: 'meta_description', label: 'Meta description', type: 'textarea', rows: 2 },
           ]}

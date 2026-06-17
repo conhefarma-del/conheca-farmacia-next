@@ -209,6 +209,8 @@
     "meeting_id": "ID da Reunião:",
     "password": "Senha:",
     "support_materials": "Materiais de Apoio",
+    "speakers_title": "Conheça os Palestrantes",
+    "topic_label": "Tópico",
     "not_found_title": "Live não encontrada",
     "not_found_text": "Desculpe, não conseguimos encontrar a live que procura.",
     "back_to_home": "Voltar ao Início",

@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Save, X } from 'lucide-react'
 import ImageUpload from '@/components/admin/ImageUpload'
+import HostEditor from '@/components/admin/HostEditor'
 import { createLive, updateLive } from '@/lib/actions/content'
 
 const CATEGORIES = [
@@ -42,9 +43,12 @@ export default function LiveForm({ mode = 'create', initialData = null, lang = '
   const [materials, setMaterials] = useState(
     initialData?.materials ? JSON.stringify(initialData.materials, null, 2) : ''
   )
-  const [hostName, setHostName] = useState(initialData?.host_name || '')
-  const [hostRole, setHostRole] = useState(initialData?.host_role || '')
-  const [hostOrg, setHostOrg] = useState(initialData?.host_organization || '')
+  const [hosts, setHosts] = useState(
+    Array.isArray(initialData?.hosts) && initialData.hosts.length > 0
+      ? initialData.hosts
+      : [{ name: '', role: '', organization: '' }]
+  )
+  const [topic, setTopic] = useState(initialData?.topic || '')
   const [imageUrl, setImageUrl] = useState(initialData?.image_url || '')
 
   const handleTitleChange = useCallback((value) => {
@@ -68,8 +72,7 @@ export default function LiveForm({ mode = 'create', initialData = null, lang = '
       title, slug, category, category_label: categoryLabel, status, featured_langs: featuredLangs,
       excerpt, date, time, end_time: endTime, platform,
       access_link: accessLink, meeting_id: meetingId, password,
-      materials, host_name: hostName, host_role: hostRole,
-      host_organization: hostOrg, image_url: imageUrl,
+      materials, hosts, topic, image_url: imageUrl,
     }
 
     try {
@@ -88,8 +91,8 @@ export default function LiveForm({ mode = 'create', initialData = null, lang = '
       setSaving(false)
     }
   }, [title, slug, category, status, featuredLangs, excerpt, date, time, endTime,
-    platform, accessLink, meetingId, password, materials, hostName, hostRole,
-    hostOrg, imageUrl, mode, initialData, router, lang])
+    platform, accessLink, meetingId, password, materials, hosts, topic,
+    imageUrl, mode, initialData, router, lang])
 
   return (
     <form onSubmit={handleSubmit} className="admin-card admin-form">
@@ -211,23 +214,19 @@ export default function LiveForm({ mode = 'create', initialData = null, lang = '
         </small>
       </div>
 
-      <div className="admin-form-grid">
-        <div className="admin-form-group">
-          <label>Nome do Anfitrião</label>
-          <input type="text" value={hostName} onChange={(e) => setHostName(e.target.value)}
-            className="admin-input" placeholder="Nome completo" />
-        </div>
-        <div className="admin-form-group">
-          <label>Cargo/Função</label>
-          <input type="text" value={hostRole} onChange={(e) => setHostRole(e.target.value)}
-            className="admin-input" placeholder="Farmacêutico · Palestrante" />
-        </div>
-        <div className="admin-form-group">
-          <label>Organização</label>
-          <input type="text" value={hostOrg} onChange={(e) => setHostOrg(e.target.value)}
-            className="admin-input" placeholder="Nome da organização" />
-        </div>
+      <div className="admin-form-group">
+        <label>Tópico</label>
+        <input
+          type="text"
+          value={topic}
+          onChange={(e) => setTopic(e.target.value)}
+          className="admin-input"
+          placeholder="Ex: Saúde da Mulher"
+          maxLength={200}
+        />
       </div>
+
+      <HostEditor hosts={hosts} onChange={setHosts} />
 
       <ImageUpload value={imageUrl} onChange={setImageUrl} bucket="live-images" folder="lives" label="Imagem" />
 
