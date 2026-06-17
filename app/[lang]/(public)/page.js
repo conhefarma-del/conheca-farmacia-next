@@ -37,9 +37,9 @@ export default async function HomePage({ params }) {
 
   try {
     const [a, e, l] = await Promise.all([
-      getFeaturedArticles(3),
-      getFeaturedEvents(2),
-      getFeaturedLives(2),
+      getFeaturedArticles(3, safeLang),
+      getFeaturedEvents(2, safeLang),
+      getFeaturedLives(2, safeLang),
     ])
     articles = a
     events = e

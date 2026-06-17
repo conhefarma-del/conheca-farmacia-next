@@ -42,7 +42,7 @@ export default function ArticleForm({ mode = 'create', initialData = null, lang 
   const [slugEdited, setSlugEdited] = useState(!!initialData?.slug)
   const [category, setCategory] = useState(initialData?.category || '')
   const [status, setStatus] = useState(initialData?.status || 'draft')
-  const [featured, setFeatured] = useState(initialData?.featured || false)
+  const [featuredLangs, setFeaturedLangs] = useState(initialData?.featured_langs || [])
   const [excerpt, setExcerpt] = useState(initialData?.excerpt || '')
   const [metaDescription, setMetaDescription] = useState(initialData?.meta_description || '')
   const [content, setContent] = useState(initialData?.content || '')
@@ -125,7 +125,7 @@ export default function ArticleForm({ mode = 'create', initialData = null, lang 
     const categoryLabel = CATEGORIES.find(c => c.value === category)?.label || category
 
     const formData = {
-      title, slug, category, category_label: categoryLabel, status, featured,
+      title, slug, category, category_label: categoryLabel, status, featured_langs: featuredLangs,
       excerpt, meta_description: metaDescription, content,
       author_name: authorName, author_role: authorRole, author_bio: authorBio,
       author_avatar: authorAvatar, author_avatar_bg: authorAvatarBg,
@@ -151,7 +151,7 @@ export default function ArticleForm({ mode = 'create', initialData = null, lang 
     } finally {
       setSaving(false)
     }
-  }, [title, slug, category, status, featured, excerpt, metaDescription, content,
+  }, [title, slug, category, status, featuredLangs, excerpt, metaDescription, content,
     authorName, authorRole, authorBio, authorAvatar, authorAvatarBg, imageUrl, references, publishedDate, readTime,
     mode, initialData, router, lang])
 
@@ -189,9 +189,36 @@ export default function ArticleForm({ mode = 'create', initialData = null, lang 
 
       <div className="admin-form-group">
         <label className="admin-checkbox-label">
-          <input type="checkbox" checked={featured} onChange={(e) => setFeatured(e.target.checked)} />
-          <span>Destacar na página principal</span>
+          <span style={{ marginRight: '0.5rem', fontWeight: 500 }}>Destacar na página principal:</span>
         </label>
+        <div style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap' }}>
+          <label className="admin-checkbox-label">
+            <input
+              type="checkbox"
+              checked={featuredLangs.includes('pt')}
+              onChange={(e) => {
+                const next = new Set(featuredLangs)
+                if (e.target.checked) next.add('pt')
+                else next.delete('pt')
+                setFeaturedLangs([...next])
+              }}
+            />
+            <span>PT</span>
+          </label>
+          <label className="admin-checkbox-label">
+            <input
+              type="checkbox"
+              checked={featuredLangs.includes('en')}
+              onChange={(e) => {
+                const next = new Set(featuredLangs)
+                if (e.target.checked) next.add('en')
+                else next.delete('en')
+                setFeaturedLangs([...next])
+              }}
+            />
+            <span>EN</span>
+          </label>
+        </div>
       </div>
 
       <div className="admin-form-group">
