@@ -207,9 +207,6 @@ export default async function LiveDetailPage({ params }) {
               {/* Live Title */}
               <h1 className="event-hero-title">{live.title || live.titulo}</h1>
 
-              {/* Topic eyebrow */}
-              {topico && <p className="live-topic-eyebrow">{topico}</p>}
-
               {/* Featured Image */}
               {live.imagem && (
                 <div className="event-hero-image-wrapper">
@@ -223,6 +220,9 @@ export default async function LiveDetailPage({ params }) {
                   />
                 </div>
               )}
+
+              {/* Topic eyebrow — sits between image and platform/date meta bar */}
+              {topico && <p className="live-topic-eyebrow">{topico}</p>}
 
               {/* Live Meta Bar */}
               <div className="event-meta-bar">

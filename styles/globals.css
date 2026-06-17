@@ -1405,6 +1405,13 @@ html.dark .form-note {
     @apply text-xs font-bold px-3 py-1 rounded-full inline-flex items-center;
   }
 
+  /* Live topic eyebrow — sits between the featured image and the
+     platform/date meta bar. Mirrors the brand-voice blockquote style:
+     small, italic, muted, with a brand-accent left rule. */
+  .live-topic-eyebrow {
+    @apply text-base md:text-lg italic text-brand-deep/70 leading-snug border-l-4 border-brand-accent pl-4 mb-6 max-w-3xl;
+  }
+
   .event-content-section {
     @apply py-16 md:py-24 bg-brand-bg;
   }
