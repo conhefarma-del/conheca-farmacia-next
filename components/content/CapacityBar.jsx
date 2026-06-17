@@ -4,9 +4,9 @@ import { useContext } from 'react'
 import { LangContext } from '@/lib/contexts'
 import { useCapacityPolling } from '@/hooks/useCapacityPolling'
 
-export default function CapacityBar({ eventSlug, capacity, initialCount = 0, isPast = false }) {
+export default function CapacityBar({ eventId, capacity, initialCount = 0, isPast = false }) {
   const { t } = useContext(LangContext)
-  const { inscriptionCount } = useCapacityPolling(eventSlug, initialCount)
+  const { inscriptionCount } = useCapacityPolling(eventId, initialCount)
 
   if (isPast) return null
   const percentage = capacity > 0 ? Math.min((inscriptionCount / capacity) * 100, 100) : 0

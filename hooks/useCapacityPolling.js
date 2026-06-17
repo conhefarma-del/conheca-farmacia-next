@@ -1,16 +1,18 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { createClient } from '../lib/supabase/client'
+import { apiGetEventInscriptionCount } from '@/lib/actions/inscription'
 
 const INITIAL_INTERVAL = 30000  // 30s
 const MAX_INTERVAL = 120000     // 2min
 const MAX_RETRIES = 5
 
 /**
- * Poll inscription count for an event with exponential backoff
+ * Poll inscription count for an event with exponential backoff.
+ * Calls a Server Action (Service Role on the server) instead of querying
+ * `inscricoes` directly in the browser — RLS blocks SELECT for `anon`.
  */
-export function useCapacityPolling(eventSlug, initialCount = 0) {
+export function useCapacityPolling(eventId, initialCount = 0) {
   const [inscriptionCount, setInscriptionCount] = useState(initialCount)
   const [loading, setLoading] = useState(false)
   const intervalRef = useRef(INITIAL_INTERVAL)
@@ -18,17 +20,11 @@ export function useCapacityPolling(eventSlug, initialCount = 0) {
   const timerRef = useRef(null)
 
   const fetchCount = useCallback(async () => {
-    if (!eventSlug) return
+    if (!eventId) return
 
     try {
       setLoading(true)
-      const supabase = createClient()
-      const { count, error } = await supabase
-        .from('inscricoes')
-        .select('*', { count: 'exact', head: true })
-        .eq('evento_slug', eventSlug)
-
-      if (error) throw error
+      const { count } = await apiGetEventInscriptionCount(eventId)
 
       setInscriptionCount(count || 0)
       intervalRef.current = INITIAL_INTERVAL
@@ -43,10 +39,10 @@ export function useCapacityPolling(eventSlug, initialCount = 0) {
     } finally {
       setLoading(false)
     }
-  }, [eventSlug])
+  }, [eventId])
 
   useEffect(() => {
-    if (!eventSlug) return
+    if (!eventId) return
 
     const poll = () => {
       timerRef.current = setTimeout(() => {
@@ -72,7 +68,7 @@ export function useCapacityPolling(eventSlug, initialCount = 0) {
       clearTimeout(timerRef.current)
       document.removeEventListener('visibilitychange', handleVisibility)
     }
-  }, [eventSlug, fetchCount])
+  }, [eventId, fetchCount])
 
   return { inscriptionCount, loading }
 }

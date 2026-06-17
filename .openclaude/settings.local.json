@@ -165,7 +165,23 @@
       "Bash(npm list:*)",
       "mcp__plugin_supabase_supabase__list_migrations",
       "Bash(echo:*)",
-      "Bash(npx prettier:*)"
+      "Bash(npx prettier:*)",
+      "Bash(ls \"app/[lang]/\\(admin\\)/artigos/\")",
+      "Bash(find \"app/[lang]/\\(admin\\)/artigos\" -maxdepth 2 -name \"page.js\")",
+      "Bash(sed -n '70,82p' \"app/[lang]/\\(public\\)/artigos/[slug]/page.js\")",
+      "Bash(sed -n '10,16p' \"app/[lang]/\\(public\\)/sobre/page.js\")",
+      "Bash(tasklist /FI \"IMAGENAME eq node.exe\")",
+      "Bash(node -e \"console.log\\(require\\(''./node_modules/sanitize-html/package.json''\\).version\\)\")",
+      "Bash(head -3 \"C:\\\\Users\\\\bapti\\\\Projects\\\\conheca-farmacia-NEXT\\\\app\\\\[lang]\\\\\\(public\\)\\\\eventos\\\\[slug]\\\\page.js\")",
+      "Bash(\"/c/Program Files/nodejs/node\" scripts/backfill-event-translation-fields.js)",
+      "Bash(grep -rn \"host\" app/[lang]/admin/\\\\\\(protected\\\\\\)/eventos/new/page.js app/[lang]/admin/\\\\\\(protected\\\\\\)/eventos/[id]/page.js)",
+      "Bash(grep -rn \"host\" app/[lang]/admin/\\\\\\(protected\\\\\\)/eventos/new/page.js)",
+      "Bash(cat:*)",
+      "Bash(grep -rn \"evento_slug\" app/[lang]/\\\\\\(public\\\\\\)/eventos/[slug]/page.js app/[lang]/\\\\\\(public\\\\\\)/events/[slug]/page.js)",
+      "Bash(ls \"C:/Users/bapti/Projects/conheca-farmacia-NEXT/app/[lang]/\\(public\\)/inscricao/\")",
+      "Bash(ls \"C:/Users/bapti/Projects/conheca-farmacia-NEXT/app/[lang]/\\(public\\)/register/\")",
+      "Bash(npx eslint:*)",
+      "Bash(timeout 60 npx eslint --no-warn-ignored \"app/[lang]/\\(public\\)/eventos/[slug]/page.js\" \"app/[lang]/\\(public\\)/events/[slug]/page.js\" \"app/[lang]/\\(public\\)/inscricao/page.js\" \"app/[lang]/\\(public\\)/register/page.js\" lib/api/inscription.js)"
     ]
   }
 }

@@ -125,7 +125,7 @@ export default async function EventDetailPage({ params }) {
   // Inscription count
   let inscriptionCount = 0
   try {
-    inscriptionCount = await getEventInscriptionCount(event.slug)
+    inscriptionCount = await getEventInscriptionCount(event.id)
   } catch {}
 
   const isFull = event.capacity && inscriptionCount >= event.capacity
@@ -313,7 +313,7 @@ export default async function EventDetailPage({ params }) {
                       {tFn('evento_detail.available_spots')}
                     </h3>
                     <CapacityBar
-                      eventSlug={event.slug}
+                      eventId={event.id}
                       capacity={event.capacity}
                       initialCount={inscriptionCount}
                       isPast={isPast}
@@ -324,7 +324,7 @@ export default async function EventDetailPage({ params }) {
                 {/* Registration CTA */}
                 <div className="mt-12">
                   <RegistrationButton
-                    eventSlug={event.slug}
+                    eventId={event.id}
                     capacity={event.capacity}
                     initialCount={inscriptionCount}
                     isPast={isPast}
