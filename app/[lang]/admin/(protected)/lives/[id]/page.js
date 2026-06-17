@@ -45,12 +45,13 @@ export default async function EditLivePage({ params }) {
           entityType="live"
           entityId={id}
           translation={translation}
+          ptHosts={live.hosts ?? []}
           fields={[
             { key: 'title', label: 'Title' },
             { key: 'slug', label: 'Slug' },
-            { key: 'description', label: 'Description', type: 'textarea', rows: 6 },
+            { key: 'excerpt', label: 'Excerpt', type: 'textarea', rows: 6 },
             { key: 'topic', label: 'Topic' },
-            { key: 'meta_description', label: 'Meta description', type: 'textarea', rows: 2 },
+            { key: 'hosts', label: 'Hosts' },
           ]}
           lang={lang}
         />

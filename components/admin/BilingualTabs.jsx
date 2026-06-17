@@ -111,7 +111,17 @@ export default function BilingualTabs({
         const result = await autoTranslateEntity(entityType, entityId)
         if (result?.ok) {
           if (result.translation) {
-            setEnValues(result.translation)
+            // Merge instead of replace: preserve fields the LLM didn't return
+            // (e.g. topic/category_label that Gemma 4 31B may leave empty).
+            // Also skip empty strings to avoid wiping manual edits.
+            setEnValues((prev) => {
+              const next = { ...prev }
+              for (const [k, v] of Object.entries(result.translation)) {
+                if (v === '' || v == null) continue
+                next[k] = v
+              }
+              return next
+            })
           }
           setSuccess(t('translation.auto_success', 'Tradução gerada com sucesso. Reveja e guarde.'))
           router.refresh()
@@ -142,10 +152,17 @@ export default function BilingualTabs({
     try {
       // Merge the hosts array (managed separately) into the payload
       // before saving. Filter out empty hosts so we don't persist
-      // an array of empty objects when the admin hasn't translated them.
-      const hostsPayload = enHosts.filter(
-        (h) => h.name || h.role || h.organization
-      )
+      // Merge PT name/organization with EN role: only `role` is translatable
+      // for hosts. Drop hosts where the PT source has no name AND the EN
+      // translation has no role — an array of empty objects when the admin
+      // hasn't translated them.
+      const hostsPayload = enHosts
+        .map((h, i) => ({
+          name: ptHosts[i]?.name ?? '',
+          role: h.role ?? '',
+          organization: ptHosts[i]?.organization ?? '',
+        }))
+        .filter((h) => h.name || h.role || h.organization)
       const payload = { ...enValues, hosts: hostsPayload }
       const result = await saveTranslationAction(entityType, entityId, payload)
       if (result?.ok) {
@@ -410,9 +427,10 @@ export default function BilingualTabs({
                       <input
                         type="text"
                         placeholder={t('translation.host_name_placeholder', 'Nome em inglês')}
-                        value={host.name}
-                        onChange={(e) => updateHost(index, 'name', e.target.value)}
-                        style={{ ...fieldInputStyle, marginBottom: '6px' }}
+                        value={ptHosts[index]?.name ?? ''}
+                        readOnly
+                        title={t('translation.host_name_readonly', 'O nome mantém-se em PT — não é traduzível.')}
+                        style={{ ...fieldInputStyle, marginBottom: '6px', background: 'var(--admin-input-readonly-bg, #f3f4f6)', color: 'var(--admin-text-muted)' }}
                       />
                       <input
                         type="text"
@@ -424,9 +442,10 @@ export default function BilingualTabs({
                       <input
                         type="text"
                         placeholder={t('translation.host_org_placeholder', 'Organização em inglês')}
-                        value={host.organization}
-                        onChange={(e) => updateHost(index, 'organization', e.target.value)}
-                        style={fieldInputStyle}
+                        value={ptHosts[index]?.organization ?? ''}
+                        readOnly
+                        title={t('translation.host_org_readonly', 'A organização mantém-se em PT — não é traduzível.')}
+                        style={{ ...fieldInputStyle, background: 'var(--admin-input-readonly-bg, #f3f4f6)', color: 'var(--admin-text-muted)' }}
                       />
                     </div>
                   ))}
