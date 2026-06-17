@@ -10,14 +10,14 @@ import { AlertCircle } from 'lucide-react'
 
 const RATE_LIMIT_MS = 5000
 
-export default function InscricaoPageClient({ lang, eventoSlug, eventTitle, capacity, initialInscriptionCount = 0 }) {
+export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventTitle, capacity, initialInscriptionCount = 0 }) {
   const { t } = useContext(LangContext)
   const router = useRouter()
   const lastSubmitRef = useRef(0)
   const honeypotRef = useRef('')
 
-  // Verificar capacidade em tempo real
-  const { inscriptionCount } = useCapacityPolling(eventoSlug, initialInscriptionCount)
+  // Verificar capacidade em tempo real (polling via Server Action → Service Role)
+  const { inscriptionCount } = useCapacityPolling(eventoId, initialInscriptionCount)
   const isEventFull = capacity && inscriptionCount >= capacity
 
   const [form, setForm] = useState({
@@ -104,17 +104,37 @@ export default function InscricaoPageClient({ lang, eventoSlug, eventTitle, capa
     setErrorMsg('')
 
     try {
-      const result = await submitInscription(form, eventoSlug)
+      const result = await submitInscription(form, eventoId, eventoSlug)
       setEmailSent(result.emailSent)
       setInscriptionId(result.inscriptionId)
       setStatus('success')
     } catch (err) {
-      if (err.message === 'duplicate') {
+      // Commit 2 (2026-06-17): mapear code semântico do Server Action para i18n.
+      // Server Action pode emitir:
+      //  - Error('duplicate') — legacy string (mantida p/ compat)
+      //  - Error(JSON.stringify({code,detail})) — formato novo (futuro)
+      // O parse abaixo cobre ambos sem breaking change.
+      let code = null
+      if (err.message && err.message.startsWith('{')) {
+        try {
+          const parsed = JSON.parse(err.message)
+          code = parsed?.code || null
+        } catch {
+          // ignore — fallback abaixo
+        }
+      } else if (err.message === 'duplicate') {
+        code = 'duplicate'
+      }
+
+      if (code === 'duplicate') {
         setStatus('duplicate')
-        setErrorMsg(t('inscricao_error.duplicate'))
+        setErrorMsg(t('inscricao_error.codes.duplicate') || t('inscricao_error.duplicate'))
+      } else if (code) {
+        setStatus('error')
+        setErrorMsg(t(`inscricao_error.codes.${code}`) || t('inscricao_error.message'))
       } else {
         setStatus('error')
-        setErrorMsg('custom_whatsapp')
+        setErrorMsg(t('inscricao_error.message'))
       }
     }
   }
@@ -125,7 +145,7 @@ export default function InscricaoPageClient({ lang, eventoSlug, eventTitle, capa
   }
 
   // No evento slug — show error
-  if (!eventoSlug) {
+  if (!eventoId) {
     return (
       <>
         <nav id="breadcrumb" aria-label="Breadcrumb">
@@ -303,7 +323,7 @@ export default function InscricaoPageClient({ lang, eventoSlug, eventTitle, capa
                 />
 
                 {/* Hidden evento_slug */}
-                <input type="hidden" name="evento_slug" value={eventoSlug || ''} />
+                <input type="hidden" name="evento_id" value={eventoId || ''} />
 
                 {/* Section: Identidade */}
                 <div className="form-section-label" data-i18n="inscricao.identidade">
@@ -527,22 +547,24 @@ export default function InscricaoPageClient({ lang, eventoSlug, eventTitle, capa
                   <div id="error-container" className="inscription-error mt-8">
                     <div className="error-icon">⚠</div>
                     <h2 className="error-title" data-i18n="inscricao_error.title">{t('inscricao_error.title')}</h2>
-                    {errorMsg === 'custom_whatsapp' ? (
-                      <p className="error-message" id="error-message">
-                        Não foi possível registrar a sua inscrição, entre em contacto connosco via{' '}
-                        <a
-                          href={`https://wa.me/244925696002?text=${encodeURIComponent(`Olá, estou com dificuldades no processo da inscrição do evento ${eventTitle || ''}`)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ color: 'inherit', textDecoration: 'underline', fontWeight: 600 }}
-                        >
-                          WhatsApp (+244 925 696 002)
-                        </a>
-                        {' '}para resolver.
-                      </p>
-                    ) : (
-                      <p className="error-message" id="error-message">{errorMsg}</p>
-                    )}
+                    <p className="error-message" id="error-message">
+                      {errorMsg}
+                      {errorMsg && (
+                        <>
+                          {' '}
+                          {t('inscricao_error.whatsapp_cta')}{' '}
+                          <a
+                            href={`https://wa.me/244925696002?text=${encodeURIComponent(`Olá, estou com dificuldades no processo da inscrição do evento ${eventTitle || ''}`)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: 'inherit', textDecoration: 'underline', fontWeight: 600 }}
+                          >
+                            WhatsApp (+244 925 696 002)
+                          </a>
+                          {' '}para resolver.
+                        </>
+                      )}
+                    </p>
                     <button
                       type="button"
                       className="btn btn-primary inscription-btn mt-6"

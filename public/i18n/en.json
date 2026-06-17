@@ -302,7 +302,21 @@
   },
   "inscricao_error": {
     "title": "Registration Error",
-    "message": "An error occurred while processing your registration. Please try again.",
-    "duplicate": "You already have a registration for this event. If you have questions, please contact us."
+    "message": "We could not complete your registration.",
+    "duplicate": "Your registration could not be completed because this email is already registered for this event.",
+    "whatsapp_cta": "Contact us via",
+    "codes": {
+      "event_not_found": "This event is no longer available or has been removed.",
+      "event_full": "All spots for this event are taken.",
+      "duplicate": "This email is already registered for this event.",
+      "rate_limited": "Too many attempts in a short time. Please wait a moment before trying again.",
+      "validation_failed": "Some form fields are invalid. Please check and try again.",
+      "validation_unreachable": "We could not validate your registration right now. Please try again.",
+      "db_insert_error": "We could not complete your registration. Please try again in a moment.",
+      "db_insert_no_id": "We could not generate your registration receipt. Please try again.",
+      "invalid_event_id": "The event identifier is invalid. Please reopen the event page and try again.",
+      "invalid_event_slug": "The event URL is invalid.",
+      "misconfigured": "The system is temporarily unavailable. Our team has been notified."
+    }
   }
 }

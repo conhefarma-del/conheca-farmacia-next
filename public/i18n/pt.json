@@ -302,7 +302,21 @@
   },
   "inscricao_error": {
     "title": "Erro na Inscrição",
-    "message": "Ocorreu um erro ao processar a sua inscrição. Tente novamente.",
-    "duplicate": "Já tem uma inscrição neste evento. Se tem dúvidas, contacte-nos."
+    "message": "Não foi possível registrar a sua inscrição.",
+    "duplicate": "Não é possível fazer sua inscrição porque esse email já está registrado neste evento.",
+    "whatsapp_cta": "Contacte connosco via",
+    "codes": {
+      "event_not_found": "Este evento já não está disponível ou foi removido.",
+      "event_full": "As vagas para este evento estão esgotadas.",
+      "duplicate": "Não é possível fazer sua inscrição porque esse email já está registrado neste evento.",
+      "rate_limited": "Muitas tentativas em pouco tempo. Aguarda um momento antes de tentar novamente.",
+      "validation_failed": "Alguns dados do formulário são inválidos. Verifica os campos e tenta novamente.",
+      "validation_unreachable": "Não foi possível validar a sua inscrição neste momento. Tenta novamente.",
+      "db_insert_error": "Não foi possível completar a inscrição agora. Tenta novamente em alguns instantes.",
+      "db_insert_no_id": "Não foi possível gerar o comprovativo da inscrição. Tenta novamente.",
+      "invalid_event_id": "O identificador do evento é inválido. Volta a abrir a página do evento e tenta outra vez.",
+      "invalid_event_slug": "O endereço do evento é inválido.",
+      "misconfigured": "O sistema está temporariamente indisponível. A nossa equipa já foi notificada."
+    }
   }
 }
