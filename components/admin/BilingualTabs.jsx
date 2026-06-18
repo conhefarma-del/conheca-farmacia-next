@@ -25,7 +25,7 @@
  *   - saveTranslationAction
  */
 
-import { useContext, useState, useTransition } from 'react'
+import { useContext, useEffect, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { LangContext } from '@/lib/contexts'
 import { autoTranslateEntity, saveTranslationAction } from '@/lib/actions/translation'
@@ -52,17 +52,44 @@ export default function BilingualTabs({
   const t = useT()
   const router = useRouter()
   const [activeTab, setActiveTab] = useState('en')
+  // Sync enHosts with ptHosts when the PT list changes (e.g. admin added
+  // or removed a host in the PT form, then re-opened the EN tab). The
+  // initial state mirrors ptHosts; this effect preserves any manual EN
+  // edits already made while padding / truncating to match ptHosts.length.
+  useEffect(() => {
+    setEnHosts((prev) => {
+      const ptLen = Array.isArray(ptHosts) ? ptHosts.length : 0
+      if (prev.length === ptLen) return prev
+      if (prev.length < ptLen) {
+        // Admin added host(s) in PT — pad with blank slots for the new ones,
+        // keeping existing edits for the ones we already had.
+        return [
+          ...prev,
+          ...Array.from({ length: ptLen - prev.length }, () => ({ name: '', role: '', organization: '' })),
+        ]
+      }
+      // Admin removed host(s) from PT — truncate (extra EN slots are stale).
+      return prev.slice(0, ptLen)
+    })
+  }, [ptHosts])
   const [enHosts, setEnHosts] = useState(() => {
     // Hydrate hosts array from translation.hosts (JSONB) when present,
     // otherwise mirror ptHosts so each PT host gets a blank EN slot.
-    if (Array.isArray(translation?.hosts) && translation.hosts.length > 0) {
-      return translation.hosts.map((h) => ({
-        name: h.name ?? '',
-        role: h.role ?? '',
-        organization: h.organization ?? '',
-      }))
-    }
-    return ptHosts.map((h) => ({ name: '', role: '', organization: '' }))
+    // The list length is bounded by MAX(translation.hosts, ptHosts) so
+    // a PT edit that adds a host is reflected immediately on first
+    // render (not only after the useEffect below runs).
+    const ptLen = Array.isArray(ptHosts) ? ptHosts.length : 0
+    const trArr = Array.isArray(translation?.hosts) ? translation.hosts : []
+    const len = Math.max(trArr.length, ptLen)
+    const slots = Array.from({ length: len }, (_, i) => {
+      const tr = trArr[i]
+      return {
+        name: tr?.name ?? '',
+        role: tr?.role ?? '',
+        organization: tr?.organization ?? '',
+      }
+    })
+    return slots
   })
   const [enValues, setEnValues] = useState(() => {
     if (translation) {
@@ -150,19 +177,26 @@ export default function BilingualTabs({
     setSuccess(null)
     setIsSaving(true)
     try {
-      // Merge the hosts array (managed separately) into the payload
-      // before saving. Filter out empty hosts so we don't persist
-      // Merge PT name/organization with EN role: only `role` is translatable
-      // for hosts. Drop hosts where the PT source has no name AND the EN
-      // translation has no role — an array of empty objects when the admin
-      // hasn't translated them.
-      const hostsPayload = enHosts
-        .map((h, i) => ({
-          name: ptHosts[i]?.name ?? '',
-          role: h.role ?? '',
-          organization: ptHosts[i]?.organization ?? '',
-        }))
-        .filter((h) => h.name || h.role || h.organization)
+      // Build the hosts payload aligned to ptHosts.length (the source of
+      // truth for "how many cards render on /en"). For each PT host:
+      //   - name & organization stay in PT (not translatable)
+      //   - role: use the EN edit if non-empty, else fall back to the PT
+      //     role so the public /en page keeps showing the same N cards
+      //     as /pt even if the admin hasn't translated every host yet.
+      // Drop the entry only if the PT source itself is empty (no name AND
+      // no role AND no organization) — that means the host doesn't exist
+      // on the PT side and shouldn't be in the EN translation either.
+      const ptLen = Array.isArray(ptHosts) ? ptHosts.length : 0
+      const hostsPayload = []
+      for (let i = 0; i < ptLen; i++) {
+        const pt = ptHosts[i] || {}
+        const en = enHosts[i] || {}
+        const name = pt.name ?? ''
+        const role = (en.role ?? '').trim() || (pt.role ?? '')
+        const organization = pt.organization ?? ''
+        if (!name && !role && !organization) continue
+        hostsPayload.push({ name, role, organization })
+      }
       const payload = { ...enValues, hosts: hostsPayload }
       const result = await saveTranslationAction(entityType, entityId, payload)
       if (result?.ok) {

@@ -9,6 +9,7 @@
   --admin-bg: #f9f9f9f9;
   --admin-card-bg: #ffffff;
   --admin-input-bg: #f9f9f9f9;
+  --admin-input-readonly-bg: #f3f4f6;
   --admin-text: #002a32;
   --admin-text-muted: #6b7280;
   --admin-border: #dddddd;
@@ -52,6 +53,7 @@ html.dark {
   --admin-bg: #0a0f0d;
   --admin-card-bg: #111816;
   --admin-input-bg: #1a2120;
+  --admin-input-readonly-bg: #0f1614;
   --admin-text: #e5e7eb;
   --admin-text-muted: #94a3b8;
   --admin-border: #1f2927;
@@ -63,6 +65,7 @@ html.dark {
   --admin-warning: #fcd34d;
   --admin-warning-bg: #78350f;
   --admin-info-bg: #1e3a8a;
+  --admin-info: #93c5fd;
   --admin-indigo: #818cf8;
 }
 
