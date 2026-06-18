@@ -104,7 +104,7 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
     setErrorMsg('')
 
     try {
-      const result = await submitInscription(form, eventoId, eventoSlug)
+      const result = await submitInscription(form, eventoId, eventoSlug, lang)
       setEmailSent(result.emailSent)
       setInscriptionId(result.inscriptionId)
       setStatus('success')

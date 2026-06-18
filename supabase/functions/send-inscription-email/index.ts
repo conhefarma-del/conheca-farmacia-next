@@ -3,6 +3,9 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const SITE_URL = "https://conhecafarmacia.com";
 
+type Lang = 'pt' | 'en';
+function isLang(x: unknown): x is Lang { return x === 'pt' || x === 'en' }
+
 function getInscriptionEmailTemplate(
   nomeParticipante: string,
   nomeEvento: string,
@@ -126,6 +129,85 @@ function getInscriptionEmailTemplate(
 </html>`;
 }
 
+function getInscriptionEmailTemplateEN(
+  nomeParticipante: string,
+  nomeEvento: string,
+  dataInscricao: string,
+  eventoSlug: string,
+  unsubscribeUrl: string,
+): string {
+  const dataObj = new Date(dataInscricao);
+  const dataFormatada = dataObj.toLocaleDateString("en-GB", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const eventoUrl = `${SITE_URL}/en/events/${eventoSlug}`;
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Confirmation - Conheça Farmácia</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5;">
+    <tr>
+        <td align="center" style="padding: 40px 20px;">
+            <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); overflow: hidden;">
+                <tr>
+                    <td style="background: linear-gradient(135deg, #00493a 0%, #0a844f 100%); padding: 40px 20px; text-align: center;">
+                        <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">Conheça Farmácia</h1>
+                        <p style="margin: 8px 0 0 0; color: rgba(255, 255, 255, 0.9); font-size: 14px; font-weight: 300;">Excellence in Pharmaceutical Care</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 40px 30px;">
+                        <h2 style="margin: 0 0 20px 0; color: #00493a; font-size: 22px;">Hello, ${escapeHtml(nomeParticipante)}!</h2>
+                        <p style="margin: 0 0 16px 0; color: #333; font-size: 16px; line-height: 1.6;">
+                            We've received your registration for <strong>${escapeHtml(nomeEvento)}</strong>.
+                        </p>
+                        <p style="margin: 0 0 16px 0; color: #333; font-size: 16px; line-height: 1.6;">
+                            <strong>Registration date:</strong> ${dataFormatada}
+                        </p>
+                        <p style="margin: 0 0 24px 0; color: #333; font-size: 16px; line-height: 1.6;">
+                            Check your email and the event page for further details. See you there!
+                        </p>
+                        <table width="100%" cellpadding="0" cellspacing="0" style="margin: 24px 0;">
+                            <tr>
+                                <td align="center">
+                                    <a href="${eventoUrl}" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #00493a 0%, #0a844f 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">View Event</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="background-color: #f8f8f8; padding: 20px 30px; text-align: center; color: #888; font-size: 12px; line-height: 1.5;">
+                        <p style="margin: 0 0 8px 0;">You're receiving this email because you registered for an event at Conheça Farmácia.</p>
+                        <p style="margin: 0;"><a href="${unsubscribeUrl}" style="color: #00493a; text-decoration: underline;">Unsubscribe</a></p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>`;
+}
+
+function escapeHtml(s: string): string {
+  if (!s) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 const ALLOWED_ORIGINS = [
   "https://conheca-farmacia-next.vercel.app",
   "https://conhecafarmacia.com",
@@ -158,7 +240,8 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { email, nome, evento_slug } = await req.json();
+    const { email, nome, evento_slug, lang: rawLang } = await req.json();
+    const lang: Lang = isLang(rawLang) ? rawLang : 'pt';
 
     if (!email || !nome || !evento_slug) {
       return new Response(
@@ -203,17 +286,29 @@ serve(async (req: Request) => {
       .single();
 
     const unsubscribeUrl = subscriber?.unsubscribe_token
-      ? `${SITE_URL}/pt/unsubscribe?token=${subscriber.unsubscribe_token}`
-      : `${SITE_URL}/pt/unsubscribe`;
+      ? `${SITE_URL}/${lang}/unsubscribe?token=${subscriber.unsubscribe_token}`
+      : `${SITE_URL}/${lang}/unsubscribe`;
 
-    // Generate template
-    const htmlContent = getInscriptionEmailTemplate(
-      nome,
-      nomeEvento,
-      new Date().toISOString(),
-      evento_slug,
-      unsubscribeUrl
-    );
+    // Template bilingue: PT (default) / EN conforme `lang` recebido no body.
+    const htmlContent = lang === 'en'
+      ? getInscriptionEmailTemplateEN(
+          nome,
+          nomeEvento,
+          new Date().toISOString(),
+          evento_slug,
+          unsubscribeUrl,
+        )
+      : getInscriptionEmailTemplate(
+          nome,
+          nomeEvento,
+          new Date().toISOString(),
+          evento_slug,
+          unsubscribeUrl,
+        );
+
+    const subject = lang === 'en'
+      ? 'Registration Confirmation - Conheça Farmácia'
+      : 'Confirmação de Inscrição - Conheça Farmácia';
 
     // Send via SMTP (Amazon SES) com denomailer
     const smtpUser = Deno.env.get("SMTP_USER");
@@ -245,7 +340,7 @@ serve(async (req: Request) => {
       await client.send({
         from: "Conheça Farmácia <inscricao@conhecafarmacia.com>",
         to: email,
-        subject: "Confirmação de Inscrição - Conheça Farmácia",
+        subject,
         content: htmlContent,
         html: htmlContent,
         replyTo: "contato@conhecafarmacia.com",
