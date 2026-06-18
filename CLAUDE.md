@@ -39,7 +39,7 @@ npx vercel --prod
 - **Deploy**: Vercel
 - **i18n**: Dynamic `[lang]` route segment (PT/EN)
 - **Fonts**: `next/font/google` (Inter + Fraunces) — self-hosted, zero CLS, `adjustFontFallback: true`. CSS vars em `--font-sans` / `--font-display` (ver `styles/globals.css`). **NÃO** usar `<link>` Google Fonts
-- **Email**: SMTP via `denomailer` (eu-north-1, **Resend deprecated**) — deploys `v22`/`v20`. Headers RFC 8058 (`List-Unsubscribe` + `List-Unsubscribe-Post`) obrigatórios. From per tipo: `newsletter@/info@/inscricao@conhecafarmacia.com`, Reply-To `contato@`
+- **Email**: Brevo API v3 via `supabase/functions/_shared/brevo.ts` (**denomailer/SES/Resend deprecated** 2026-06-18) — helper partilhado, error codes semânticos (`brevo_auth_error|brevo_bad_request|brevo_rate_limit|brevo_unavailable`), idempotency via `X-Request-Id`, retry 1× em 5xx, timeout 10s, telemetria `code + emailHash + requestId` sem PII. Headers RFC 8058 (`List-Unsubscribe` + `List-Unsubscribe-Post`) obrigatórios. From per tipo: `newsletter@/info@/inscricao@conhecafarmacia.com` (sender.name UTF-8 hardcoded "Conheça Farmácia"), Reply-To `contato@`. Env: `BREVO_API_KEY` (Secret).
 
 ### Directory Structure
 - Sempre restrinja buscas e comandos glob a subdiretórios específicos. Nunca use padrões genéricos como '**/*' na raiz do projeto.
