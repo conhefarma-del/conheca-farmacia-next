@@ -59,22 +59,22 @@ export async function generateMetadata({ params }) {
 
   return {
     title: `${live.title || live.titulo} — Conheça Farmácia`,
-    description: live.description || live.resumo || live.title || live.titulo,
+    description: live.excerpt || live.resumo || live.title || live.titulo,
     alternates: {
       canonical: liveUrl,
       languages: langs,
     },
     openGraph: {
       title: live.title || live.titulo,
-      description: live.description || live.resumo,
+      description: live.excerpt || live.resumo,
       url: liveUrl,
-      images: live.imagem ? [{ url: live.imagem }] : [],
+      images: live.image_url ? [{ url: live.image_url }] : (live.imagem ? [{ url: live.imagem }] : []),
     },
     twitter: {
       card: 'summary_large_image',
       title: live.title || live.titulo,
-      description: live.description || live.resumo,
-      images: live.imagem ? [live.imagem] : [],
+      description: live.excerpt || live.resumo,
+      images: live.image_url ? [live.image_url] : (live.imagem ? [live.imagem] : []),
     },
   }
 }
@@ -93,11 +93,11 @@ function formatDuration(startTime, endTime) {
 }
 
 function getEndTime(live) {
-  if (live.hora_fim || live.end_time) return live.hora_fim || live.end_time
-  if ((live.duracao || live.duration) && (live.hora || live.time)) {
-    const dur = parseInt(live.duracao || live.duration, 10)
+  if (live.end_time || live.hora_fim) return live.end_time || live.hora_fim
+  if ((live.duration || live.duracao) && (live.time || live.hora)) {
+    const dur = parseInt(live.duration || live.duracao, 10)
     if (!isNaN(dur)) {
-      const [h, m] = (live.hora || live.time).split(':').map(Number)
+      const [h, m] = (live.time || live.hora).split(':').map(Number)
       const endH = h + Math.floor((m + dur) / 60)
       const endM = (m + dur) % 60
       return `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`
@@ -139,17 +139,17 @@ export default async function LiveDetailPage({ params }) {
     { label: live.title || live.titulo },
   ]
 
-  const color = LIVE_CATEGORY_COLORS[live.categoria || live.category] || '#00493a'
-  const hora = live.hora || live.time || ''
+  const color = LIVE_CATEGORY_COLORS[live.category || live.categoria] || '#00493a'
+  const hora = live.time || live.hora || ''
   const horaFim = getEndTime(live)
   const duracao = horaFim ? formatDuration(hora, horaFim) : null
   const plataforma = live.platform || live.plataforma || ''
-  const categoriaLabel = live.categoriaLabel || live.category || live.categoria || ''
+  const categoriaLabel = live.category_label || live.category || live.categoria || ''
   const hosts = Array.isArray(live.hosts) ? live.hosts : []
-  const topico = live.topico || live.topic || ''
-  const materiais = live.materiais_apoio || live.materiais || live.materials || []
-  const meetingId = live.id_reuniao || live.meeting_id || ''
-  const senha = live.senha || live.password || ''
+  const topico = live.topic || live.topico || ''
+  const materiais = live.materials || live.materiais_apoio || live.materiais || []
+  const meetingId = live.meeting_id || live.id_reuniao || ''
+  const senha = live.password || live.senha || ''
 
   const liveJsonLd = buildLiveSchema(live, safeLang)
   const breadcrumbSchema = buildBreadcrumbSchema(
@@ -159,7 +159,7 @@ export default async function LiveDetailPage({ params }) {
     }))
   )
 
-  const accessUrl = validateUrl(live.link_acesso || live.access_link || '#')
+  const accessUrl = validateUrl(live.access_link || live.link_acesso || '#')
 
   return (
     <>
@@ -208,10 +208,10 @@ export default async function LiveDetailPage({ params }) {
               <h1 className="event-hero-title">{live.title || live.titulo}</h1>
 
               {/* Featured Image */}
-              {live.imagem && (
+              {(live.image_url || live.imagem) && (
                 <div className="event-hero-image-wrapper">
                   <Image
-                    src={live.imagem}
+                    src={live.image_url || live.imagem}
                     alt={live.title || live.titulo}
                     width={1200}
                     height={675}
@@ -234,7 +234,7 @@ export default async function LiveDetailPage({ params }) {
                     {plataforma}
                   </span>
                   <span className="text-sm font-semibold text-brand-deep/70">
-                    {formatDate(live.data || live.date, safeLang)}
+                    {formatDate(live.date || live.data, safeLang)}
                   </span>
                 </div>
                 {(hora || duracao) && (
@@ -254,9 +254,9 @@ export default async function LiveDetailPage({ params }) {
           <div className="container-center">
             <div className="event-body-wrapper">
               {/* Description */}
-              {(live.description || live.resumo) && (
+              {(live.excerpt || live.resumo) && (
                 <div className="event-body mb-12">
-                  <p>{live.description || live.resumo}</p>
+                  <p>{live.excerpt || live.resumo}</p>
                 </div>
               )}
 
