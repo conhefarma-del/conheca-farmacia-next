@@ -39,12 +39,6 @@ const PHONE_REGEX = /^(?:\+?244|0)?9\d{8}$|^\+\d{1,3}\d{4,14}$/;
 const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 const SLUG_REGEX = /^[a-zA-Z0-9\-_]+$/;
 
-function djb2Hash(s: string): string {
-  let h = 5381;
-  for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
-  return (h >>> 0).toString(16).padStart(8, '0').slice(0, 8);
-}
-
 // djb2 hash truncated to 8 hex chars — para logs sem expor PII (email raw).
 function djb2Hash(s: string): string {
   let h = 5381;
