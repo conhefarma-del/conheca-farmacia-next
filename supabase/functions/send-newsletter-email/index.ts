@@ -369,11 +369,9 @@ serve(async (req) => {
       );
     }
 
-    // Validação SMTP (Amazon SES)
-    const smtpUser = Deno.env.get("SMTP_USER");
-    const smtpPassword = Deno.env.get("SMTP_PASSWORD");
-    if (!smtpUser || !smtpPassword) {
-      console.error("SMTP_USER / SMTP_PASSWORD não configuradas");
+    // Validação Brevo API key (migração SES→Brevo 2026-06-18).
+    if (!Deno.env.get("BREVO_API_KEY")) {
+      console.error("BREVO_API_KEY não configurada");
       return new Response(
         JSON.stringify({ error: "Email service not configured" }),
         { status: 500, headers: { ...getCorsHeaders(req.headers.get("origin")), "Content-Type": "application/json" } }
@@ -421,13 +419,13 @@ serve(async (req) => {
       subject = "Nova Live - Conheca Farmacia";
     }
 
-    // From / Reply-To por tipo de email (domínio conhecafarmacia.com)
-    // Sem acentos no display name: denomailer codifica nomes com non-ASCII
-    // como =?utf-8?Q?...?=, e o Zoho Mail renderiza isso em bruto.
-    const fromAddress =
+    // From / Reply-To por tipo de email (domínio conhecafarmacia.com).
+    // sender.name UTF-8 hardcoded "Conheça Farmácia" no helper (decisão
+    // 2026-06-18 — Brevo tolera UTF-8 no JSON; rollback ASCII via commit).
+    const senderAddress =
       type === "welcome"
-        ? "Conheca Farmacia <newsletter@conhecafarmacia.com>"
-        : "Conheca Farmacia <info@conhecafarmacia.com>";
+        ? "newsletter@conhecafarmacia.com"
+        : "info@conhecafarmacia.com";
     const replyToAddress = "contato@conhecafarmacia.com";
 
     // Cabeçalhos antispam (RFC 8058 + RFC 2369)
@@ -438,32 +436,18 @@ serve(async (req) => {
       "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
     };
 
-    // Envio via SMTP (Amazon SES) com denomailer
-    const { SMTPClient } = await import("denomailer/mod.ts");
-    const client = new SMTPClient({
-      connection: {
-        hostname: Deno.env.get("SMTP_HOST") ?? "email-smtp.eu-north-1.amazonaws.com",
-        port: Number(Deno.env.get("SMTP_PORT") ?? "465"),
-        tls: true,
-        auth: {
-          username: smtpUser,
-          password: smtpPassword,
-        },
-      },
+    // Envio via Brevo API v3 (helper partilhado em _shared/brevo.ts).
+    // Erros propagam com `code` semântico mapeado para i18n no client.
+    const { sendViaBrevo } = await import("../_shared/brevo.ts");
+    await sendViaBrevo({
+      to: { email, name: nome ?? email },
+      sender: senderAddress,
+      subject,
+      htmlContent,
+      replyTo: replyToAddress,
+      headers: listUnsubscribeHeaders,
+      tags: ["newsletter", type],
     });
-    try {
-      await client.send({
-        from: fromAddress,
-        to: email,
-        subject,
-        content: htmlContent,
-        html: htmlContent,
-        replyTo: replyToAddress,
-        headers: listUnsubscribeHeaders,
-      });
-    } finally {
-      await client.close();
-    }
 
     return new Response(
       JSON.stringify({ success: true }),
