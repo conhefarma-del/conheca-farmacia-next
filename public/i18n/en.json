@@ -218,6 +218,8 @@
   },
   "inscricao": {
     "title": "Event Registration",
+    "heading": "Registration",
+    "event_label": "Event",
     "subtitle": "Fill in the form below to confirm your participation",
     "identidade": "Identity",
     "nome_label": "Full Name *",

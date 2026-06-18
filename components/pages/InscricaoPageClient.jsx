@@ -286,7 +286,12 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
             <div id="form-container" className="inscription-form-wrapper">
               {/* Header */}
               <div className="inscription-header mb-12">
-                <h1 className="inscription-title" data-i18n="inscricao.title">{t('inscricao.title')}</h1>
+                <h1 className="inscription-title" data-i18n="inscricao.heading">{t('inscricao.heading')}</h1>
+                {eventTitle && (
+                  <p className="inscription-event-name" aria-label={t('inscricao.event_label')}>
+                    {t('inscricao.event_label')}: <strong>{eventTitle}</strong>
+                  </p>
+                )}
                 <p className="inscription-subtitle" data-i18n="inscricao.subtitle">{t('inscricao.subtitle')}</p>
               </div>
 

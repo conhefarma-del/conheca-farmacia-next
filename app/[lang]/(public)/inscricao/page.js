@@ -1,5 +1,6 @@
 import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
 import { getEventBySlug, getEventInscriptionCount } from '@/lib/api/events'
+import { getTranslationByEntityId } from '@/lib/api/translations'
 import { createClient } from '@/lib/supabase/server'
 import InscricaoPageClient from '@/components/pages/InscricaoPageClient'
 
@@ -17,7 +18,7 @@ export async function generateMetadata({ params, searchParams }) {
     title: `${tFn('inscricao.title')} | Conheça Farmácia`,
     description: tFn('inscricao.subtitle'),
     robots: { index: false, follow: true },
-    alternates: { languages: { pt: '/pt/inscricao', en: '/en/inscricao' } },
+    alternates: { languages: { pt: '/pt/inscricao', en: '/en/register' } },
   }
 }
 
@@ -50,6 +51,17 @@ export default async function InscricaoPage({ params, searchParams }) {
     } catch {}
   }
 
+  // Resolve translated title for EN — UUID-stable via event_translations.
+  // PT mantém o `event.title` directo.
+  let translatedTitle = null
+  if (event && safeLang === 'en') {
+    try {
+      const tr = await getTranslationByEntityId('event', event.id, 'en')
+      translatedTitle = tr?.title || null
+    } catch {}
+  }
+  const eventTitle = translatedTitle || event?.title || null
+
   let initialCount = 0
   if (event) {
     try {
@@ -62,7 +74,7 @@ export default async function InscricaoPage({ params, searchParams }) {
       lang={safeLang}
       eventoId={event?.id || null}
       eventoSlug={event?.slug || null}
-      eventTitle={event?.title || null}
+      eventTitle={eventTitle}
       capacity={event?.capacity || null}
       initialInscriptionCount={initialCount}
     />

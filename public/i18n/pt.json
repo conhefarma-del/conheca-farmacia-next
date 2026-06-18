@@ -218,6 +218,8 @@
   },
   "inscricao": {
     "title": "Inscrição em Evento",
+    "heading": "Inscrição",
+    "event_label": "Evento",
     "subtitle": "Preencha o formulário abaixo para confirmar sua participação",
     "identidade": "Identidade",
     "nome_label": "Nome Completo *",

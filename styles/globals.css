@@ -1674,8 +1674,23 @@ html.dark .speaker-show-less-btn:hover {
     @apply text-4xl md:text-5xl font-bold text-brand-deep mb-4;
   }
 
+  .inscription-event-name {
+    @apply text-xl md:text-2xl text-brand-deep/80 mt-2 mb-4 font-medium;
+  }
+
   .inscription-subtitle {
     @apply text-lg text-brand-deep/70;
+  }
+
+  html.dark .inscription-section {
+    background-color: rgb(17 24 39);
+  }
+  html.dark .inscription-title,
+  html.dark .inscription-event-name {
+    @apply text-white;
+  }
+  html.dark .inscription-subtitle {
+    @apply text-white/70;
   }
 
   .inscription-form {

@@ -1,5 +1,6 @@
 import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
 import { getEventBySlug, getEventInscriptionCount } from '@/lib/api/events'
+import { getTranslationByEntityId } from '@/lib/api/translations'
 import { createClient } from '@/lib/supabase/server'
 import InscricaoPageClient from '@/components/pages/InscricaoPageClient'
 
@@ -50,6 +51,16 @@ export default async function RegisterPage({ params, searchParams }) {
     } catch {}
   }
 
+  // Resolve translated title for EN — UUID-stable via event_translations.
+  let translatedTitle = null
+  if (event && safeLang === 'en') {
+    try {
+      const tr = await getTranslationByEntityId('event', event.id, 'en')
+      translatedTitle = tr?.title || null
+    } catch {}
+  }
+  const eventTitle = translatedTitle || event?.title || null
+
   let initialCount = 0
   if (event) {
     try {
@@ -62,7 +73,7 @@ export default async function RegisterPage({ params, searchParams }) {
       lang={safeLang}
       eventoId={event?.id || null}
       eventoSlug={event?.slug || null}
-      eventTitle={event?.title || null}
+      eventTitle={eventTitle}
       capacity={event?.capacity || null}
       initialInscriptionCount={initialCount}
     />
