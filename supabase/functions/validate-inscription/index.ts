@@ -4,6 +4,8 @@ import { createClient } from 'jsr:@supabase/supabase-js@2';
 // Configuração de CORS — origem dinâmica (whitelist)
 const ALLOWED_ORIGINS = [
   "https://conheca-farmacia-next.vercel.app",
+  "https://conhecafarmacia.com",
+  "https://www.conhecafarmacia.com",
   "http://localhost:3000",
 ];
 
@@ -36,6 +38,19 @@ const VALID_ORIGENS = [
 const PHONE_REGEX = /^(?:\+?244|0)?9\d{8}$|^\+\d{1,3}\d{4,14}$/;
 const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 const SLUG_REGEX = /^[a-zA-Z0-9\-_]+$/;
+
+function djb2Hash(s: string): string {
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+  return (h >>> 0).toString(16).padStart(8, '0').slice(0, 8);
+}
+
+// djb2 hash truncated to 8 hex chars — para logs sem expor PII (email raw).
+function djb2Hash(s: string): string {
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+  return (h >>> 0).toString(16).padStart(8, '0').slice(0, 8);
+}
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -202,9 +217,10 @@ Deno.serve(async (req) => {
       .limit(1);
 
     if (!queryError && existingInscriptions && existingInscriptions.length > 0) {
-      console.warn(`⚠️ Inscrição duplicada detectada: ${email} no evento ${evento_slug}`);
+      console.warn(`⚠️ Inscrição duplicada detectada: emailHash=${djb2Hash(email.toLowerCase().trim())} evento=${evento_slug}`);
       return new Response(JSON.stringify({
-        error: 'Já está registado neste evento com este email'
+        error: 'duplicate',
+        message: 'Já está registado neste evento com este email'
       }), {
         status: 409,
         headers: { ...getCorsHeaders(req.headers.get("origin")), 'Content-Type': 'application/json' }
@@ -212,7 +228,7 @@ Deno.serve(async (req) => {
     }
 
     // SUCESSO
-    console.log(`✅ Inscrição validada com sucesso para ${email} no evento ${evento_slug}`);
+    console.log(`✅ Inscrição validada com sucesso para emailHash=${djb2Hash(email.toLowerCase().trim())} no evento ${evento_slug}`);
     return new Response(JSON.stringify({
       success: true,
       message: 'Validação concluída. Inscrição pode ser processada.'
