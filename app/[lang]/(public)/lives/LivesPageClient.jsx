@@ -17,16 +17,16 @@ export default function LivesPageClient({ lives, lang, t, categoryColors, catego
     return lives
       .map((live) => ({
         ...live,
-        status: live.data >= today ? 'upcoming' : 'past',
+        status: (live.date || live.data) >= today ? 'upcoming' : 'past',
       }))
       .filter((live) => {
         const matchesStatus = live.status === currentStatus
-        const matchesCategory = currentCategory === 'all' || live.categoria === currentCategory
+        const matchesCategory = currentCategory === 'all' || (live.category || live.categoria) === currentCategory
         return matchesStatus && matchesCategory
       })
       .sort((a, b) => {
-        if (currentStatus === 'upcoming') return a.data.localeCompare(b.data)
-        return b.data.localeCompare(a.data)
+        if (currentStatus === 'upcoming') return (a.date || a.data).localeCompare(b.date || b.data)
+        return (b.date || b.data).localeCompare(a.date || a.data)
       })
   }, [lives, currentStatus, currentCategory, today])
 
