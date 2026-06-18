@@ -201,7 +201,8 @@ Deno.serve(async (req) => {
     if (spotsLeft <= 0) {
       console.warn(`🚫 Evento completo: ${evento_slug} (IP: ${clientIp})`);
       return new Response(JSON.stringify({
-        error: 'Evento completo. Sem vagas disponíveis.'
+        error: 'event_full',
+        message: 'Evento completo. Sem vagas disponíveis.'
       }), {
         status: 409,
         headers: { ...getCorsHeaders(req.headers.get("origin")), 'Content-Type': 'application/json' }
