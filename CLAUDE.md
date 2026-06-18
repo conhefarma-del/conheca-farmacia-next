@@ -237,4 +237,4 @@ This file is the project entry point — it stays short and points to the detail
 - Working notes (`memory/`): architectural decisions, Sentinela audit status, project-specific invariants (admin role matrix, email infrastructure, dev server patterns, parallel session rules, TDD/debugging workflows). Team-scoped memories live in `memory/team/` (currently empty — revalidate before using)
 - **SEO audits & backlog** — `docs/security/audits/2026-06-15-seo-audit.md` (baseline Sprint 1) + `docs/security/audits/2026-06-15-seo-backlog.md` (Gaps 4, 8, 9, M2, M3 remanescentes)
 
-When adding a new lesson, prefer memory over CLAUDE.md unless it's a project-wide invariant. Project-wide invariants (i18n URL mirrors, RBAC matrix, 2FA enforcement, proxy.js auth pattern, next/font + Inter/Fraunces, Resend→SES email pipeline) stay in CLAUDE.md; everything else goes to memory.
+When adding a new lesson, prefer memory over CLAUDE.md unless it's a project-wide invariant. Project-wide invariants (i18n URL mirrors, RBAC matrix, 2FA enforcement, proxy.js auth pattern, next/font + Inter/Fraunces, Resend→SES→Brevo email pipeline) stay in CLAUDE.md; everything else goes to memory.
