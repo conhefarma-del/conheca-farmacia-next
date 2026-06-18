@@ -306,9 +306,11 @@ serve(async (req: Request) => {
           unsubscribeUrl,
         );
 
+    // Subject ASCII puro: denomailer codifica não-ASCII (Zoho/Gmail mostram
+    // "=?utf-8?Q?..." raw). Manter corpo HTML com acentos (UTF-8 ok em clientes).
     const subject = lang === 'en'
-      ? 'Registration Confirmation - Conheça Farmácia'
-      : 'Confirmação de Inscrição - Conheça Farmácia';
+      ? 'Registration Confirmation - Conheca Farmacia'
+      : 'Confirmacao de Inscricao - Conheca Farmacia';
 
     // Send via SMTP (Amazon SES) com denomailer
     const smtpUser = Deno.env.get("SMTP_USER");
@@ -338,7 +340,7 @@ serve(async (req: Request) => {
     });
     try {
       await client.send({
-        from: "Conheça Farmácia <inscricao@conhecafarmacia.com>",
+        from: "Conheca Farmacia <inscricao@conhecafarmacia.com>",
         to: email,
         subject,
         content: htmlContent,
