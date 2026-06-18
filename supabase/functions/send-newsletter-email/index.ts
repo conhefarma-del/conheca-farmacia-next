@@ -388,7 +388,7 @@ serve(async (req) => {
 
     if (type === "welcome") {
       htmlContent = getWelcomeTemplate(nome || "Subscritor", unsubUrl);
-      subject = "Bem-vindo a Newsletter - Conheca Farmacia";
+      subject = "Bem-vindo à Newsletter - Conheça Farmácia";
     } else if (type === "article") {
       htmlContent = getArticleTemplate(
         contentTitle || "Novo artigo",
@@ -396,7 +396,7 @@ serve(async (req) => {
         contentUrl || fallbackUrl,
         unsubUrl
       );
-      subject = "Novo Artigo - Conheca Farmacia";
+      subject = "Novo Artigo - Conheça Farmácia";
     } else if (type === "event") {
       htmlContent = getEventTemplate(
         contentTitle || "Novo evento",
@@ -406,7 +406,7 @@ serve(async (req) => {
         contentLocation,
         unsubUrl
       );
-      subject = "Novo Evento - Conheca Farmacia";
+      subject = "Novo Evento - Conheça Farmácia";
     } else {
       htmlContent = getLiveTemplate(
         contentTitle || "Nova live",
@@ -416,7 +416,7 @@ serve(async (req) => {
         contentPlatform,
         unsubUrl
       );
-      subject = "Nova Live - Conheca Farmacia";
+      subject = "Nova Live - Conheça Farmácia";
     }
 
     // From / Reply-To por tipo de email (domínio conhecafarmacia.com).

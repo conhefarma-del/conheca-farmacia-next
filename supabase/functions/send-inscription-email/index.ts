@@ -306,11 +306,14 @@ serve(async (req: Request) => {
           unsubscribeUrl,
         );
 
-    // Subject ASCII puro: denomailer codifica não-ASCII (Zoho/Gmail mostram
-    // "=?utf-8?Q?..." raw). Manter corpo HTML com acentos (UTF-8 ok em clientes).
+    // Subject com acentos: Brevo trata UTF-8 nos headers sem os codificar
+    // como "=?utf-8?Q?..." (ao contrário do antigo stack denomailer/Amazon
+    // SES, que produzia headers raw visíveis em Zoho). Helper envia subject
+    // tal-qual em JSON; o gateway SMTP da Brevo aplica o encoding MIME
+    // (RFC 2047) correctamente.
     const subject = lang === 'en'
-      ? 'Registration Confirmation - Conheca Farmacia'
-      : 'Confirmacao de Inscricao - Conheca Farmacia';
+      ? 'Registration Confirmation - Conheça Farmácia'
+      : 'Confirmação de Inscrição - Conheça Farmácia';
 
     // Cabeçalhos antispam (RFC 8058) — Brevo propaga-os no payload JSON
     // e o gateway SMTP da Brevo adiciona-os ao header MIME final.
