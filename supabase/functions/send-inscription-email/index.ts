@@ -312,45 +312,26 @@ serve(async (req: Request) => {
       ? 'Registration Confirmation - Conheca Farmacia'
       : 'Confirmacao de Inscricao - Conheca Farmacia';
 
-    // Send via SMTP (Amazon SES) com denomailer
-    const smtpUser = Deno.env.get("SMTP_USER");
-    const smtpPassword = Deno.env.get("SMTP_PASSWORD");
-    if (!smtpUser || !smtpPassword) {
-      throw new Error("SMTP_USER / SMTP_PASSWORD não configuradas");
-    }
-
-    // Cabeçalhos antispam (RFC 8058)
+    // Cabeçalhos antispam (RFC 8058) — Brevo propaga-os no payload JSON
+    // e o gateway SMTP da Brevo adiciona-os ao header MIME final.
     const listUnsubscribeMailto = `mailto:contato@conhecafarmacia.com?subject=unsubscribe&body=Por%20favor%2C%20remova-me%20da%20lista.`;
     const listUnsubscribeHeaders: Record<string, string> = {
       "List-Unsubscribe": `<${listUnsubscribeMailto}>, <${unsubscribeUrl}>`,
       "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
     };
 
-    const { SMTPClient } = await import("denomailer/mod.ts");
-    const client = new SMTPClient({
-      connection: {
-        hostname: Deno.env.get("SMTP_HOST") ?? "email-smtp.eu-north-1.amazonaws.com",
-        port: Number(Deno.env.get("SMTP_PORT") ?? "465"),
-        tls: true,
-        auth: {
-          username: smtpUser,
-          password: smtpPassword,
-        },
-      },
+    // Envio via Brevo API v3 (helper partilhado em _shared/brevo.ts).
+    // Erros propagam com `code` semântico mapeado para i18n no client.
+    const { sendViaBrevo } = await import("../_shared/brevo.ts");
+    await sendViaBrevo({
+      to: { email, name: nome },
+      sender: "inscricao@conhecafarmacia.com",
+      subject,
+      htmlContent,
+      replyTo: "contato@conhecafarmacia.com",
+      headers: listUnsubscribeHeaders,
+      tags: ["inscription", lang],
     });
-    try {
-      await client.send({
-        from: "Conheca Farmacia <inscricao@conhecafarmacia.com>",
-        to: email,
-        subject,
-        content: htmlContent,
-        html: htmlContent,
-        replyTo: "contato@conhecafarmacia.com",
-        headers: listUnsubscribeHeaders,
-      });
-    } finally {
-      await client.close();
-    }
 
     return new Response(
       JSON.stringify({ success: true }),
