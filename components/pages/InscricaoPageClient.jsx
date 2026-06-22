@@ -231,7 +231,6 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
             <div className="inscription-container">
               <div className="inscription-form-wrapper">
                 <div className="inscription-success">
-                  <div className="success-icon">✓</div>
                   <h2 className="success-title">{t('inscricao_success.title')}</h2>
                   <p className="success-message">{t('inscricao_success.message')}</p>
                   <div className="success-details">
