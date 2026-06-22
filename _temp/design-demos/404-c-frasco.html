@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="pt-AO">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>404 · Conheça Farmácia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600&family=Inter:wght@200;300;400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --primary: #00493a;
+    --primary-deep: #002a32;
+    --primary-mid: #006b54;
+    --warm: #e8b86b;
+    --warm-soft: #f3d49b;
+    --bg: #002a32;
+    --paper: #faf8f5;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--paper);
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+
+  body {
+    background:
+      radial-gradient(ellipse at 30% 40%, rgba(0, 107, 84, 0.3) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 60%, rgba(232, 184, 107, 0.08) 0%, transparent 50%),
+      var(--bg);
+  }
+
+  .stage {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 64px;
+    position: relative;
+  }
+
+  /* Top minimal bar */
+  .top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 28px 64px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 5;
+  }
+  .logo {
+    height: 22px;
+    opacity: 0.85;
+  }
+  .top .meta {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: rgba(250, 248, 245, 0.4);
+    font-weight: 300;
+  }
+
+  /* Bottom corner */
+  .bottom {
+    position: absolute;
+    bottom: 28px;
+    left: 64px;
+    right: 64px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(250, 248, 245, 0.3);
+    font-weight: 300;
+  }
+
+  /* Center group — the broken bottle scene */
+  .scene {
+    position: relative;
+    width: 100%;
+    max-width: 720px;
+    height: 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Tilted bottle */
+  .bottle-wrap {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-18deg);
+    animation: sway 8s ease-in-out infinite;
+  }
+  @keyframes sway {
+    0%, 100% { transform: translate(-50%, -50%) rotate(-20deg); }
+    50%      { transform: translate(-50%, -50%) rotate(-16deg); }
+  }
+
+  .bottle {
+    width: 180px;
+    height: 280px;
+    position: relative;
+  }
+
+  .bottle-rim {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70px;
+    height: 14px;
+    background: linear-gradient(180deg, var(--primary-mid) 0%, var(--primary) 100%);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+  .bottle-neck {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 56px;
+    background: linear-gradient(180deg,
+      rgba(232, 184, 107, 0.18) 0%,
+      rgba(0, 107, 84, 0.4) 100%);
+    border-left: 1px solid rgba(232, 184, 107, 0.3);
+    border-right: 1px solid rgba(0, 107, 84, 0.5);
+  }
+
+  .bottle-body {
+    position: absolute;
+    top: 70px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg,
+      rgba(0, 107, 84, 0.35) 0%,
+      rgba(0, 42, 50, 0.7) 60%,
+      rgba(0, 42, 50, 0.9) 100%);
+    border: 1px solid rgba(232, 184, 107, 0.25);
+    border-top: none;
+    border-radius: 0 0 16px 16px;
+    box-shadow:
+      inset -8px 0 16px rgba(232, 184, 107, 0.08),
+      inset 12px 0 20px rgba(232, 184, 107, 0.12),
+      0 16px 40px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Liquid surface inside bottle — sloshing to one side */
+  .liquid {
+    position: absolute;
+    top: 100px;
+    left: 8px;
+    right: 8px;
+    bottom: 12px;
+    background: linear-gradient(180deg,
+      rgba(232, 184, 107, 0.55) 0%,
+      rgba(212, 132, 50, 0.65) 100%);
+    border-radius: 0 0 12px 12px;
+    overflow: hidden;
+  }
+  .liquid::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -10%;
+    right: -10%;
+    height: 12px;
+    background: var(--warm);
+    border-radius: 50%;
+    transform: rotate(-3deg);
+    box-shadow: 0 4px 12px rgba(232, 184, 107, 0.4);
+  }
+  .liquid::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+  }
+
+  /* Pour stream from mouth — escapes the bottle because tilted */
+  .pour {
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    width: 4px;
+    height: 80px;
+    background: linear-gradient(180deg,
+      rgba(232, 184, 107, 0.8) 0%,
+      rgba(232, 184, 107, 0.2) 100%);
+    transform: translateX(-50%) rotate(40deg);
+    transform-origin: top center;
+    filter: blur(1px);
+  }
+
+  /* Puddle blobs on the ground — abstract liquid spilled */
+  .puddle {
+    position: absolute;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-30%);
+    width: 360px;
+    height: 100px;
+  }
+  .puddle .blob {
+    position: absolute;
+    background: radial-gradient(ellipse at center,
+      rgba(232, 184, 107, 0.7) 0%,
+      rgba(232, 184, 107, 0.2) 50%,
+      transparent 80%);
+    border-radius: 47% 53% 60% 40% / 45% 55% 40% 60%;
+    animation: drift 12s ease-in-out infinite;
+  }
+  .puddle .blob:nth-child(1) {
+    width: 120px; height: 60px;
+    left: 30%; top: 30px;
+    animation-delay: 0s;
+  }
+  .puddle .blob:nth-child(2) {
+    width: 90px; height: 50px;
+    left: 12%; top: 40px;
+    border-radius: 60% 40% 50% 50% / 50% 60% 40% 50%;
+    animation-delay: -3s;
+  }
+  .puddle .blob:nth-child(3) {
+    width: 160px; height: 70px;
+    left: 38%; top: 22px;
+    border-radius: 50% 50% 45% 55% / 55% 45% 55% 45%;
+    animation-delay: -6s;
+  }
+  .puddle .blob:nth-child(4) {
+    width: 70px; height: 40px;
+    left: 60%; top: 48px;
+    border-radius: 40% 60% 50% 50% / 60% 40% 60% 40%;
+    animation-delay: -9s;
+  }
+  @keyframes drift {
+    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.7; }
+    50%      { transform: translate(8px, -4px) scale(1.04); opacity: 0.85; }
+  }
+
+  /* Detached droplets */
+  .droplet {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: var(--warm);
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(232, 184, 107, 0.5);
+    animation: fall 6s ease-in infinite;
+  }
+  .droplet.d1 { left: 56%; top: 25%; animation-delay: 0s; }
+  .droplet.d2 { left: 62%; top: 35%; animation-delay: -2s; width: 5px; height: 5px; }
+  .droplet.d3 { left: 50%; top: 30%; animation-delay: -4s; width: 6px; height: 6px; }
+  @keyframes fall {
+    0%   { transform: translate(0, 0) rotate(0); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 0.6; }
+    100% { transform: translate(20px, 240px) rotate(180deg); opacity: 0; }
+  }
+
+  /* Text composition — overlapping with scene */
+  .text-stack {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 4;
+  }
+  .text-stack > * { pointer-events: auto; }
+
+  /* The big 404 — behind the bottle, low contrast */
+  .big-number {
+    font-family: 'Inter', sans-serif;
+    font-weight: 200;
+    font-size: clamp(220px, 26vw, 380px);
+    line-height: 1;
+    letter-spacing: -0.05em;
+    color: rgba(0, 107, 84, 0.35);
+    user-select: none;
+    margin-bottom: -160px;
+    z-index: 1;
+  }
+
+  /* Title on top, in front of the scene */
+  .title-wrap {
+    margin-top: 280px;
+    text-align: center;
+    z-index: 6;
+    position: relative;
+  }
+  .title {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-style: italic;
+    font-size: clamp(28px, 3vw, 38px);
+    line-height: 1.25;
+    color: var(--paper);
+    margin-bottom: 14px;
+    letter-spacing: -0.01em;
+  }
+  .sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    color: rgba(250, 248, 245, 0.55);
+    max-width: 420px;
+    margin: 0 auto 32px;
+    line-height: 1.6;
+  }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 14px;
+    color: var(--warm);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--warm);
+    transition: gap 0.25s ease, color 0.2s ease;
+  }
+  .cta:hover { color: var(--warm-soft); gap: 16px; }
+  .cta::after {
+    content: '→';
+    font-family: 'Inter', sans-serif;
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <div class="top">
+    <svg class="logo" viewBox="0 0 220 30" xmlns="http://www.w3.org/2000/svg">
+      <text x="0" y="18" font-family="Fraunces, serif" font-weight="600" font-size="18" fill="#faf8f5">Conheça</text>
+      <text x="84" y="18" font-family="Fraunces, serif" font-weight="300" font-style="italic" font-size="18" fill="#faf8f5">Farmácia</text>
+      <line x1="0" y1="24" x2="180" y2="24" stroke="#faf8f5" stroke-width="0.5" opacity="0.5" />
+    </svg>
+    <div class="meta">Catálogo · Erro N.º 404</div>
+  </div>
+
+  <div class="scene">
+    <!-- The big 404 sits behind -->
+    <div class="big-number">404</div>
+
+    <!-- Puddle blobs (on ground) -->
+    <div class="puddle">
+      <div class="blob"></div>
+      <div class="blob"></div>
+      <div class="blob"></div>
+      <div class="blob"></div>
+    </div>
+
+    <!-- Tilted bottle -->
+    <div class="bottle-wrap">
+      <div class="bottle">
+        <div class="bottle-rim"></div>
+        <div class="bottle-neck"></div>
+        <div class="bottle-body">
+          <div class="liquid"></div>
+        </div>
+        <div class="pour"></div>
+      </div>
+    </div>
+
+    <!-- Droplets falling -->
+    <div class="droplet d1"></div>
+    <div class="droplet d2"></div>
+    <div class="droplet d3"></div>
+
+    <!-- Title text layered on top -->
+    <div class="title-wrap">
+      <h1 class="title">O frasco partiu-se.</h1>
+      <p class="sub">A página que procura escorreu do catálogo. Não encontramos vestígios desta fórmula nos nossos arquivos.</p>
+      <a href="/pt" class="cta">Regressar ao início</a>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div>Conheça Farmácia · MMXXVI</div>
+    <div>Erro · Item N.º 404 / NF</div>
+  </div>
+</div>
+</body>
+</html>

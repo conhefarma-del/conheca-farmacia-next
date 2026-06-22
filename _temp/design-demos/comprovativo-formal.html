@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Comprovativo · Mockup Alternativo B · Documento Formal</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background: #e5e7eb;
+    padding: 40px 20px;
+    color: #002a32;
+  }
+  .page-label {
+    text-align: center;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin-bottom: 16px;
+    font-family: monospace;
+  }
+  .a4 {
+    width: 794px;
+    min-height: 560px;
+    margin: 0 auto;
+    background: #ffffff;
+    box-shadow: 0 10px 40px rgba(0, 42, 50, 0.15);
+    position: relative;
+    padding: 56px 64px;
+  }
+  /* Topo — cabeçalho com logo + brand */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 18px;
+    border-bottom: 2px solid #00493a;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .brand-logo {
+    width: 56px;
+    height: 56px;
+    background: #00493a;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 24px;
+    font-weight: 700;
+  }
+  .brand-name {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #00493a;
+    line-height: 1.1;
+  }
+  .brand-tag {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin-top: 2px;
+  }
+  .doc-meta {
+    text-align: right;
+    font-size: 10px;
+    color: #6b7280;
+    line-height: 1.5;
+  }
+  .doc-meta .ref {
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    color: #00493a;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    margin-top: 4px;
+  }
+  /* Título */
+  .doc-title {
+    text-align: center;
+    margin-top: 32px;
+  }
+  .doc-title h1 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: #002a32;
+    letter-spacing: 0.02em;
+  }
+  .doc-title p {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 6px;
+    font-style: italic;
+  }
+  /* Selo de confirmação */
+  .seal {
+    width: 120px;
+    height: 120px;
+    border: 2px solid #0a844f;
+    border-radius: 50%;
+    margin: 28px auto 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #0a844f;
+    text-align: center;
+    position: relative;
+  }
+  .seal::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border: 1px dashed #0a844f;
+    border-radius: 50%;
+  }
+  .seal-icon {
+    font-size: 32px;
+    line-height: 1;
+  }
+  .seal-text {
+    font-size: 8px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 4px;
+    font-weight: 600;
+  }
+  /* Bloco do evento */
+  .event-block {
+    margin-top: 28px;
+    padding: 18px 24px;
+    background: #f9f9f9;
+    border-left: 4px solid #0a844f;
+    border-radius: 4px;
+  }
+  .event-block .label {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin-bottom: 4px;
+  }
+  .event-block .name {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: #002a32;
+  }
+  .event-details {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 18px;
+    padding: 0 4px;
+  }
+  .event-details .cell {
+    border-top: 1px solid #e5e7eb;
+    padding-top: 8px;
+  }
+  .event-details .label {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin-bottom: 3px;
+  }
+  .event-details .value {
+    font-size: 13px;
+    font-weight: 500;
+    color: #002a32;
+  }
+  /* Dados do inscrito */
+  .section-title {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #00493a;
+    margin: 28px 0 12px 0;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #e5e7eb;
+    letter-spacing: 0.02em;
+  }
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .data-table tr {
+    border-bottom: 1px solid #f3f4f6;
+  }
+  .data-table td {
+    padding: 10px 0;
+    font-size: 13px;
+  }
+  .data-table td:first-child {
+    color: #6b7280;
+    width: 35%;
+    font-size: 12px;
+  }
+  .data-table td:last-child {
+    color: #002a32;
+    font-weight: 500;
+    text-align: right;
+  }
+  /* Assinatura + Validação */
+  .footer-block {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 36px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+  }
+  .signature {
+    text-align: center;
+    width: 220px;
+  }
+  .signature .line {
+    border-bottom: 1px solid #002a32;
+    height: 28px;
+  }
+  .signature .label {
+    font-size: 10px;
+    color: #6b7280;
+    margin-top: 4px;
+  }
+  .validation {
+    text-align: right;
+    font-size: 10px;
+    color: #6b7280;
+    line-height: 1.6;
+  }
+  .validation .verify-url {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: #00493a;
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+  <p class="page-label">Mockup B · Comprovativo Formal · Estilo Certificado</p>
+
+  <div class="a4">
+    <!-- Header -->
+    <div class="header">
+      <div class="brand">
+        <div class="brand-logo">CF</div>
+        <div>
+          <div class="brand-name">Conheça Farmácia</div>
+          <div class="brand-tag">Portal de Saúde · MZ</div>
+        </div>
+      </div>
+      <div class="doc-meta">
+        Comprovativo Nº<br>
+        <span class="ref">A1B2C3D4</span>
+        <div style="margin-top: 4px;">Emitido em 22 jun 2026</div>
+      </div>
+    </div>
+
+    <!-- Title -->
+    <div class="doc-title">
+      <h1>Comprovativo de Inscrição</h1>
+      <p>Documento gerado electronicamente · Conheça Farmácia</p>
+    </div>
+
+    <!-- Seal -->
+    <div class="seal">
+      <div class="seal-icon">✓</div>
+      <div class="seal-text">Confirmado</div>
+    </div>
+
+    <!-- Event Block -->
+    <div class="event-block">
+      <div class="label">Evento</div>
+      <div class="name">Workshop de Farmacocinética Clínica</div>
+    </div>
+    <div class="event-details">
+      <div class="cell">
+        <div class="label">Data</div>
+        <div class="value">15 jul 2026</div>
+      </div>
+      <div class="cell">
+        <div class="label">Hora</div>
+        <div class="value">19:00 — 21:00</div>
+      </div>
+      <div class="cell">
+        <div class="label">Modalidade</div>
+        <div class="value">Presencial</div>
+      </div>
+      <div class="cell" style="grid-column: 1 / -1;">
+        <div class="label">Local</div>
+        <div class="value">Auditório da Faculdade de Farmácia — UEM, Maputo</div>
+      </div>
+    </div>
+
+    <!-- Inscrito -->
+    <div class="section-title">Dados do Inscrito</div>
+    <table class="data-table">
+      <tr>
+        <td>Nome completo</td>
+        <td>Maria João Macuácua</td>
+      </tr>
+      <tr>
+        <td>E-mail</td>
+        <td>maria.mac@example.mz</td>
+      </tr>
+      <tr>
+        <td>Telefone</td>
+        <td>+258 84 123 4567</td>
+      </tr>
+      <tr>
+        <td>Profissão</td>
+        <td>Farmacêutico</td>
+      </tr>
+      <tr>
+        <td>Data de inscrição</td>
+        <td>22 jun 2026, 14:32</td>
+      </tr>
+    </table>
+
+    <!-- Footer -->
+    <div class="footer-block">
+      <div class="signature">
+        <div class="line"></div>
+        <div class="label">Assinatura do titular</div>
+      </div>
+      <div class="validation">
+        Valide este documento em:<br>
+        <span class="verify-url">conhecafarmacia.com/validar/A1B2C3D4</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

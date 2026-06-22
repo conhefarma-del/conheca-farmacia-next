@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Comprovativo de Inscrição · Mockup</title>
+<style>
+  /* Reset mínimo */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background: #e5e7eb;
+    padding: 40px 20px;
+    color: #002a32;
+  }
+  .page-label {
+    text-align: center;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin-bottom: 16px;
+    font-family: monospace;
+  }
+  /* A4 ratio: 210x297mm ≈ 1:1.414 */
+  .a4 {
+    width: 794px;
+    min-height: 560px;
+    margin: 0 auto;
+    background: #ffffff;
+    box-shadow: 0 10px 40px rgba(0, 42, 50, 0.15);
+    position: relative;
+    overflow: hidden;
+  }
+  /* ============ TICKET STYLE ============ */
+  .ticket {
+    display: flex;
+    margin: 32px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 73, 58, 0.12);
+  }
+  /* LEFT — Stub (canhoto) */
+  .stub {
+    width: 220px;
+    background: linear-gradient(160deg, #00493a 0%, #002a32 100%);
+    color: #ffffff;
+    padding: 28px 22px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .stub::after {
+    content: '';
+    position: absolute;
+    right: -8px;
+    top: 0;
+    bottom: 0;
+    width: 16px;
+    background-image: radial-gradient(circle at 0 8px, #ffffff 8px, transparent 8px);
+    background-size: 16px 16px;
+    background-repeat: repeat-y;
+    background-position: left center;
+  }
+  .stub-logo {
+    width: 140px;
+    height: auto;
+    margin-bottom: 24px;
+  }
+  .stub-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin-bottom: 6px;
+    font-family: 'Inter', sans-serif;
+  }
+  .stub-ref {
+    font-family: 'Courier New', monospace;
+    font-size: 22px;
+    letter-spacing: 0.15em;
+    font-weight: 700;
+    color: #ffffff;
+  }
+  .stub-qr {
+    width: 96px;
+    height: 96px;
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 6px;
+    margin-top: 16px;
+    align-self: flex-start;
+  }
+  .stub-qr svg { width: 100%; height: 100%; display: block; }
+  .stub-footer {
+    font-size: 9px;
+    opacity: 0.5;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  /* RIGHT — Main */
+  .main {
+    flex: 1;
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    position: relative;
+  }
+  .main-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .badge {
+    background: #0a844f;
+    color: #ffffff;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+  .doc-title {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #00493a;
+    margin-top: 12px;
+  }
+  .doc-sub {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 2px;
+  }
+  .event-name {
+    margin-top: 18px;
+    padding: 12px 16px;
+    background: #f9f9f9;
+    border-left: 3px solid #0a844f;
+    border-radius: 4px;
+  }
+  .event-name .label {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin-bottom: 4px;
+  }
+  .event-name .value {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #002a32;
+  }
+  .event-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-top: 14px;
+  }
+  .meta-cell .label {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin-bottom: 4px;
+  }
+  .meta-cell .value {
+    font-size: 13px;
+    font-weight: 500;
+    color: #002a32;
+  }
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #e5e7eb 20%, #e5e7eb 80%, transparent);
+    margin: 16px 0;
+  }
+  .data-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 24px;
+  }
+  .field .label {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin-bottom: 3px;
+  }
+  .field .value {
+    font-size: 13px;
+    font-weight: 500;
+    color: #002a32;
+  }
+  .footer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: auto;
+    padding-top: 16px;
+  }
+  .issued {
+    font-size: 10px;
+    color: #6b7280;
+  }
+  .signature {
+    text-align: right;
+  }
+  .signature .label {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin-bottom: 4px;
+  }
+  .signature .line {
+    width: 160px;
+    border-bottom: 1px solid #002a32;
+    height: 22px;
+  }
+  /* EN version row */
+  .row-separator {
+    border-top: 1px dashed #e5e7eb;
+    margin: 32px 32px 0 32px;
+  }
+  .row-label {
+    text-align: center;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin: 8px 0 24px 0;
+    font-family: monospace;
+  }
+</style>
+</head>
+<body>
+  <p class="page-label">Mockup · Comprovativo de Inscrição · Conheça Farmácia</p>
+
+  <div class="a4">
+    <!-- PT VERSION -->
+    <div class="ticket">
+      <!-- LEFT STUB -->
+      <div class="stub">
+        <div>
+          <!-- Logo (referência a asset real do projecto) -->
+          <img src="/public/logo/logo-principal-branco.svg" alt="Conheça Farmácia" class="stub-logo">
+          <div class="stub-label">Referência</div>
+          <div class="stub-ref">A1B2C3D4</div>
+        </div>
+        <div>
+          <div class="stub-qr">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <rect width="100" height="100" fill="white"/>
+              <!-- QR simplificado (placeholder) -->
+              <g fill="#00493a">
+                <rect x="8" y="8" width="20" height="20"/>
+                <rect x="72" y="8" width="20" height="20"/>
+                <rect x="8" y="72" width="20" height="20"/>
+                <rect x="12" y="12" width="12" height="12" fill="white"/>
+                <rect x="76" y="12" width="12" height="12" fill="white"/>
+                <rect x="12" y="76" width="12" height="12" fill="white"/>
+                <rect x="16" y="16" width="4" height="4"/>
+                <rect x="80" y="16" width="4" height="4"/>
+                <rect x="16" y="80" width="4" height="4"/>
+                <rect x="36" y="8" width="4" height="4"/><rect x="44" y="8" width="4" height="4"/><rect x="52" y="8" width="4" height="4"/><rect x="60" y="8" width="4" height="4"/>
+                <rect x="8" y="36" width="4" height="4"/><rect x="16" y="36" width="4" height="4"/><rect x="28" y="36" width="4" height="4"/><rect x="40" y="36" width="4" height="4"/><rect x="48" y="36" width="4" height="4"/><rect x="60" y="36" width="4" height="4"/><rect x="72" y="36" width="4" height="4"/><rect x="84" y="36" width="4" height="4"/>
+                <rect x="36" y="44" width="4" height="4"/><rect x="52" y="44" width="4" height="4"/><rect x="64" y="44" width="4" height="4"/><rect x="76" y="44" width="4" height="4"/>
+                <rect x="12" y="52" width="4" height="4"/><rect x="24" y="52" width="4" height="4"/><rect x="36" y="52" width="4" height="4"/><rect x="48" y="52" width="4" height="4"/><rect x="56" y="52" width="4" height="4"/><rect x="68" y="52" width="4" height="4"/><rect x="80" y="52" width="4" height="4"/><rect x="88" y="52" width="4" height="4"/>
+                <rect x="8" y="60" width="4" height="4"/><rect x="20" y="60" width="4" height="4"/><rect x="32" y="60" width="4" height="4"/><rect x="44" y="60" width="4" height="4"/><rect x="60" y="60" width="4" height="4"/><rect x="72" y="60" width="4" height="4"/><rect x="84" y="60" width="4" height="4"/>
+                <rect x="36" y="68" width="4" height="4"/><rect x="48" y="68" width="4" height="4"/><rect x="60" y="68" width="4" height="4"/><rect x="76" y="68" width="4" height="4"/>
+                <rect x="36" y="76" width="4" height="4"/><rect x="48" y="76" width="4" height="4"/><rect x="60" y="76" width="4" height="4"/><rect x="68" y="76" width="4" height="4"/><rect x="80" y="76" width="4" height="4"/>
+                <rect x="36" y="84" width="4" height="4"/><rect x="44" y="84" width="4" height="4"/><rect x="56" y="84" width="4" height="4"/><rect x="64" y="84" width="4" height="4"/><rect x="76" y="84" width="4" height="4"/><rect x="88" y="84" width="4" height="4"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+        <div class="stub-footer">confira em conhecafarmacia.com</div>
+      </div>
+      <!-- RIGHT MAIN -->
+      <div class="main">
+        <div>
+          <div class="main-top">
+            <div class="badge">Inscrição Confirmada</div>
+            <div style="font-size: 10px; color: #6b7280;">Nº 1/100</div>
+          </div>
+          <h1 class="doc-title">Comprovativo de Inscrição</h1>
+          <p class="doc-sub">Documento gerado electronicamente</p>
+
+          <div class="event-name">
+            <div class="label">Evento</div>
+            <div class="value">Workshop de Farmacocinética Clínica</div>
+          </div>
+
+          <div class="event-meta">
+            <div class="meta-cell">
+              <div class="label">Data</div>
+              <div class="value">15 jul 2026</div>
+            </div>
+            <div class="meta-cell">
+              <div class="label">Hora</div>
+              <div class="value">19:00 — 21:00</div>
+            </div>
+            <div class="meta-cell">
+              <div class="label">Modalidade</div>
+              <div class="value">Presencial</div>
+            </div>
+            <div class="meta-cell" style="grid-column: 1 / -1;">
+              <div class="label">Local</div>
+              <div class="value">Auditório da Faculdade de Farmácia — UEM, Maputo</div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="data-grid">
+            <div class="field">
+              <div class="label">Nome</div>
+              <div class="value">Maria João Macuácua</div>
+            </div>
+            <div class="field">
+              <div class="label">E-mail</div>
+              <div class="value">maria.mac@example.mz</div>
+            </div>
+            <div class="field">
+              <div class="label">Telefone</div>
+              <div class="value">+258 84 123 4567</div>
+            </div>
+            <div class="field">
+              <div class="label">Profissão</div>
+              <div class="value">Farmacêutico</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-row">
+          <div class="issued">
+            Emitido em 22 jun 2026, 14:32<br>
+            ID: 1f3a8b2e-4c91-4d8a-a07b-3e9d2c5f81ab
+          </div>
+          <div class="signature">
+            <div class="label">Assinatura do titular</div>
+            <div class="line"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="row-label" style="margin-top: 48px;">Versão EN · Same layout, English labels</p>
+  <div class="a4">
+    <div class="ticket">
+      <div class="stub">
+        <div>
+          <img src="/public/logo/logo-principal-branco.svg" alt="Conheça Farmácia" class="stub-logo">
+          <div class="stub-label">Reference</div>
+          <div class="stub-ref">A1B2C3D4</div>
+        </div>
+        <div>
+          <div class="stub-qr">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <rect width="100" height="100" fill="white"/>
+              <g fill="#00493a">
+                <rect x="8" y="8" width="20" height="20"/><rect x="72" y="8" width="20" height="20"/><rect x="8" y="72" width="20" height="20"/>
+                <rect x="12" y="12" width="12" height="12" fill="white"/><rect x="76" y="12" width="12" height="12" fill="white"/><rect x="12" y="76" width="12" height="12" fill="white"/>
+                <rect x="16" y="16" width="4" height="4"/><rect x="80" y="16" width="4" height="4"/><rect x="16" y="80" width="4" height="4"/>
+                <rect x="36" y="8" width="4" height="4"/><rect x="44" y="8" width="4" height="4"/><rect x="52" y="8" width="4" height="4"/><rect x="60" y="8" width="4" height="4"/>
+                <rect x="8" y="36" width="4" height="4"/><rect x="16" y="36" width="4" height="4"/><rect x="28" y="36" width="4" height="4"/><rect x="40" y="36" width="4" height="4"/><rect x="48" y="36" width="4" height="4"/><rect x="60" y="36" width="4" height="4"/><rect x="72" y="36" width="4" height="4"/><rect x="84" y="36" width="4" height="4"/>
+                <rect x="36" y="44" width="4" height="4"/><rect x="52" y="44" width="4" height="4"/><rect x="64" y="44" width="4" height="4"/><rect x="76" y="44" width="4" height="4"/>
+                <rect x="12" y="52" width="4" height="4"/><rect x="24" y="52" width="4" height="4"/><rect x="36" y="52" width="4" height="4"/><rect x="48" y="52" width="4" height="4"/><rect x="56" y="52" width="4" height="4"/><rect x="68" y="52" width="4" height="4"/><rect x="80" y="52" width="4" height="4"/><rect x="88" y="52" width="4" height="4"/>
+                <rect x="8" y="60" width="4" height="4"/><rect x="20" y="60" width="4" height="4"/><rect x="32" y="60" width="4" height="4"/><rect x="44" y="60" width="4" height="4"/><rect x="60" y="60" width="4" height="4"/><rect x="72" y="60" width="4" height="4"/><rect x="84" y="60" width="4" height="4"/>
+                <rect x="36" y="68" width="4" height="4"/><rect x="48" y="68" width="4" height="4"/><rect x="60" y="68" width="4" height="4"/><rect x="76" y="68" width="4" height="4"/>
+                <rect x="36" y="76" width="4" height="4"/><rect x="48" y="76" width="4" height="4"/><rect x="60" y="76" width="4" height="4"/><rect x="68" y="76" width="4" height="4"/><rect x="80" y="76" width="4" height="4"/>
+                <rect x="36" y="84" width="4" height="4"/><rect x="44" y="84" width="4" height="4"/><rect x="56" y="84" width="4" height="4"/><rect x="64" y="84" width="4" height="4"/><rect x="76" y="84" width="4" height="4"/><rect x="88" y="84" width="4" height="4"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+        <div class="stub-footer">verify at conhecafarmacia.com</div>
+      </div>
+      <div class="main">
+        <div>
+          <div class="main-top">
+            <div class="badge">Registration Confirmed</div>
+            <div style="font-size: 10px; color: #6b7280;">No. 1/100</div>
+          </div>
+          <h1 class="doc-title">Registration Receipt</h1>
+          <p class="doc-sub">Electronically generated document</p>
+          <div class="event-name">
+            <div class="label">Event</div>
+            <div class="value">Clinical Pharmacokinetics Workshop</div>
+          </div>
+          <div class="event-meta">
+            <div class="meta-cell"><div class="label">Date</div><div class="value">Jul 15, 2026</div></div>
+            <div class="meta-cell"><div class="label">Time</div><div class="value">7:00 — 9:00 PM</div></div>
+            <div class="meta-cell"><div class="label">Format</div><div class="value">In-person</div></div>
+            <div class="meta-cell" style="grid-column: 1 / -1;"><div class="label">Location</div><div class="value">Faculty of Pharmacy Auditorium — UEM, Maputo</div></div>
+          </div>
+          <div class="divider"></div>
+          <div class="data-grid">
+            <div class="field"><div class="label">Name</div><div class="value">Maria João Macuácua</div></div>
+            <div class="field"><div class="label">E-mail</div><div class="value">maria.mac@example.mz</div></div>
+            <div class="field"><div class="label">Phone</div><div class="value">+258 84 123 4567</div></div>
+            <div class="field"><div class="label">Profession</div><div class="value">Pharmacist</div></div>
+          </div>
+        </div>
+        <div class="footer-row">
+          <div class="issued">Issued on Jun 22, 2026, 2:32 PM<br>ID: 1f3a8b2e-4c91-4d8a-a07b-3e9d2c5f81ab</div>
+          <div class="signature">
+            <div class="label">Holder signature</div>
+            <div class="line"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

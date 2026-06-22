@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="pt-AO">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>404 · Conheça Farmácia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,800;1,9..144,700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --primary: #00493a;
+    --primary-deep: #002a32;
+    --wine: #7c2d2d;
+    --bg: #faf8f5;
+    --paper: #ffffff;
+    --ink: #1a1816;
+    --ink-soft: #5a5650;
+    --rule: #e0dcd4;
+    --grid: rgba(0, 73, 58, 0.04);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Optional grid overlay (visible on hover) */
+  .grid-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, var(--grid) 1px, transparent 1px);
+    background-size: calc(100% / 12) 100%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+  }
+  body:hover .grid-overlay { opacity: 1; }
+
+  .stage {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    position: relative;
+    z-index: 2;
+  }
+
+  .left {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 64px;
+    background: var(--paper);
+    border-right: 1px solid var(--rule);
+    position: relative;
+  }
+
+  .botanical {
+    width: 100%;
+    max-width: 380px;
+    aspect-ratio: 1;
+    position: relative;
+  }
+
+  .right {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 80px 80px 72px;
+    position: relative;
+  }
+
+  /* Header strip — institutional */
+  .top-strip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 20px 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    border-bottom: 1px solid var(--rule);
+    background: var(--bg);
+  }
+  .top-strip .dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--wine);
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  /* Footer strip */
+  .bottom-strip {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    border-top: 1px solid var(--rule);
+    background: var(--bg);
+  }
+
+  .logo {
+    height: 32px;
+  }
+
+  /* Botanical SVG sizing */
+  .botanical svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .herbarium-card {
+    position: absolute;
+    bottom: -32px;
+    right: -32px;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    padding: 14px 18px;
+    width: 220px;
+    box-shadow: 0 8px 24px rgba(0, 73, 58, 0.06);
+    font-family: 'Inter', sans-serif;
+  }
+  .herbarium-card .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 4px 0;
+    border-bottom: 1px dotted var(--rule);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+  }
+  .herbarium-card .row:last-child { border-bottom: none; }
+  .herbarium-card .label {
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-size: 9px;
+    letter-spacing: 0.16em;
+  }
+  .herbarium-card .value {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    color: var(--ink);
+    font-size: 12px;
+  }
+  .herbarium-card .value.wine { color: var(--wine); font-weight: 600; font-style: normal; }
+
+  /* Right side typography */
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--primary);
+    font-weight: 500;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .eyebrow::before {
+    content: '';
+    width: 28px;
+    height: 2px;
+    background: var(--primary);
+  }
+
+  .number {
+    font-family: 'Fraunces', serif;
+    font-weight: 800;
+    font-size: clamp(140px, 18vw, 240px);
+    line-height: 0.86;
+    color: var(--primary);
+    letter-spacing: -0.06em;
+    margin-bottom: 24px;
+    position: relative;
+    display: inline-block;
+  }
+  .number::after {
+    content: '';
+    position: absolute;
+    bottom: 12px;
+    left: 0;
+    right: 12%;
+    height: 1px;
+    background: var(--wine);
+  }
+
+  .title {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(28px, 3.2vw, 40px);
+    line-height: 1.15;
+    color: var(--primary-deep);
+    margin-bottom: 24px;
+    max-width: 520px;
+  }
+
+  .body-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--ink-soft);
+    max-width: 480px;
+    margin-bottom: 36px;
+  }
+
+  .path-mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--ink-soft);
+    margin-bottom: 36px;
+    padding: 10px 14px;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--wine);
+    display: inline-block;
+  }
+  .path-mono .k { color: var(--primary); font-weight: 600; }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 28px;
+    background: var(--primary);
+    color: var(--paper);
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    transition: background 0.2s ease;
+    align-self: flex-start;
+  }
+  .cta:hover { background: var(--primary-deep); }
+  .cta::after {
+    content: '→';
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    margin-left: 4px;
+  }
+
+  .secondary {
+    margin-top: 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: var(--ink-soft);
+    align-self: flex-start;
+  }
+  .secondary a {
+    color: var(--primary);
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+    margin: 0 6px;
+  }
+</style>
+</head>
+<body>
+<div class="grid-overlay"></div>
+
+<div class="top-strip">
+  <div><span class="dot"></span>Catálogo Online · v4.2</div>
+  <div>Conheça Farmácia · 2026</div>
+  <div>Luanda · Angola</div>
+</div>
+
+<div class="stage">
+  <!-- Left: botanical illustration -->
+  <div class="left">
+    <div class="botanical">
+      <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round">
+        <!-- Stem -->
+        <path d="M200 380 Q 200 280, 200 60" stroke="#00493a" stroke-width="2" fill="none" />
+
+        <!-- Leaves (paired, simplified Mikania) -->
+        <g stroke="#00493a" stroke-width="1.4" fill="none">
+          <!-- Right leaves -->
+          <path d="M200 320 Q 240 310, 270 280 Q 280 270, 290 250 Q 270 260, 240 280 Q 215 300, 200 320 Z" />
+          <path d="M200 240 Q 248 230, 282 195 Q 295 184, 305 162 Q 282 175, 248 200 Q 220 222, 200 240 Z" />
+          <path d="M200 160 Q 240 148, 268 115 Q 278 100, 285 78 Q 268 92, 242 116 Q 218 138, 200 160 Z" />
+
+          <!-- Left leaves -->
+          <path d="M200 290 Q 160 280, 130 250 Q 120 240, 110 220 Q 130 230, 160 250 Q 185 270, 200 290 Z" />
+          <path d="M200 210 Q 152 200, 118 165 Q 105 154, 95 132 Q 118 145, 152 170 Q 180 192, 200 210 Z" />
+          <path d="M200 130 Q 160 118, 132 85 Q 122 70, 115 48 Q 132 62, 158 86 Q 182 108, 200 130 Z" />
+
+          <!-- Leaf veins (subtle) -->
+          <path d="M200 320 L 270 280" stroke="#00493a" stroke-width="0.6" opacity="0.5" />
+          <path d="M200 240 L 282 195" stroke="#00493a" stroke-width="0.6" opacity="0.5" />
+          <path d="M200 160 L 268 115" stroke="#00493a" stroke-width="0.6" opacity="0.5" />
+          <path d="M200 290 L 130 250" stroke="#00493a" stroke-width="0.6" opacity="0.5" />
+          <path d="M200 210 L 118 165" stroke="#00493a" stroke-width="0.6" opacity="0.5" />
+          <path d="M200 130 L 132 85" stroke="#00493a" stroke-width="0.6" opacity="0.5" />
+        </g>
+
+        <!-- Small flowers at top -->
+        <g fill="none" stroke="#7c2d2d" stroke-width="1.2">
+          <circle cx="200" cy="50" r="6" />
+          <circle cx="190" cy="42" r="4" />
+          <circle cx="210" cy="42" r="4" />
+          <circle cx="195" cy="34" r="3.5" />
+          <circle cx="205" cy="34" r="3.5" />
+        </g>
+
+        <!-- Root -->
+        <g stroke="#00493a" stroke-width="1.4" fill="none">
+          <path d="M200 380 Q 195 388, 188 392" />
+          <path d="M200 380 Q 205 388, 212 392" />
+          <path d="M200 380 Q 200 392, 200 398" />
+        </g>
+
+        <!-- Annotation marks (botanical plate style) -->
+        <g font-family="JetBrains Mono, monospace" fill="#5a5650" font-size="8" letter-spacing="1">
+          <line x1="290" y1="250" x2="320" y2="250" stroke="#5a5650" stroke-width="0.5" />
+          <text x="324" y="252">FOLIA OP</text>
+          <line x1="95" y1="132" x2="60" y2="132" stroke="#5a5650" stroke-width="0.5" />
+          <text x="20" y="134">FOLIA INF</text>
+          <line x1="200" y1="50" x2="220" y2="30" stroke="#7c2d2d" stroke-width="0.5" />
+          <text x="224" y="32" fill="#7c2d2d">FLOS</text>
+        </g>
+      </svg>
+
+      <!-- Herbarium card overlay -->
+      <div class="herbarium-card">
+        <div class="row">
+          <span class="label">Spec.</span>
+          <span class="value">Pagina desiderata</span>
+        </div>
+        <div class="row">
+          <span class="label">N.º Cat.</span>
+          <span class="value wine">404/NF</span>
+        </div>
+        <div class="row">
+          <span class="label">Coll.</span>
+          <span class="value">C. F. (2026)</span>
+        </div>
+        <div class="row">
+          <span class="label">Status</span>
+          <span class="value wine">non inventa</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: typography block -->
+  <div class="right">
+    <svg class="logo" viewBox="0 0 220 40" xmlns="http://www.w3.org/2000/svg" aria-label="Conheça Farmácia">
+      <text x="0" y="22" font-family="Fraunces, serif" font-weight="700" font-size="22" fill="#00493a">Conheça</text>
+      <text x="92" y="22" font-family="Fraunces, serif" font-weight="400" font-style="italic" font-size="22" fill="#00493a">Farmácia</text>
+      <line x1="0" y1="30" x2="186" y2="30" stroke="#00493a" stroke-width="0.6" />
+      <text x="0" y="38" font-family="JetBrains Mono, monospace" font-size="6" letter-spacing="2.5" fill="#5a5650">CATÁLOGO · EDIÇÃO 2026</text>
+    </svg>
+
+    <div class="eyebrow">Item N.º 404 · Fora de Catálogo</div>
+
+    <div class="number">404</div>
+
+    <h1 class="title">Este item não consta<br/>no nosso catálogo.</h1>
+
+    <p class="body-text">A página solicitada foi retirada do catálogo, arquivada por motivos editoriais, ou o endereço introduzido contém um erro tipográfico. A consulta foi registada para revisão.</p>
+
+    <div class="path-mono">
+      <span class="k">PATH</span> &nbsp; /pt/<s>artigos</s>/<s>pagina-perdida&nbsp;&nbsp;</s>
+      <span class="k">STATUS</span> &nbsp; NOT_FOUND
+    </div>
+
+    <a href="/pt" class="cta">Regressar ao índice</a>
+    <div class="secondary">
+      Ou consultar:
+      <a href="/pt/artigos">Artigos</a>·
+      <a href="/pt/eventos">Eventos</a>·
+      <a href="/pt/lives">Lives</a>·
+      <a href="/pt/pesquisa">Pesquisa</a>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-strip">
+  <div>Pág. 404 / NF</div>
+  <div>Impr. Luanda · MMXXVI</div>
+  <div>↓ procurar item válido</div>
+</div>
+</body>
+</html>
