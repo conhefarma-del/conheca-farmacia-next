@@ -19,16 +19,18 @@ const nextConfig = {
   // Turbopack — they must be externalized so Node loads them at runtime.
   // `resvg-js` includes a native renderer used by the comprovativo PDF
   // generation pipeline (app/api/comprovativo/[id]/pdf/route.js).
-  // `@fontsource/*` packages are externalized because Turbopack does not
-  // recognise `.woff` as a placeable module — Node resolves them at
-  // runtime and returns the file contents as a Buffer, which Satori's
-  // loadFont accepts directly.
-  serverExternalPackages: [
-    '@resvg/resvg-js',
-    '@fontsource/noto-sans',
-    '@fontsource/noto-serif',
-    '@fontsource/noto-sans-mono',
-  ],
+  serverExternalPackages: ['@resvg/resvg-js'],
+  // Turbopack built-in module type for binary assets. Without this, the
+  // build fails with "Unknown module type" on .woff imports because
+  // Turbopack does not recognise fonts as placeable modules. `type: 'bytes'`
+  // (supported since Next.js 16.2.0) inlines the file as a Uint8Array, which
+  // Satori's loadFont accepts directly via Buffer.from().
+  turbopack: {
+    rules: {
+      '*.woff': { type: 'bytes' },
+      '*.woff2': { type: 'bytes' },
+    },
+  },
 };
 
 export default nextConfig;
