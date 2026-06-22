@@ -38,9 +38,11 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
   const [emailSent, setEmailSent] = useState(true)
   const [inscriptionId, setInscriptionId] = useState(null)
   const [downloading, setDownloading] = useState(false)
-  // shortRef (8 chars do UUID) calculado fora do success-state para estar disponível no useCallback do handleDownloadPdf
+  // shortRef: zero-padded inscription int8 id, e.g. 85 -> "000085".
+  // inscricoes.id is int8 (not UUID), so slice(-8) of "85" = "85" not useful.
+  // Use the int8 directly, padded to 6 digits for consistent display.
   const shortRef = useMemo(
-    () => (inscriptionId ? inscriptionId.slice(-8).toUpperCase() : null),
+    () => (inscriptionId ? String(inscriptionId).padStart(6, '0') : null),
     [inscriptionId]
   )
 

@@ -40,10 +40,13 @@ function sanitizeFilename(s) {
 }
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+const INT_RE = /^\d{1,18}$/
 
 export async function GET(request, { params }) {
   const { id } = await params
-  if (!id || !UUID_RE.test(id)) {
+  // Accept both UUID and int8 (inscricoes.id is int8; the user-facing
+  // inscription number is the int8, not a UUID).
+  if (!id || (!UUID_RE.test(id) && !INT_RE.test(id))) {
     return new Response('Invalid id', { status: 400 })
   }
 
@@ -58,18 +61,18 @@ export async function GET(request, { params }) {
   )
 
   // Fetch inscription + event
+  // NOTE: column names mirror the actual Supabase schema:
+  //   inscricoes: id, nome, email, evento_id, evento_slug, created_at, ...
+  //   events:     id, slug, title, date, time, location, type, capacity, ...
   const { data: inscription, error } = await supabase
     .from('inscricoes')
     .select(`
       id,
-      nome_completo,
+      nome,
       email,
-      especialidade,
-      numero_inscricao,
-      modalidade,
+      evento_slug,
       created_at,
-      evento_id,
-      evento:eventos(id, title, slug, data_evento, localizacao, capacidade)
+      events:evento_id(id, slug, title, date, time, location, type, capacity)
     `)
     .eq('id', id)
     .single()
@@ -78,12 +81,14 @@ export async function GET(request, { params }) {
     return new Response('Inscription not found', { status: 404 })
   }
 
-  const shortRef = inscription.numero_inscricao ||
-    inscription.id.slice(-8).toUpperCase()
+  // shortRef is the inscription's int8 id, zero-padded to 6 digits for
+  // display (e.g. 85 -> "000085"). Padded so QR codes and filename
+  // look consistent across single/double/triple digit numbers.
+  const shortRef = String(inscription.id).padStart(6, '0')
 
   // Resolve event title (handle EN translation if needed)
-  let eventTitle = inscription.evento?.title || ''
-  if (lang === 'en') {
+  let eventTitle = inscription.events?.title || ''
+  if (lang === 'en' && inscription.evento_id) {
     const { data: tr } = await supabase
       .from('event_translations')
       .select('title')
@@ -93,7 +98,7 @@ export async function GET(request, { params }) {
     if (tr?.title) eventTitle = tr.title
   }
 
-  // Resolve modality label
+  // Resolve modality label (events.type is freeform: 'presencial' | 'online' | etc.)
   const translations = await loadTranslations(lang)
   const t = (path) => {
     const keys = path.split('.')
@@ -107,8 +112,8 @@ export async function GET(request, { params }) {
     online: t('evento.modalidade.online'),
     hibrido: t('evento.modalidade.hibrido'),
   }
-  const modalityLabel = inscription.modalidade
-    ? modalityLabels[inscription.modalidade]
+  const modalityLabel = inscription.events?.type
+    ? modalityLabels[inscription.events.type] || inscription.events.type
     : ''
 
   // Format date (e.g. "21 jun 2026")
@@ -119,8 +124,8 @@ export async function GET(request, { params }) {
   const inscriptionDate = inscription.created_at
     ? dateFmt.format(new Date(inscription.created_at))
     : ''
-  const eventDate = inscription.evento?.data_evento
-    ? dateFmt.format(new Date(inscription.evento.data_evento))
+  const eventDate = inscription.events?.date
+    ? dateFmt.format(new Date(inscription.events.date))
     : ''
 
   // Generate QR (validation URL)
@@ -138,10 +143,10 @@ export async function GET(request, { params }) {
       shortRef={shortRef}
       eventTitle={eventTitle}
       eventDate={eventDate}
-      eventLocation={inscription.evento?.localizacao || ''}
-      modality={inscription.modalidade}
+      eventLocation={inscription.events?.location || ''}
+      modality={inscription.events?.type}
       modalityLabel={modalityLabel}
-      attendeeName={inscription.nome_completo}
+      attendeeName={inscription.nome}
       attendeeEmail={inscription.email}
       attestationCode={lang === 'pt' ? 'Inscrição confirmada' : 'Registration confirmed'}
       inscriptionDate={inscriptionDate}
