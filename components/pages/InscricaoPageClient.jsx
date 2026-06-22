@@ -3,7 +3,7 @@
 import { useState, useRef, useContext, useEffect, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { LangContext } from '@/lib/contexts'
-import { validateField, submitInscription } from '@/lib/api/inscription'
+import { validateField, submitInscription, checkDuplicate } from '@/lib/api/inscription'
 import { useCapacityPolling } from '@/hooks/useCapacityPolling'
 import Breadcrumb from '@/components/ui/Breadcrumb'
 import { AlertCircle, Download, Printer, CheckCircle2 } from 'lucide-react'
@@ -188,28 +188,27 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
     setErrorMsg('')
 
     try {
-      const result = await submitInscription(form, eventoId, eventoSlug, lang)
-      setEmailSent(result.emailSent)
-      setInscriptionId(result.inscriptionId)
-      setStatus('success')
-    } catch (err) {
-      // Commit 2 (2026-06-17): mapear code semântico do Server Action para i18n.
-      // Server Action pode emitir:
-      //  - Error('duplicate') — legacy string (mantida p/ compat)
-      //  - Error(JSON.stringify({code,detail})) — formato novo (futuro)
-      // O parse abaixo cobre ambos sem breaking change.
-      let code = null
-      if (err.message && err.message.startsWith('{')) {
-        try {
-          const parsed = JSON.parse(err.message)
-          code = parsed?.code || null
-        } catch {
-          // ignore — fallback abaixo
-        }
-      } else if (err.message === 'duplicate') {
-        code = 'duplicate'
+      // Optimização UX (2026-06-22): pré-validar duplicate para resposta
+      // imediata no caso mais frequente, sem esperar pelo RPC. Falha
+      // silenciosa do checkDuplicate (isDuplicate=false) deixa o submit
+      // validar como fallback.
+      const dupCheck = await checkDuplicate(eventoId, form.email)
+      if (dupCheck?.isDuplicate) {
+        setStatus('duplicate')
+        setErrorMsg(t('inscricao_error.codes.duplicate') || t('inscricao_error.duplicate'))
+        return
       }
 
+      const result = await submitInscription(form, eventoId, eventoSlug, lang)
+      if (result?.success) {
+        setEmailSent(!!result.emailSent)
+        setInscriptionId(result.inscriptionId)
+        setStatus('success')
+        return
+      }
+
+      // Erro de negócio (return-based contract).
+      const code = result?.code || null
       if (code === 'duplicate') {
         setStatus('duplicate')
         setErrorMsg(t('inscricao_error.codes.duplicate') || t('inscricao_error.duplicate'))
@@ -220,6 +219,12 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
         setStatus('error')
         setErrorMsg(t('inscricao_error.message'))
       }
+    } catch (err) {
+      // Throw residual (infra: Server Action aborted, network). Não esperamos
+      // mensagem útil — fallback genérico com WhatsApp CTA.
+      console.error('[Inscricao] submit unexpected throw:', err)
+      setStatus('error')
+      setErrorMsg(t('inscricao_error.message'))
     }
   }
 
