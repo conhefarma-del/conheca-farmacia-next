@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useRef, useContext, useEffect } from 'react'
+import { useState, useRef, useContext, useEffect, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { LangContext } from '@/lib/contexts'
 import { validateField, submitInscription } from '@/lib/api/inscription'
 import { useCapacityPolling } from '@/hooks/useCapacityPolling'
 import Breadcrumb from '@/components/ui/Breadcrumb'
-import { AlertCircle } from 'lucide-react'
+import { AlertCircle, Download, Printer, CheckCircle2 } from 'lucide-react'
 
 const RATE_LIMIT_MS = 5000
 
@@ -37,6 +37,13 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
   const [countdown, setCountdown] = useState(3)
   const [emailSent, setEmailSent] = useState(true)
   const [inscriptionId, setInscriptionId] = useState(null)
+  const [downloading, setDownloading] = useState(false)
+  const [logoDataUrl, setLogoDataUrl] = useState(null)
+  // shortRef (8 chars do UUID) calculado fora do success-state para estar disponível no useCallback do handleDownloadPdf
+  const shortRef = useMemo(
+    () => (inscriptionId ? inscriptionId.slice(-8).toUpperCase() : null),
+    [inscriptionId]
+  )
 
   const breadcrumbItems = [
     { label: t('nav.inicio'), href: `/${lang}` },
@@ -86,6 +93,83 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
     setTouched(Object.fromEntries(Object.keys(form).map(k => [k, true])))
     return valid
   }
+
+  // Carrega o logo como dataURL base64. Robusto: sem CORS, sem race conditions.
+  const loadLogoDataUrl = useCallback(async () => {
+    try {
+      const res = await fetch('/logo/logo-principal-branco.svg')
+      if (!res.ok) throw new Error(`fetch ${res.status}`)
+      const blob = await res.blob()
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result)
+        reader.onerror = () => reject(new Error('FileReader falhou'))
+        reader.readAsDataURL(blob)
+      })
+      setLogoDataUrl(dataUrl)
+      return dataUrl
+    } catch (err) {
+      console.warn('[InscricaoBilhete] Não foi possível carregar logo como dataURL:', err)
+      return null
+    }
+  }, [])
+
+  // Eager-load do logo assim que entramos no success-state, para que o <img src> já use dataURL
+  // antes do html2canvas capturar o DOM (evita CORS taint)
+  useEffect(() => {
+    if (status === 'success' && !logoDataUrl) {
+      loadLogoDataUrl()
+    }
+  }, [status, logoDataUrl, loadLogoDataUrl])
+
+  // Gera o PDF do comprovativo via html2canvas + jsPDF (landscape A4).
+  const handleDownloadPdf = useCallback(async () => {
+    if (downloading) return
+    setDownloading(true)
+    try {
+      const [{ default: html2canvas }, jspdfModule] = await Promise.all([
+        import('html2canvas'),
+        import('jspdf'),
+      ])
+      const jsPDF = jspdfModule.jsPDF || jspdfModule.default
+
+      // Garante que o logo está disponível como dataURL antes de capturar
+      await loadLogoDataUrl()
+
+      const node = document.getElementById('comprovativo-bilhete')
+      if (!node) throw new Error('Elemento #comprovativo-bilhete não encontrado')
+
+      const canvas = await html2canvas(node, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        useCORS: true,
+        allowTaint: false,
+        logging: false,
+      })
+
+      const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
+      const pageW = 297 // A4 landscape width mm
+      const pageH = 210 // A4 landscape height mm
+      const imgData = canvas.toDataURL('image/png')
+      pdf.addImage(imgData, 'PNG', 0, 0, pageW, pageH)
+
+      const ref = shortRef || 'comprovativo'
+      pdf.setProperties({
+        title: 'Comprovativo de Inscrição — Conheça Farmácia',
+        subject: eventTitle ? `Comprovativo de inscrição no evento: ${eventTitle}` : 'Comprovativo de inscrição',
+        author: 'Conheça Farmácia',
+        creator: 'Conheça Farmácia',
+        keywords: 'comprovativo, inscrição, Conheça Farmácia',
+      })
+      pdf.save(`comprovativo-${ref}.pdf`)
+    } catch (err) {
+      console.error('[InscricaoBilhete] Falha ao gerar PDF:', err)
+      // fallback: abrir diálogo de impressão do browser
+      if (typeof window !== 'undefined') window.print()
+    } finally {
+      setDownloading(false)
+    }
+  }, [downloading, loadLogoDataUrl, shortRef])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -173,10 +257,12 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
 
   // Success state
   if (status === 'success') {
-    const shortRef = inscriptionId ? inscriptionId.slice(-8).toUpperCase() : null
     const profKey = form.profissao === 'estudante-saude' ? 'estudante' : form.profissao === 'tecnico-medio-saude' ? 'tecnico_medio' : form.profissao === 'tecnico-radiologia' ? 'tecnico_radio' : form.profissao === 'tecnico-analises-clinicas' ? 'tecnico_analises' : form.profissao === 'medico-dentista' ? 'dentista' : form.profissao === 'biologo-analista' ? 'biologo' : form.profissao
     const profLabel = form.profissao ? t('inscricao.prof_' + profKey) : ''
     const backUrl = eventoSlug ? '/' + lang + '/eventos/' + eventoSlug : '/' + lang + '/eventos'
+    const submittedAt = new Date()
+    // eventMeta é derivado (defaults vazios se schema não tem colunas) — render condicional no InscricaoBilhete
+    const eventMeta = { startAt: null, location: null, modality: null }
 
     return (
       <>
@@ -200,51 +286,31 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
                     </p>
                   </div>
 
-                  {/* Comprovativo */}
-                  <div style={{
-                    marginTop: 24, padding: 24, borderRadius: 12,
-                    border: '1px solid var(--color-brand-divider, #e5e7eb)',
-                    background: 'var(--color-brand-bg, #ffffff)', textAlign: 'left',
-                  }}>
-                    <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, textAlign: 'center' }}>
-                      {t('inscricao_success.comprovativo')}
-                    </h3>
-                    <div style={{ display: 'grid', gap: 8, fontSize: 14 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--color-brand-divider, #f3f4f6)' }}>
-                        <span style={{ opacity: 0.6 }}>{t('inscricao.nome_label')}</span>
-                        <span style={{ fontWeight: 500 }}>{form.nome}</span>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--color-brand-divider, #f3f4f6)' }}>
-                        <span style={{ opacity: 0.6 }}>{t('inscricao.email_label')}</span>
-                        <span style={{ fontWeight: 500 }}>{form.email}</span>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--color-brand-divider, #f3f4f6)' }}>
-                        <span style={{ opacity: 0.6 }}>{t('inscricao.telefone_label')}</span>
-                        <span style={{ fontWeight: 500 }}>{form.telefone}</span>
-                      </div>
-                      {profLabel && (
-                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--color-brand-divider, #f3f4f6)' }}>
-                          <span style={{ opacity: 0.6 }}>{t('inscricao.profissao_label')}</span>
-                          <span style={{ fontWeight: 500 }}>{profLabel}</span>
-                        </div>
-                      )}
-                      {eventTitle && (
-                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--color-brand-divider, #f3f4f6)' }}>
-                          <span style={{ opacity: 0.6 }}>{t('nav.eventos')}</span>
-                          <span style={{ fontWeight: 500 }}>{eventTitle}</span>
-                        </div>
-                      )}
-                      {shortRef && (
-                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0' }}>
-                          <span style={{ opacity: 0.6 }}>{t('inscricao_success.referencia')}</span>
-                          <span style={{ fontWeight: 600, fontFamily: 'monospace', letterSpacing: 1 }}>{shortRef}</span>
-                        </div>
-                      )}
-                    </div>
+                  {/* Comprovativo (estilo boarding pass) — wrapper branco isolado */}
+                  <div
+                    style={{
+                      background: '#ffffff',
+                      borderRadius: 16,
+                      padding: 16,
+                      marginTop: 8,
+                      marginBottom: 8,
+                    }}
+                  >
+                    <InscricaoBilhete
+                      lang={lang}
+                      formData={form}
+                      profLabel={profLabel}
+                      eventTitle={eventTitle}
+                      eventMeta={eventMeta}
+                      shortRef={shortRef}
+                      inscriptionDate={submittedAt}
+                      logoSrc={logoDataUrl || '/logo/logo-principal-branco.svg'}
+                      t={t}
+                    />
                   </div>
 
                   {/* Actions */}
-                  <div style={{ display: 'flex', gap: 12, marginTop: 24, justifyContent: 'center', flexWrap: 'wrap' }}>
+                  <div className="comprovativo-actions" data-pdf-hide style={{ display: 'flex', gap: 12, marginTop: 24, justifyContent: 'center', flexWrap: 'wrap' }}>
                     {countdown === 0 && (
                       <a
                         href={backUrl}
@@ -255,10 +321,23 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
                     )}
                     <button
                       type="button"
+                      className="btn btn-primary"
+                      onClick={handleDownloadPdf}
+                      disabled={downloading}
+                      data-pdf-hide
+                      style={{ cursor: downloading ? 'wait' : 'pointer' }}
+                    >
+                      <Download size={18} style={{ marginRight: 8, verticalAlign: 'middle' }} />
+                      {downloading ? t('inscricao_success.download_pdf_loading') : t('inscricao_success.download_pdf')}
+                    </button>
+                    <button
+                      type="button"
                       className="btn btn-secondary"
                       onClick={() => window.print()}
+                      data-pdf-hide
                       style={{ cursor: 'pointer' }}
                     >
+                      <Printer size={18} style={{ marginRight: 8, verticalAlign: 'middle' }} />
                       {t('inscricao_success.print')}
                     </button>
                   </div>
@@ -586,5 +665,194 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
         </div>
       </section>
     </>
+  )
+}
+
+// =============================================
+// InscricaoBilhete — estilo boarding pass horizontal
+// Renderiza um cartão A4 landscape (1 página) com:
+//   - Canhoto esquerdo (gradient verde-escuro): logo + ref + QR + tagline
+//   - Corpo direito (branco): badge + título + nome evento + meta (data/hora/local/modalidade) + grid dados + assinatura
+// O id="comprovativo-bilhete" é capturado pelo html2canvas para gerar o PDF.
+// =============================================
+function formatEventDate(startAt, lang) {
+  if (!startAt) return null
+  const d = new Date(startAt)
+  if (isNaN(d.getTime())) return null
+  // PT: 15 jul 2026 · EN: Jul 15, 2026
+  try {
+    return new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : 'pt-PT', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    }).format(d)
+  } catch {
+    return d.toISOString().slice(0, 10)
+  }
+}
+
+function formatEventTime(startAt, lang) {
+  if (!startAt) return null
+  const d = new Date(startAt)
+  if (isNaN(d.getTime())) return null
+  try {
+    return new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : 'pt-PT', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: lang === 'en',
+    }).format(d)
+  } catch {
+    return d.toISOString().slice(11, 16)
+  }
+}
+
+function formatSubmittedAt(date, lang) {
+  if (!date) return null
+  try {
+    const dateStr = new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : 'pt-PT', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    }).format(date)
+    const timeStr = new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : 'pt-PT', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: lang === 'en',
+    }).format(date)
+    return `${dateStr} · ${timeStr}`
+  } catch {
+    return date.toISOString().slice(0, 16).replace('T', ' ')
+  }
+}
+
+function modalityLabel(modality, t) {
+  if (!modality) return null
+  const key = `inscricao_success.comprovativo_modalidade_${modality}`
+  const translated = t(key)
+  // t() devolve a própria key se não encontrar; nesse caso fallback
+  if (translated && translated !== key) return translated
+  return modality
+}
+
+function InscricaoBilhete({ lang, formData, profLabel, eventTitle, eventMeta, shortRef, inscriptionDate, logoSrc, t }) {
+  const validationUrl = shortRef
+    ? `https://conhecafarmacia.com/validar/${shortRef}`
+    : 'https://conhecafarmacia.com'
+  // QR via API externa (zero bundle, ~1KB request). Fallback: ref em monospace se offline.
+  const qrSrc = shortRef
+    ? `https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=0&data=${encodeURIComponent(validationUrl)}`
+    : null
+
+  const eventDate = formatEventDate(eventMeta?.startAt, lang)
+  const eventTime = formatEventTime(eventMeta?.startAt, lang)
+  const eventLocation = eventMeta?.location || null
+  const eventModality = modalityLabel(eventMeta?.modality, t)
+  const submittedAtStr = formatSubmittedAt(inscriptionDate, lang)
+
+  return (
+    <div
+      id="comprovativo-bilhete"
+      className="comprovativo-bilhete"
+      role="document"
+      aria-label={t('inscricao_success.comprovativo')}
+    >
+      {/* CANHOTO — gradient verde-escuro */}
+      <div className="comprovativo-stub">
+        <div className="comprovativo-stub-brand">
+          <img
+            src={logoSrc}
+            alt="Conheça Farmácia"
+            className="comprovativo-stub-logo"
+          />
+        </div>
+        <div className="comprovativo-stub-ref">
+          <div className="comprovativo-stub-label">{t('inscricao_success.comprovativo')}</div>
+          <div className="comprovativo-stub-refcode">{shortRef || '—'}</div>
+        </div>
+        {qrSrc && (
+          <div className="comprovativo-stub-qr">
+            <img src={qrSrc} alt="QR code" crossOrigin="anonymous" />
+          </div>
+        )}
+        <div className="comprovativo-stub-tagline">{t('inscricao_success.comprovativo_stub_tagline')}</div>
+      </div>
+
+      {/* CORPO — branco */}
+      <div className="comprovativo-main">
+        <div className="comprovativo-top">
+          <span className="comprovativo-badge">{t('inscricao_success.comprovativo_badge')}</span>
+        </div>
+        <h3 className="comprovativo-title">{t('inscricao_success.comprovativo')}</h3>
+        <p className="comprovativo-subtitle">{t('inscricao_success.comprovativo_doc_sub')}</p>
+
+        {eventTitle && (
+          <div className="comprovativo-event">
+            <div className="comprovativo-label">{t('inscricao_success.comprovativo_label_evento')}</div>
+            <div className="comprovativo-event-name">{eventTitle}</div>
+          </div>
+        )}
+
+        {(eventDate || eventTime || eventLocation || eventModality) && (
+          <div className="comprovativo-meta">
+            {eventDate && (
+              <div className="comprovativo-meta-cell">
+                <div className="comprovativo-label">{t('inscricao_success.comprovativo_label_data')}</div>
+                <div className="comprovativo-value">{eventDate}</div>
+              </div>
+            )}
+            {eventTime && (
+              <div className="comprovativo-meta-cell">
+                <div className="comprovativo-label">{t('inscricao_success.comprovativo_label_hora')}</div>
+                <div className="comprovativo-value">{eventTime}</div>
+              </div>
+            )}
+            {eventModality && (
+              <div className="comprovativo-meta-cell">
+                <div className="comprovativo-label">{t('inscricao_success.comprovativo_label_modalidade')}</div>
+                <div className="comprovativo-value">{eventModality}</div>
+              </div>
+            )}
+            {eventLocation && (
+              <div className="comprovativo-meta-cell comprovativo-meta-cell--full">
+                <div className="comprovativo-label">{t('inscricao_success.comprovativo_label_local')}</div>
+                <div className="comprovativo-value">{eventLocation}</div>
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="comprovativo-divider" />
+
+        <div className="comprovativo-data">
+          <div className="comprovativo-field">
+            <div className="comprovativo-label">{t('inscricao_success.comprovativo_label_nome')}</div>
+            <div className="comprovativo-value">{formData.nome}</div>
+          </div>
+          <div className="comprovativo-field">
+            <div className="comprovativo-label">{t('inscricao_success.comprovativo_label_email')}</div>
+            <div className="comprovativo-value">{formData.email}</div>
+          </div>
+          <div className="comprovativo-field">
+            <div className="comprovativo-label">{t('inscricao_success.comprovativo_label_telefone')}</div>
+            <div className="comprovativo-value">{formData.telefone}</div>
+          </div>
+          {profLabel && (
+            <div className="comprovativo-field">
+              <div className="comprovativo-label">{t('inscricao_success.comprovativo_label_profissao')}</div>
+              <div className="comprovativo-value">{profLabel}</div>
+            </div>
+          )}
+        </div>
+
+        <div className="comprovativo-footer">
+          {submittedAtStr && (
+            <div className="comprovativo-issued">
+              <div className="comprovativo-label">{t('inscricao_success.comprovativo_label_inscricao')}</div>
+              <div className="comprovativo-value">{submittedAtStr}</div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   )
 }
