@@ -248,6 +248,7 @@ export default function ComprovativoSatori({
           <div
             style={{
               display: 'flex',
+              flexWrap: 'wrap',
               gap: 28,
               fontSize: 20,
               color: '#5a5650',
