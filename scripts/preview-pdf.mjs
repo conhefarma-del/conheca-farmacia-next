@@ -8,9 +8,30 @@
 // Requires: .env.local with NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY
 // (used only to fetch the inscription row — never sent anywhere else).
 
-import { writeFileSync } from 'node:fs'
+import { writeFileSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { createClient } from '@supabase/supabase-js'
+
+// Load .env.local manually (node doesn't auto-load like next dev does).
+// Only sets vars that are not already in process.env.
+const envPath = join(process.cwd(), '.env.local')
+try {
+  const envContent = readFileSync(envPath, 'utf8')
+  for (const line of envContent.split('\n')) {
+    const trimmed = line.trim()
+    if (!trimmed || trimmed.startsWith('#')) continue
+    const eq = trimmed.indexOf('=')
+    if (eq === -1) continue
+    const key = trimmed.slice(0, eq).trim()
+    const value = trimmed
+      .slice(eq + 1)
+      .trim()
+      .replace(/^["']|["']$/g, '')
+    if (!process.env[key]) process.env[key] = value
+  }
+} catch {
+  // file missing or unreadable — fall through to the explicit check below
+}
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -37,8 +58,8 @@ console.log(`Found ${rows.length} inscription(s). Fetching PDF for each...`)
 
 for (const row of rows) {
   const pdfUrl = `https://www.conhecafarmacia.com/api/comprovativo/${row.id}/pdf?lang=pt`
-  console.log(`\nInscription #${row.numero_inscricao} (UUID: ${row.id})`)
-  console.log(`  Event: ${row.evento?.title}`)
+  console.log(`\nInscription (id: ${row.id})`)
+  console.log(`  Event: ${row.events?.title}`)
   console.log(`  Fetching: ${pdfUrl}`)
 
   const res = await fetch(pdfUrl)
@@ -48,7 +69,7 @@ for (const row of rows) {
   }
 
   const buf = Buffer.from(await res.arrayBuffer())
-  const filename = `preview-comprovativo-${row.numero_inscricao || row.id.slice(-6)}.pdf`
+  const filename = `preview-comprovativo-${row.id}.pdf`
   const out = join(process.cwd(), '.next', filename)
   writeFileSync(out, buf)
   console.log(`  ✓ Wrote ${out} (${buf.length} bytes)`)

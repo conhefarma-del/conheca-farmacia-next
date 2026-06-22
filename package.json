@@ -14,6 +14,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fontsource/noto-sans": "^5.1.0",
+    "@fontsource/noto-sans-mono": "^5.1.0",
+    "@fontsource/noto-serif": "^5.1.0",
     "@resvg/resvg-js": "^2.6.2",
     "@supabase/ssr": "^0.6.0",
     "@supabase/supabase-js": "^2.103.3",

@@ -12,7 +12,6 @@
 //   - `::after` perforated edge is replaced with a simple dashed border
 //     (Satori does not support pseudo-elements)
 //   - flexbox is used the same way; Satori has good support
-//   - linear-gradient on the canhoto (left stub) is supported by Satori
 //   - no images served via URL — logo and QR are passed as data URLs
 
 export default function ComprovativoSatori({
@@ -41,7 +40,7 @@ export default function ComprovativoSatori({
         display: 'flex',
         flexDirection: 'row',
         backgroundColor: '#ffffff',
-        fontFamily: 'Inter',
+        fontFamily: 'sans-serif',
         color: '#002a32',
       }}
     >
@@ -85,7 +84,7 @@ export default function ComprovativoSatori({
           </div>
           <div
             style={{
-              fontFamily: 'Courier New, monospace',
+              fontFamily: 'monospace',
               fontSize: 56,
               fontWeight: 700,
               letterSpacing: '0.04em',
@@ -193,7 +192,7 @@ export default function ComprovativoSatori({
         {/* Title */}
         <div
           style={{
-            fontFamily: 'Fraunces',
+            fontFamily: 'serif',
             fontSize: 72,
             fontWeight: 700,
             lineHeight: 1.05,
@@ -237,7 +236,7 @@ export default function ComprovativoSatori({
           </div>
           <div
             style={{
-              fontFamily: 'Fraunces',
+              fontFamily: 'serif',
               fontSize: 44,
               fontWeight: 600,
               lineHeight: 1.15,
