@@ -73,6 +73,7 @@ export default function ComprovativoSatori({
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div
             style={{
+              display: 'flex',
               fontSize: 18,
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
@@ -84,6 +85,7 @@ export default function ComprovativoSatori({
           </div>
           <div
             style={{
+              display: 'flex',
               fontFamily: 'monospace',
               fontSize: 56,
               fontWeight: 700,
@@ -105,11 +107,11 @@ export default function ComprovativoSatori({
         >
           <div
             style={{
+              display: 'flex',
               width: 220,
               height: 220,
               backgroundColor: '#ffffff',
               padding: 10,
-              display: 'flex',
             }}
           >
             <img
@@ -121,6 +123,7 @@ export default function ComprovativoSatori({
           </div>
           <div
             style={{
+              display: 'flex',
               fontSize: 14,
               letterSpacing: '0.16em',
               textTransform: 'uppercase',
@@ -135,6 +138,7 @@ export default function ComprovativoSatori({
         {/* Tagline */}
         <div
           style={{
+            display: 'flex',
             fontSize: 14,
             fontStyle: 'italic',
             opacity: 0.65,
@@ -180,6 +184,7 @@ export default function ComprovativoSatori({
           </div>
           <div
             style={{
+              display: 'flex',
               fontSize: 16,
               color: '#5a5650',
               letterSpacing: '0.06em',
@@ -192,6 +197,7 @@ export default function ComprovativoSatori({
         {/* Title */}
         <div
           style={{
+            display: 'flex',
             fontFamily: 'serif',
             fontSize: 72,
             fontWeight: 700,
@@ -204,6 +210,7 @@ export default function ComprovativoSatori({
         </div>
         <div
           style={{
+            display: 'flex',
             fontSize: 22,
             color: '#5a5650',
             marginBottom: 36,
@@ -225,6 +232,7 @@ export default function ComprovativoSatori({
         >
           <div
             style={{
+              display: 'flex',
               fontSize: 16,
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
@@ -236,6 +244,7 @@ export default function ComprovativoSatori({
           </div>
           <div
             style={{
+              display: 'flex',
               fontFamily: 'serif',
               fontSize: 44,
               fontWeight: 600,
@@ -272,6 +281,7 @@ export default function ComprovativoSatori({
         >
           <div
             style={{
+              display: 'flex',
               fontSize: 16,
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
@@ -283,6 +293,7 @@ export default function ComprovativoSatori({
           </div>
           <div
             style={{
+              display: 'flex',
               fontSize: 32,
               fontWeight: 600,
               color: '#002a32',
@@ -291,7 +302,7 @@ export default function ComprovativoSatori({
           >
             {attendeeName}
           </div>
-          <div style={{ fontSize: 18, color: '#5a5650' }}>{attendeeEmail}</div>
+          <div style={{ display: 'flex', fontSize: 18, color: '#5a5650' }}>{attendeeEmail}</div>
         </div>
 
         {/* Footer line */}
@@ -307,10 +318,10 @@ export default function ComprovativoSatori({
             letterSpacing: '0.06em',
           }}
         >
-          <div>
+          <div style={{ display: 'flex' }}>
             {lang === 'pt' ? 'Emitido em' : 'Issued on'} {inscriptionDate}
           </div>
-          <div>conhecafarmacia.com</div>
+          <div style={{ display: 'flex' }}>conhecafarmacia.com</div>
         </div>
       </div>
     </div>
