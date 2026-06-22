@@ -122,7 +122,26 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
     }
   }, [status, logoDataUrl, loadLogoDataUrl])
 
+  // Sanitizar string para filename cross-platform (Windows proíbe \ / : * ? " < > |).
+  const sanitizeFilename = useCallback((s) => {
+    if (!s) return ''
+    return String(s)
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')  // remove diacríticos
+      .replace(/[\\/:*?"<>|]/g, '')     // remove chars ilegais
+      .replace(/\s+/g, '_')              // espaços → underscore
+      .replace(/_+/g, '_')               // colapsa underscores
+      .replace(/^_|_$/g, '')              // trim underscores
+      .slice(0, 60)                       // limite razoável
+  }, [])
+
   // Gera o PDF do comprovativo via html2canvas + jsPDF (landscape A4).
+  // Fix 2026-06-22:
+  //   - filename: `Inscricao_<eventTitle>_<shortRef>.pdf` (era `comprovativo-80`)
+  //   - scale 2 → 1 (canvas 2x estourava aspect ratio e gerava PNG ~2MB)
+  //   - PNG → JPEG q=0.92 (~150KB com qualidade visual idêntica em gradientes planos)
+  //   - addImage com ratio correcto: largura = pageW (297mm), altura proporcional ao canvas
+  //     (evita esticar a imagem no eixo vertical e cortar conteúdo)
   const handleDownloadPdf = useCallback(async () => {
     if (downloading) return
     setDownloading(true)
@@ -139,21 +158,41 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
       const node = document.getElementById('comprovativo-bilhete')
       if (!node) throw new Error('Elemento #comprovativo-bilhete não encontrado')
 
+      const nodeWidth = node.offsetWidth
+      const nodeHeight = node.offsetHeight
+
       const canvas = await html2canvas(node, {
-        scale: 2,
+        scale: 1,
         backgroundColor: '#ffffff',
         useCORS: true,
         allowTaint: false,
         logging: false,
+        windowWidth: nodeWidth,
+        windowHeight: nodeHeight,
       })
 
       const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
       const pageW = 297 // A4 landscape width mm
       const pageH = 210 // A4 landscape height mm
-      const imgData = canvas.toDataURL('image/png')
-      pdf.addImage(imgData, 'PNG', 0, 0, pageW, pageH)
 
-      const ref = shortRef || 'comprovativo'
+      // Mantém aspect ratio do canvas: largura = pageW, altura proporcional.
+      // Antes esticava para pageH e cortava o lado direito.
+      const canvasRatio = canvas.height / canvas.width
+      const renderW = pageW
+      const renderH = renderW * canvasRatio
+      const offsetX = 0
+      // Se renderH > pageH, centramos verticalmente (improvável com o bilhete actual,
+      // mas defende contra mudanças no CSS).
+      const offsetY = renderH > pageH ? (pageH - renderH) / 2 : 0
+
+      const imgData = canvas.toDataURL('image/jpeg', 0.92)
+      pdf.addImage(imgData, 'JPEG', offsetX, offsetY, renderW, renderH)
+
+      // Filename: Inscricao_<eventTitle>_<shortRef>.pdf
+      const titlePart = sanitizeFilename(eventTitle) || 'Evento'
+      const refPart = shortRef || 'comprovativo'
+      const filename = `Inscricao_${titlePart}_${refPart}.pdf`
+
       pdf.setProperties({
         title: 'Comprovativo de Inscrição — Conheça Farmácia',
         subject: eventTitle ? `Comprovativo de inscrição no evento: ${eventTitle}` : 'Comprovativo de inscrição',
@@ -161,7 +200,7 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
         creator: 'Conheça Farmácia',
         keywords: 'comprovativo, inscrição, Conheça Farmácia',
       })
-      pdf.save(`comprovativo-${ref}.pdf`)
+      pdf.save(filename)
     } catch (err) {
       console.error('[InscricaoBilhete] Falha ao gerar PDF:', err)
       // fallback: abrir diálogo de impressão do browser
@@ -169,7 +208,7 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
     } finally {
       setDownloading(false)
     }
-  }, [downloading, loadLogoDataUrl, shortRef])
+  }, [downloading, loadLogoDataUrl, shortRef, eventTitle, sanitizeFilename])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
