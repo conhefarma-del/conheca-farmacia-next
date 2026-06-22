@@ -38,7 +38,6 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
   const [emailSent, setEmailSent] = useState(true)
   const [inscriptionId, setInscriptionId] = useState(null)
   const [downloading, setDownloading] = useState(false)
-  const [logoDataUrl, setLogoDataUrl] = useState(null)
   // shortRef (8 chars do UUID) calculado fora do success-state para estar disponível no useCallback do handleDownloadPdf
   const shortRef = useMemo(
     () => (inscriptionId ? inscriptionId.slice(-8).toUpperCase() : null),
@@ -94,121 +93,37 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
     return valid
   }
 
-  // Carrega o logo como dataURL base64. Robusto: sem CORS, sem race conditions.
-  const loadLogoDataUrl = useCallback(async () => {
-    try {
-      const res = await fetch('/logo/logo-principal-branco.svg')
-      if (!res.ok) throw new Error(`fetch ${res.status}`)
-      const blob = await res.blob()
-      const dataUrl = await new Promise((resolve, reject) => {
-        const reader = new FileReader()
-        reader.onload = () => resolve(reader.result)
-        reader.onerror = () => reject(new Error('FileReader falhou'))
-        reader.readAsDataURL(blob)
-      })
-      setLogoDataUrl(dataUrl)
-      return dataUrl
-    } catch (err) {
-      console.warn('[InscricaoBilhete] Não foi possível carregar logo como dataURL:', err)
-      return null
-    }
-  }, [])
-
-  // Eager-load do logo assim que entramos no success-state, para que o <img src> já use dataURL
-  // antes do html2canvas capturar o DOM (evita CORS taint)
-  useEffect(() => {
-    if (status === 'success' && !logoDataUrl) {
-      loadLogoDataUrl()
-    }
-  }, [status, logoDataUrl, loadLogoDataUrl])
-
-  // Sanitizar string para filename cross-platform (Windows proíbe \ / : * ? " < > |).
-  const sanitizeFilename = useCallback((s) => {
-    if (!s) return ''
-    return String(s)
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')  // remove diacríticos
-      .replace(/[\\/:*?"<>|]/g, '')     // remove chars ilegais
-      .replace(/\s+/g, '_')              // espaços → underscore
-      .replace(/_+/g, '_')               // colapsa underscores
-      .replace(/^_|_$/g, '')              // trim underscores
-      .slice(0, 60)                       // limite razoável
-  }, [])
-
-  // Gera o PDF do comprovativo via html2canvas + jsPDF (landscape A4).
-  // Fix 2026-06-22:
-  //   - filename: `Inscricao_<eventTitle>_<shortRef>.pdf` (era `comprovativo-80`)
-  //   - scale 2 → 1 (canvas 2x estourava aspect ratio e gerava PNG ~2MB)
-  //   - PNG → JPEG q=0.92 (~150KB com qualidade visual idêntica em gradientes planos)
-  //   - addImage com ratio correcto: largura = pageW (297mm), altura proporcional ao canvas
-  //     (evita esticar a imagem no eixo vertical e cortar conteúdo)
-  const handleDownloadPdf = useCallback(async () => {
-    if (downloading) return
+  // Gera o PDF do comprovativo via redirect para a API server-side
+  // (Satori + resvg-js + pdf-lib). Vantagens:
+  //   - Renderiza 100% do lado do servidor, sem html2canvas, sem race conditions
+  //     de fontes, sem CORS taint, sem dependências no bundle do client
+  //   - Bundle do client -250KB (html2canvas + jspdf saem)
+  //   - Output vector-when-possible, consistente em qualquer dispositivo
+  const handleDownloadPdf = useCallback(() => {
+    if (downloading || !inscriptionId) return
     setDownloading(true)
     try {
-      const [{ default: html2canvas }, jspdfModule] = await Promise.all([
-        import('html2canvas'),
-        import('jspdf'),
-      ])
-      const jsPDF = jspdfModule.jsPDF || jspdfModule.default
-
-      // Garante que o logo está disponível como dataURL antes de capturar
-      await loadLogoDataUrl()
-
-      const node = document.getElementById('comprovativo-bilhete')
-      if (!node) throw new Error('Elemento #comprovativo-bilhete não encontrado')
-
-      const nodeWidth = node.offsetWidth
-      const nodeHeight = node.offsetHeight
-
-      const canvas = await html2canvas(node, {
-        scale: 1,
-        backgroundColor: '#ffffff',
-        useCORS: true,
-        allowTaint: false,
-        logging: false,
-        windowWidth: nodeWidth,
-        windowHeight: nodeHeight,
-      })
-
-      const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
-      const pageW = 297 // A4 landscape width mm
-      const pageH = 210 // A4 landscape height mm
-
-      // Mantém aspect ratio do canvas: largura = pageW, altura proporcional.
-      // Antes esticava para pageH e cortava o lado direito.
-      const canvasRatio = canvas.height / canvas.width
-      const renderW = pageW
-      const renderH = renderW * canvasRatio
-      const offsetX = 0
-      // Se renderH > pageH, centramos verticalmente (improvável com o bilhete actual,
-      // mas defende contra mudanças no CSS).
-      const offsetY = renderH > pageH ? (pageH - renderH) / 2 : 0
-
-      const imgData = canvas.toDataURL('image/jpeg', 0.92)
-      pdf.addImage(imgData, 'JPEG', offsetX, offsetY, renderW, renderH)
-
-      // Filename: Inscricao_<eventTitle>_<shortRef>.pdf
-      const titlePart = sanitizeFilename(eventTitle) || 'Evento'
-      const refPart = shortRef || 'comprovativo'
-      const filename = `Inscricao_${titlePart}_${refPart}.pdf`
-
-      pdf.setProperties({
-        title: 'Comprovativo de Inscrição — Conheça Farmácia',
-        subject: eventTitle ? `Comprovativo de inscrição no evento: ${eventTitle}` : 'Comprovativo de inscrição',
-        author: 'Conheça Farmácia',
-        creator: 'Conheça Farmácia',
-        keywords: 'comprovativo, inscrição, Conheça Farmácia',
-      })
-      pdf.save(filename)
+      const url = `/api/comprovativo/${inscriptionId}/pdf?lang=${lang}`
+      // Use a hidden iframe to trigger download without navigating away
+      const iframe = document.createElement('iframe')
+      iframe.style.display = 'none'
+      iframe.src = url
+      document.body.appendChild(iframe)
+      // Reset downloading state after a short delay (server response time)
+      setTimeout(() => {
+        setDownloading(false)
+        // Clean up iframe after download starts
+        setTimeout(() => {
+          if (iframe.parentNode) iframe.parentNode.removeChild(iframe)
+        }, 5000)
+      }, 800)
     } catch (err) {
-      console.error('[InscricaoBilhete] Falha ao gerar PDF:', err)
+      console.error('[InscricaoBilhete] Falha ao iniciar download PDF:', err)
+      setDownloading(false)
       // fallback: abrir diálogo de impressão do browser
       if (typeof window !== 'undefined') window.print()
-    } finally {
-      setDownloading(false)
     }
-  }, [downloading, loadLogoDataUrl, shortRef, eventTitle, sanitizeFilename])
+  }, [downloading, inscriptionId, lang])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -348,7 +263,7 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
                       eventMeta={eventMeta}
                       shortRef={shortRef}
                       inscriptionDate={submittedAt}
-                      logoSrc={logoDataUrl || '/logo/logo-principal-branco.svg'}
+                      logoSrc="/logo/logo-principal-branco.svg"
                       t={t}
                     />
                   </div>
