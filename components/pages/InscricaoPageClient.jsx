@@ -99,29 +99,27 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
   //     de fontes, sem CORS taint, sem dependências no bundle do client
   //   - Bundle do client -250KB (html2canvas + jspdf saem)
   //   - Output vector-when-possible, consistente em qualquer dispositivo
+  // Estratégia: abrir o URL numa nova janela com `noopener,noreferrer` —
+  // o browser aplica `Content-Disposition: attachment` automaticamente,
+  // descarrega o PDF sem navegar para fora da página de sucesso.
   const handleDownloadPdf = useCallback(() => {
     if (downloading || !inscriptionId) return
     setDownloading(true)
     try {
       const url = `/api/comprovativo/${inscriptionId}/pdf?lang=${lang}`
-      // Use a hidden iframe to trigger download without navigating away
-      const iframe = document.createElement('iframe')
-      iframe.style.display = 'none'
-      iframe.src = url
-      document.body.appendChild(iframe)
-      // Reset downloading state after a short delay (server response time)
-      setTimeout(() => {
-        setDownloading(false)
-        // Clean up iframe after download starts
-        setTimeout(() => {
-          if (iframe.parentNode) iframe.parentNode.removeChild(iframe)
-        }, 5000)
-      }, 800)
+      const win = window.open(url, '_blank', 'noopener,noreferrer')
+      if (!win) {
+        // Popup blocked — fall back to direct navigation (browser will download
+        // the file via Content-Disposition, or display it inline)
+        window.location.href = url
+      }
     } catch (err) {
       console.error('[InscricaoBilhete] Falha ao iniciar download PDF:', err)
-      setDownloading(false)
       // fallback: abrir diálogo de impressão do browser
       if (typeof window !== 'undefined') window.print()
+    } finally {
+      // Reset state quickly — the actual download happens in another window/tab
+      setTimeout(() => setDownloading(false), 1000)
     }
   }, [downloading, inscriptionId, lang])
 
@@ -697,10 +695,28 @@ function InscricaoBilhete({ lang, formData, profLabel, eventTitle, eventMeta, sh
   const validationUrl = shortRef
     ? `https://conhecafarmacia.com/validar/${shortRef}`
     : 'https://conhecafarmacia.com'
-  // QR via API externa (zero bundle, ~1KB request). Fallback: ref em monospace se offline.
-  const qrSrc = shortRef
-    ? `https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=0&data=${encodeURIComponent(validationUrl)}`
-    : null
+  // QR gerado localmente via package `qrcode` (zero requests externos, sem CORS,
+  // funciona offline). Foi um external service (api.qrserver.com) que
+  // falhava intermitentemente e bloqueava o bilhete em alguns ambientes.
+  const [qrDataUrl, setQrDataUrl] = useState(null)
+  useEffect(() => {
+    let cancelled = false
+    if (!shortRef) { setQrDataUrl(null); return }
+    import('qrcode').then(({ default: qrcode }) => {
+      qrcode.toDataURL(validationUrl, {
+        type: 'image/png',
+        width: 200,
+        margin: 0,
+        errorCorrectionLevel: 'M',
+        color: { dark: '#002a32', light: '#ffffff' },
+      }).then((dataUrl) => {
+        if (!cancelled) setQrDataUrl(dataUrl)
+      }).catch((err) => {
+        console.warn('[InscricaoBilhete] Falha ao gerar QR:', err)
+      })
+    })
+    return () => { cancelled = true }
+  }, [shortRef, validationUrl])
 
   const eventDate = formatEventDate(eventMeta?.startAt, lang)
   const eventTime = formatEventTime(eventMeta?.startAt, lang)
@@ -728,9 +744,9 @@ function InscricaoBilhete({ lang, formData, profLabel, eventTitle, eventMeta, sh
           <div className="comprovativo-stub-label">{t('inscricao_success.comprovativo')}</div>
           <div className="comprovativo-stub-refcode">{shortRef || '—'}</div>
         </div>
-        {qrSrc && (
+        {qrDataUrl && (
           <div className="comprovativo-stub-qr">
-            <img src={qrSrc} alt="QR code" crossOrigin="anonymous" />
+            <img src={qrDataUrl} alt="QR code" />
           </div>
         )}
         <div className="comprovativo-stub-tagline">{t('inscricao_success.comprovativo_stub_tagline')}</div>
