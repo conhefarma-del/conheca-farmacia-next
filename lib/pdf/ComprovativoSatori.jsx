@@ -36,8 +36,8 @@ export default function ComprovativoSatori({
   return (
     <div
       style={{
-        width: 1100,
-        height: 450,
+        width: 1300,
+        height: 920,
         display: 'flex',
         flexDirection: 'row',
         backgroundColor: '#ffffff',
@@ -48,33 +48,33 @@ export default function ComprovativoSatori({
       {/* LEFT: Canhoto (stub) */}
       <div
         style={{
-          width: 280,
-          height: 450,
+          width: 380,
+          height: 920,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          padding: 28,
-          background: 'linear-gradient(160deg, #00493a 0%, #002a32 100%)',
+          padding: 48,
+          backgroundColor: '#00493a',
           color: '#ffffff',
           // dashed right border (Satori equivalent of perforated edge)
-          borderRight: '2px dashed rgba(255,255,255,0.35)',
+          borderRight: '3px dashed rgba(255,255,255,0.35)',
         }}
       >
         {/* Logo */}
         <div style={{ display: 'flex' }}>
           <img
             src={logoDataUrl}
-            width={170}
-            height={56}
+            width={220}
+            height={72}
             style={{ objectFit: 'contain' }}
           />
         </div>
 
         {/* Reference */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div
             style={{
-              fontSize: 11,
+              fontSize: 18,
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
               opacity: 0.7,
@@ -86,7 +86,7 @@ export default function ComprovativoSatori({
           <div
             style={{
               fontFamily: 'Courier New, monospace',
-              fontSize: 32,
+              fontSize: 56,
               fontWeight: 700,
               letterSpacing: '0.04em',
             }}
@@ -101,28 +101,28 @@ export default function ComprovativoSatori({
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: 8,
+            gap: 14,
           }}
         >
           <div
             style={{
-              width: 120,
-              height: 120,
+              width: 220,
+              height: 220,
               backgroundColor: '#ffffff',
-              padding: 6,
+              padding: 10,
               display: 'flex',
             }}
           >
             <img
               src={qrDataUrl}
-              width={108}
-              height={108}
+              width={200}
+              height={200}
               style={{ objectFit: 'contain' }}
             />
           </div>
           <div
             style={{
-              fontSize: 9,
+              fontSize: 14,
               letterSpacing: '0.16em',
               textTransform: 'uppercase',
               opacity: 0.7,
@@ -136,7 +136,7 @@ export default function ComprovativoSatori({
         {/* Tagline */}
         <div
           style={{
-            fontSize: 10,
+            fontSize: 14,
             fontStyle: 'italic',
             opacity: 0.65,
             lineHeight: 1.4,
@@ -150,10 +150,10 @@ export default function ComprovativoSatori({
       <div
         style={{
           flex: 1,
-          height: 450,
+          height: 920,
           display: 'flex',
           flexDirection: 'column',
-          padding: '32px 40px',
+          padding: '64px 72px',
         }}
       >
         {/* Top: badge + attestation */}
@@ -162,16 +162,16 @@ export default function ComprovativoSatori({
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            marginBottom: 12,
+            marginBottom: 24,
           }}
         >
           <div
             style={{
               display: 'flex',
-              padding: '6px 12px',
+              padding: '10px 18px',
               backgroundColor: '#e6f0ed',
               color: '#00493a',
-              fontSize: 11,
+              fontSize: 16,
               fontWeight: 600,
               letterSpacing: '0.14em',
               textTransform: 'uppercase',
@@ -181,7 +181,7 @@ export default function ComprovativoSatori({
           </div>
           <div
             style={{
-              fontSize: 11,
+              fontSize: 16,
               color: '#5a5650',
               letterSpacing: '0.06em',
             }}
@@ -194,10 +194,10 @@ export default function ComprovativoSatori({
         <div
           style={{
             fontFamily: 'Fraunces',
-            fontSize: 36,
+            fontSize: 72,
             fontWeight: 700,
             lineHeight: 1.05,
-            marginBottom: 6,
+            marginBottom: 12,
             color: '#002a32',
           }}
         >
@@ -205,9 +205,9 @@ export default function ComprovativoSatori({
         </div>
         <div
           style={{
-            fontSize: 13,
+            fontSize: 22,
             color: '#5a5650',
-            marginBottom: 18,
+            marginBottom: 36,
           }}
         >
           {docSubtitle}
@@ -218,15 +218,15 @@ export default function ComprovativoSatori({
           style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: 4,
-            paddingBottom: 14,
-            borderBottom: '1px solid #e0dcd4',
-            marginBottom: 14,
+            gap: 8,
+            paddingBottom: 28,
+            borderBottom: '2px solid #e0dcd4',
+            marginBottom: 28,
           }}
         >
           <div
             style={{
-              fontSize: 10,
+              fontSize: 16,
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
               color: '#5a5650',
@@ -238,7 +238,7 @@ export default function ComprovativoSatori({
           <div
             style={{
               fontFamily: 'Fraunces',
-              fontSize: 22,
+              fontSize: 44,
               fontWeight: 600,
               lineHeight: 1.15,
               color: '#002a32',
@@ -249,10 +249,10 @@ export default function ComprovativoSatori({
           <div
             style={{
               display: 'flex',
-              gap: 16,
-              fontSize: 12,
+              gap: 28,
+              fontSize: 20,
               color: '#5a5650',
-              marginTop: 4,
+              marginTop: 8,
             }}
           >
             {eventDate && <div>📅 {eventDate}</div>}
@@ -266,13 +266,13 @@ export default function ComprovativoSatori({
           style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: 4,
+            gap: 8,
             flex: 1,
           }}
         >
           <div
             style={{
-              fontSize: 10,
+              fontSize: 16,
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
               color: '#5a5650',
@@ -283,7 +283,7 @@ export default function ComprovativoSatori({
           </div>
           <div
             style={{
-              fontSize: 18,
+              fontSize: 32,
               fontWeight: 600,
               color: '#002a32',
               lineHeight: 1.2,
@@ -291,7 +291,7 @@ export default function ComprovativoSatori({
           >
             {attendeeName}
           </div>
-          <div style={{ fontSize: 12, color: '#5a5650' }}>{attendeeEmail}</div>
+          <div style={{ fontSize: 18, color: '#5a5650' }}>{attendeeEmail}</div>
         </div>
 
         {/* Footer line */}
@@ -300,9 +300,9 @@ export default function ComprovativoSatori({
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            paddingTop: 12,
-            borderTop: '1px solid #e0dcd4',
-            fontSize: 10,
+            paddingTop: 24,
+            borderTop: '2px solid #e0dcd4',
+            fontSize: 14,
             color: '#5a5650',
             letterSpacing: '0.06em',
           }}
