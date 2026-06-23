@@ -39,6 +39,20 @@ const PHONE_REGEX = /^(?:\+?244|0)?9\d{8}$|^\+\d{1,3}\d{4,14}$/;
 const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 const SLUG_REGEX = /^[a-zA-Z0-9\-_]+$/;
 
+// SEC-SPAM-01: Disposable email domains blocklist
+// Common temporary/disposable email providers used for spam/fraud
+const DISPOSABLE_DOMAINS = new Set([
+  'mailinator.com', 'guerrillamail.com', 'sharklasers.com', 'guerrillamailblock.com',
+  'grr.la', 'guerrillamail.info', 'guerrillamail.net', 'guerrillamail.org',
+  'tempmail.com', 'temp-mail.org', 'throwaway.email', 'yopmail.com',
+  'yopmail.fr', 'yopmail.net', 'jetable.org', 'jetable.fr',
+  'maildrop.cc', 'mailnesia.com', 'tempail.com', 'tempr.email',
+  'dispostable.com', 'trashmail.fr', 'trashmail.org', 'throwawaymail.com',
+  '10minutemail.com', '10minutemail.net', 'minutemail.org',
+  'burnermail.io', 'emaillime.com', 'mailsac.com', 'mohmal.com',
+  'fakeinbox.com', 'tempinbox.com', 'emailondeck.com', 'laswwq.com',
+]);
+
 // djb2 hash truncated to 8 hex chars — para logs sem expor PII (email raw).
 function djb2Hash(s: string): string {
   let h = 5381;
@@ -113,6 +127,10 @@ Deno.serve(async (req) => {
 
     if (!email || !EMAIL_REGEX.test(email) || email.length > 255) {
       errors.push('Email inválido');
+    } else if (DISPOSABLE_DOMAINS.has(email.split('@')[1]?.toLowerCase())) {
+      // SEC-SPAM-01: Bloquear domínios descartáveis
+      console.warn(`🚨 Disposable email blocked: ${djb2Hash(email)} IP: ${clientIp}`);
+      errors.push('Email temporal não permitido. Use um email permanente.');
     }
 
     const phoneClean = telefone?.replace(/[\s\-()]/g, '');
