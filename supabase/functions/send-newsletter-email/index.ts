@@ -18,6 +18,8 @@ function getCorsHeaders(requestOrigin: string | null): Record<string, string> {
   };
 }
 
+// rate-limiter removed to restore original behavior (can be reintroduced later)
+
 interface EmailRequest {
   type: "welcome" | "article" | "event" | "live";
   email: string;
@@ -460,10 +462,7 @@ serve(async (req) => {
     const e = error as Error;
     console.error("send-newsletter-email error:", e.message, e.stack);
     return new Response(
-      JSON.stringify({
-        error: "Erro interno do servidor",
-        debug: e.message,
-      }),
+      JSON.stringify({ error: "Erro interno do servidor" }),
       {
         status: 500,
         headers: { ...getCorsHeaders(req.headers.get("origin")), "Content-Type": "application/json" },

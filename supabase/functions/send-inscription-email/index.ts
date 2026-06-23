@@ -344,7 +344,7 @@ serve(async (req: Request) => {
     const e = error as Error;
     console.error("send-inscription-email error:", e.message, e.stack);
     return new Response(
-      JSON.stringify({ error: "Erro interno do servidor", debug: e.message }),
+      JSON.stringify({ error: "Erro interno do servidor" }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   }

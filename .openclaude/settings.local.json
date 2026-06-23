@@ -184,7 +184,9 @@
       "Bash(timeout 60 npx eslint --no-warn-ignored \"app/[lang]/\\(public\\)/eventos/[slug]/page.js\" \"app/[lang]/\\(public\\)/events/[slug]/page.js\" \"app/[lang]/\\(public\\)/inscricao/page.js\" \"app/[lang]/\\(public\\)/register/page.js\" lib/api/inscription.js)",
       "Bash(tasklist /fi \"imagename eq node.exe\")",
       "Bash(rm -f lib/pdf/qr.js lib/pdf/qrcode-core.js)",
-      "Bash(rm \"C:/Users/bapti/Projects/conheca-farmacia-NEXT/lib/pdf/qr.js\")"
+      "Bash(rm \"C:/Users/bapti/Projects/conheca-farmacia-NEXT/lib/pdf/qr.js\")",
+      "Bash(ls \"C:\\\\Users\\\\bapti\\\\Projects\\\\conheca-farmacia-NEXT\\\\app\\\\[lang]\\\\\\(public\\)\\\\inscricao\" \")",
+      "Bash(ls 'app/[lang]/\\(public\\)/inscricao')"
     ]
   }
 }
