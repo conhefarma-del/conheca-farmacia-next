@@ -7,6 +7,12 @@ import ValidarBloqueado from '@/components/pages/ValidarBloqueado'
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
+// No caching on this route — it returns sensitive admin-only data.
+export const headers = () => ({
+  'Cache-Control': 'no-store, max-age=0',
+  'X-Robots-Tag': 'noindex, nofollow',
+})
+
 export const metadata = {
   title: 'Validar inscrição | Conheça Farmácia',
   description:
@@ -15,29 +21,17 @@ export const metadata = {
 }
 
 export default async function ValidarPage({ searchParams }) {
-  const sp = await searchParams
-  const rawRef = typeof sp?.ref === 'string' ? sp.ref : null
-
-  // No ref provided — show the friendly blocked page so the URL itself
-  // (e.g. /validar with no querystring) does not 404 for an admin who
-  // typed it manually.
-  if (!rawRef) {
-    return <ValidarBloqueado lang="pt" />
-  }
-
-  const intRef = refToInt(rawRef)
-  if (intRef === null) {
-    // Invalid format — same response as missing ref, to avoid leaking
-    // whether a given id exists.
-    return <ValidarBloqueado lang="pt" />
-  }
-
+  // SECURITY (Sentinela A.2): Auth check FIRST, ref parsing LAST.
+  // Previous order parsed ?ref and called refToInt before any auth,
+  // creating a timing side-channel: valid ref formats triggered
+  // extra Supabase work (auth + admin check + inscription query),
+  // invalid formats returned immediately. An attacker could enumerate
+  // plausible IDs via timing. By doing auth + admin check first,
+  // every unauthenticated or non-admin request returns the same
+  // ValidarBloqueado render in roughly the same time, regardless of
+  // whether the ref is well-formed.
   const supabase = await createClient()
 
-  // HIGH-08 / RLS-aware: check the session FIRST. We never query the
-  // inscription unless the visitor is an authenticated admin — this is
-  // the privacy boundary. Non-admins see the blocked page regardless of
-  // whether the ref is valid.
   const {
     data: { user },
   } = await supabase.auth.getUser()
@@ -56,7 +50,22 @@ export default async function ValidarPage({ searchParams }) {
     return <ValidarBloqueado lang="pt" />
   }
 
-  // Admin confirmed — fetch the inscription + nested event.
+  // Admin confirmed — only NOW parse and validate the ref.
+  const sp = await searchParams
+  const rawRef = typeof sp?.ref === 'string' ? sp.ref : null
+
+  if (!rawRef) {
+    // Admin typed /validar manually with no querystring. Return blocked
+    // page (not 404) so the route is still useful.
+    return <ValidarBloqueado lang="pt" />
+  }
+
+  const intRef = refToInt(rawRef)
+  if (intRef === null) notFound()
+
+  // Fetch the inscription + nested event. RLS lets the admin see all
+  // rows (admins are deliberately privileged). Data is masked in the
+  // helpers below before reaching the browser.
   const { data: inscription, error } = await supabase
     .from('inscricoes')
     .select(
