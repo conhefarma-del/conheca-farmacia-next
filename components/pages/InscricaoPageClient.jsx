@@ -6,7 +6,7 @@ import { LangContext } from '@/lib/contexts'
 import { validateField, submitInscription, checkDuplicate } from '@/lib/api/inscription'
 import { useCapacityPolling } from '@/hooks/useCapacityPolling'
 import Breadcrumb from '@/components/ui/Breadcrumb'
-import { AlertCircle, Download, Printer, CheckCircle2 } from 'lucide-react'
+import { AlertCircle, Printer, CheckCircle2 } from 'lucide-react'
 
 const RATE_LIMIT_MS = 5000
 
@@ -37,7 +37,6 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
   const [countdown, setCountdown] = useState(3)
   const [emailSent, setEmailSent] = useState(true)
   const [inscriptionId, setInscriptionId] = useState(null)
-  const [downloading, setDownloading] = useState(false)
   // shortRef: zero-padded inscription int8 id, e.g. 85 -> "000085".
   // inscricoes.id is int8 (not UUID), so slice(-8) of "85" = "85" not useful.
   // Use the int8 directly, padded to 6 digits for consistent display.
@@ -95,35 +94,12 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
     return valid
   }
 
-  // Gera o PDF do comprovativo via redirect para a API server-side
-  // (Satori + resvg-js + pdf-lib). Vantagens:
-  //   - Renderiza 100% do lado do servidor, sem html2canvas, sem race conditions
-  //     de fontes, sem CORS taint, sem dependências no bundle do client
-  //   - Bundle do client -250KB (html2canvas + jspdf saem)
-  //   - Output vector-when-possible, consistente em qualquer dispositivo
-  // Estratégia: abrir o URL numa nova janela com `noopener,noreferrer` —
-  // o browser aplica `Content-Disposition: attachment` automaticamente,
-  // descarrega o PDF sem navegar para fora da página de sucesso.
-  const handleDownloadPdf = useCallback(() => {
-    if (downloading || !inscriptionId) return
-    setDownloading(true)
-    try {
-      const url = `/api/comprovativo/${inscriptionId}/pdf?lang=${lang}`
-      const win = window.open(url, '_blank', 'noopener,noreferrer')
-      if (!win) {
-        // Popup blocked — fall back to direct navigation (browser will download
-        // the file via Content-Disposition, or display it inline)
-        window.location.href = url
-      }
-    } catch (err) {
-      console.error('[InscricaoBilhete] Falha ao iniciar download PDF:', err)
-      // fallback: abrir diálogo de impressão do browser
-      if (typeof window !== 'undefined') window.print()
-    } finally {
-      // Reset state quickly — the actual download happens in another window/tab
-      setTimeout(() => setDownloading(false), 1000)
-    }
-  }, [downloading, inscriptionId, lang])
+  // Gera o PDF do comprovativo via o diálogo de impressão do browser.
+  // O user escolhe "Guardar como PDF" como destino para guardar o ficheiro.
+  // Vantagens:
+  //   - Zero dependências server-side para PDF (sem Satori, sem resvg-js)
+  //   - O que vês é exactamente o que imprimes (mesmo HTML, mesmas CSS)
+  //   - Não há regressões de fontes, layouts, ou gradientes
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -279,17 +255,6 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
                     )}
                     <button
                       type="button"
-                      className="btn btn-primary"
-                      onClick={handleDownloadPdf}
-                      disabled={downloading}
-                      data-pdf-hide
-                      style={{ cursor: downloading ? 'wait' : 'pointer' }}
-                    >
-                      <Download size={18} style={{ marginRight: 8, verticalAlign: 'middle' }} />
-                      {downloading ? t('inscricao_success.download_pdf_loading') : t('inscricao_success.download_pdf')}
-                    </button>
-                    <button
-                      type="button"
                       className="btn btn-secondary"
                       onClick={() => window.print()}
                       data-pdf-hide
@@ -299,6 +264,21 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
                       {t('inscricao_success.print')}
                     </button>
                   </div>
+                  <p
+                    data-pdf-hide
+                    style={{
+                      maxWidth: 480,
+                      margin: '16px auto 0',
+                      fontSize: 14,
+                      color: '#5a5650',
+                      lineHeight: 1.5,
+                      textAlign: 'center',
+                    }}
+                  >
+                    {lang === 'en'
+                      ? 'In the print dialog, choose "Save as PDF" as the destination to save the receipt to your device.'
+                      : 'Na janela de impressão, escolha "Guardar como PDF" como destino para guardar o comprovativo no seu dispositivo.'}
+                  </p>
                 </div>
               </div>
             </div>
