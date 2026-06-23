@@ -3119,3 +3119,288 @@ html.dark .comprovativo-event {
   }
   .validar-note { display: none !important; }
 }
+
+/* =============================================
+   /not-found — Editorial 404 page
+   Botanical/herbarium style. Two-column layout on desktop,
+   stacks on mobile. Brand colour: --primary (#00493a),
+   wine accent (#7c2d2d), ink-soft (#5a5650).
+   ============================================= */
+.not-found-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-brand-bg, #faf8f5);
+  color: var(--color-brand-deep, #002a32);
+  font-family: var(--font-sans, 'Inter', system-ui, sans-serif);
+  -webkit-font-smoothing: antialiased;
+}
+
+.not-found-top-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 80px;
+  border-bottom: 1px solid var(--color-brand-divider, #e0dcd4);
+  background: var(--color-brand-bg, #faf8f5);
+}
+.not-found-logo { height: 32px; }
+.not-found-top-meta {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-brand-deep, #002a32);
+  opacity: 0.55;
+}
+
+.not-found-stage {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+}
+
+.not-found-left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 64px;
+  background: #ffffff;
+  border-right: 1px solid var(--color-brand-divider, #e0dcd4);
+  position: relative;
+}
+
+.not-found-botanical {
+  width: 100%;
+  max-width: 380px;
+  aspect-ratio: 1;
+  position: relative;
+}
+.not-found-botanical svg {
+  width: 100%;
+  height: 100%;
+}
+
+.not-found-herbarium {
+  position: absolute;
+  bottom: -32px;
+  right: -32px;
+  background: #ffffff;
+  border: 1px solid var(--color-brand-divider, #e0dcd4);
+  padding: 14px 18px;
+  width: 220px;
+  box-shadow: 0 8px 24px rgba(0, 73, 58, 0.06);
+}
+.not-found-herbarium-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 4px 0;
+  border-bottom: 1px dotted var(--color-brand-divider, #e0dcd4);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+}
+.not-found-herbarium-row:last-child { border-bottom: none; }
+.not-found-label {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  text-transform: uppercase;
+  color: var(--color-brand-deep, #002a32);
+  opacity: 0.65;
+  font-size: 9px;
+  letter-spacing: 0.16em;
+}
+.not-found-value {
+  font-family: var(--font-display, 'Fraunces', serif);
+  font-style: italic;
+  font-weight: 500;
+  color: var(--color-brand-deep, #002a32);
+  font-size: 12px;
+}
+.not-found-value--wine {
+  color: #7c2d2d;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.not-found-right {
+  padding: 80px 80px 80px 72px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.not-found-eyebrow {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--color-brand-primary, #00493a);
+  font-weight: 500;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.not-found-eyebrow::before {
+  content: '';
+  width: 28px;
+  height: 2px;
+  background: var(--color-brand-primary, #00493a);
+  flex-shrink: 0;
+}
+
+.not-found-number {
+  font-family: var(--font-display, 'Fraunces', serif);
+  font-weight: 800;
+  font-size: clamp(120px, 18vw, 240px);
+  line-height: 0.86;
+  color: var(--color-brand-primary, #00493a);
+  letter-spacing: -0.06em;
+  margin-bottom: 24px;
+  position: relative;
+  display: inline-block;
+}
+.not-found-number::after {
+  content: '';
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+  right: 12%;
+  height: 1px;
+  background: #7c2d2d;
+}
+
+.not-found-title {
+  font-family: var(--font-display, 'Fraunces', serif);
+  font-weight: 600;
+  font-size: clamp(26px, 3.2vw, 40px);
+  line-height: 1.15;
+  color: var(--color-brand-deep, #002a32);
+  margin-bottom: 24px;
+  max-width: 520px;
+}
+
+.not-found-body {
+  font-family: var(--font-sans, 'Inter', sans-serif);
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--color-brand-deep, #002a32);
+  opacity: 0.7;
+  max-width: 480px;
+  margin-bottom: 36px;
+}
+
+.not-found-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 28px;
+  background: var(--color-brand-primary, #00493a);
+  color: #ffffff;
+  text-decoration: none;
+  font-family: var(--font-sans, 'Inter', sans-serif);
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  transition: background 0.2s ease;
+  align-self: flex-start;
+}
+.not-found-cta:hover { background: var(--color-brand-deep, #002a32); }
+.not-found-cta::after {
+  content: '→';
+  font-family: var(--font-sans, 'Inter', sans-serif);
+  font-size: 16px;
+  margin-left: 4px;
+}
+
+.not-found-secondary {
+  margin-top: 16px;
+  font-family: var(--font-sans, 'Inter', sans-serif);
+  font-size: 12px;
+  color: var(--color-brand-deep, #002a32);
+  opacity: 0.7;
+  align-self: flex-start;
+}
+.not-found-secondary a {
+  color: var(--color-brand-primary, #00493a);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  margin: 0 6px;
+}
+
+.not-found-bottom-strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 80px;
+  border-top: 1px solid var(--color-brand-divider, #e0dcd4);
+  background: var(--color-brand-bg, #faf8f5);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-brand-deep, #002a32);
+  opacity: 0.55;
+}
+
+/* --- Mobile --- */
+@media (max-width: 768px) {
+  .not-found-top-strip {
+    padding: 16px 20px;
+  }
+  .not-found-top-meta { font-size: 10px; }
+
+  .not-found-stage {
+    grid-template-columns: 1fr;
+  }
+
+  .not-found-left {
+    padding: 48px 24px 80px;
+    border-right: none;
+    border-bottom: 1px solid var(--color-brand-divider, #e0dcd4);
+  }
+  .not-found-botanical {
+    max-width: 280px;
+  }
+
+  /* Herbarium card becomes inline (not absolute) on mobile so it does
+     not get clipped by the viewport */
+  .not-found-herbarium {
+    position: static;
+    width: auto;
+    margin-top: 32px;
+    max-width: 320px;
+  }
+
+  .not-found-right {
+    padding: 48px 24px 64px;
+  }
+  .not-found-eyebrow { font-size: 10px; margin-bottom: 20px; }
+  .not-found-number { margin-bottom: 16px; }
+  .not-found-title { margin-bottom: 20px; }
+  .not-found-body { margin-bottom: 28px; }
+  .not-found-cta {
+    width: 100%;
+    justify-content: center;
+    padding: 18px 24px;
+  }
+  .not-found-secondary {
+    font-size: 12px;
+    text-align: center;
+    align-self: stretch;
+  }
+
+  .not-found-bottom-strip {
+    padding: 14px 20px;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: 380px) {
+  .not-found-botanical { max-width: 240px; }
+  .not-found-herbarium-row { font-size: 9px; }
+}
