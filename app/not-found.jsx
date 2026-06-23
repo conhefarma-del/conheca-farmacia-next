@@ -16,7 +16,39 @@ export default function NotFound() {
       </header>
 
       <main className="not-found-stage">
-        {/* Left: botanical illustration */}
+        {/* Right: typography block */}
+        <div className="not-found-right">
+          <div className="not-found-eyebrow">Item N.º 404 · Fora de Catálogo</div>
+
+          <div className="not-found-number">404</div>
+
+          <h1 className="not-found-title">
+            Este item não consta
+            <br />
+            no nosso catálogo.
+          </h1>
+
+          <p className="not-found-body">
+            A página solicitada foi retirada do catálogo, arquivada por
+            motivos editoriais, ou o endereço introduzido contém um erro
+            tipográfico.
+          </p>
+
+          <Link href="/pt" className="not-found-cta">
+            Regressar ao índice
+          </Link>
+
+          <div className="not-found-secondary">
+            Ou consultar:&nbsp;
+            <Link href="/pt/artigos">Artigos</Link>·
+            <Link href="/pt/eventos">Eventos</Link>·
+            <Link href="/pt/lives">Lives</Link>·
+            <Link href="/pt/pesquisa">Pesquisa</Link>
+          </div>
+        </div>
+
+        {/* Left: botanical illustration (renders second in DOM so mobile
+            CSS can use order: to put typography on top) */}
         <div className="not-found-left">
           <div className="not-found-botanical">
             <svg
@@ -103,37 +135,6 @@ export default function NotFound() {
                 <span className="not-found-value not-found-value--wine">non inventa</span>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Right: typography block */}
-        <div className="not-found-right">
-          <div className="not-found-eyebrow">Item N.º 404 · Fora de Catálogo</div>
-
-          <div className="not-found-number">404</div>
-
-          <h1 className="not-found-title">
-            Este item não consta
-            <br />
-            no nosso catálogo.
-          </h1>
-
-          <p className="not-found-body">
-            A página solicitada foi retirada do catálogo, arquivada por
-            motivos editoriais, ou o endereço introduzido contém um erro
-            tipográfico.
-          </p>
-
-          <Link href="/pt" className="not-found-cta">
-            Regressar ao índice
-          </Link>
-
-          <div className="not-found-secondary">
-            Ou consultar:&nbsp;
-            <Link href="/pt/artigos">Artigos</Link>·
-            <Link href="/pt/eventos">Eventos</Link>·
-            <Link href="/pt/lives">Lives</Link>·
-            <Link href="/pt/pesquisa">Pesquisa</Link>
           </div>
         </div>
       </main>

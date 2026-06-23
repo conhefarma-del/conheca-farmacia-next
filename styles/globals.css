@@ -3161,13 +3161,25 @@ html.dark .comprovativo-event {
   align-items: center;
 }
 
+/* DOM order: typography first, botanical second. On desktop we keep the
+   editorial layout (typography left, botanical right). On mobile we
+   stack and flip order so typography sits on top. */
+.not-found-right {
+  grid-column: 1;
+  grid-row: 1;
+}
+.not-found-left {
+  grid-column: 2;
+  grid-row: 1;
+}
+
 .not-found-left {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 80px 64px;
-  background: #ffffff;
-  border-right: 1px solid var(--color-brand-divider, #e0dcd4);
+  background: var(--not-found-card-bg, #ffffff);
+  border-left: 1px solid var(--color-brand-divider, #e0dcd4);
   position: relative;
 }
 
@@ -3186,7 +3198,7 @@ html.dark .comprovativo-event {
   position: absolute;
   bottom: -32px;
   right: -32px;
-  background: #ffffff;
+  background: var(--not-found-card-bg, #ffffff);
   border: 1px solid var(--color-brand-divider, #e0dcd4);
   padding: 14px 18px;
   width: 220px;
@@ -3251,7 +3263,7 @@ html.dark .comprovativo-event {
 }
 
 .not-found-number {
-  font-family: var(--font-display, 'Fraunces', serif);
+  font-family: var(--font-sans, 'Inter', system-ui, sans-serif);
   font-weight: 800;
   font-size: clamp(120px, 18vw, 240px);
   line-height: 0.86;
@@ -3260,6 +3272,7 @@ html.dark .comprovativo-event {
   margin-bottom: 24px;
   position: relative;
   display: inline-block;
+  font-feature-settings: 'tnum' 1;
 }
 .not-found-number::after {
   content: '';
@@ -3355,10 +3368,20 @@ html.dark .comprovativo-event {
     grid-template-columns: 1fr;
   }
 
+  /* On mobile: typography on top (DOM order already puts it first),
+     botanical on bottom */
+  .not-found-right {
+    grid-column: 1;
+    grid-row: 1;
+    order: 1;
+  }
   .not-found-left {
+    grid-column: 1;
+    grid-row: 2;
+    order: 2;
+    border-left: none;
+    border-top: 1px solid var(--color-brand-divider, #e0dcd4);
     padding: 48px 24px 80px;
-    border-right: none;
-    border-bottom: 1px solid var(--color-brand-divider, #e0dcd4);
   }
   .not-found-botanical {
     max-width: 280px;
@@ -3403,4 +3426,42 @@ html.dark .comprovativo-event {
 @media (max-width: 380px) {
   .not-found-botanical { max-width: 240px; }
   .not-found-herbarium-row { font-size: 9px; }
+}
+
+/* --- Dark mode overrides --- */
+html.dark .not-found-page {
+  background: #0e1a1f;
+  color: #e8e6e1;
+}
+html.dark .not-found-left {
+  --not-found-card-bg: #15252b;
+  border-left-color: rgba(255, 255, 255, 0.08);
+}
+html.dark .not-found-herbarium {
+  --not-found-card-bg: #15252b;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+html.dark .not-found-herbarium-row {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+html.dark .not-found-label {
+  color: #e8e6e1;
+}
+html.dark .not-found-value {
+  color: #e8e6e1;
+}
+html.dark .not-found-top-strip,
+html.dark .not-found-bottom-strip {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: #0e1a1f;
+}
+html.dark .not-found-right {
+  color: #e8e6e1;
+}
+html.dark .not-found-title {
+  color: #e8e6e1;
+}
+html.dark .not-found-body {
+  color: #b8b6b1;
 }
