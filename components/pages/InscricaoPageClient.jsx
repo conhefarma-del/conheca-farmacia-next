@@ -674,7 +674,7 @@ function modalityLabel(modality, t) {
 
 function InscricaoBilhete({ lang, formData, profLabel, eventTitle, eventMeta, shortRef, inscriptionDate, logoSrc, t }) {
   const validationUrl = shortRef
-    ? `https://conhecafarmacia.com/validar/${shortRef}`
+    ? `https://conhecafarmacia.com/validar?ref=${shortRef}`
     : 'https://conhecafarmacia.com'
   // QR gerado localmente via package `qrcode` (zero requests externos, sem CORS,
   // funciona offline). Foi um external service (api.qrserver.com) que
