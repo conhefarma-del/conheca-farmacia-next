@@ -26,10 +26,41 @@ export async function proxy(request) {
     return NextResponse.next()
   }
 
+  // Generate a per-request CSP nonce. Forwarded to the app via header
+  // so app/layout.js can mark the anti-FOUC script with it. The same
+  // nonce is injected into the CSP header below so the browser trusts
+  // only the inline scripts that carry this exact nonce value. This
+  // replaces the previous 'unsafe-inline' allowance in script-src.
+  const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
+
+  // Content-Security-Policy built with the per-request nonce. We keep
+  // the same directives as the previous static vercel.json CSP so the
+  // site's resource-loading behaviour is unchanged, but we tighten
+  // script-src from 'unsafe-inline' to 'nonce-...'.
+  const csp = [
+    `default-src 'self'`,
+    `script-src 'self' 'nonce-${nonce}' https://vercel.live`,
+    `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
+    `img-src 'self' data: blob: https://*.supabase.co https://vercel.live`,
+    `font-src 'self' https://fonts.gstatic.com`,
+    `connect-src 'self' https://*.supabase.co https://vercel.live`,
+    `frame-ancestors 'none'`,
+    `object-src 'none'`,
+    `base-uri 'self'`,
+    `form-action 'self'`,
+  ].join('; ')
+
   // Create Supabase client for session management
   const requestHeaders = new Headers(request.headers)
   requestHeaders.set('x-lang', lang)
-  let supabaseResponse = NextResponse.next({ request: { headers: requestHeaders } })
+  requestHeaders.set('x-csp-nonce', nonce)
+  let supabaseResponse = NextResponse.next({
+    request: { headers: requestHeaders },
+    headers: {
+      'x-csp-nonce': nonce,
+      'Content-Security-Policy': csp,
+    },
+  })
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,

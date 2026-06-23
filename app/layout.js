@@ -53,12 +53,23 @@ export const metadata = {
 export default async function RootLayout({ children }) {
   const headersList = await headers()
   const lang = headersList.get('x-lang') || 'pt'
+  // CSP nonce set by proxy.js on every request. Applied to the anti-
+  // FOUC inline script so vercel.json's strict script-src (no
+  // 'unsafe-inline') lets it through. Falls back to undefined on
+  // routes the proxy does not match (which is fine — those routes
+  // do not have CSP headers either).
+  const nonce = headersList.get('x-csp-nonce') || undefined
 
   return (
     <html lang={lang} suppressHydrationWarning className={`${inter.variable} ${fraunces.variable}`}>
       <head>
-        {/* Anti-FOUC: set dark class before hydration */}
+        {/* Anti-FOUC: set dark class before hydration. The CSP nonce
+            lets this inline script run under our strict Content-Security-
+            Policy (vercel.json uses 'nonce-${nonce}' instead of
+            'unsafe-inline' in script-src). Without the nonce, the CSP
+            would block this script. */}
         <script
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('theme');var d=t==='dark'||(!t&&matchMedia('(prefers-color-scheme:dark)').matches);if(d)document.documentElement.classList.add('dark')}catch(e){}})()`,
           }}
