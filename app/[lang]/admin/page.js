@@ -71,11 +71,6 @@ export default function AdminLoginPage() {
     setGateLoading(true)
 
     try {
-      if (!gateQuestions.length) {
-        setAuthState(LOGIN_STATE)
-        return
-      }
-
       const answers = [
         { question_id: 1, answer: gateAnswers.q1 },
         { question_id: 2, answer: gateAnswers.q2 },
@@ -246,7 +241,7 @@ export default function AdminLoginPage() {
 
               <button
                 type="submit"
-                disabled={gateLoading}
+                disabled={gateLoading || !gateQuestions.length}
                 className="w-full py-3.5 rounded-xl text-white font-semibold text-sm transition-all duration-200"
                 style={{
                   background: 'linear-gradient(135deg, #00493a 0%, #0a844f 100%)',
