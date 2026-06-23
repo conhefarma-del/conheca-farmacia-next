@@ -76,10 +76,10 @@ export default function AdminLoginPage() {
         return
       }
 
-      const answers = gateQuestions.map((q, i) => ({
-        question_id: q.id,
-        answer: i === 0 ? gateAnswers.q1 : gateAnswers.q2,
-      }))
+      const answers = [
+        { question_id: 1, answer: gateAnswers.q1 },
+        { question_id: 2, answer: gateAnswers.q2 },
+      ]
 
       const result = await verifyGateAnswers(answers)
 
