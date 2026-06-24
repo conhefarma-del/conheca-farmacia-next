@@ -71,6 +71,7 @@ export default function AdminSidebar({ lang, user, onLogout }) {
         id="hamburger-btn"
         aria-label={isOpen ? 'Fechar menu' : 'Abrir menu'}
         onClick={() => setIsOpen(!isOpen)}
+        onMouseDown={(e) => { e.preventDefault(); setIsOpen(!isOpen); }}
         style={{
           position: 'fixed',
           top: 16,
@@ -129,6 +130,7 @@ export default function AdminSidebar({ lang, user, onLogout }) {
           <button
             className="admin-sidebar-btn"
             onClick={toggleDarkMode}
+            onMouseDown={(e) => { e.preventDefault(); toggleDarkMode(); }}
             aria-label="Toggle dark mode"
             title={isDark ? 'Modo claro' : 'Modo escuro'}
           >
@@ -139,6 +141,7 @@ export default function AdminSidebar({ lang, user, onLogout }) {
           <button
             className="admin-sidebar-btn"
             onClick={onLogout}
+            onMouseDown={(e) => { e.preventDefault(); onLogout(); }}
             aria-label="Sair"
             title="Terminar sessão"
           >

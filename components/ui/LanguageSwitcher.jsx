@@ -30,6 +30,7 @@ export default function LanguageSwitcher({ currentLang }) {
       <button
         className="lang-toggle"
         onClick={() => setOpen(!open)}
+        onMouseDown={(e) => { e.preventDefault(); setOpen(!open); }}
         aria-expanded={open}
         aria-haspopup="true"
       >

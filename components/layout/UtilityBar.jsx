@@ -26,7 +26,14 @@ export default function UtilityBar({ lang, t }) {
     <div className="utility-bar">
       <div className="utility-bar-container">
         <div className="utility-search">
-          <span className="utility-search-icon" onClick={handleSearchClick} role="button" tabIndex={0}>
+          <span
+            className="utility-search-icon"
+            onClick={handleSearchClick}
+            onMouseDown={handleSearchClick}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSearchClick(); } }}
+            role="button"
+            tabIndex={0}
+          >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="11" cy="11" r="8" />
               <line x1="21" y1="21" x2="16.65" y2="16.65" />

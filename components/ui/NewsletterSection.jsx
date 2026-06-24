@@ -93,6 +93,7 @@ export default function NewsletterSection({ keys = 'artigos_page' }) {
               type="submit"
               disabled={status === 'loading'}
               className="btn btn-primary whitespace-nowrap"
+              onMouseDown={() => setStatus('loading')}
             >
               {status === 'loading' ? t(`${keys}.newsletter_submitting`) : t(`${keys}.newsletter_submit`)}
             </button>

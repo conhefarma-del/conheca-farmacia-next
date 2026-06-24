@@ -49,6 +49,7 @@ export default function Header({ lang, t, onToggleDrawer }) {
           <button
             className="hamburger"
             onClick={onToggleDrawer}
+            onMouseDown={(e) => { e.preventDefault(); onToggleDrawer(); }}
             aria-label="Menu"
           >
             <span></span>

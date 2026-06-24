@@ -14,6 +14,7 @@ export default function FilterButtons({ categories, activeFilter, onFilterChange
         data-filter="all"
         data-category="all"
         onClick={() => onFilterChange('all')}
+        onMouseDown={(e) => { e.preventDefault(); onFilterChange('all'); }}
       >
         {allLabel}
       </button>
@@ -24,6 +25,7 @@ export default function FilterButtons({ categories, activeFilter, onFilterChange
           data-filter={key}
           data-category={key}
           onClick={() => onFilterChange(key)}
+          onMouseDown={(e) => { e.preventDefault(); onFilterChange(key); }}
         >
           {label}
         </button>

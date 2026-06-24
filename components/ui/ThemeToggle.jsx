@@ -21,7 +21,12 @@ export default function ThemeToggle({ className = 'theme-toggle' }) {
   }
 
   return (
-    <button className={className} onClick={toggle} aria-label="Toggle dark mode">
+    <button
+      className={className}
+      onClick={toggle}
+      onMouseDown={(e) => { e.preventDefault(); toggle(); }}
+      aria-label="Toggle dark mode"
+    >
       <svg className="sun-icon" viewBox="0 0 24 24" width="20" height="20">
         <circle cx="12" cy="12" r="5" />
         <line x1="12" y1="1" x2="12" y2="3" />

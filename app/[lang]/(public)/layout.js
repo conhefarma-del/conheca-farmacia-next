@@ -76,11 +76,12 @@ export default function PublicLayout({ children }) {
         className="header-wrapper"
         style={{
           position: 'fixed',
-          top: HEADER_OFFSET,
+          top: 0,
           left: 0,
           right: 0,
           zIndex: 50,
-          transition: 'top 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
+          transform: `translateY(${HEADER_OFFSET}px)`,
+          transition: 'transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
         }}
       >
         <Header lang={lang} t={t} onToggleDrawer={() => setDrawerOpen(!drawerOpen)} />
@@ -91,7 +92,7 @@ export default function PublicLayout({ children }) {
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
       />
-      <main style={{ paddingTop: MAIN_PADDING_TOP }}>{children}</main>
+      <main style={{ paddingTop: 140 }}>{children}</main>
       <Footer lang={lang} t={t} />
     </>
   )

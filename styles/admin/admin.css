@@ -396,7 +396,7 @@ body {
   cursor: pointer;
   background: transparent;
   color: rgba(255, 255, 255, 0.7);
-  transition: all 0.2s;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .admin-analytics-filter:hover {
@@ -594,7 +594,7 @@ body {
   cursor: pointer;
   background: transparent;
   color: var(--admin-text-muted);
-  transition: all 0.2s;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .admin-chart-filter-btn:hover {
@@ -913,7 +913,7 @@ body {
   background: var(--admin-card-bg);
   border: 1px solid var(--admin-border);
   border-radius: 12px;
-  transition: all 0.2s;
+  transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
 
 .admin-list-item:hover {
@@ -1089,7 +1089,7 @@ body {
   padding: 12px 20px;
   color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
-  transition: all 0.2s;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
   border-radius: 8px;
   margin: 0 8px;
   font-size: 14px;
@@ -1385,7 +1385,7 @@ body {
   font-size: 12px;
   font-family: var(--font-sans);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
   z-index: 2;
 }
 
@@ -1478,7 +1478,7 @@ body {
   font-family: var(--font-sans);
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .admin-editor-close:hover {
@@ -1890,7 +1890,7 @@ select.admin-input {
   cursor: pointer;
   border: none;
   text-decoration: none;
-  transition: all 0.2s;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .admin-btn svg {
@@ -2606,7 +2606,7 @@ html.dark .settings-error {
   background: var(--admin-input-bg, #f9f9f9);
   color: var(--admin-primary, #00493a);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
   flex-shrink: 0;
 }
 

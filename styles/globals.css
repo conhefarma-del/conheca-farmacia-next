@@ -83,7 +83,12 @@ html.dark .form-note {
 /* Custom Components & Utilities */
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold transition-all duration-300 ease-in-out;
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold;
+    transition: background-color 0.3s ease-in-out,
+                color 0.3s ease-in-out,
+                transform 0.3s ease-in-out,
+                box-shadow 0.3s ease-in-out,
+                opacity 0.3s ease-in-out;
   }
 
   .btn-primary {
@@ -593,7 +598,8 @@ html.dark .form-note {
   }
 
   .article-card-link {
-    @apply text-brand-accent font-semibold text-sm flex items-center gap-2 hover:gap-3 transition-all;
+    @apply text-brand-accent font-semibold text-sm flex items-center gap-2 hover:gap-3;
+    transition: color 0.3s ease, gap 0.3s ease;
   }
 
   /* Event Card */
@@ -1204,7 +1210,8 @@ html.dark .form-note {
   }
 
   .event-card {
-    @apply bg-white rounded-2xl overflow-hidden shadow-soft transition-all duration-300 hover:shadow-md-soft hover:-translate-y-2 flex flex-col h-full;
+    @apply bg-white rounded-2xl overflow-hidden shadow-soft flex flex-col h-full;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
   }
   /* Dark mode event card */
   html.dark .event-card {
@@ -1329,9 +1336,9 @@ html.dark .form-note {
 
   /* Homepage Cards — fixed height, button pinned to bottom */
   .home-card {
-    @apply bg-white rounded-2xl overflow-hidden shadow-soft transition-all duration-300
-      hover:shadow-md-soft hover:-translate-y-2 flex flex-col border border-brand-divider/10;
+    @apply bg-white rounded-2xl overflow-hidden shadow-soft flex flex-col border border-brand-divider/10;
     height: 420px;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
   }
 
   html.dark .home-card {
