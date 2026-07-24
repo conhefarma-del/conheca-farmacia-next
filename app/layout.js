@@ -50,16 +50,13 @@ export default async function RootLayout({ children }) {
       <head>
         {/* Anti-FOUC: set dark class before hydration. The CSP nonce
             lets this inline script run under our strict Content-Security-
-            Policy (vercel.json uses 'nonce-${nonce}' instead of
+            Policy (proxy.js uses 'nonce-${nonce}' instead of
             'unsafe-inline' in script-src). Without the nonce, the CSP
-            would block this script. */}
-        {/* O nonce é passado via spread condicional para evitar
-            hydration mismatch em dev (Turbopack não corre o proxy,
-            então o servidor serializa nonce="" enquanto o cliente 
-            pode ter um nonce real do HMR). Em prod o proxy injecta
-            x-csp-nonce consistentemente antes da SSR. */}
+            would block this script. O suppressHydrationWarning evita
+            mismatch em dev (Turbopack) onde o proxy não corre. */}
         <script
-          {...(nonce ? { nonce } : {})}
+          nonce={nonce}
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('theme');var d=t==='dark'||(!t&&matchMedia('(prefers-color-scheme:dark)').matches);if(d)document.documentElement.classList.add('dark')}catch(e){}})()`,
           }}
