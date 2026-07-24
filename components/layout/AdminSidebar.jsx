@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState, useCallback } from 'react'
+import { useTheme } from '@/components/providers/ThemeProvider'
 import {
   Home,
   FileText,
@@ -16,12 +17,15 @@ import {
   LogOut,
   Menu,
   X,
+  Users,
+  HelpCircle,
+  Shield,
 } from 'lucide-react'
 
 export default function AdminSidebar({ lang, user, onLogout }) {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
-  const [isDark, setIsDark] = useState(false)
+  const { isDark, toggleTheme } = useTheme()
 
   const links = [
     { href: `/${lang}/admin/dashboard`, label: 'Dashboard', icon: Home },
@@ -30,28 +34,13 @@ export default function AdminSidebar({ lang, user, onLogout }) {
     { href: `/${lang}/admin/lives`, label: 'Lives', icon: Video },
     { href: `/${lang}/admin/traducoes`, label: 'Traduções EN', icon: Languages },
     { href: `/${lang}/admin/newsletter`, label: 'Newsletter', icon: Mail },
+    { href: `/${lang}/admin/inscritos`, label: 'Inscritos', icon: Users },
+    { href: `/${lang}/admin/conteudo-legal/faq`, label: 'FAQ', icon: HelpCircle },
+    { href: `/${lang}/admin/conteudo-legal/politica-privacidade`, label: 'Política de Privacidade', icon: Shield },
     { href: `/${lang}/admin/definicoes`, label: 'Definições', icon: Settings },
   ]
 
   const isActive = (href) => pathname === href || pathname.startsWith(href + '/')
-
-  // Detectar dark mode atual
-  useEffect(() => {
-    setIsDark(document.documentElement.classList.contains('dark'))
-  }, [])
-
-  // Toggle dark mode
-  const toggleDarkMode = useCallback(() => {
-    const html = document.documentElement
-    const next = !html.classList.contains('dark')
-    html.classList.toggle('dark', next)
-    setIsDark(next)
-    try {
-      localStorage.setItem('theme', next ? 'dark' : 'light')
-    } catch {
-      // SEC-STR-01: localStorage com try/catch
-    }
-  }, [])
 
   // Fechar sidebar ao navegar (mobile)
   useEffect(() => {
@@ -129,8 +118,8 @@ export default function AdminSidebar({ lang, user, onLogout }) {
         <div className="admin-sidebar-footer">
           <button
             className="admin-sidebar-btn"
-            onClick={toggleDarkMode}
-            onMouseDown={(e) => { e.preventDefault(); toggleDarkMode(); }}
+            onClick={toggleTheme}
+            onMouseDown={(e) => e.preventDefault()}
             aria-label="Toggle dark mode"
             title={isDark ? 'Modo claro' : 'Modo escuro'}
           >

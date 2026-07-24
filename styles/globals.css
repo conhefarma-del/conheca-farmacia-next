@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=Fraunces:opsz,wght@9..144,400..700&display=swap');
+
 @import "tailwindcss";
 
 @theme {
@@ -10,8 +12,8 @@
   --color-brand-divider: #dddddd;
 
   /* Typography */
-  --font-sans: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-fraunces), "Fraunces", Georgia, serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces", Georgia, serif;
 
   /* Elevation */
   --shadow-soft: 0 4px 20px rgba(0, 42, 50, 0.05);
@@ -3471,4 +3473,314 @@ html.dark .not-found-title {
 }
 html.dark .not-found-body {
   color: #b8b6b1;
+}
+
+/* ========================================
+   FAQ Page
+   ======================================== */
+
+.faq-tab-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid var(--color-brand-divider);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  position: sticky;
+  top: 3.5rem;
+  z-index: 10;
+  background: var(--color-brand-bg);
+  backdrop-filter: blur(8px);
+}
+
+.faq-tab-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.faq-tab {
+  flex-shrink: 0;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-brand-deep);
+  opacity: 0.6;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+
+.faq-tab:hover {
+  opacity: 0.8;
+}
+
+.faq-tab--active {
+  color: var(--color-brand-primary);
+  border-bottom-color: var(--color-brand-primary);
+  font-weight: 600;
+  opacity: 1;
+}
+
+.faq-panel {
+  padding: 1.5rem 0;
+}
+
+.faq-panel-empty {
+  text-align: center;
+  color: var(--color-brand-deep);
+  opacity: 0.5;
+  padding: 3rem 1rem;
+}
+
+.faq-item {
+  border-bottom: 1px solid var(--color-brand-divider);
+  transition: border-color 0.2s;
+}
+
+.faq-item--pending {
+  opacity: 0.6;
+  padding: 1rem 0;
+}
+
+.faq-item--pending .faq-item-question {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.faq-item-text {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--color-brand-deep);
+}
+
+.faq-item-message {
+  font-size: 0.875rem;
+  color: var(--color-brand-deep);
+  opacity: 0.6;
+  margin-top: 0.25rem;
+  margin-left: 0;
+}
+
+.faq-item-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0;
+  cursor: pointer;
+  list-style: none;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--color-brand-deep);
+  transition: color 0.2s;
+}
+
+.faq-item-summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item-summary:hover {
+  color: var(--color-brand-accent);
+}
+
+.faq-item-chevron {
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+  color: var(--color-brand-deep);
+  opacity: 0.4;
+}
+
+details[open] .faq-item-chevron {
+  transform: rotate(180deg);
+}
+
+.faq-item-answer {
+  padding: 0 0 1.25rem;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--color-brand-deep);
+  opacity: 0.7;
+}
+
+/* Dark mode FAQ */
+html.dark .faq-tab-bar {
+  background: var(--color-brand-bg-alt);
+}
+html.dark .faq-tab-bar {
+  border-bottom-color: var(--color-brand-divider);
+}
+html.dark .faq-tab--active {
+  color: var(--color-brand-accent);
+  border-bottom-color: var(--color-brand-accent);
+}
+
+/* ========================================
+   Privacy Policy Page
+   ======================================== */
+
+.privacy-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+@media (max-width: 1023px) {
+  .privacy-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.privacy-layout-toc {
+  position: sticky;
+  top: 5rem;
+  max-height: calc(100vh - 10rem);
+  overflow-y: auto;
+}
+
+@media (max-width: 1023px) {
+  .privacy-layout-toc {
+    position: relative;
+    top: 0;
+    max-height: none;
+  }
+}
+
+.privacy-toc-toggle {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: var(--color-brand-bg);
+  border: 1px solid var(--color-brand-divider);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-brand-deep);
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+@media (max-width: 1023px) {
+  .privacy-toc-toggle {
+    display: flex;
+  }
+}
+
+.privacy-toc-content {
+  font-size: 0.875rem;
+}
+
+@media (max-width: 1023px) {
+  .privacy-toc-content {
+    display: none;
+  }
+  .privacy-toc-content--open {
+    display: block;
+  }
+}
+
+.privacy-toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.privacy-toc-sublist {
+  padding-left: 1rem;
+  margin-top: 0.125rem;
+}
+
+.privacy-toc-link {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  color: var(--color-brand-deep);
+  opacity: 0.6;
+  text-decoration: none;
+  border-radius: 0.375rem;
+  border-left: 3px solid transparent;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.privacy-toc-link:hover {
+  opacity: 0.9;
+  background: rgba(0, 73, 58, 0.04);
+}
+
+.privacy-toc-link--active {
+  color: var(--color-brand-primary);
+  border-left-color: var(--color-brand-primary);
+  font-weight: 500;
+  opacity: 1;
+}
+
+.privacy-toc-link--pending {
+  opacity: 0.5;
+}
+
+.privacy-toc-pending-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f59e0b;
+  flex-shrink: 0;
+}
+
+.privacy-layout-content {
+  min-width: 0;
+}
+
+.privacy-section {
+  scroll-margin-top: 6rem;
+}
+
+.privacy-section--sub {
+  padding-left: 1.5rem;
+  border-left: 3px solid var(--color-brand-divider);
+  margin-left: 0;
+}
+
+.privacy-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.privacy-heading--sub {
+  font-size: 1.25rem;
+  color: var(--color-brand-deep);
+  opacity: 0.7;
+}
+
+.privacy-content--pending {
+  opacity: 0.7;
+}
+
+.privacy-divider {
+  border: none;
+  border-top: 1px solid var(--color-brand-divider);
+  margin: 2rem 0;
+}
+
+html.dark .privacy-toc-link:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+html.dark .privacy-toc-link--active {
+  color: var(--color-brand-accent);
+  border-left-color: var(--color-brand-accent);
 }

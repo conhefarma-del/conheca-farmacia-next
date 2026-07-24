@@ -29,7 +29,6 @@ export default function UtilityBar({ lang, t }) {
           <span
             className="utility-search-icon"
             onClick={handleSearchClick}
-            onMouseDown={handleSearchClick}
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSearchClick(); } }}
             role="button"
             tabIndex={0}

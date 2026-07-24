@@ -51,6 +51,18 @@ export default function EventForm({ mode = 'create', initialData = null, lang = 
   const [imageUrl, setImageUrl] = useState(initialData?.image_url || '')
   const [hosts, setHosts] = useState(initialData?.hosts || [])
 
+  // Campos de template de certificado
+  const [certificadoCor, setCertificadoCor] = useState(initialData?.certificado_cor || '#00493A')
+  const [certificadoTexto, setCertificadoTexto] = useState(
+    initialData?.certificado_texto || 'Certificamos que o participante concluiu com aproveitamento.'
+  )
+  const [certificadoLogoUrl, setCertificadoLogoUrl] = useState(initialData?.certificado_logo_url || '')
+  const [certificadoCargaHoraria, setCertificadoCargaHoraria] = useState(initialData?.certificado_carga_horaria || '')
+  const [assinante1Nome, setAssinante1Nome] = useState(initialData?.certificado_assinante_1_nome || 'Conheça Farmácia')
+  const [assinante1Cargo, setAssinante1Cargo] = useState(initialData?.certificado_assinante_1_cargo || 'Conheça Farmácia')
+  const [assinante2Nome, setAssinante2Nome] = useState(initialData?.certificado_assinante_2_nome || '')
+  const [assinante2Cargo, setAssinante2Cargo] = useState(initialData?.certificado_assinante_2_cargo || 'Ordem dos Farmacêuticos')
+
   const handleTitleChange = useCallback((value) => {
     setTitle(value)
     if (!slugEdited) setSlug(generateSlug(value))
@@ -72,6 +84,15 @@ export default function EventForm({ mode = 'create', initialData = null, lang = 
       title, slug, category, category_label: categoryLabel, status, featured_langs: featuredLangs,
       excerpt, date, time, end_time: endTime, location, type, capacity,
       registration_link: registrationLink, image_url: imageUrl, hosts,
+      // Campos de certificado
+      certificado_cor: certificadoCor,
+      certificado_texto: certificadoTexto,
+      certificado_logo_url: certificadoLogoUrl || null,
+      certificado_carga_horaria: certificadoCargaHoraria || null,
+      certificado_assinante_1_nome: assinante1Nome,
+      certificado_assinante_1_cargo: assinante1Cargo,
+      certificado_assinante_2_nome: assinante2Nome || null,
+      certificado_assinante_2_cargo: assinante2Cargo || null,
     }
 
     try {
@@ -91,6 +112,8 @@ export default function EventForm({ mode = 'create', initialData = null, lang = 
     }
   }, [title, slug, category, status, featuredLangs, excerpt, date, time, endTime,
     location, type, capacity, registrationLink, imageUrl, hosts,
+    certificadoCor, certificadoTexto, certificadoLogoUrl, certificadoCargaHoraria,
+    assinante1Nome, assinante1Cargo, assinante2Nome, assinante2Cargo,
     mode, initialData, router, lang])
 
   return (
@@ -208,6 +231,111 @@ export default function EventForm({ mode = 'create', initialData = null, lang = 
       <ImageUpload value={imageUrl} onChange={setImageUrl} bucket="event-images" folder="events" label="Imagem" />
 
       <HostEditor hosts={hosts} onChange={setHosts} />
+
+      {/* ===== Certificado de Participação ===== */}
+      <div style={{ marginTop: 32, marginBottom: 16, borderTop: '1px solid var(--admin-border)', paddingTop: 24 }}>
+        <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 16, color: 'var(--admin-text)' }}>
+          Certificado de Participação
+        </h3>
+        <p style={{ fontSize: 13, color: 'var(--admin-text-muted)', marginBottom: 16 }}>
+          Personalize o template do certificado para este evento.
+        </p>
+
+        <div className="admin-form-grid">
+          <div className="admin-form-group">
+            <label>Cor do certificado (hex)</label>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <input
+                type="color"
+                value={certificadoCor}
+                onChange={(e) => setCertificadoCor(e.target.value)}
+                style={{ width: 40, height: 40, padding: 2, border: '1px solid var(--admin-border)', borderRadius: 6, cursor: 'pointer' }}
+              />
+              <input
+                type="text"
+                value={certificadoCor}
+                onChange={(e) => setCertificadoCor(e.target.value)}
+                className="admin-input"
+                style={{ maxWidth: 120, fontFamily: 'monospace' }}
+                placeholder="#00493A"
+              />
+            </div>
+          </div>
+
+          <div className="admin-form-group">
+            <label>Logo URL (opcional)</label>
+            <input
+              type="url"
+              value={certificadoLogoUrl}
+              onChange={(e) => setCertificadoLogoUrl(e.target.value)}
+              className="admin-input"
+              placeholder="https://..."
+            />
+          </div>
+
+          <div className="admin-form-group">
+            <label>Carga horária (opcional)</label>
+            <input
+              type="text"
+              value={certificadoCargaHoraria}
+              onChange={(e) => setCertificadoCargaHoraria(e.target.value)}
+              className="admin-input"
+              placeholder="ex: 8 horas"
+            />
+          </div>
+        </div>
+
+        <div className="admin-form-group">
+          <label>Texto do certificado</label>
+          <textarea
+            value={certificadoTexto}
+            onChange={(e) => setCertificadoTexto(e.target.value)}
+            className="admin-textarea"
+            style={{ minHeight: 80 }}
+            placeholder="Certificamos que o participante concluiu com aproveitamento."
+          />
+        </div>
+
+        <div className="admin-form-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+          <div className="admin-form-group">
+            <label>Assinante 1 — Nome</label>
+            <input
+              type="text"
+              value={assinante1Nome}
+              onChange={(e) => setAssinante1Nome(e.target.value)}
+              className="admin-input"
+            />
+          </div>
+          <div className="admin-form-group">
+            <label>Assinante 1 — Cargo</label>
+            <input
+              type="text"
+              value={assinante1Cargo}
+              onChange={(e) => setAssinante1Cargo(e.target.value)}
+              className="admin-input"
+            />
+          </div>
+          <div className="admin-form-group">
+            <label>Assinante 2 — Nome (opcional)</label>
+            <input
+              type="text"
+              value={assinante2Nome}
+              onChange={(e) => setAssinante2Nome(e.target.value)}
+              className="admin-input"
+              placeholder="Deixe vazio para 1 assinante"
+            />
+          </div>
+          <div className="admin-form-group">
+            <label>Assinante 2 — Cargo (opcional)</label>
+            <input
+              type="text"
+              value={assinante2Cargo}
+              onChange={(e) => setAssinante2Cargo(e.target.value)}
+              className="admin-input"
+            />
+          </div>
+        </div>
+      </div>
 
       {error && <div className="admin-error-message" style={{ display: 'block' }}>{error}</div>}
 

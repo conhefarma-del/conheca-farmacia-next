@@ -92,7 +92,7 @@ export default function PublicLayout({ children }) {
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
       />
-      <main style={{ paddingTop: 140 }}>{children}</main>
+      <main style={{ paddingTop: MAIN_PADDING_TOP }}>{children}</main>
       <Footer lang={lang} t={t} />
     </>
   )

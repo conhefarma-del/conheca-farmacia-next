@@ -4,7 +4,9 @@
     "artigos": "Artigos",
     "eventos": "Eventos",
     "lives": "Lives",
-    "sobre": "Sobre Nós"
+    "sobre": "Sobre Nós",
+    "faq": "FAQ",
+    "privacidade": "Privacidade"
   },
   "hero": {
     "title": "Excelência no Cuidado Farmacêutico",
@@ -57,7 +59,9 @@
     "contacto": "Contato",
     "localizacao": "Luanda, Angola",
     "redes_sociais": "Redes Sociais",
-    "direitos": "© 2026 Conheça Farmácia. Todos os direitos reservados."
+    "direitos": "© 2026 Conheça Farmácia. Todos os direitos reservados.",
+    "faq": "Perguntas Frequentes",
+    "privacidade": "Termos, Privacidade e Cookies"
   },
   "common": {
     "voltar": "Voltar",
@@ -341,5 +345,23 @@
       "invalid_event_slug": "O endereço do evento é inválido.",
       "misconfigured": "O sistema está temporariamente indisponível. A nossa equipa já foi notificada."
     }
+  },
+  "faq_page": {
+    "hero_title": "Perguntas Frequentes",
+    "hero_subtitle": "Respostas às perguntas mais comuns sobre a Conheça Farmácia, eventos e parcerias.",
+    "tab_geral": "Geral",
+    "tab_parceiros": "Parceiros e Patrocinadores",
+    "pending_badge": "Pendente",
+    "pending_message": "Esta resposta está a ser preparada. Volte mais tarde.",
+    "no_questions": "Nenhuma pergunta disponível nesta categoria."
+  },
+  "privacy_page": {
+    "hero_title": "Política de Privacidade e Cookies",
+    "hero_subtitle": "Saiba como tratamos os seus dados pessoais e como utilizamos cookies no nosso website.",
+    "toc_label": "Índice",
+    "toc_toggle": "Índice",
+    "pending_badge": "Pendente",
+    "last_updated": "Última atualização",
+    "pending_section_note": "Esta secção contém conteúdo pendente de aprovação."
   }
 }

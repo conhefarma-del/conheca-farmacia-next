@@ -1,31 +1,17 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useTheme } from '@/components/providers/ThemeProvider'
 
 export default function ThemeToggle({ className = 'theme-toggle' }) {
-  const [dark, setDark] = useState(false)
-
-  useEffect(() => {
-    const stored = localStorage.getItem('theme')
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    const isDark = stored === 'dark' || (!stored && prefersDark)
-    setDark(isDark)
-    document.documentElement.classList.toggle('dark', isDark)
-  }, [])
-
-  const toggle = () => {
-    const next = !dark
-    setDark(next)
-    document.documentElement.classList.toggle('dark', next)
-    localStorage.setItem('theme', next ? 'dark' : 'light')
-  }
+  const { theme, toggleTheme } = useTheme()
 
   return (
     <button
       className={className}
-      onClick={toggle}
-      onMouseDown={(e) => { e.preventDefault(); toggle(); }}
+      onClick={toggleTheme}
+      onMouseDown={(e) => e.preventDefault()}
       aria-label="Toggle dark mode"
+      type="button"
     >
       <svg className="sun-icon" viewBox="0 0 24 24" width="20" height="20">
         <circle cx="12" cy="12" r="5" />

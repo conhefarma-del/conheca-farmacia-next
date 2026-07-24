@@ -186,7 +186,16 @@
       "Bash(rm -f lib/pdf/qr.js lib/pdf/qrcode-core.js)",
       "Bash(rm \"C:/Users/bapti/Projects/conheca-farmacia-NEXT/lib/pdf/qr.js\")",
       "Bash(ls \"C:\\\\Users\\\\bapti\\\\Projects\\\\conheca-farmacia-NEXT\\\\app\\\\[lang]\\\\\\(public\\)\\\\inscricao\" \")",
-      "Bash(ls 'app/[lang]/\\(public\\)/inscricao')"
+      "Bash(ls 'app/[lang]/\\(public\\)/inscricao')",
+      "Read(//c/Users/bapti/Projects/conheca-farmacia-NEXT/**)",
+      "Read(//c/Users/bapti/**)",
+      "Bash(1 echo:*)",
+      "Bash(wait)",
+      "Bash(tasklist)",
+      "Bash(tasklist //FI \"IMAGENAME eq node.exe\")",
+      "Bash(tasklist //FI \"IMAGENAME eq next-server.exe\")",
+      "Bash(taskkill //PID 10332 //F)",
+      "Bash(taskkill //PID 11160 //F)"
     ]
   }
 }

@@ -4,7 +4,9 @@
     "artigos": "Articles",
     "eventos": "Events",
     "lives": "Lives",
-    "sobre": "About Us"
+    "sobre": "About Us",
+    "faq": "FAQ",
+    "privacidade": "Privacy"
   },
   "hero": {
     "title": "Excellence in Pharmaceutical Care",
@@ -57,7 +59,9 @@
     "contacto": "Contact",
     "localizacao": "Luanda, Angola",
     "redes_sociais": "Social Media",
-    "direitos": "© 2026 Conheça Farmácia. All rights reserved."
+    "direitos": "© 2026 Conheça Farmácia. All rights reserved.",
+    "faq": "Frequently Asked Questions",
+    "privacidade": "Terms, Privacy and Cookies"
   },
   "common": {
     "voltar": "Back",
@@ -341,5 +345,23 @@
       "invalid_event_slug": "The event URL is invalid.",
       "misconfigured": "The system is temporarily unavailable. Our team has been notified."
     }
+  },
+  "faq_page": {
+    "hero_title": "Frequently Asked Questions",
+    "hero_subtitle": "Answers to the most common questions about Conheça Farmácia, events and partnerships.",
+    "tab_geral": "General",
+    "tab_parceiros": "Partners & Sponsors",
+    "pending_badge": "Pending",
+    "pending_message": "This answer is being prepared. Please check back later.",
+    "no_questions": "No questions available in this category."
+  },
+  "privacy_page": {
+    "hero_title": "Privacy and Cookie Policy",
+    "hero_subtitle": "Learn how we handle your personal data and how we use cookies on our website.",
+    "toc_label": "Table of Contents",
+    "toc_toggle": "Contents",
+    "pending_badge": "Pending",
+    "last_updated": "Last updated",
+    "pending_section_note": "This section contains content pending approval."
   }
 }
