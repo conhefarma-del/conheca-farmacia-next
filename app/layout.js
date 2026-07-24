@@ -1,10 +1,25 @@
 import { Suspense } from 'react'
 import { headers } from 'next/headers'
+import { Inter, Fraunces } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import ThemeProvider from '@/components/providers/ThemeProvider'
 import PageViewTracker from '@/components/content/PageViewTracker'
 import '@/styles/globals.css'
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  adjustFontFallback: true,
+  variable: '--font-inter',
+})
+
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  display: 'swap',
+  adjustFontFallback: true,
+  variable: '--font-fraunces',
+})
 
 export const metadata = {
   metadataBase: new URL('https://conhecafarmacia.com'),
@@ -46,7 +61,7 @@ export default async function RootLayout({ children }) {
   const nonce = headersList.get('x-csp-nonce') || undefined
 
   return (
-    <html lang={lang} suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning className={`${inter.variable} ${fraunces.variable}`}>
       <head>
         {/* Anti-FOUC: set dark class before hydration. The CSP nonce
             lets this inline script run under our strict Content-Security-
@@ -62,7 +77,7 @@ export default async function RootLayout({ children }) {
           }}
         />
       </head>
-      <body>
+      <body className={inter.className}>
         <ThemeProvider>
           <Suspense fallback={null}>
             <PageViewTracker />

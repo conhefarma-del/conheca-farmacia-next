@@ -64,6 +64,7 @@ export default function FAQAdminPage({ lang, initialTabs, currentUserRole }) {
     setFormPending(question.pending !== false)
     setFormSortOrder(question.sort_order || 0)
     setFormError(null)
+    setPanelRendered(true)
     requestAnimationFrame(() => setPanelOpen(true))
   }, [])
 
