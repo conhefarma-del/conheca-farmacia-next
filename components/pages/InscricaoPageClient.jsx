@@ -30,6 +30,7 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
     profissao: '',
     nivel_escolaridade: '',
     origem_evento: '',
+    menor_consentimento: false,
   })
   const [errors, setErrors] = useState({})
   const [touched, setTouched] = useState({})
@@ -63,7 +64,7 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
   // Validate a single field on blur
   const handleBlur = (name) => {
     setTouched(prev => ({ ...prev, [name]: true }))
-    const required = ['nome', 'email', 'telefone', 'profissao'].includes(name)
+    const required = ['nome', 'email', 'telefone', 'profissao', 'faixa_etaria'].includes(name)
     const error = validateField(name, form[name], required)
     setErrors(prev => ({ ...prev, [name]: error }))
   }
@@ -79,7 +80,7 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
   // Validate all fields
   const validateAll = () => {
     const newErrors = {}
-    const requiredFields = ['nome', 'email', 'telefone', 'profissao']
+    const requiredFields = ['nome', 'email', 'telefone', 'profissao', 'faixa_etaria']
     let valid = true
 
     for (const key of Object.keys(form)) {
@@ -88,6 +89,12 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
         newErrors[key] = error
         valid = false
       }
+    }
+
+    // Menor de idade exige consentimento do responsável legal (Política 2.1)
+    if (form.faixa_etaria === 'menor-18' && !form.menor_consentimento) {
+      newErrors.menor_consentimento = t('inscricao.menor_consentimento_error')
+      valid = false
     }
 
     setErrors(newErrors)
@@ -395,7 +402,7 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
 
                 <div className="form-group">
                   <label htmlFor="faixa_etaria" className="form-label" data-i18n="inscricao.faixa_etaria_label">
-                    {t('inscricao.faixa_etaria_label')}
+                    {t('inscricao.faixa_etaria_label')} *
                   </label>
                   <select
                     id="faixa_etaria"
@@ -404,8 +411,10 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
                     value={form.faixa_etaria}
                     onChange={(e) => handleChange('faixa_etaria', e.target.value)}
                     onBlur={() => handleBlur('faixa_etaria')}
+                    required
                   >
                     <option value="">{t('inscricao.faixa_etaria_select')}</option>
+                    <option value="menor-18">{t('inscricao.faixa_menor_18')}</option>
                     <option value="18-24">{t('inscricao.faixa_18_24')}</option>
                     <option value="25-34">{t('inscricao.faixa_25_34')}</option>
                     <option value="35-44">{t('inscricao.faixa_35_44')}</option>
@@ -413,6 +422,32 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
                     <option value="55+">{t('inscricao.faixa_55_plus')}</option>
                   </select>
                   {renderError('faixa_etaria')}
+
+                  {/* Menor de idade — consentimento do responsável legal (Política 2.1) */}
+                  {form.faixa_etaria === 'menor-18' && (
+                    <label
+                      htmlFor="menor_consentimento"
+                      className="form-label form-checkbox mt-3"
+                      style={{ display: 'flex', alignItems: 'flex-start', gap: 8, cursor: 'pointer' }}
+                      data-i18n="inscricao.menor_consentimento_text"
+                    >
+                      <input
+                        id="menor_consentimento"
+                        type="checkbox"
+                        name="menor_consentimento"
+                        checked={!!form.menor_consentimento}
+                        onChange={(e) => {
+                          handleChange('menor_consentimento', e.target.checked)
+                          if (e.target.checked) {
+                            setErrors(prev => ({ ...prev, menor_consentimento: null }))
+                          }
+                        }}
+                        style={{ marginTop: 4, flexShrink: 0 }}
+                      />
+                      <span>{t('inscricao.menor_consentimento_text')}</span>
+                    </label>
+                  )}
+                  {renderError('menor_consentimento')}
                 </div>
 
                 {/* Section: Contacto */}

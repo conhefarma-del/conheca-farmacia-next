@@ -147,7 +147,30 @@ export default function InscritosListPage({ lang, inscricoes, eventos, currentUs
 
               return (
                 <tr key={i.id}>
-                  <td>{i.nome}</td>
+                  <td>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                      {i.nome}
+                      {i.menor_consentimento && (
+                        <span
+                          title="Inscrição de menor de 18 anos com consentimento do responsável legal"
+                          style={{
+                            display: 'inline-block',
+                            padding: '1px 8px',
+                            borderRadius: 10,
+                            background: '#fff3cd',
+                            color: '#856404',
+                            border: '1px solid #ffc107',
+                            fontSize: 11,
+                            fontWeight: 700,
+                            lineHeight: '16px',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          Menor
+                        </span>
+                      )}
+                    </div>
+                  </td>
                   <td>{maskEmail(i.email)}</td>
                   <td>{i.evento?.title || i.evento_slug || '—'}</td>
                   <td>
