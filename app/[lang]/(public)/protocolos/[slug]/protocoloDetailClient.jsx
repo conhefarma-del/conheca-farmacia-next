@@ -7,7 +7,7 @@ import {
 } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
 import { getSectionHref } from '@/lib/i18n-routes'
-import { Breadcrumb } from '@/components/ui/Breadcrumb'
+import Breadcrumb from '@/components/ui/Breadcrumb'
 import ProtocolStep from '@/components/protocolos/ProtocolStep'
 import ProtocolSidebar from '@/components/protocolos/ProtocolSidebar'
 import ProtocolQuiz from '@/components/protocolos/ProtocolQuiz'

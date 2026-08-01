@@ -3,7 +3,7 @@
 import { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { Search } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
-import { Breadcrumb } from '@/components/ui/Breadcrumb'
+import Breadcrumb from '@/components/ui/Breadcrumb'
 import ProtocolCard from '@/components/protocolos/ProtocolCard'
 
 export default function ProtocolosPageClient({ lang, categories, protocols }) {
