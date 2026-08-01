@@ -2,6 +2,7 @@
 
 import { useContext } from 'react'
 import { LangContext } from '@/lib/contexts'
+import GuideCourseIcon from '@/components/guias/GuideCourseIcon'
 import GuideDisciplinaCard from '@/components/guias/GuideDisciplinaCard'
 import Breadcrumb from '@/components/ui/Breadcrumb'
 import { getSectionHref } from '@/lib/i18n-routes'
@@ -22,7 +23,7 @@ export default function GuiasCursoClient({ lang, course }) {
         <div className="container-center">
           <Breadcrumb items={breadcrumbItems} />
           <div className="flex items-center gap-4 mb-4">
-            <span className="text-5xl">{course.iconEmoji || '📚'}</span>
+            <GuideCourseIcon name={course.iconEmoji} size={48} className="text-brand-accent" />
             <h1 className="article-hero-title">{course.name}</h1>
           </div>
           {course.heroSubtitle && (

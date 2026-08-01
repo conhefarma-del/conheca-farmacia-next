@@ -174,7 +174,7 @@ export default function GuidesAdminPage({ lang, initialCourses, currentUserRole 
                 <tr><td colSpan={6} className="admin-table-empty">Nenhum curso encontrado.</td></tr>
               ) : courses.map((course) => (
                 <tr key={course.id} className={course.is_archived ? 'admin-table-row-archived' : ''}>
-                  <td>{course.icon_emoji} {course.name_pt}</td>
+                  <td>{course.name_pt}</td>
                   <td>{course.slug}</td>
                   <td>{statusBadge(course.status, course.is_archived)}</td>
                   <td>{course.disciplineCount}</td>

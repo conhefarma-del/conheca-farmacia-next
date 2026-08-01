@@ -4,6 +4,9 @@ import { useState } from 'react'
 import { Save, X, CheckCircle, XCircle } from 'lucide-react'
 import { createGuideCourse, updateGuideCourse } from '@/lib/actions/guides'
 
+// Nomes de ícones Lucide aceites (ver components/guias/GuideCourseIcon.jsx)
+const ICON_OPTIONS = ['Pill', 'Stethoscope', 'HeartHandshake', 'Microscope', 'BookOpen']
+
 /**
  * Slide-in panel para criar/editar um curso de guia de estudo.
  * Padrão visual do painel FAQ/Privacy (commit 2826073).
@@ -16,7 +19,7 @@ export default function GuideCursoForm({ course, panelOpen, onClose, onSaved }) 
   const [descriptionEn, setDescriptionEn] = useState(course?.description_en || '')
   const [heroSubtitlePt, setHeroSubtitlePt] = useState(course?.hero_subtitle_pt || '')
   const [heroSubtitleEn, setHeroSubtitleEn] = useState(course?.hero_subtitle_en || '')
-  const [iconEmoji, setIconEmoji] = useState(course?.icon_emoji || '📚')
+  const [iconEmoji, setIconEmoji] = useState(course?.icon_emoji || 'BookOpen')
   const [color, setColor] = useState(course?.color || '#0a844f')
   const [status, setStatus] = useState(course?.status === 'published' ? 'published' : 'draft')
   const [sortOrder, setSortOrder] = useState(course?.sort_order ?? 0)
@@ -39,7 +42,7 @@ export default function GuideCursoForm({ course, panelOpen, onClose, onSaved }) 
         description_en: descriptionEn,
         hero_subtitle_pt: heroSubtitlePt,
         hero_subtitle_en: heroSubtitleEn,
-        icon_emoji: iconEmoji || '📚',
+        icon_emoji: iconEmoji || 'BookOpen',
         color: color || '#0a844f',
         status,
         sort_order: parseInt(sortOrder, 10) || 0,
@@ -183,8 +186,16 @@ export default function GuideCursoForm({ course, panelOpen, onClose, onSaved }) 
 
           <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
             <div style={{ flex: 1 }}>
-              <label style={labelStyle}>Emoji</label>
-              <input type="text" value={iconEmoji} onChange={(e) => setIconEmoji(e.target.value)} style={inputStyle} />
+              <label style={labelStyle}>Ícone (Lucide)</label>
+              <select
+                value={iconEmoji}
+                onChange={(e) => setIconEmoji(e.target.value)}
+                style={inputStyle}
+              >
+                {ICON_OPTIONS.map((name) => (
+                  <option key={name} value={name}>{name}</option>
+                ))}
+              </select>
             </div>
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>Cor (hex)</label>
