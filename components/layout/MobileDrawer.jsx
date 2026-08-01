@@ -38,6 +38,7 @@ export default function MobileDrawer({ lang, t, open, onClose }) {
     { href: getSectionHref(lang, 'eventos'), label: t('nav.eventos'), path: 'eventos' },
     { href: getSectionHref(lang, 'lives'), label: t('nav.lives'), path: 'lives' },
     { href: getSectionHref(lang, 'guias'), label: t('nav.guias'), path: 'guias' },
+    { href: getSectionHref(lang, 'protocolos'), label: t('nav.protocolos'), path: 'protocolos' },
     { href: getSectionHref(lang, 'sobre'), label: t('nav.sobre'), path: 'sobre' },
   ]
 
