@@ -25,12 +25,14 @@
     "animated_lives": "Lives & Webinars"
   },
   "search": {
-    "placeholder": "Search articles, events, lives...",
+    "placeholder": "Search articles, events, lives, guides and protocols...",
     "button": "Search",
     "todos": "All",
     "artigos": "Articles",
     "eventos": "Events",
     "lives": "Lives & Webinars",
+    "guias": "Study Guides",
+    "protocolos": "Protocols",
     "mais_recente": "Newest",
     "mais_antigo": "Oldest",
     "nenhum_resultado": "No results found for",
@@ -42,7 +44,7 @@
     "resultados": "results",
     "pesquisa": "Search",
     "hero_title": "Search",
-    "hero_subtitle": "Search for articles, events and lives on our platform.",
+    "hero_subtitle": "Search for articles, events, lives, study guides and clinical protocols on our platform.",
     "empty_hint": "Type what you want to search for."
   },
   "content": {

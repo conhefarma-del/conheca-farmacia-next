@@ -25,12 +25,14 @@
     "animated_lives": "Lives & Webinars"
   },
   "search": {
-    "placeholder": "Pesquisar artigos, eventos, lives...",
+    "placeholder": "Pesquisar artigos, eventos, lives, guias e protocolos...",
     "button": "Pesquisar",
     "todos": "Todos",
     "artigos": "Artigos",
     "eventos": "Eventos",
     "lives": "Lives & Webinars",
+    "guias": "Guias de Estudo",
+    "protocolos": "Protocolos",
     "mais_recente": "Mais Recente",
     "mais_antigo": "Mais Antigo",
     "nenhum_resultado": "Nenhum resultado encontrado para",
@@ -42,7 +44,7 @@
     "resultados": "resultados",
     "pesquisa": "Pesquisa",
     "hero_title": "Pesquisa",
-    "hero_subtitle": "Pesquise por artigos, eventos e lives na nossa plataforma.",
+    "hero_subtitle": "Pesquise por artigos, eventos, lives, guias de estudo e protocolos clínicos na nossa plataforma.",
     "empty_hint": "Escreva o que pretende pesquisar."
   },
   "content": {

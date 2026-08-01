@@ -4,6 +4,7 @@ import { useState, useEffect, useContext, useCallback } from 'react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
+import { BookOpen, CalendarDays, ClipboardList, FileText, Search, Video } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
 import { searchAllContent } from '@/lib/api/search'
 import { escapeHtml } from '@/lib/security'
@@ -20,7 +21,10 @@ const MONTHS_PT = [
 function formatDate(dateStr) {
   if (!dateStr) return ''
   try {
-    const d = new Date(dateStr + 'T00:00:00')
+    // updated_at de guias/protocolos já é timestamp completo (tem 'T');
+    // datas de artigos/eventos são só 'YYYY-MM-DD'
+    const d = dateStr.includes('T') ? new Date(dateStr) : new Date(dateStr + 'T00:00:00')
+    if (isNaN(d.getTime())) return dateStr
     return `${d.getDate()} ${MONTHS_PT[d.getMonth()]} ${d.getFullYear()}`
   } catch {
     return dateStr
@@ -74,6 +78,8 @@ export default function PesquisaPageClient({ lang }) {
     allResults.articles.forEach(item => items.push({ ...item, type: 'articles' }))
     allResults.events.forEach(item => items.push({ ...item, type: 'events' }))
     allResults.lives.forEach(item => items.push({ ...item, type: 'lives' }))
+    allResults.guides.forEach(item => items.push({ ...item, type: 'guias' }))
+    allResults.protocolos.forEach(item => items.push({ ...item, type: 'protocolos' }))
 
     items.sort((a, b) => {
       const da = a.published_date || a.date || ''
@@ -108,7 +114,7 @@ export default function PesquisaPageClient({ lang }) {
       updateUrl(q, tVal || tipo, o || ordem, 1)
     } catch (err) {
       console.error('Search error:', err)
-      setAllResults({ articles: [], events: [], lives: [], total: 0 })
+      setAllResults({ articles: [], events: [], lives: [], guides: [], protocolos: [], total: 0 })
     } finally {
       setLoading(false)
     }
@@ -159,6 +165,8 @@ export default function PesquisaPageClient({ lang }) {
     if (item.type === 'articles') return `/${lang}/artigos/${item.slug}`
     if (item.type === 'events') return `/${lang}/eventos/${item.slug}`
     if (item.type === 'lives') return `/${lang}/lives/${item.slug}`
+    if (item.type === 'guias') return `/${lang}/guias/${item.slug}`
+    if (item.type === 'protocolos') return `/${lang}/protocolos/${item.slug}`
     return '#'
   }
 
@@ -177,6 +185,31 @@ export default function PesquisaPageClient({ lang }) {
       )
     }
     return buttons
+  }
+
+  // Ícone + label por tipo de conteúdo (100% Lucide, sem emojis)
+  const TYPE_ICONS = {
+    articles: FileText,
+    events: CalendarDays,
+    lives: Video,
+    guias: BookOpen,
+    protocolos: ClipboardList,
+  }
+  const TYPE_KEYS = {
+    articles: 'search.artigos',
+    events: 'search.eventos',
+    lives: 'search.lives',
+    guias: 'search.guias',
+    protocolos: 'search.protocolos',
+  }
+  const renderTypeBadge = (type) => {
+    const Icon = TYPE_ICONS[type]
+    return (
+      <span className="search-result-type">
+        {Icon && <Icon size={13} aria-hidden="true" />}
+        {t(TYPE_KEYS[type] || 'search.artigos')}
+      </span>
+    )
   }
 
   return (
@@ -236,7 +269,7 @@ export default function PesquisaPageClient({ lang }) {
           {/* Filters & Sort */}
           <div className="search-filters">
             <div className="search-type-filters">
-              {['todos', 'artigos', 'eventos', 'lives'].map((key) => (
+              {['todos', 'artigos', 'eventos', 'lives', 'guias', 'protocolos'].map((key) => (
                 <button
                   key={key}
                   className={`filter-btn ${tipo === key ? 'active' : ''}`}
@@ -272,7 +305,7 @@ export default function PesquisaPageClient({ lang }) {
           {/* Empty state */}
           {!loading && allResults && allResults.total === 0 && (
             <div className="search-empty" id="search-empty">
-              <div className="search-empty-icon">🔍</div>
+              <div className="search-empty-icon"><Search size={28} aria-hidden="true" /></div>
               <p className="search-empty-text">{t('search.nenhum_resultado')}</p>
               <p className="text-sm opacity-50 mt-1">&ldquo;{query}&rdquo;</p>
             </div>
@@ -307,9 +340,7 @@ export default function PesquisaPageClient({ lang }) {
                       </div>
                     )}
                     <div className="search-result-body">
-                      <span className="search-result-type">
-                        {item.type === 'articles' ? '📄 Artigo' : item.type === 'events' ? '📅 Evento' : '🎬 Live'}
-                      </span>
+                      {renderTypeBadge(item.type)}
                       <h3
                         className="search-result-title"
                         dangerouslySetInnerHTML={{ __html: highlightTerms(item.title, query) }}

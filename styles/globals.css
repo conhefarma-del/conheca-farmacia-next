@@ -616,34 +616,6 @@ html.dark .form-note {
     display: none;
   }
 
-  /* Drawer Social Icons */
-  .drawer-social {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-  }
-
-  .drawer-social a {
-    color: #00493a;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: opacity 0.2s ease;
-  }
-
-  html.dark .drawer-social a {
-    color: var(--color-brand-primary);
-  }
-
-  .drawer-social a:hover {
-    opacity: 0.7;
-  }
-
-  .drawer-social a svg {
-    width: 22px;
-    height: 22px;
-  }
-
   /* Smooth push effect — mobile only */
   @media (max-width: 768px) {
     body {
@@ -676,11 +648,14 @@ html.dark .form-note {
       overflow: hidden;
     }
 
-    /* When the utility bar is hidden (scrolled down), the drawer starts
-       right below the header (h-20 = 80px) instead of at 60. */
+    /* When the utility bar is hidden (scrolled down), the header wrapper
+       slides to top: 0 (see PublicLayout JSX). The drawer must stay aligned
+       with the header (open BESIDE it), so its top edge also goes to 0 —
+       otherwise a gap appears above the drawer where the pushed-aside
+       header used to be. */
     body.utility-hidden .mobile-drawer {
-      top: 80px;
-      height: calc(100dvh - 80px);
+      top: 0;
+      height: 100dvh;
     }
   }
 
@@ -2494,12 +2469,16 @@ html.dark .lang-option + .lang-option {
 }
 
 .search-result-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--color-brand-primary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+.search-result-type svg { flex-shrink: 0; }
 
 .search-result-title {
   font-size: 1.1rem;
@@ -2543,7 +2522,10 @@ html.dark .lang-option + .lang-option {
 }
 
 .search-empty-icon {
-  font-size: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-brand-primary);
   margin-bottom: 1rem;
 }
 
