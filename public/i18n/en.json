@@ -4,6 +4,7 @@
     "artigos": "Articles",
     "eventos": "Events",
     "lives": "Lives",
+    "guias": "Study Guides",
     "sobre": "About Us",
     "faq": "FAQ",
     "privacidade": "Privacy"
@@ -56,6 +57,7 @@
   "footer": {
     "descricao": "Knowledge that connects. Training that transforms. Health that evolves.",
     "navegacao": "Navigation",
+    "guias": "Study Guides",
     "contacto": "Contact",
     "localizacao": "Luanda, Angola",
     "redes_sociais": "Social Media",
@@ -366,5 +368,20 @@
     "pending_badge": "Pending",
     "last_updated": "Last updated",
     "pending_section_note": "This section contains content pending approval."
+  },
+  "guias_page": {
+    "hero_title": "Study Guides",
+    "hero_subtitle": "Essential disciplines, books and resources for health courses — Medicine, Pharmacy, Nursing and Clinical Laboratory Science.",
+    "no_courses": "Coming soon — study guides in preparation.",
+    "ver_disciplinas": "View disciplines →"
+  },
+  "guias_curso": {
+    "breadcrumb_guias": "Study Guides",
+    "porque_essencial": "Why it matters",
+    "livros_essenciais": "Essential Books",
+    "recursos_gratuitos": "Free Resources",
+    "outros_cursos": "Other Courses",
+    "disciplinas_preparacao": "Disciplines in preparation.",
+    "erro_carregar": "Error loading guide."
   }
 }

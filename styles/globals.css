@@ -3782,3 +3782,237 @@ html.dark .privacy-toc-link--active {
   color: var(--color-brand-accent);
   border-left-color: var(--color-brand-accent);
 }
+
+/* ============================================================
+   STUDY GUIDES — /[lang]/guias
+   ============================================================ */
+
+/* Index — course cards */
+.guide-course-card {
+  display: block;
+  border: 1px solid var(--color-brand-divider);
+  border-radius: 1rem;
+  background: var(--color-brand-bg);
+  padding: 1.5rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.guide-course-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0, 42, 50, 0.08);
+  border-color: var(--color-brand-accent);
+}
+.guide-course-emoji { font-size: 2.5rem; margin-bottom: 1rem; }
+.guide-course-name {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-brand-deep);
+  margin-bottom: 0.5rem;
+}
+.guide-course-desc {
+  font-size: 0.9rem;
+  color: var(--color-brand-deep);
+  opacity: 0.7;
+  margin-bottom: 0.75rem;
+}
+.guide-course-count {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-brand-accent);
+}
+
+/* Course page — discipline cards */
+.guide-discipline-card {
+  border: 1px solid var(--color-brand-divider);
+  border-radius: 1rem;
+  background: var(--color-brand-bg);
+  overflow: hidden;
+}
+.guide-discipline-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  padding: 1.5rem;
+  cursor: pointer;
+  text-align: left;
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  transition: background-color 0.2s ease;
+}
+.guide-discipline-header:hover { background: rgba(0, 42, 50, 0.03); }
+.guide-discipline-text { min-width: 0; }
+.guide-discipline-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-brand-deep);
+}
+.guide-discipline-desc {
+  font-size: 0.85rem;
+  color: var(--color-brand-deep);
+  opacity: 0.7;
+  margin-top: 0.25rem;
+}
+.guide-discipline-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+.guide-discipline-phase {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(0, 42, 50, 0.05);
+  color: var(--color-brand-primary);
+  white-space: nowrap;
+}
+.guide-discipline-toggle {
+  color: var(--color-brand-deep);
+  opacity: 0.5;
+  transition: transform 0.3s ease;
+}
+.guide-discipline-toggle.expanded { transform: rotate(180deg); }
+.guide-discipline-content { padding: 0 1.5rem 1.5rem; }
+
+.guide-section-block { margin-top: 1.5rem; }
+.guide-section-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-brand-deep);
+  opacity: 0.6;
+  margin-bottom: 0.75rem;
+}
+.guide-section-label::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--color-brand-divider);
+}
+
+/* Importance box */
+.guide-importance-box {
+  margin-top: 1rem;
+  background: rgba(0, 42, 50, 0.03);
+  border-left: 4px solid var(--color-brand-accent);
+  border-radius: 0 0.75rem 0.75rem 0;
+  padding: 1rem;
+  font-size: 0.9rem;
+  color: var(--color-brand-deep);
+  opacity: 0.85;
+}
+.guide-importance-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-brand-accent);
+  margin-bottom: 0.5rem;
+}
+
+/* Book cards */
+.guide-book-card {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background: rgba(0, 42, 50, 0.03);
+}
+.guide-book-cover {
+  flex-shrink: 0;
+  width: 96px;
+  height: 144px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+.guide-book-info { flex: 1; min-width: 0; }
+.guide-book-title {
+  font-weight: 700;
+  color: var(--color-brand-deep);
+  margin-bottom: 0.25rem;
+}
+.guide-book-meta {
+  font-size: 0.8rem;
+  color: var(--color-brand-deep);
+  opacity: 0.7;
+  margin-bottom: 0.5rem;
+}
+.guide-book-paragraph {
+  font-size: 0.9rem;
+  color: var(--color-brand-deep);
+  opacity: 0.75;
+  margin-bottom: 0.75rem;
+}
+.guide-book-links { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.guide-book-link {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-brand-divider);
+  color: var(--color-brand-accent);
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.guide-book-link:hover {
+  background: var(--color-brand-accent);
+  border-color: var(--color-brand-accent);
+  color: #ffffff;
+}
+
+/* Resources */
+.guide-resource-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--color-brand-deep);
+  transition: background 0.2s ease;
+}
+.guide-resource-link:hover { background: rgba(0, 42, 50, 0.03); }
+.guide-resource-icon {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 42, 50, 0.05);
+  font-size: 0.85rem;
+}
+.guide-resource-title { font-weight: 500; color: var(--color-brand-deep); }
+.guide-resource-desc {
+  font-size: 0.8rem;
+  color: var(--color-brand-deep);
+  opacity: 0.7;
+}
+
+/* Dark mode */
+html.dark .guide-course-card { background: var(--color-brand-bg-alt); }
+html.dark .guide-discipline-card { background: var(--color-brand-bg-alt); }
+html.dark .guide-discipline-header:hover,
+html.dark .guide-resource-link:hover { background: rgba(255, 255, 255, 0.05); }
+html.dark .guide-book-card,
+html.dark .guide-importance-box { background: rgba(255, 255, 255, 0.05); }
+html.dark .guide-discipline-phase { background: rgba(255, 255, 255, 0.08); }
+html.dark .guide-resource-icon { background: rgba(255, 255, 255, 0.08); }
+
+/* Responsivo */
+@media (max-width: 640px) {
+  .guide-book-card { flex-direction: column; }
+  .guide-book-cover {
+    width: 100%;
+    height: auto;
+    max-height: 220px;
+  }
+}

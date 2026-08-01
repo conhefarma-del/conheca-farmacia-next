@@ -26,6 +26,7 @@ export default function Header({ lang, t, onToggleDrawer }) {
     { href: getSectionHref(lang, 'artigos'), label: t('nav.artigos'), path: 'artigos' },
     { href: getSectionHref(lang, 'eventos'), label: t('nav.eventos'), path: 'eventos' },
     { href: getSectionHref(lang, 'lives'), label: t('nav.lives'), path: 'lives' },
+    { href: getSectionHref(lang, 'guias'), label: t('nav.guias'), path: 'guias' },
     { href: getSectionHref(lang, 'sobre'), label: t('nav.sobre'), path: 'sobre' },
   ]
 

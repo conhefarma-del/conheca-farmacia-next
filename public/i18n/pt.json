@@ -4,6 +4,7 @@
     "artigos": "Artigos",
     "eventos": "Eventos",
     "lives": "Lives",
+    "guias": "Guias de Estudo",
     "sobre": "Sobre Nós",
     "faq": "FAQ",
     "privacidade": "Privacidade"
@@ -56,6 +57,7 @@
   "footer": {
     "descricao": "Conhecimento que conecta. Formação que transforma. Saúde que evolui.",
     "navegacao": "Navegação",
+    "guias": "Guias de Estudo",
     "contacto": "Contato",
     "localizacao": "Luanda, Angola",
     "redes_sociais": "Redes Sociais",
@@ -366,5 +368,20 @@
     "pending_badge": "Pendente",
     "last_updated": "Última atualização",
     "pending_section_note": "Esta secção contém conteúdo pendente de aprovação."
+  },
+  "guias_page": {
+    "hero_title": "Guias de Estudo",
+    "hero_subtitle": "Disciplinas, livros e recursos essenciais para cursos de saúde — Medicina, Farmácia, Enfermagem e Análises Clínicas.",
+    "no_courses": "Em breve — guias de estudo em preparação.",
+    "ver_disciplinas": "Ver disciplinas →"
+  },
+  "guias_curso": {
+    "breadcrumb_guias": "Guias de Estudo",
+    "porque_essencial": "Porquê é essencial",
+    "livros_essenciais": "Livros Essenciais",
+    "recursos_gratuitos": "Recursos Gratuitos",
+    "outros_cursos": "Outros Cursos",
+    "disciplinas_preparacao": "Disciplinas em preparação.",
+    "erro_carregar": "Erro ao carregar guia."
   }
 }
