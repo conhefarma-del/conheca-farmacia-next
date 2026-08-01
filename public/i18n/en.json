@@ -6,6 +6,7 @@
     "lives": "Lives",
     "guias": "Study Guides",
     "protocolos": "Protocols",
+    "ferramentas": "Tools",
     "sobre": "About Us",
     "faq": "FAQ",
     "privacidade": "Privacy"
@@ -430,6 +431,7 @@
     "explicacao": "Explanation",
     "continuar": "Continue",
     "ver_resultado": "See result",
-    "erro_carregar": "Could not load the protocol."
+    "erro_carregar": "Could not load the protocol.",
+    "relacionados": "Related protocols"
   }
 }

@@ -293,6 +293,72 @@ html.dark .form-note {
     color: var(--color-brand-deep);
   }
 
+  /* Desktop nav dropdown ("Ferramentas" → Guias / Protocolos) */
+  .nav-dropdown { position: relative; }
+  .nav-dropdown-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-brand-deep);
+    padding: 5px 10px;
+    border-radius: 10px;
+    transition: color 0.3s, background 0.3s;
+  }
+  .nav-dropdown-btn:hover {
+    background: rgba(0, 73, 58, 0.06);
+    color: var(--color-brand-accent);
+  }
+  .nav-dropdown-btn.nav-link-active {
+    background: rgba(0, 73, 58, 0.12);
+    color: var(--color-brand-primary);
+    font-weight: 600;
+  }
+  .nav-dropdown-chevron { transition: transform 0.2s ease; }
+  .nav-dropdown-chevron.is-open { transform: rotate(180deg); }
+  .nav-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    min-width: 200px;
+    background: var(--color-brand-bg);
+    border: 1px solid var(--color-brand-divider);
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 8px 24px rgba(15, 26, 20, 0.10);
+    display: none;
+    z-index: 60;
+  }
+  .nav-dropdown-menu.is-open { display: flex; flex-direction: column; gap: 2px; }
+  .nav-dropdown-menu a {
+    display: block;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.925rem;
+    font-weight: 500;
+    color: var(--color-brand-deep);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .nav-dropdown-menu a:hover {
+    background: rgba(0, 73, 58, 0.06);
+    color: var(--color-brand-accent);
+  }
+  .nav-dropdown-menu a.nav-link-active {
+    background: rgba(0, 73, 58, 0.12);
+    color: var(--color-brand-primary);
+    font-weight: 600;
+  }
+  html.dark .nav-dropdown-btn,
+  html.dark .nav-dropdown-menu a {
+    color: var(--color-brand-deep);
+  }
+
   /* Drawer link active dark mode */
   html.dark .drawer-links li a.drawer-link-active {
     background: rgba(255, 255, 255, 0.12);
@@ -429,6 +495,42 @@ html.dark .form-note {
     background: rgba(0, 73, 58, 0.5);
     color: var(--color-brand-primary);
     font-weight: 600;
+  }
+
+  /* Drawer sub-menu ("Ferramentas" → Guias / Protocolos) */
+  .drawer-submenu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: calc(100% - 0.5rem);
+    margin: 0 0.25rem;
+    padding: 0.75rem 1rem;
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-brand-deep);
+    background: none;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .drawer-submenu-btn:hover { background: rgba(0, 73, 58, 0.05); }
+  .drawer-submenu-btn--active {
+    background: rgba(0, 73, 58, 0.5);
+    color: var(--color-brand-primary);
+    font-weight: 600;
+  }
+  .drawer-submenu-btn svg { transition: transform 0.2s ease; flex-shrink: 0; }
+  .drawer-submenu-btn svg.is-open { transform: rotate(180deg); }
+  .drawer-submenu {
+    list-style: none;
+    padding: 0;
+    margin: 0.25rem 0 0.375rem;
+  }
+  .drawer-submenu li a {
+    padding: 0.6rem 1rem 0.6rem 2.25rem;
+    font-size: 0.925rem;
   }
 
   /* Drawer Footer */
@@ -676,7 +778,7 @@ html.dark .form-note {
   }
 
   .footer-grid {
-    @apply grid grid-cols-1 md:grid-cols-4 gap-12 mb-12;
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-12;
   }
 
   .footer-logo img {
@@ -3801,7 +3903,13 @@ html.dark .privacy-toc-link--active {
   box-shadow: 0 10px 30px rgba(0, 42, 50, 0.08);
   border-color: var(--color-brand-accent);
 }
-.guide-course-emoji { font-size: 2.5rem; margin-bottom: 1rem; }
+.guide-course-icon {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  color: var(--color-brand-accent);
+  margin-bottom: 1rem;
+}
 .guide-course-name {
   font-size: 1.4rem;
   font-weight: 700;
@@ -3988,6 +4096,7 @@ html.dark .privacy-toc-link--active {
   align-items: center;
   justify-content: center;
   background: rgba(0, 42, 50, 0.05);
+  color: var(--color-brand-accent);
   font-size: 0.85rem;
 }
 .guide-resource-title { font-weight: 500; color: var(--color-brand-deep); }
@@ -4156,6 +4265,8 @@ html.dark .guide-resource-icon { background: rgba(255, 255, 255, 0.08); }
   border: 1px solid var(--color-brand-divider);
   margin-bottom: 24px;
 }
+.protocol-hero-badges { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+.protocol-hero-badges .protocol-category { margin-bottom: 0; }
 .protocol-category {
   display: inline-block;
   font-size: 12px;
@@ -4331,6 +4442,8 @@ html.dark .guide-resource-icon { background: rgba(255, 255, 255, 0.08); }
   line-height: 1.4;
 }
 .toc-link:hover { color: var(--color-brand-accent); text-decoration: underline; }
+.toc-link.is-active { color: var(--color-brand-accent); font-weight: 700; }
+.toc-link.is-active .toc-num { background: var(--color-brand-accent); color: #fff; }
 .toc-num {
   width: 20px;
   height: 20px;
@@ -4515,6 +4628,25 @@ html.dark .quiz-option.is-wrong,
 html.dark .quiz-feedback-title.is-wrong { color: #fca5a5; }
 html.dark .step-drug { color: var(--color-brand-accent); }
 html.dark .protocol-progress { background: var(--color-brand-bg); }
+
+/* ----- Relacionados ----- */
+.protocol-related-section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 8px 24px 72px;
+}
+.protocol-related-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-brand-deep);
+  opacity: 0.45;
+  margin-bottom: 16px;
+}
+
+/* Âncoras do TOC deslizam suavemente até ao passo */
+html { scroll-behavior: smooth; }
 
 /* ----- Responsivo ----- */
 @media (max-width: 840px) {

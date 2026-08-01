@@ -6,6 +6,7 @@
     "lives": "Lives",
     "guias": "Guias de Estudo",
     "protocolos": "Protocolos",
+    "ferramentas": "Ferramentas",
     "sobre": "Sobre Nós",
     "faq": "FAQ",
     "privacidade": "Privacidade"
@@ -430,6 +431,7 @@
     "explicacao": "Explicação",
     "continuar": "Continuar",
     "ver_resultado": "Ver resultado",
-    "erro_carregar": "Não foi possível carregar o protocolo."
+    "erro_carregar": "Não foi possível carregar o protocolo.",
+    "relacionados": "Protocolos relacionados"
   }
 }

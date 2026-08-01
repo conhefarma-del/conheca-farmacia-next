@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
-import { getPublicProtocolBySlug } from '@/lib/actions/protocolos'
+import { getPublicProtocolBySlug, getRelatedProtocols } from '@/lib/actions/protocolos'
 import ProtocoloDetailClient from './protocoloDetailClient'
 
 export const dynamic = 'force-dynamic'
@@ -24,5 +24,6 @@ export default async function ProtocoloDetalhePage({ params }) {
   const safeLang = SUPPORTED_LANGS.includes(lang) ? lang : DEFAULT_LANG
   const protocol = await getPublicProtocolBySlug(slug, safeLang)
   if (!protocol) notFound()
-  return <ProtocoloDetailClient lang={safeLang} protocol={protocol} />
+  const related = await getRelatedProtocols(protocol.category.slug, protocol.slug, safeLang, 3)
+  return <ProtocoloDetailClient lang={safeLang} protocol={protocol} related={related} />
 }

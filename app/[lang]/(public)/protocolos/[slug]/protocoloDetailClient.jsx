@@ -3,11 +3,12 @@
 import { useContext, useEffect, useMemo, useState } from 'react'
 import {
   ArrowUpRight, CalendarDays, CheckCircle2, Clock, Copy, Download, ListChecks, Share2,
-  ShieldAlert, TriangleAlert, Zap,
+  ShieldAlert, Signal, TriangleAlert, Zap,
 } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
 import { getSectionHref } from '@/lib/i18n-routes'
 import Breadcrumb from '@/components/ui/Breadcrumb'
+import ProtocolCard from '@/components/protocolos/ProtocolCard'
 import ProtocolStep from '@/components/protocolos/ProtocolStep'
 import ProtocolSidebar from '@/components/protocolos/ProtocolSidebar'
 import ProtocolQuiz from '@/components/protocolos/ProtocolQuiz'
@@ -33,7 +34,7 @@ function formatMonthYear(iso, lang) {
   }
 }
 
-export default function ProtocoloDetailClient({ lang, protocol }) {
+export default function ProtocoloDetailClient({ lang, protocol, related = [] }) {
   const { t } = useContext(LangContext)
   const storageKey = `cf_protocolo_progress_${protocol.slug}`
 
@@ -89,7 +90,7 @@ export default function ProtocoloDetailClient({ lang, protocol }) {
       <Breadcrumb items={[
         { label: t('nav.inicio'), href: '/' + lang },
         { label: t('protocolos_detalhe.breadcrumb_protocolos'), href: getSectionHref(lang, 'protocolos') },
-        { label: protocol.category.name, href: getSectionHref(lang, 'protocolos') },
+        { label: protocol.category.name, href: `${getSectionHref(lang, 'protocolos')}?categoria=${protocol.category.slug}` },
         { label: protocol.title },
       ]} />
 
@@ -107,7 +108,15 @@ export default function ProtocoloDetailClient({ lang, protocol }) {
       <div className="protocol-detail-layout">
         <main>
           <div className="protocol-hero">
-            <span className="protocol-category">{protocol.category.name}</span>
+            <div className="protocol-hero-badges">
+              <span className="protocol-category">{protocol.category.name}</span>
+              {protocol.difficulty && (
+                <span className={`protocol-difficulty protocol-difficulty--${protocol.difficulty}`}>
+                  <Signal size={12} aria-hidden="true" />
+                  {t(`protocolos_detalhe.dificuldade_${protocol.difficulty}`)}
+                </span>
+              )}
+            </div>
             <h1>{protocol.title}</h1>
             <div className="protocol-hero-meta">
               <span className="protocol-meta-item">
@@ -207,6 +216,17 @@ export default function ProtocoloDetailClient({ lang, protocol }) {
 
         <ProtocolSidebar protocol={protocol} mentionedDrugs={mentionedDrugs} t={t} />
       </div>
+
+      {related.length > 0 && (
+        <section className="protocol-related-section">
+          <div className="protocol-related-title">{t('protocolos_detalhe.relacionados')}</div>
+          <div className="protocolos-grid">
+            {related.map((p) => (
+              <ProtocolCard key={p.id} protocol={p} lang={lang} t={t} />
+            ))}
+          </div>
+        </section>
+      )}
 
       <div className="protocol-mobile-bar">
         {protocol.pdfUrl && (

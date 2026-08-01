@@ -1,6 +1,7 @@
 'use client'
 
 import { useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Search } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
 import Breadcrumb from '@/components/ui/Breadcrumb'
@@ -8,9 +9,32 @@ import ProtocolCard from '@/components/protocolos/ProtocolCard'
 
 export default function ProtocolosPageClient({ lang, categories, protocols }) {
   const { t } = useContext(LangContext)
-  const [activeCategory, setActiveCategory] = useState('all')
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const [activeCategory, setActiveCategory] = useState(() => {
+    if (typeof window === 'undefined') return 'all'
+    const cat = new URLSearchParams(window.location.search).get('categoria')
+    return cat && categories.some((c) => c.slug === cat) ? cat : 'all'
+  })
   const [query, setQuery] = useState('')
   const searchRef = useRef(null)
+
+  // Sincroniza com ?categoria= (back/forward, links externos, breadcrumb do detalhe)
+  useEffect(() => {
+    const cat = searchParams.get('categoria')
+    const valid = cat && categories.some((c) => c.slug === cat)
+    setActiveCategory(valid ? cat : 'all')
+  }, [searchParams, categories])
+
+  const selectCategory = (slug) => {
+    setActiveCategory(slug)
+    const params = new URLSearchParams(searchParams.toString())
+    if (slug === 'all') params.delete('categoria')
+    else params.set('categoria', slug)
+    const qs = params.toString()
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false })
+  }
 
   // Atalhos: "/" foca a pesquisa; Ctrl/Cmd+K idem
   useEffect(() => {
@@ -52,7 +76,7 @@ export default function ProtocolosPageClient({ lang, categories, protocols }) {
       <nav className="protocol-filters-bar" aria-label={t('protocolos_page.hero_title')}>
         <button
           className={`protocol-filter-btn ${activeCategory === 'all' ? 'active' : ''}`}
-          onClick={() => setActiveCategory('all')}
+          onClick={() => selectCategory('all')}
         >
           {t('protocolos_page.todos')}
         </button>
@@ -60,7 +84,7 @@ export default function ProtocolosPageClient({ lang, categories, protocols }) {
           <button
             key={c.id}
             className={`protocol-filter-btn ${activeCategory === c.slug ? 'active' : ''}`}
-            onClick={() => setActiveCategory(c.slug)}
+            onClick={() => selectCategory(c.slug)}
           >
             {c.name}
           </button>
