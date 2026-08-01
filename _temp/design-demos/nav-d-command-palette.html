@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Navegação: Command Palette — Conheça Farmácia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-brand-bg: #fafaf8;
+      --color-brand-bg-alt: #f3f4f1;
+      --color-brand-deep: #0f1a14;
+      --color-brand-accent: #0a844f;
+      --color-brand-accent-soft: rgba(10, 132, 79, 0.08);
+      --color-brand-divider: #e5e7e4;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: var(--font-sans); background: var(--color-brand-bg); color: var(--color-brand-deep); }
+
+    /* HEADER — minimalista */
+    .site-header {
+      border-bottom: 1px solid var(--color-brand-divider);
+      background: white;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--color-brand-deep);
+      font-weight: 700;
+      font-size: 18px;
+    }
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: var(--color-brand-accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 16px;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .cmd-trigger {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 12px 7px 14px;
+      background: var(--color-brand-bg-alt);
+      border: 1px solid var(--color-brand-divider);
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--color-brand-deep);
+      opacity: 0.65;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .cmd-trigger:hover { background: var(--color-brand-bg); border-color: var(--color-brand-accent); opacity: 1; }
+    .cmd-kbd {
+      padding: 2px 6px;
+      background: white;
+      border: 1px solid var(--color-brand-divider);
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: inherit;
+      color: var(--color-brand-deep);
+      opacity: 0.7;
+    }
+    .header-icon-btn {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      background: none;
+      border: 1px solid var(--color-brand-divider);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: background 0.15s;
+    }
+    .header-icon-btn:hover { background: var(--color-brand-bg-alt); }
+
+    /* OVERLAY */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 26, 20, 0.4);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+    }
+    .overlay.open { display: block; }
+
+    /* COMMAND PALETTE */
+    .command-palette {
+      display: none;
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      width: 90%;
+      max-width: 560px;
+      background: white;
+      border: 1px solid var(--color-brand-divider);
+      border-radius: 14px;
+      box-shadow: 0 24px 80px rgba(15, 26, 20, 0.2);
+      z-index: 201;
+      opacity: 0;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    .command-palette.open {
+      display: block;
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .cmd-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--color-brand-divider);
+    }
+    .cmd-input-icon { opacity: 0.4; font-size: 16px; }
+    .cmd-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      font-family: var(--font-sans);
+      background: transparent;
+      color: var(--color-brand-deep);
+    }
+    .cmd-input::placeholder { color: var(--color-brand-deep); opacity: 0.4; }
+    .cmd-esc {
+      padding: 3px 8px;
+      background: var(--color-brand-bg-alt);
+      border: 1px solid var(--color-brand-divider);
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--color-brand-deep);
+      opacity: 0.6;
+      font-family: inherit;
+    }
+    .cmd-results {
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 8px;
+    }
+    .cmd-group {
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--color-brand-deep);
+      opacity: 0.4;
+    }
+    .cmd-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    .cmd-item:hover, .cmd-item.selected { background: var(--color-brand-accent-soft); }
+    .cmd-item-icon {
+      width: 32px; height: 32px;
+      border-radius: 6px;
+      background: var(--color-brand-bg-alt);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .cmd-item-label { flex: 1; }
+    .cmd-item-title {
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 1px;
+    }
+    .cmd-item-desc {
+      font-size: 11px;
+      color: var(--color-brand-deep);
+      opacity: 0.5;
+    }
+    .cmd-item-shortcut {
+      display: flex;
+      gap: 4px;
+    }
+    .cmd-item-shortcut span {
+      padding: 2px 5px;
+      background: white;
+      border: 1px solid var(--color-brand-divider);
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 600;
+      font-family: inherit;
+    }
+    .cmd-footer {
+      padding: 10px 18px;
+      border-top: 1px solid var(--color-brand-divider);
+      display: flex;
+      gap: 16px;
+      font-size: 11px;
+      color: var(--color-brand-deep);
+      opacity: 0.5;
+    }
+    .cmd-footer-hint {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* PAGE PREVIEW */
+    .page-preview {
+      max-width: 1200px;
+      margin: 60px auto;
+      padding: 0 24px;
+    }
+    .page-preview h2 {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+    .page-preview p {
+      font-size: 14px;
+      color: var(--color-brand-deep);
+      opacity: 0.6;
+      margin-bottom: 40px;
+    }
+    .variant-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .variant-card {
+      background: white;
+      border-radius: 14px;
+      border: 1px solid var(--color-brand-divider);
+      padding: 24px;
+    }
+    .variant-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-brand-accent);
+      margin-bottom: 16px;
+    }
+    .variant-desc {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--color-brand-deep);
+      opacity: 0.7;
+      margin-bottom: 16px;
+    }
+    .pros-cons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .pro, .con {
+      font-size: 11px;
+      line-height: 1.5;
+      padding: 8px;
+      border-radius: 6px;
+    }
+    .pro { background: #dcfce7; color: #166534; }
+    .con { background: #fef2f2; color: #991b1b; }
+
+    /* Mini palette demo */
+    .mini-palette {
+      background: var(--color-brand-bg);
+      border: 1px solid var(--color-brand-divider);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .mini-palette-header {
+      padding: 10px 12px;
+      background: white;
+      border-bottom: 1px solid var(--color-brand-divider);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .mini-palette-input {
+      flex: 1;
+      height: 24px;
+      background: var(--color-brand-bg);
+      border-radius: 4px;
+    }
+    .mini-palette-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--color-brand-divider);
+      background: white;
+    }
+    .mini-palette-item:last-child { border-bottom: none; }
+    .mini-palette-item.active {
+      background: var(--color-brand-accent-soft);
+    }
+
+    @media (max-width: 768px) {
+      .variant-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#" class="logo">
+        <span class="logo-icon">CF</span>
+        Conheça Farmácia
+      </a>
+      <div class="header-actions">
+        <button class="cmd-trigger" id="cmdTrigger">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
+          Pesquisar...
+          <span class="cmd-kbd">⌘K</span>
+        </button>
+        <button class="header-icon-btn" aria-label="Utilizador">👤</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- OVERLAY -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- COMMAND PALETTE -->
+  <div class="command-palette" id="cmdPalette">
+    <div class="cmd-input-wrap">
+      <span class="cmd-input-icon">🔍</span>
+      <input type="text" class="cmd-input" id="cmdInput" placeholder="Pesquisar páginas, ferramentas, protocolos..." autofocus />
+      <button class="cmd-esc">ESC</button>
+    </div>
+    <div class="cmd-results" id="cmdResults">
+      <div class="cmd-group">Navegação principal</div>
+      <div class="cmd-item">
+        <div class="cmd-item-icon">🏠</div>
+        <div class="cmd-item-label">
+          <div class="cmd-item-title">Início</div>
+          <div class="cmd-item-desc">Página principal</div>
+        </div>
+      </div>
+      <div class="cmd-item">
+        <div class="cmd-item-icon">🧮</div>
+        <div class="cmd-item-label">
+          <div class="cmd-item-title">Ferramentas</div>
+          <div class="cmd-item-desc">Calculadoras, interacções, protocolos</div>
+        </div>
+        <div class="cmd-item-shortcut"><span>↑</span><span>↓</span></div>
+      </div>
+      <div class="cmd-group">Ferramentas</div>
+      <div class="cmd-item">
+        <div class="cmd-item-icon">⚗️</div>
+        <div class="cmd-item-label">
+          <div class="cmd-item-title">Interacções entre fármacos</div>
+          <div class="cmd-item-desc">Consultar compatibilidade</div>
+        </div>
+      </div>
+      <div class="cmd-item">
+        <div class="cmd-item-icon">📋</div>
+        <div class="cmd-item-label">
+          <div class="cmd-item-title">Protocolos Clínicos</div>
+          <div class="cmd-item-desc">Guias de tratamento passo a passo</div>
+        </div>
+      </div>
+      <div class="cmd-item">
+        <div class="cmd-item-icon">📖</div>
+        <div class="cmd-item-label">
+          <div class="cmd-item-title">Guias de Estudo</div>
+          <div class="cmd-item-desc">Farmácia, Medicina, Enfermagem...</div>
+        </div>
+      </div>
+      <div class="cmd-item">
+        <div class="cmd-item-icon">🏥</div>
+        <div class="cmd-item-label">
+          <div class="cmd-item-title">Directório de Farmácias</div>
+          <div class="cmd-item-desc">Encontre farmácias abertas perto de si</div>
+        </div>
+      </div>
+      <div class="cmd-group">Conteúdos</div>
+      <div class="cmd-item">
+        <div class="cmd-item-icon">📄</div>
+        <div class="cmd-item-label">
+          <div class="cmd-item-title">Artigos Científicos</div>
+          <div class="cmd-item-desc">Publicações e reviews</div>
+        </div>
+      </div>
+      <div class="cmd-item">
+        <div class="cmd-item-icon">📅</div>
+        <div class="cmd-item-label">
+          <div class="cmd-item-title">Eventos</div>
+          <div class="cmd-item-desc">Formações e webinars</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-footer">
+      <span class="cmd-footer-hint"><span class="cmd-kbd">↑↓</span> Navegar</span>
+      <span class="cmd-footer-hint"><span class="cmd-kbd">↵</span> Seleccionar</span>
+      <span class="cmd-footer-hint"><span class="cmd-kbd">ESC</span> Fechar</span>
+    </div>
+  </div>
+
+  <main class="page-preview">
+    <h2>Variante D · Command Palette (⌘K)</h2>
+    <p>Header minimalista. Toda a navegação concentrada numa palette tipo Spotlight/Vercel/Raycast. ⌘K ou clique na barra de pesquisa para abrir. Resultados agrupados por categoria com ícone + descrição + shortcut. Adeus dropdowns, olá velocidade.</p>
+
+    <div class="variant-grid">
+
+      <div class="variant-card">
+        <div class="variant-label">Desktop · ⌘K palette</div>
+        <div class="variant-desc">Header com logo + search bar como elemento principal. Clica ou ⌘K → palette centralized com resultados agrupados (Navegação / Ferramentas / Conteúdos). Ideal para power users.</div>
+        <div class="mini-palette" style="margin-top: 12px;">
+          <div class="mini-palette-header">
+            <span style="opacity: 0.4;">🔍</span>
+            <div class="mini-palette-input"></div>
+            <span style="font-size: 10px; opacity: 0.4; font-weight: 600;">ESC</span>
+          </div>
+          <div class="mini-palette-item">
+            <div style="width: 24px; height: 24px; border-radius: 4px; background: #f3f4f1; display: flex; align-items: center; justify-content: center; font-size: 12px;">🧮</div>
+            <div style="flex: 1;"><div style="font-size: 12px; font-weight: 500;">Ferramentas</div><div style="font-size: 10px; opacity: 0.5;">Calculadoras, interacções...</div></div>
+          </div>
+          <div class="mini-palette-item active">
+            <div style="width: 24px; height: 24px; border-radius: 4px; background: rgba(10,132,79,0.08); display: flex; align-items: center; justify-content: center; font-size: 12px;">📋</div>
+            <div style="flex: 1;"><div style="font-size: 12px; font-weight: 600; color: var(--color-brand-accent);">Protocolos Clínicos</div><div style="font-size: 10px; opacity: 0.5;">Guias de tratamento</div></div>
+          </div>
+          <div class="mini-palette-item">
+            <div style="width: 24px; height: 24px; border-radius: 4px; background: #f3f4f1; display: flex; align-items: center; justify-content: center; font-size: 12px;">📖</div>
+            <div style="flex: 1;"><div style="font-size: 12px; font-weight: 500;">Guias de Estudo</div><div style="font-size: 10px; opacity: 0.5;">Farmácia, Medicina...</div></div>
+          </div>
+        </div>
+        <div class="pros-cons" style="margin-top: 14px;">
+          <div class="pro">✓ Super rápido para power users<br/>✓ Zero clutter no header<br/>✓ Busca + navegação juntas<br/>✓ Escalável (infinitas páginas)</div>
+          <div class="con">✗ Invisível para novos usuários<br/>✗ Exige ⌘K muscle memory<br/>✗ Difícil de "descobrir"<br/>✗ Não funciona bem em touch</div>
+        </div>
+      </div>
+
+      <div class="variant-card">
+        <div class="variant-label">Mobile · Bottom sheet search</div>
+        <div class="variant-desc">No mobile, a barra de pesquisa no header abre um bottom sheet com resultados agrupados. Toque-first, mas mantém a filosofia "search-first".</div>
+        <div class="mini-palette" style="margin-top: 12px; border-radius: 14px 14px 0 0; border-bottom: none;">
+          <div style="padding: 10px; display: flex; justify-content: center;">
+            <div style="width: 36px; height: 4px; background: #e5e7e4; border-radius: 2px;"></div>
+          </div>
+          <div class="mini-palette-header" style="border-radius: 0;">
+            <span style="opacity: 0.4;">🔍</span>
+            <div class="mini-palette-input"></div>
+          </div>
+          <div class="mini-palette-item">
+            <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(10,132,79,0.08); display: flex; align-items: center; justify-content: center;">🏥</div>
+            <div style="flex: 1;"><div style="font-size: 13px; font-weight: 600;">Directório Farmácias</div><div style="font-size: 11px; opacity: 0.5;">Luanda · 1.2 km</div></div>
+          </div>
+          <div class="mini-palette-item">
+            <div style="width: 28px; height: 28px; border-radius: 6px; background: #f3f4f1; display: flex; align-items: center; justify-content: center;">📋</div>
+            <div style="flex: 1;"><div style="font-size: 13px; font-weight: 500;">Protocolos</div><div style="font-size: 11px; opacity: 0.5;">Hipertensão Resistente</div></div>
+          </div>
+        </div>
+        <div class="pros-cons" style="margin-top: 14px;">
+          <div class="pro">✓ Mobile-friendly (bottom sheet)<br/>✓ Search é sempre visível<br/>✓ Resultados relevantes primeiro</div>
+          <div class="con">✗ Esconde menu estruturado<br/>✗ Não existe "visão geral"<br/>✗ Depende de search quality</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top: 28px; padding: 16px; background: white; border-radius: 12px; border: 1px solid #e5e7e4;">
+      <div style="font-size: 12px; font-weight: 700; color: #0a844f; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em;">💡 Quando usar esta variante</div>
+      <div style="font-size: 13px; line-height: 1.6; color: #0f1a14; opacity: 0.75;">
+        Melhor se a tua audiência é <strong>tech-savvy</strong> (profissionais de saúde jovens, estudantes) e o site tem <strong>muitas páginas</strong> (20+). Combina com plataformas que já usam command palette (Vercel, Linear, Notion). Para <strong>Conheça Farmácia</strong>, funciona se o público-alvo for principalmente estudantes/internos/supervisores digitais. Pode ser combinado com Variante B (hub com pills) — pills visíveis + palette como atalho power-user.
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const cmdTrigger = document.getElementById('cmdTrigger');
+    const cmdPalette = document.getElementById('cmdPalette');
+    const overlay = document.getElementById('overlay');
+    const cmdInput = document.getElementById('cmdInput');
+
+    function openPalette() {
+      cmdPalette.classList.add('open');
+      overlay.classList.add('open');
+      setTimeout(() => cmdInput.focus(), 100);
+    }
+    function closePalette() {
+      cmdPalette.classList.remove('open');
+      overlay.classList.remove('open');
+      cmdInput.value = '';
+    }
+    cmdTrigger.addEventListener('click', openPalette);
+    overlay.addEventListener('click', closePalette);
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        if (cmdPalette.classList.contains('open')) closePalette();
+        else openPalette();
+      }
+      if (e.key === 'Escape') closePalette();
+    });
+
+    // Cmd+K hint click
+    document.querySelector('.cmd-kbd').addEventListener('click', openPalette);
+  </script>
+</body>
+</html>

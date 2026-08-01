@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Navegação: Tabs Inline — Conheça Farmácia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-brand-bg: #fafaf8;
+      --color-brand-bg-alt: #f3f4f1;
+      --color-brand-deep: #0f1a14;
+      --color-brand-accent: #0a844f;
+      --color-brand-accent-soft: rgba(10, 132, 79, 0.08);
+      --color-brand-divider: #e5e7e4;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: var(--font-sans); background: var(--color-brand-bg); color: var(--color-brand-deep); }
+
+    /* HEADER — compacto */
+    .site-header {
+      border-bottom: 1px solid var(--color-brand-divider);
+      background: white;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--color-brand-deep); font-weight: 700; font-size: 18px; }
+    .logo-icon { width: 32px; height: 32px; background: var(--color-brand-accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 16px; }
+
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+    .icon-btn {
+      width: 36px; height: 36px; border-radius: 8px; background: none; border: 1px solid var(--color-brand-divider);
+      cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: background 0.15s;
+    }
+    .icon-btn:hover { background: var(--color-brand-bg-alt); }
+
+    /* SUB-HEADER com tabs */
+    .sub-nav {
+      border-bottom: 1px solid var(--color-brand-divider);
+      background: white;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .sub-nav::-webkit-scrollbar { display: none; }
+    .sub-nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      gap: 0;
+      align-items: center;
+    }
+    .tab-item { position: relative; }
+    .tab-link {
+      display: flex; align-items: center; gap: 7px;
+      padding: 14px 18px;
+      font-size: 14px; font-weight: 500;
+      color: var(--color-brand-deep);
+      text-decoration: none;
+      cursor: pointer;
+      background: none; border: none;
+      font-family: inherit;
+      transition: color 0.15s, background 0.15s;
+      white-space: nowrap;
+    }
+    .tab-link:hover { color: var(--color-brand-accent); background: var(--color-brand-bg-alt); }
+    .tab-link.active {
+      color: var(--color-brand-accent); font-weight: 600;
+    }
+    .tab-link.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 18px;
+      right: 18px;
+      height: 2px;
+      background: var(--color-brand-accent);
+      border-radius: 2px 2px 0 0;
+    }
+    .tab-badge {
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: var(--color-brand-accent-soft);
+      color: var(--color-brand-accent);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    /* HAMBURGER */
+    .hamburger { display: none; flex-direction: column; gap: 5px; padding: 8px; background: none; border: none; cursor: pointer; }
+    .hamburger span { width: 22px; height: 2px; background: var(--color-brand-deep); border-radius: 2px; }
+
+    /* MOBILE SUB-NAV */
+    .mobile-sub-nav {
+      display: none;
+      background: white;
+      border-bottom: 1px solid var(--color-brand-divider);
+      padding: 10px 18px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .mobile-sub-nav.open { display: block; }
+    .mobile-tabs-row {
+      display: flex;
+      gap: 8px;
+    }
+    .mobile-tab {
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      background: var(--color-brand-bg-alt);
+      border: 1px solid var(--color-brand-divider);
+      color: var(--color-brand-deep);
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .mobile-tab.active {
+      background: var(--color-brand-accent);
+      color: white;
+      border-color: var(--color-brand-accent);
+    }
+
+    /* MOBILE DRAWER */
+    .mobile-drawer { display: none; position: fixed; inset: 0; background: white; z-index: 150; padding: 20px; overflow-y: auto; }
+    .mobile-drawer.open { display: block; }
+    .mobile-nav-list { list-style: none; }
+    .mobile-nav-item { border-bottom: 1px solid var(--color-brand-divider); }
+    .mobile-nav-link {
+      display: block; width: 100%; padding: 14px 0;
+      font-size: 15px; font-weight: 500; background: none; border: none;
+      color: var(--color-brand-deep); cursor: pointer; font-family: inherit; text-align: left;
+    }
+    .mobile-sub-list { list-style: none; padding: 0 0 10px 16px; display: none; }
+    .mobile-sub-list.open { display: block; }
+    .mobile-sub-link { display: block; padding: 10px 0; font-size: 14px; color: var(--color-brand-accent); text-decoration: none; }
+
+    /* PAGE PREVIEW */
+    .page-preview { max-width: 1200px; margin: 60px auto; padding: 0 24px; }
+    .page-preview h2 { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+    .page-preview p { font-size: 14px; color: var(--color-brand-deep); opacity: 0.6; margin-bottom: 40px; }
+    .variant-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .variant-card { background: white; border-radius: 14px; border: 1px solid var(--color-brand-divider); padding: 24px; }
+    .variant-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-brand-accent); margin-bottom: 16px; }
+    .variant-desc { font-size: 13px; line-height: 1.6; color: var(--color-brand-deep); opacity: 0.7; margin-bottom: 16px; }
+    .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .pro, .con { font-size: 11px; line-height: 1.5; padding: 8px; border-radius: 6px; }
+    .pro { background: #dcfce7; color: #166534; }
+    .con { background: #fef2f2; color: #991b1b; }
+
+    @media (max-width: 768px) {
+      .desktop-tabs { display: none; }
+      .hamburger { display: flex; }
+      .mobile-sub-nav { display: block; }
+      .variant-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#" class="logo">
+        <span class="logo-icon">CF</span>
+        Conheça Farmácia
+      </a>
+      <div class="header-actions">
+        <button class="icon-btn" aria-label="Pesquisa">🔍</button>
+        <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- SUB-NAV com tabs (desktop) -->
+  <div class="sub-nav desktop-tabs">
+    <div class="sub-nav-inner" id="desktopTabs">
+      <button class="tab-link active">Início</button>
+      <button class="tab-link">Ferramentas <span class="tab-badge">4</span></button>
+      <button class="tab-link">Guias de Estudo</button>
+      <button class="tab-link">Artigos Científicos</button>
+      <button class="tab-link">Protocolos</button>
+      <button class="tab-link">Eventos</button>
+      <button class="tab-link">Lives</button>
+      <button class="tab-link">Directório</button>
+    </div>
+  </div>
+
+  <!-- MOBILE: sub-nav scrollable + drawer -->
+  <div class="mobile-sub-nav" id="mobileSubNav">
+    <div class="mobile-tabs-row">
+      <button class="mobile-tab active">Início</button>
+      <button class="mobile-tab">Ferramentas ▾</button>
+      <button class="mobile-tab">Guias</button>
+      <button class="mobile-tab">Artigos</button>
+      <button class="mobile-tab">Protocolos</button>
+      <button class="mobile-tab">+</button>
+    </div>
+  </div>
+  <div class="mobile-drawer" id="mobileDrawer">
+    <ul class="mobile-nav-list">
+      <li class="mobile-nav-item"><a href="#" class="mobile-nav-link" style="color: var(--color-brand-accent); font-weight: 600;">Início</a></li>
+      <li class="mobile-nav-item">
+        <button class="mobile-nav-link" data-mobile-toggle="mob-t-ferramentas">Ferramentas ▾</button>
+        <ul class="mobile-sub-list" id="mob-t-ferramentas">
+          <li><a href="#" class="mobile-sub-link">🧮 Interacções</a></li>
+          <li><a href="#" class="mobile-sub-link">💊 Dosagem</a></li>
+          <li><a href="#" class="mobile-sub-link">🔬 Conversor</a></li>
+          <li><a href="#" class="mobile-sub-link">📋 Protocolos</a></li>
+        </ul>
+      </li>
+      <li class="mobile-nav-item"><a href="#" class="mobile-nav-link">Guias de Estudo</a></li>
+      <li class="mobile-nav-item"><a href="#" class="mobile-nav-link">Artigos Científicos</a></li>
+      <li class="mobile-nav-item"><a href="#" class="mobile-nav-link">Protocolos</a></li>
+      <li class="mobile-nav-item"><a href="#" class="mobile-nav-link">Eventos</a></li>
+      <li class="mobile-nav-item"><a href="#" class="mobile-nav-link">Lives</a></li>
+      <li class="mobile-nav-item"><a href="#" class="mobile-nav-link">Directório</a></li>
+    </ul>
+  </div>
+
+  <main class="page-preview">
+    <h2>Variante H · Tabs Inline (sub-nav independente)</h2>
+    <p>Header separa-se em 2 níveis: (1) header fixo com logo + search, (2) sub-nav com tabs horizontais inline. No mobile, tabs viram scroll horizontal pill-style + hamburger para menu completo. Sem dropdowns — todas as páginas são tabs.</p>
+
+    <div class="variant-grid">
+
+      <div class="variant-card">
+        <div class="variant-label">Desktop · Sub-nav com tabs</div>
+        <div class="variant-desc">Header simples (logo+lupa). Sub-nav logo abaixo com todas as secções como tabs (Início, Ferramentas, Guias, Artigos, Protocolos, Eventos, Lives, Directório). Active tab com underline accent. Scroll horizontal se necessário. Sub-itens (Ferramentas→Interacções) aparecem como dropdown ou como segunda linha de tabs aninhados.</div>
+        <div style="display: flex; flex-direction: column; border: 1px solid #e5e7e4; border-radius: 10px; overflow: hidden; margin-bottom: 12px;">
+          <div style="padding: 14px 18px; background: white; border-bottom: 1px solid #e5e7e4; font-size: 14px; font-weight: 600;">Início</div>
+          <div style="display: flex; padding: 0;">
+            <div style="flex: 1; padding: 10px 14px; font-size: 12px; text-align: center; border-right: 1px solid #e5e7e4; color: var(--color-brand-accent); font-weight: 600; border-bottom: 2px solid var(--color-brand-accent);">Início</div>
+            <div style="flex: 1; padding: 10px 14px; font-size: 12px; text-align: center; border-right: 1px solid #e5e7e4; opacity: 0.6;">Ferramentas</div>
+            <div style="flex: 1; padding: 10px 14px; font-size: 12px; text-align: center; border-right: 1px solid #e5e7e4; opacity: 0.6;">Guias</div>
+            <div style="flex: 1; padding: 10px 14px; font-size: 12px; text-align: center; opacity: 0.6;">Artigos</div>
+          </div>
+        </div>
+        <div class="pros-cons">
+          <div class="pro">✓ Zero dropdowns<br/>✓ Todas secções visíveis<br/>✓ Familiar (como tabs de IDE)<br/>✓ Aninhamento possível</div>
+          <div class="con">✗ Sub-nav ocupa altura extra<br/>✗ Muitas tabs = scroll<br/>✗ Sub-itens precisam de solução</div>
+        </div>
+      </div>
+
+      <div class="variant-card">
+        <div class="demo-label">Mobile · Tabs scrolláveis + drawer</div>
+        <div class="demo-desc">Sub-nav vira scroll horizontal de pills. "Ferramentas" com seta indica que tem sub-páginas (abre drawer). Cabe mais categorias sem perder navegação.</div>
+        <div style="display: flex; flex-direction: column; border: 1px solid var(--color-brand-divider); border-radius: 10px; overflow: hidden; margin-bottom: 12px;">
+          <div style="padding: 10px 14px; background: white; border-bottom: 1px solid #e5e7e4; display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 16px;">☰</span>
+            <span style="font-size: 14px; font-weight: 600;">Conheça Farmácia</span>
+          </div>
+          <div style="padding: 10px 12px; background: white; border-bottom: 1px solid #e5e7e4; display: flex; gap: 8px; overflow-x: auto;">
+            <span style="padding: 8px 14px; border-radius: 999px; background: var(--color-brand-accent); color: white; font-size: 12px; font-weight: 600; white-space: nowrap;">Início</span>
+            <span style="padding: 8px 14px; border-radius: 999px; background: var(--color-brand-bg-alt); font-size: 12px; white-space: nowrap;">Ferramentas ▾</span>
+            <span style="padding: 8px 14px; border-radius: 999px; background: var(--color-brand-bg-alt); font-size: 12px; white-space: nowrap;">Guias</span>
+            <span style="padding: 8px 14px; border-radius: 999px; background: var(--color-brand-bg-alt); font-size: 12px; white-space: nowrap;">Artigos</span>
+            <span style="padding: 8px 14px; border-radius: 999px; background: var(--color-brand-bg-alt); font-size: 12px; white-space: nowrap;">+</span>
+          </div>
+        </div>
+        <div class="pros-cons">
+          <div class="pro">✓ Mobile nativo (scroll pills)<br/>✓ Sem clutter<br/>✓ Indicador visual de subpáginas<br/>✓ Quick access a tudo</div>
+          <div class="con">✗ Duas camadas de nav<br/>✗ Sub-itens escondidos no drawer<br/>✗ Altura extra no mobile</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top: 28px; padding: 16px; background: white; border-radius: 12px; border: 1px solid #e5e7e4;">
+      <div style="font-size: 12px; font-weight: 700; color: #0a844f; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em;">💡 Quando usar esta variante</div>
+      <div style="font-size: 13px; line-height: 1.6; color: #0f1a14; opacity: 0.75;">
+        Escolhe esta se queres que <strong>todas as secções sejam descobertas</strong> sem cliques extra. As tabs inline Communication "tudo o que há aqui" de imediato. Funciona bem para <strong>Conheça Farmácia</strong> se tens poucas subpáginas por categoria (≤3). No mobile, scroll horizontal de pills é padrão iOS/Android. Acede a subpáginas via drawer ou inline dropdown nos pills com ▾.
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Desktop tab selection
+    const tabs = document.querySelectorAll('.tab-link, .mobile-tab');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', function(e) {
+        e.preventDefault();
+        tabs.forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    // Hamburger + drawer
+    const hamburger = document.getElementById('hamburger');
+    const mobileDrawer = document.getElementById('mobileDrawer');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileDrawer.classList.toggle('open');
+    });
+    document.querySelectorAll('[data-mobile-toggle]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.getElementById(btn.getAttribute('data-mobile-toggle')).classList.toggle('open');
+      });
+    });
+  </script>
+</body>
+</html>

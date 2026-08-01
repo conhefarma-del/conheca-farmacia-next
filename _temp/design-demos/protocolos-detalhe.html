@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hipertensão Arterial Resistente — Protocolo | Conheça Farmácia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-brand-bg: #fafaf8;
+      --color-brand-bg-alt: #f3f4f1;
+      --color-brand-deep: #0f1a14;
+      --color-brand-accent: #0a844f;
+      --color-brand-accent-soft: rgba(10, 132, 79, 0.08);
+      --color-brand-divider: #e5e7e4;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-brand-bg);
+      color: var(--color-brand-deep);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .site-header {
+      border-bottom: 1px solid var(--color-brand-divider);
+      background: white;
+    }
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--color-brand-deep);
+      font-weight: 700;
+      font-size: 18px;
+    }
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: var(--color-brand-accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 16px;
+    }
+    .back-link {
+      font-size: 13px;
+      color: var(--color-brand-accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .back-link:hover { text-decoration: underline; }
+
+    .detail-layout {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 100px;
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 48px;
+      align-items: start;
+    }
+
+    .breadcrumb {
+      padding: 18px 0 0;
+      font-size: 13px;
+      color: var(--color-brand-deep);
+      opacity: 0.5;
+    }
+    .breadcrumb a { color: inherit; text-decoration: none; }
+    .breadcrumb a:hover { opacity: 1; }
+    .breadcrumb span { margin: 0 6px; opacity: 0.4; }
+
+    /* Hero */
+    .protocol-hero {
+      margin: 20px 0 28px;
+      padding: 28px 30px;
+      background: white;
+      border-radius: 18px;
+      border: 1px solid var(--color-brand-divider);
+    }
+    .protocol-category {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: var(--color-brand-accent-soft);
+      color: var(--color-brand-accent);
+      margin-bottom: 14px;
+    }
+    .protocol-hero h1 {
+      font-size: clamp(24px, 3.5vw, 36px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 12px;
+    }
+    .protocol-hero-meta {
+      display: flex;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--color-brand-deep);
+      opacity: 0.6;
+      flex-wrap: wrap;
+    }
+
+    /* Quick summary */
+    .quick-summary {
+      background: var(--color-brand-bg-alt);
+      border-radius: 14px;
+      padding: 18px 22px;
+      margin-bottom: 28px;
+      border-left: 4px solid var(--color-brand-accent);
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .qs-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .qs-body { flex: 1; }
+    .qs-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--color-brand-accent);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .qs-text {
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--color-brand-deep);
+      opacity: 0.85;
+    }
+
+    /* Steps */
+    .steps-section {
+      margin-bottom: 28px;
+    }
+    .steps-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--color-brand-deep);
+      opacity: 0.45;
+      margin-bottom: 16px;
+    }
+    .step {
+      display: flex;
+      gap: 16px;
+      padding: 18px 22px;
+      background: white;
+      border-radius: 14px;
+      border: 1px solid var(--color-brand-divider);
+      margin-bottom: 10px;
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .step:hover {
+      box-shadow: 0 3px 12px rgba(15, 26, 20, 0.06);
+      border-color: var(--color-brand-accent);
+    }
+    .step-number {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--color-brand-accent);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .step-content { flex: 1; }
+    .step-label {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-brand-accent);
+      margin-bottom: 4px;
+    }
+    .step-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .step-body {
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--color-brand-deep);
+      opacity: 0.8;
+    }
+    .step-drug {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: var(--color-brand-accent-soft);
+      border: 1px solid var(--color-brand-accent);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-brand-accent);
+      margin-top: 8px;
+    }
+
+    /* Notes */
+    .notes-box {
+      background: #fffbeb;
+      border-radius: 12px;
+      border: 1px solid #f59e0b;
+      padding: 16px 20px;
+      margin-bottom: 28px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .notes-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .notes-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #92400e;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .notes-body {
+      font-size: 13px;
+      line-height: 1.6;
+      color: #92400e;
+      opacity: 0.9;
+    }
+
+    /* Sidebar */
+    .protocol-sidebar { position: sticky; top: 90px; }
+    .sidebar-card {
+      background: white;
+      border-radius: 14px;
+      border: 1px solid var(--color-brand-divider);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+    .sidebar-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--color-brand-deep);
+      opacity: 0.4;
+      margin-bottom: 10px;
+    }
+    .toc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .toc-list a {
+      font-size: 13px;
+      color: var(--color-brand-accent);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .toc-list a:hover { text-decoration: underline; }
+    .toc-num {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--color-brand-accent-soft);
+      color: var(--color-brand-accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .ref-link {
+      font-size: 13px;
+      color: var(--color-brand-accent);
+      text-decoration: none;
+      display: block;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--color-brand-divider);
+    }
+    .ref-link:last-child { border-bottom: none; }
+    .ref-link:hover { text-decoration: underline; }
+
+    .download-btn {
+      width: 100%;
+      padding: 11px;
+      background: var(--color-brand-accent);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      text-align: center;
+      text-decoration: none;
+      display: block;
+      margin-top: 6px;
+    }
+    .download-btn:hover { background: #0d6b3f; }
+
+    @media (max-width: 840px) {
+      .detail-layout { grid-template-columns: 1fr; }
+      .protocol-sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#" class="logo">
+        <span class="logo-icon">CF</span>
+        Conheça Farmácia
+      </a>
+      <a href="#" class="back-link">← Protocolos</a>
+    </div>
+  </header>
+
+  <div class="detail-layout">
+
+    <!-- COLUNA PRINCIPAL -->
+    <main>
+
+      <nav class="breadcrumb">
+        <a href="#">Protocolos</a> <span>/</span> Cardiologia <span>/</span> Hipertensão Arterial Resistente
+      </nav>
+
+      <div class="protocol-hero">
+        <span class="protocol-category">Cardiologia</span>
+        <h1>Hipertensão Arterial Resistente</h1>
+        <div class="protocol-hero-meta">
+          <span>📅 Actualizado: Abril 2026</span>
+          <span>·</span>
+          <span>📋 4 passos</span>
+          <span>·</span>
+          <span>⏱️ 15 min de leitura</span>
+        </div>
+      </div>
+
+      <!-- Quick summary -->
+      <div class="quick-summary">
+        <span class="qs-icon">⚡</span>
+        <div class="qs-body">
+          <div class="qs-title">Resumo Rápido</div>
+          <p class="qs-text">
+            Doente com PA não controlada apesar de 3 anti-hipertensores (incluindo diurético tiazídico) em doses óptimas. <strong>Acção:</strong> Confirmar adherencia, avaliar causas reversíveis, propor quadrupla ou encaminhar para secundário.
+          </p>
+        </div>
+      </div>
+
+      <!-- Steps -->
+      <div class="steps-section">
+        <div class="steps-title">Protocolo passo a passo</div>
+
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <div class="step-label">Confirmar</div>
+            <div class="step-title">Validar a resistência verdadeira</div>
+            <p class="step-body">
+              Confirmar adherencia (entrevista + contagem de comprimidos). Excluir pseudo-resistência: técnica de medição incorrecta, uso de AINEs não declarados, álcool, ou white-coat effect (MAPPA).
+            </p>
+            <span class="step-drug">🔍 MAPPA · Entrevista</span>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <div class="step-label">Identificar</div>
+            <div class="step-title">Causas secundárias e reversíveis</div>
+            <p class="step-body">
+              Apneia obstrutiva do sono, hiperaldosteronismo primário, feocromocitoma, estenose da artéria renal, síndrome de Cushing. Pedir orientação médica se suspeita.
+            </p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <div class="step-label">Optimizar</div>
+            <div class="step-title">Esquema quadruplo dirigido</div>
+            <p class="step-body">
+              Manter IECA/ARB II na dose óptima + antagonista da aldosterona (espironolactona 25mg) + diurético tiazídico + bloqueador dos canais de cálcio. <strong>Monitorizar K+ e função renal em 7–14 dias.</strong>
+            </p>
+            <span class="step-drug">💊 Espironolactona 25mg</span>
+            <span class="step-drug">🧪 K+ sérico · eGFR</span>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <div class="step-label">Referenciar</div>
+            <div class="step-title">Encaminhar para cuidados secundários</div>
+            <p class="step-body">
+              Se PA continua não controlada após optimização farmacológica máxima: referenciar para hiper tensão de difícil controlo. Documentar todos os fármacos tentados e respectivas doses.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Alertas -->
+      <div class="notes-box">
+        <span class="notes-icon">⚠️</span>
+        <div>
+          <div class="notes-title">Notas de Segurança</div>
+          <p class="notes-body">
+            A combinação IECA + espironolactona + diurético poupador de K+ aumenta risco de hipercalemia. Verificar K+ basal antes de iniciar. Não usar em doentes com eGFR &lt; 30 mL/min sem orientação especializada.
+          </p>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- SIDEBAR -->
+    <aside class="protocol-sidebar">
+
+      <div class="sidebar-card">
+        <div class="sidebar-label">Neste protocolo</div>
+        <ul class="toc-list">
+          <a href="#"><span class="toc-num">1</span> Confirmar resistência</a>
+          <a href="#"><span class="toc-num">2</span> Causas secundárias</a>
+          <a href="#"><span class="toc-num">3</span> Optimizar terapia</a>
+          <a href="#"><span class="toc-num">4</span> Referenciar</a>
+        </ul>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-label">Fármacos mencionados</div>
+        <ul class="toc-list">
+          <a href="#"><span style="opacity:0.4;">•</span> Enalapril</a>
+          <a href="#"><span style="opacity:0.4;">•</span> Losartan</a>
+          <a href="#"><span style="opacity:0.4;">•</span> Espironolactona</a>
+          <a href="#"><span style="opacity:0.4;">•</span> Hidroclorotiazida</a>
+          <a href="#"><span style="opacity:0.4;">•</span> Nifedipina</a>
+          <a href="#"><span style="opacity:0.4;">•</span> Amlodipina</a>
+        </ul>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-label">Referências</div>
+        <a href="#" class="ref-link">KDIGO 2024 — Hypertension in CKD</a>
+        <a href="#" class="ref-link">ESC/ESH 2018 — Arterial Hypertension</a>
+        <a href="#" class="ref-link">Infarmed — Protocolo Nacional</a>
+      </div>
+
+      <button class="download-btn">📥 Descarregar PDF</button>
+
+    </aside>
+
+  </div>
+
+</body>
+</html>

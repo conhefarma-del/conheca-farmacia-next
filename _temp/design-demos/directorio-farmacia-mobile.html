@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Consulta Rápida — Directório Farmácias</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-brand-bg: #fafaf8;
+      --color-brand-bg-alt: #f3f4f1;
+      --color-brand-deep: #0f1a14;
+      --color-brand-accent: #0a844f;
+      --color-brand-accent-soft: rgba(10, 132, 79, 0.08);
+      --color-brand-divider: #e5e7e4;
+      --color-critical-bg: #fef2f2;
+      --color-warning-bg: #fff7ed;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-sans);
+      background: #e5e7e4;
+      color: var(--color-brand-deep);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Mobile shell */
+    .mobile-shell {
+      max-width: 420px;
+      margin: 0 auto;
+      background: var(--color-brand-bg);
+      min-height: 100vh;
+      box-shadow: 0 0 40px rgba(15, 26, 20, 0.10);
+    }
+
+    /* Top nav */
+    .top-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      background: white;
+      border-bottom: 1px solid var(--color-brand-divider);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 15px;
+      text-decoration: none;
+      color: var(--color-brand-deep);
+    }
+    .nav-logo-icon {
+      width: 28px; height: 28px;
+      background: var(--color-brand-accent);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    /* Search */
+    .search-bar {
+      padding: 14px 18px;
+      background: white;
+      border-bottom: 1px solid var(--color-brand-divider);
+    }
+    .search-input {
+      width: 100%;
+      padding: 10px 14px 10px 36px;
+      border: 1px solid var(--color-brand-divider);
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: var(--font-sans);
+      background: var(--color-brand-bg);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230f1a14' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.3-4.3'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: 12px center;
+    }
+
+    /* Location */
+    .location-strip {
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--color-brand-deep);
+      opacity: 0.6;
+      background: white;
+      border-bottom: 1px solid var(--color-brand-divider);
+    }
+    .location-pin { opacity: 0.7; }
+
+    /* Pharmacy card — stacked list */
+    .pharmacy-card {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--color-brand-divider);
+      background: white;
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.15s;
+    }
+    .pharmacy-card:active { background: var(--color-brand-bg-alt); }
+    .pharmacy-card-header {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+    .pharmacy-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--color-brand-accent-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .pharmacy-info { flex: 1; min-width: 0; }
+    .pharmacy-name {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 2px;
+      line-height: 1.3;
+    }
+    .pharmacy-address {
+      font-size: 12px;
+      color: var(--color-brand-deep);
+      opacity: 0.6;
+      line-height: 1.4;
+    }
+    .pharmacy-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .meta-tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+    .tag-open { background: #dcfce7; color: #166534; }
+    .tag-24h { background: #dbeafe; color: #1e40af; }
+    .tag-closed { background: #fee2e2; color: #991b1b; }
+    .pharmacy-distance {
+      font-size: 11px;
+      color: var(--color-brand-accent);
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    /* Bottom sheet trigger */
+    .bottom-sheet {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 420px;
+      background: white;
+      border-top: 1px solid var(--color-brand-divider);
+      border-radius: 18px 18px 0 0;
+      box-shadow: 0 -4px 20px rgba(15, 26, 20, 0.1);
+      padding: 18px;
+      z-index: 100;
+    }
+    .sheet-handle {
+      width: 36px;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--color-brand-divider);
+      margin: 0 auto 14px;
+    }
+    .sheet-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .sheet-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .sheet-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      text-align: center;
+    }
+    .sheet-btn-primary {
+      background: var(--color-brand-accent);
+      color: white;
+    }
+    .sheet-btn-secondary {
+      background: var(--color-brand-bg-alt);
+      color: var(--color-brand-deep);
+    }
+
+    @media (min-width: 500px) {
+      body { padding: 24px 0; }
+      .mobile-shell { border-radius: 20px; min-height: auto; max-height: 800px; overflow-y: auto; }
+      .bottom-sheet { position: sticky; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-shell">
+
+    <!-- Top nav -->
+    <div class="top-nav">
+      <a href="#" class="nav-logo">
+        <span class="nav-logo-icon">CF</span>
+        Conheça Farmácia
+      </a>
+      <span style="font-size: 12px; opacity: 0.5;">Directório</span>
+    </div>
+
+    <!-- Search -->
+    <div class="search-bar">
+      <input type="search" class="search-input" placeholder="Pesquisar nome, bairro..." />
+    </div>
+
+    <!-- Location auto-detect -->
+    <div class="location-strip">
+      <span class="location-pin">📍</span>
+      <span>A detectar: <strong>Luanda, Angola</strong></span>
+    </div>
+
+    <!-- Cards -->
+    <div>
+
+      <a href="#" class="pharmacy-card">
+        <div class="pharmacy-card-header">
+          <div class="pharmacy-icon">💊</div>
+          <div class="pharmacy-info">
+            <div class="pharmacy-name">Farmácia Central do Patriota</div>
+            <div class="pharmacy-address">Patriota, Luanda · 1.2 km</div>
+          </div>
+        </div>
+        <div class="pharmacy-meta">
+          <span class="meta-tag tag-open">● Aberta</span>
+          <span class="meta-tag tag-24h">24h</span>
+        </div>
+        <div class="pharmacy-distance">Ver detalhe →</div>
+      </a>
+
+      <a href="#" class="pharmacy-card">
+        <div class="pharmacy-card-header">
+          <div class="pharmacy-icon">🏥</div>
+          <div class="pharmacy-info">
+            <div class="pharmacy-name">Farmácia Nova Vida</div>
+            <div class="pharmacy-address">Maianga, Luanda · 0.8 km</div>
+          </div>
+        </div>
+        <div class="pharmacy-meta">
+          <span class="meta-tag tag-open">● Aberta</span>
+        </div>
+        <div class="pharmacy-distance">Ver detalhe →</div>
+      </a>
+
+      <a href="#" class="pharmacy-card">
+        <div class="pharmacy-card-header">
+          <div class="pharmacy-icon">💊</div>
+          <div class="pharmacy-info">
+            <div class="pharmacy-name">Farmácia Kings</div>
+            <div class="pharmacy-address">Ingombota, Luanda · 2.3 km</div>
+          </div>
+        </div>
+        <div class="pharmacy-meta">
+          <span class="meta-tag tag-open">● Aberta</span>
+        </div>
+        <div class="pharmacy-distance">Ver detalhe →</div>
+      </a>
+
+      <a href="#" class="pharmacy-card">
+        <div class="pharmacy-card-header">
+          <div class="pharmacy-icon">🏥</div>
+          <div class="pharmacy-info">
+            <div class="pharmacy-name">Posto de Saúde de Viana</div>
+            <div class="pharmacy-address">Viana, Luanda · 5.1 km</div>
+          </div>
+        </div>
+        <div class="pharmacy-meta">
+          <span class="meta-tag tag-closed">Fechada</span>
+        </div>
+        <div class="pharmacy-distance">Ver detalhe →</div>
+      </a>
+
+      <a href="#" class="pharmacy-card">
+        <div class="pharmacy-card-header">
+          <div class="pharmacy-icon">💊</div>
+          <div class="pharmacy-info">
+            <div class="pharmacy-name">Farmácia do Hospital Geral</div>
+            <div class="pharmacy-address">Hospital Geral, Luanda · 4.0 km</div>
+          </div>
+        </div>
+        <div class="pharmacy-meta">
+          <span class="meta-tag tag-24h">24h</span>
+        </div>
+        <div class="pharmacy-distance">Ver detalhe →</div>
+      </a>
+
+    </div>
+
+    <!-- Bottom sheet (quick actions) -->
+    <div class="bottom-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">Acções rápidas</div>
+      <div class="sheet-actions">
+        <button class="sheet-btn sheet-btn-primary">📞 Ligar</button>
+        <button class="sheet-btn sheet-btn-secondary">🧭 Direcções</button>
+        <button class="sheet-btn sheet-btn-secondary">💬 WhatsApp</button>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

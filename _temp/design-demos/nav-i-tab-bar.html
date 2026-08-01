@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Navegação: Tab Bar Inferior — Conheça Farmácia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-brand-bg: #fafaf8;
+      --color-brand-bg-alt: #f3f4f1;
+      --color-brand-deep: #0f1a14;
+      --color-brand-accent: #0a844f;
+      --color-brand-accent-soft: rgba(10, 132, 79, 0.08);
+      --color-brand-divider: #e5e7e4;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: var(--font-sans); background: var(--color-brand-bg); color: var(--color-brand-deep); padding-bottom: 80px; }
+
+    /* HEADER — super compacto */
+    .site-header {
+      border-bottom: 1px solid var(--color-brand-divider);
+      background: white;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 52px;
+    }
+    .logo { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--color-brand-deep); font-weight: 700; font-size: 15px; }
+    .logo-icon { width: 28px; height: 28px; background: var(--color-brand-accent); border-radius: 7px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 14px; }
+    .header-actions { display: flex; gap: 6px; }
+    .icon-btn-sm {
+      width: 32px; height: 32px; border-radius: 6px; background: none; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; font-size: 15px; opacity: 0.6; transition: opacity 0.15s;
+    }
+    .icon-btn-sm:hover { opacity: 1; }
+
+    /* SUB-HEADER contextual */
+    .context-header {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 14px 20px 0;
+      font-size: 12px;
+      color: var(--color-brand-deep); opacity: 0.5;
+    }
+
+    /* TAB BAR INFERIOR — estilo iOS app */
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      border-top: 1px solid var(--color-brand-divider);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      height: 68px;
+      padding-bottom: env(safe-area-inset-bottom, 0);
+      z-index: 200;
+      box-shadow: 0 -2px 12px rgba(15, 26, 20, 0.04);
+    }
+    .tab-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      flex: 1;
+      height: 100%;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      color: var(--color-brand-deep);
+      opacity: 0.5;
+      transition: opacity 0.15s, color 0.15s;
+      position: relative;
+      padding: 6px 4px 4px;
+    }
+    .tab-btn:hover { opacity: 0.75; }
+    .tab-btn.active { opacity: 1; color: var(--color-brand-accent); }
+    .tab-btn.active::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 32px;
+      height: 3px;
+      background: var(--color-brand-accent);
+      border-radius: 0 0 3px 3px;
+    }
+    .tab-icon { font-size: 22px; line-height: 1; }
+    .tab-label { font-size: 10px; font-weight: 600; letter-spacing: 0.02em; }
+    .tab-badge {
+      position: absolute;
+      top: 4px;
+      right: 50%;
+      transform: translateX(14px);
+      padding: 1px 5px;
+      border-radius: 999px;
+      background: #dc2626;
+      color: white;
+      font-size: 9px;
+      font-weight: 700;
+      min-width: 16px;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    /* TAB PANEL */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .content-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    .panel-hero {
+      padding: 24px 0;
+    }
+    .panel-hero h2 {
+      font-size: 24px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 6px;
+    }
+    .panel-hero p {
+      font-size: 14px; color: var(--color-brand-deep); opacity: 0.6;
+    }
+
+    /* Cards inside panels */
+    .grid-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+      padding: 14px 0;
+    }
+    .grid-card {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid var(--color-brand-divider);
+      padding: 18px;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: box-shadow 0.15s, border-color 0.15s;
+    }
+    .grid-card:hover { border-color: var(--color-brand-accent); box-shadow: 0 4px 16px rgba(15, 26, 20, 0.06); }
+    .grid-card-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .grid-card-desc { font-size: 12px; color: var(--color-brand-deep); opacity: 0.6; line-height: 1.5; }
+    .grid-card-meta { font-size: 11px; opacity: 0.45; margin-top: 10px; }
+
+    /* Floating + button (centre do tab bar) */
+    .tab-btn-center {
+      position: relative;
+      top: -18px;
+    }
+    .tab-btn-center .tab-icon {
+      width: 52px; height: 52px;
+      background: var(--color-brand-accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      box-shadow: 0 6px 20px rgba(10, 132, 79, 0.3);
+    }
+    .tab-btn-center.active::before { display: none; }
+
+    /* PAGE PREVIEW (desktop overlay) */
+    .page-preview {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    .page-preview h2 { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+    .page-preview p { font-size: 14px; color: var(--color-brand-deep); opacity: 0.6; margin-bottom: 40px; }
+    .variant-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .variant-card { background: white; border-radius: 14px; border: 1px solid var(--color-brand-divider); padding: 24px; }
+    .variant-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-brand-accent); margin-bottom: 16px; }
+    .variant-desc { font-size: 13px; line-height: 1.6; color: var(--color-brand-deep); opacity: 0.7; margin-bottom: 16px; }
+    .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .pro, .con { font-size: 11px; line-height: 1.5; padding: 8px; border-radius: 6px; }
+    .pro { background: #dcfce7; color: #166534; }
+    .con { background: #fef2f2; color: #991b1b; }
+
+    @media (min-width: 769px) {
+      .tab-bar-mockup {
+        display: flex;
+        justify-content: space-around;
+        background: white;
+        border: 1px solid var(--color-brand-divider);
+        border-radius: 10px;
+        padding: 8px 0 4px;
+        margin-bottom: 12px;
+      }
+    }
+    @media (max-width: 768px) {
+      .desktop-only { display: none; }
+      .variant-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#" class="logo">
+        <span class="logo-icon">CF</span>
+        Conheça Farmácia
+      </a>
+      <div class="header-actions">
+        <button class="icon-btn-sm" aria-label="Pesquisa">🔍</button>
+        <button class="icon-btn-sm" aria-label="Perfil">👤</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- TAB PANELS (exemplo: painel Início activo) -->
+  <div class="tab-panel active" id="panel-home">
+    <div class="content-container">
+      <div class="panel-hero">
+        <h2>Início</h2>
+        <p>Bem-vindo de volta. Acesso rápido às ferramentas mais usadas.</p>
+      </div>
+      <div class="grid-cards">
+        <a href="#" class="grid-card">
+          <div class="grid-card-title">🧮 Interacções</div>
+          <div class="grid-card-desc">Consultar compatibilidade entre fármacos</div>
+          <div class="grid-card-meta">Útil · acesso rápido</div>
+        </a>
+        <a href="#" class="grid-card">
+          <div class="grid-card-title">📋 Protocolos</div>
+          <div class="grid-card-desc">Guias clínicos validados</div>
+          <div class="grid-card-meta">Novo · Hypertensão 2026</div>
+        </a>
+        <a href="#" class="grid-card">
+          <div class="grid-card-title">📖 Guias de Estudo</div>
+          <div class="grid-card-desc">Farmácia · Medicina · Enfermagem</div>
+          <div class="grid-card-meta">4 cursos activos</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="panel-ferramentas">
+    <div class="content-container">
+      <div class="panel-hero"><h2>Ferramentas</h2><p>Calculadoras e recursos clínicos.</p></div>
+      <div class="grid-cards">
+        <a href="#" class="grid-card"><div class="grid-card-title">🧮 Interacções</div><div class="grid-card-desc">Consultar compatibilidade</div></a>
+        <a href="#" class="grid-card"><div class="grid-card-title">💊 Dosagem</div><div class="grid-card-desc">Calculadora por peso/idade</div></a>
+        <a href="#" class="grid-card"><div class="grid-card-title">🔬 Conversor</div><div class="grid-card-desc">mg ↔ mmol, UI ↔ mg</div></a>
+        <a href="#" class="grid-card"><div class="grid-card-title">📋 Protocolos</div><div class="grid-card-desc">Guias passo a passo</div></a>
+      </div>
+    </div>
+  </div>
+  <div class="tab-panel" id="panel-guias">
+    <div class="content-container">
+      <div class="panel-hero"><h2>Guias de Estudo</h2><p>Cursos por área profissional.</p></div>
+      <div class="grid-cards">
+        <a href="#" class="grid-card"><div class="grid-card-title">🎓 Farmácia</div><div class="grid-card-desc">5 disciplinas · 48 unidades</div></a>
+        <a href="#" class="grid-card"><div class="grid-card-title">🩺 Medicina</div><div class="grid-card-desc">3 disciplinas · 32 unidades</div></a>
+        <a href="#" class="grid-card"><div class="grid-card-title">💉 Enfermagem</div><div class="grid-card-desc">4 disciplinas · 40 unidades</div></a>
+        <a href="#" class="grid-card"><div class="grid-card-title">🔬 Análises</div><div class="grid-card-desc">2 disciplinas · 20 unidades</div></a>
+      </div>
+    </div>
+  </div>
+  <div class="tab-panel" id="panel-artigos">
+    <div class="content-container">
+      <div class="panel-hero"><h2>Artigos Científicos</h2><p>Publicações e revisões da comunidade.</p></div>
+      <div class="grid-cards">
+        <a href="#" class="grid-card"><div class="grid-card-title">Novos antibióticos 2026</div><div class="grid-card-desc">Review · 8 min leitura</div></a>
+        <a href="#" class="grid-card"><div class="grid-card-title">Hipertensão: ESC 2023</div><div class="grid-card-desc">Protocolo · 5 min leitura</div></a>
+      </div>
+    </div>
+  </div>
+  <div class="tab-panel" id="panel-directorio">
+    <div class="content-container">
+      <div class="panel-hero"><h2>Directório Farmácias</h2><p>Encontre farmácias perto de si.</p></div>
+      <div class="grid-cards">
+        <a href="#" class="grid-card"><div class="grid-card-title">Farmácia Central</div><div class="grid-card-desc">Patriota · 1.2 km · Aberta 24h</div></a>
+        <a href="#" class="grid-card"><div class="grid-card-title">Farmácia Nova Vida</div><div class="grid-card-desc">Maianga · 0.8 km · Aberta</div></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB BAR INFERIOR (mobile-first, também mostrado no desktop mockup) -->
+  <nav class="tab-bar" id="tabBar">
+    <button class="tab-btn active" data-panel="panel-home">
+      <span class="tab-icon">🏠</span>
+      <span class="tab-label">Início</span>
+    </button>
+    <button class="tab-btn" data-panel="panel-ferramentas">
+      <span class="tab-icon">🧮</span>
+      <span class="tab-label">Ferramentas</span>
+      <span class="tab-badge">4</span>
+    </button>
+    <button class="tab-btn tab-btn-center" data-panel="panel-protocolos">
+      <span class="tab-icon">📋</span>
+      <span class="tab-label">Protocolos</span>
+    </button>
+    <button class="tab-btn" data-panel="panel-guias">
+      <span class="tab-icon">📖</span>
+      <span class="tab-label">Guias</span>
+    </button>
+    <button class="tab-btn" data-panel="panel-directorio">
+      <span class="tab-icon">🏥</span>
+      <span class="tab-label">Directório</span>
+    </button>
+  </nav>
+
+  <main class="page-preview desktop-only">
+    <h2>Variante I · Tab Bar Inferior (estilo app nativa)</h2>
+    <p>Abandona o header como destino principal. Em vez disso, usa uma tab bar fixa no fundo — como Instagram, WhatsApp, PedidosJá. Header fica super compacto (logo + ícones). Tab central "Protocolos" com FAB (floating action button) para a acção principal. Ideal para mobile-first.</p>
+
+    <div class="variant-grid">
+
+      <div class="variant-card">
+        <div class="variant-label">Mobile · Tab bar 5 ícones</div>
+        <div class="demo-desc">5 tabs no fundo: Início, Ferramentas, [Protocolos FAB central], Guias, Directório. Cada tab mostra ícone + label pequeno. Active com cor accent + top indicator. Safe-area-aware para iPhone.</div>
+        <div class="tab-bar-mockup">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px; opacity: 1;">
+            <span style="font-size: 20px;">🏠</span>
+            <span style="font-size: 10px; font-weight: 600; color: var(--color-brand-accent);">Início</span>
+            <div style="width: 24px; height: 2px; background: var(--color-brand-accent); border-radius: 2px; margin-top: 2px;"></div>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px; opacity: 0.45;">
+            <span style="font-size: 20px;">🧮</span>
+            <span style="font-size: 10px; font-weight: 600;">Ferramentas</span>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px;">
+            <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--color-brand-accent); display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; box-shadow: 0 4px 12px rgba(10,132,79,0.3);">📋</div>
+            <span style="font-size: 10px; font-weight: 600; margin-top: 2px;">Protocolos</span>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px; opacity: 0.45;">
+            <span style="font-size: 20px;">📖</span>
+            <span style="font-size: 10px; font-weight: 600;">Guias</span>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px; opacity: 0.45;">
+            <span style="font-size: 20px;">🏥</span>
+            <span style="font-size: 10px; font-weight: 600;">Directório</span>
+          </div>
+        </div>
+        <div class="pros-cons">
+          <div class="pro">✓ Mobile nativo (iOS/Android)<br/>✓ Always-visible thumb-friendly<br/>✓ FAB central para acção principal<br/>✓ Zero clutter no header</div>
+          <div class="con">✗ Só 4-5 tabs (limite)<br/>✗ Desktop precisa de solução diferente<br/>✗ Subpáginas precisam de dropdown ou segunda camada</div>
+        </div>
+      </div>
+
+      <div class="variant-card">
+        <div class="variant-label">Desktop · Header + tab bar</div>
+        <div class="demo-desc">No desktop, mantém-se o tab bar no fundo para consistência cross-device. Header fica responsável por branding + search + utilizador. Conteúdo ocupa a área central. Resultado: UX consistente entre mobile e desktop.</div>
+        <div style="display: flex; flex-direction: column; border: 1px solid #e5e7e4; border-radius: 10px; overflow: hidden; font-size: 12px; margin-bottom: 12px;">
+          <div style="padding: 10px 14px; background: white; border-bottom: 1px solid #e5e7e4; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-weight: 700;">CF Conheça Farmácia</span>
+            <span style="opacity: 0.4;">🔍 👤</span>
+          </div>
+          <div style="padding: 32px 16px; background: var(--color-brand-bg-alt); text-align: center; color: var(--color-brand-deep); opacity: 0.5;">
+            [Conteúdo do painel Início aqui — cards em grelha]
+          </div>
+          <div style="padding: 8px 4px 4px; background: white; border-top: 1px solid #e5e7e4; display: flex; justify-content: space-around;">
+            <div style="text-align: center; padding: 4px 8px; color: var(--color-brand-accent); font-weight: 600;"><div>🏠</div><div style="font-size: 10px;">Início</div></div>
+            <div style="text-align: center; padding: 4px 8px; opacity: 0.4;"><div>🧮</div><div style="font-size: 10px;">Ferramentas</div></div>
+            <div style="text-align: center; padding: 4px 8px; opacity: 0.4;"><div style="width: 36px; height: 36px; border-radius: 50%; background: var(--color-brand-accent); color: white; display: inline-flex; align-items: center; justify-content: center; font-size: 16px;">📋</div><div style="font-size: 10px;">Protocolos</div></div>
+            <div style="text-align: center; padding: 4px 8px; opacity: 0.4;"><div>📖</div><div style="font-size: 10px;">Guias</div></div>
+            <div style="text-align: center; padding: 4px 8px; opacity: 0.4;"><div>🏥</div><div style="font-size: 10px;">Directório</div></div>
+          </div>
+        </div>
+        <div class="pros-cons">
+          <div class="pro">✓ UX consistente (mobile ↔ desktop)<br/>✓ Conteúdo ganha todo o espaço<br/>✓ Simples de implementar<br/>✓ Bom para PWA</div>
+          <div class="con">✗ Tab bar no desktop é raro<br/>✗ Sensação "app em browser"<br/>✗ Perde convenções web tradicionais</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top: 28px; padding: 16px; background: white; border-radius: 12px; border: 1px solid #e5e7e4;">
+      <div style="font-size: 12px; font-weight: 700; color: #0a844f; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em;">💡 Quando usar esta variante</div>
+      <div style="font-size: 13px; line-height: 1.6; color: #0f1a14; opacity: 0.75;">
+        Escolhe esta se <strong>Conheça Farmácia</strong> é predominantemente consumida em mobile (profissionais de saúde no balcão, consulta, hospital). A tab bar inferior é a interface mais rápida para thumb — os 4 destros principais sempre acessíveis com uma mão. O FAB central "Protocolos" torna a acção mais importante (guia clínico no momento da consulta) sempre a um toque. Desktop converte-se automaticamente para header limpo + mesma tab bar para consistência. Melhor para apps/progressive web apps.
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const panels = document.querySelectorAll('.tab-panel');
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.getAttribute('data-panel');
+        tabBtns.forEach(b => b.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        const panel = document.getElementById(target);
+        if (panel) panel.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

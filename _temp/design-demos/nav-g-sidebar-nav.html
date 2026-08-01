@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Navegação: Sidebar Colapsável — Conheça Farmácia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-brand-bg: #fafaf8;
+      --color-brand-bg-alt: #f3f4f1;
+      --color-brand-deep: #0f1a14;
+      --color-brand-accent: #0a844f;
+      --color-brand-accent-soft: rgba(10, 132, 79, 0.08);
+      --color-brand-divider: #e5e7e4;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --sidebar-width: 260px;
+      --sidebar-collapsed: 68px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: var(--font-sans); background: var(--color-brand-bg); color: var(--color-brand-deep); display: flex; min-height: 100vh; }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: white;
+      border-right: 1px solid var(--color-brand-divider);
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      transition: width 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+      overflow: hidden;
+    }
+    .sidebar.collapsed { width: var(--sidebar-collapsed); }
+
+    .sidebar-header {
+      padding: 18px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--color-brand-divider);
+      min-height: 64px;
+    }
+    .sidebar-logo {
+      width: 32px; height: 32px;
+      background: var(--color-brand-accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .sidebar-brand {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+    }
+    .sidebar-brand-name {
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+    .sidebar-brand-sub {
+      font-size: 11px;
+      opacity: 0.5;
+      white-space: nowrap;
+    }
+    .sidebar.collapsed .sidebar-brand { opacity: 0; }
+
+    .sidebar-toggle {
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      background: var(--color-brand-bg-alt);
+      border: 1px solid var(--color-brand-divider);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.2s, background 0.15s;
+    }
+    .sidebar-toggle:hover { background: var(--color-brand-bg); }
+    .sidebar.collapsed .sidebar-toggle { transform: rotate(180deg); }
+    .sidebar.collapsed .sidebar-toggle svg { width: 14px; height: 14px; }
+
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 10px;
+    }
+    .sidebar-section {
+      margin-bottom: 20px;
+    }
+    .sidebar-section-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-brand-deep);
+      opacity: 0.4;
+      padding: 0 12px 8px;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .sidebar.collapsed .sidebar-section-title { opacity: 0; height: 0; padding: 0; }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-brand-deep);
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .sidebar-item:hover { background: var(--color-brand-bg-alt); }
+    .sidebar-item.active { background: var(--color-brand-accent-soft); color: var(--color-brand-accent); font-weight: 600; }
+    .sidebar-item-icon {
+      width: 20px; height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .sidebar-item-label { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+    .sidebar.collapsed .sidebar-item-label { opacity: 0; }
+    .sidebar-item-badge {
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: var(--color-brand-accent-soft);
+      color: var(--color-brand-accent);
+      font-size: 10px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .sidebar.collapsed .sidebar-item-badge { opacity: 0; }
+
+    /* EXPANDABLE SUB-ITEMS */
+    .sidebar-sub {
+      list-style: none;
+      padding: 0 0 0 22px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .sidebar-sub.open { max-height: 300px; }
+    .sidebar-sub-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--color-brand-deep);
+      text-decoration: none;
+      transition: background 0.12s;
+    }
+    .sidebar-sub-link:hover { background: var(--color-brand-bg-alt); }
+    .sidebar-sub-link.active { color: var(--color-brand-accent); font-weight: 600; }
+    .sidebar.collapsed .sidebar-sub { display: none; }
+
+    /* MAIN CONTENT */
+    .main {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      min-height: 100vh;
+    }
+    .main-header {
+      background: white;
+      border-bottom: 1px solid var(--color-brand-divider);
+      padding: 0 32px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .main-title { font-size: 16px; font-weight: 600; }
+    .main-content {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 48px 32px;
+    }
+    .main-content h2 { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 12px; }
+    .main-content p { font-size: 15px; line-height: 1.7; color: var(--color-brand-deep); opacity: 0.65; margin-bottom: 32px; }
+
+    .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .demo-card { background: white; border-radius: 14px; border: 1px solid var(--color-brand-divider); padding: 24px; }
+    .demo-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-brand-accent); margin-bottom: 16px; }
+    .demo-desc { font-size: 13px; line-height: 1.6; color: var(--color-brand-deep); opacity: 0.7; margin-bottom: 16px; }
+    .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .pro, .con { font-size: 11px; line-height: 1.5; padding: 8px; border-radius: 6px; }
+    .pro { background: #dcfce7; color: #166534; }
+    .con { background: #fef2f2; color: #991b1b; }
+
+    /* Mini sidebar demo */
+    .mini-sidebar {
+      background: white;
+      border: 1px solid var(--color-brand-divider);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .mini-sidebar-item {
+      padding: 8px 12px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--color-brand-divider);
+    }
+    .mini-sidebar-item:last-child { border-bottom: none; }
+    .mini-sidebar-item.active {
+      background: var(--color-brand-accent-soft);
+      color: var(--color-brand-accent);
+      font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); width: var(--sidebar-width) !important; }
+      .sidebar.mobile-open { transform: translateX(0); }
+      .main { margin-left: 0 !important; }
+      .demo-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">CF</div>
+      <div class="sidebar-brand">
+        <div class="sidebar-brand-name">Conheça Farmácia</div>
+        <div class="sidebar-brand-sub">Plataforma</div>
+      </div>
+      <button class="sidebar-toggle" id="sidebarToggle" aria-label="Recolher sidebar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18-9 12 15 6"/></svg>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <!-- Secção: Principal -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Principal</div>
+        <a href="#" class="sidebar-item active">
+          <span class="sidebar-item-icon">🏠</span>
+          <span class="sidebar-item-label">Início</span>
+        </a>
+        <a href="#" class="sidebar-item">
+          <span class="sidebar-item-icon">🔍</span>
+          <span class="sidebar-item-label">Pesquisa</span>
+        </a>
+
+        <!-- Ferramentas com sub-itens -->
+        <div class="sidebar-item" data-sidebar-sub="sub-ferramentas" style="cursor: pointer;">
+          <span class="sidebar-item-icon">🧮</span>
+          <span class="sidebar-item-label">Ferramentas</span>
+          <span class="sidebar-item-badge">4</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink: 0; transition: transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <ul class="sidebar-sub open" id="sub-ferramentas">
+          <li><a href="#" class="sidebar-sub-link active">🧮 Interacções</a></li>
+          <li><a href="#" class="sidebar-sub-link">💊 Dosagem</a></li>
+          <li><a href="#" class="sidebar-sub-link">🔬 Conversor</a></li>
+          <li><a href="#" class="sidebar-sub-link">📋 Protocolos</a></li>
+        </ul>
+
+        <!-- Guias com sub-itens -->
+        <div class="sidebar-item" data-sidebar-sub="sub-guias" style="cursor: pointer;">
+          <span class="sidebar-item-icon">📖</span>
+          <span class="sidebar-item-label">Guias de Estudo</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink: 0; transition: transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <ul class="sidebar-sub" id="sub-guias">
+          <li><a href="#" class="sidebar-sub-link">🎓 Farmácia</a></li>
+          <li><a href="#" class="sidebar-sub-link">🩺 Medicina</a></li>
+          <li><a href="#" class="sidebar-sub-link">💉 Enfermagem</a></li>
+          <li><a href="#" class="sidebar-sub-link">🔬 Análises Clínicas</a></li>
+        </ul>
+      </div>
+
+      <!-- Secção: Conteúdos -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Conteúdos</div>
+        <a href="#" class="sidebar-item">
+          <span class="sidebar-item-icon">📄</span>
+          <span class="sidebar-item-label">Artigos Científicos</span>
+        </a>
+        <a href="#" class="sidebar-item">
+          <span class="sidebar-item-icon">📅</span>
+          <span class="sidebar-item-label">Eventos</span>
+        </a>
+        <a href="#" class="sidebar-item">
+          <span class="sidebar-item-icon">▶️</span>
+          <span class="sidebar-item-label">Lives</span>
+        </a>
+      </div>
+
+      <!-- Secção: Serviços -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Serviços</div>
+        <a href="#" class="sidebar-item">
+          <span class="sidebar-item-icon">🏥</span>
+          <span class="sidebar-item-label">Directório Farmácias</span>
+        </a>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="main-header">
+      <div class="main-title">Início</div>
+      <button class="hamburger" style="display: none;" id="mobileMenu" aria-label="Abrir menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="main-content">
+      <h2>Variante G · Sidebar Colapsável</h2>
+      <p>A navegação sai do header e vai para uma sidebar fixa à esquerda, estilo Notion/Linear. Todas as categorias ficam sempre visíveis sem dropdowns. Subcategorias expandem inline com accordion. Botão de recolher transforma sidebar em ícons only (68px).</p>
+
+      <div class="demo-grid">
+
+        <div class="demo-card">
+          <div class="demo-label">Desktop · Sidebar expandida</div>
+          <div class="demo-desc">Sidebar 260px com logo + navegação completa. Ferramentas e Guias têm sub-itens expansíveis (accordion). Cada item com ícone 20px + label + badge opcional. Recolhe para 68px (só ícones).</div>
+          <div class="mini-sidebar">
+            <div class="mini-sidebar-item active" style="background: var(--color-brand-accent-soft); color: var(--color-brand-accent); font-weight: 600;">
+              <span>🏠</span> Início
+            </div>
+            <div class="mini-sidebar-item">
+              <span>🧮</span> Ferramentas <span style="margin-left: auto; background: var(--color-brand-accent-soft); color: var(--color-brand-accent); padding: 1px 6px; border-radius: 999px; font-size: 10px; font-weight: 700;">4</span>
+            </div>
+            <div class="mini-sidebar-item" style="padding-left: 32px; font-size: 11px; color: var(--color-brand-accent);">— Interacções</div>
+            <div class="mini-sidebar-item" style="padding-left: 32px; font-size: 11px;">— Dosagem</div>
+            <div class="mini-sidebar-item">
+              <span>📖</span> Guias
+            </div>
+            <div class="mini-sidebar-item"><span>📄</span> Artigos</div>
+            <div class="mini-sidebar-item"><span>📅</span> Eventos</div>
+          </div>
+          <div class="pros-cons" style="margin-top: 12px;">
+            <div class="pro">✓ Sem dropdowns — tudo visível<br/>✓ Escalável (adiciona item)<br/>✓ Colapsável a ícones<br/>✓ Padrão usado por Notion/Linear</div>
+            <div class="con">✗ Sidebar rouba espaço horizontal<br/>✗ Mudança grande do header actual<br/>✗ Precisa toggle mobile</div>
+          </div>
+        </div>
+
+        <div class="demo-card">
+          <div class="demo-label">Mobile · Sidebar offline-canvas</div>
+          <div class="demo-desc">No mobile, sidebar some. Hamburger → slide-over drawer com mesma estrutura vertical. Sub-itens como accordion. Mais próximo de uma "app nativa" do que drawer full-screen.</div>
+          <div class="mini-sidebar" style="border-radius: 12px;">
+            <div class="mini-sidebar-item active" style="background: var(--color-brand-accent-soft); color: var(--color-brand-accent); font-weight: 600;">🏠 Início</div>
+            <div class="mini-sidebar-item">🧮 Ferramentas ▾</div>
+            <div class="mini-sidebar-item" style="padding-left: 32px; font-size: 11px; color: var(--color-brand-accent);">— Protocolos</div>
+            <div class="mini-sidebar-item" style="padding-left: 32px; font-size: 11px; color: var(--color-brand-accent);">— Interacções</div>
+            <div class="mini-sidebar-item">📖 Guias</div>
+            <div class="mini-sidebar-item">📄 Artigos</div>
+            <div class="mini-sidebar-item">🏥 Directório</div>
+          </div>
+          <div class="pros-cons" style="margin-top: 12px;">
+            <div class="pro">✓ Sensação "app nativa"<br/>✓ Sem dropdowns ocultos<br/>✓ Conteúdo sempre visível</div>
+            <div class="con">✗ Sidebar some em mobile<br/>✗ Mais complexo de implementar<br/>✗ Requer CSS/JS no mobile</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="margin-top: 28px; padding: 16px; background: white; border-radius: 12px; border: 1px solid #e5e7e4;">
+        <div style="font-size: 12px; font-weight: 700; color: #0a844f; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em;">💡 Quando usar esta variante</div>
+        <div style="font-size: 13px; line-height: 1.6; color: #0f1a14; opacity: 0.75;">
+          Melhor para sites com <strong>muitas secções permanentes</strong> (8+) que não cabem no header. Elimina o problema de "header cheio" definitivamente — a sidebar cresce verticalmente sem ocupar header. Inspiração: <strong>Notion</strong>, <strong>Linear</strong>, <strong>GitBook</strong>. A sidebar colapsável dá flexibilidade: expanded para desktop, collapsed para screens médios, drawer para mobile. Ideal se o site vai crescer muito (ex: +3 secções nos próximos meses).
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Sidebar collapse
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    sidebarToggle.addEventListener('click', () => sidebar.classList.toggle('collapsed'));
+
+    // Sidebar sub-items accordion
+    document.querySelectorAll('[data-sidebar-sub]').forEach(item => {
+      item.addEventListener('click', () => {
+        const targetId = item.getAttribute('data-sidebar-sub');
+        const sub = document.getElementById(targetId);
+        if (sub) sub.classList.toggle('open');
+        // rotate chevron
+        const chevron = item.querySelector('svg');
+        if (chevron) {
+          const isOpen = sub && sub.classList.contains('open');
+          chevron.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+      });
+    });
+
+    // Active state on sidebar item click
+    document.querySelectorAll('.sidebar-item, .sidebar-sub-link').forEach(el => {
+      el.addEventListener('click', function(e) {
+        if (this.tagName === 'A') {
+          e.preventDefault();
+        }
+        document.querySelectorAll('.sidebar-item, .sidebar-sub-link').forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

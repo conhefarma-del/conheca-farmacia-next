@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Edit3, Trash2, RotateCcw, FolderOpen, CheckCircle, XCircle } from 'lucide-react'
+import { Plus, Edit3, Trash2, RotateCcw, FolderOpen, CheckCircle, XCircle, GraduationCap } from 'lucide-react'
 import {
   getAllGuideCourses,
   getGuideCourseDetail,
@@ -12,9 +12,11 @@ import {
   restoreGuideCourse,
   deleteGuideCourse,
   deleteGuideDiscipline,
+  deleteGuideUniversity,
 } from '@/lib/actions/guides'
 import GuideCursoForm from './GuideCursoForm'
 import GuideDisciplinaForm from './GuideDisciplinaForm'
+import GuideUniversidadeForm from './GuideUniversidadeForm'
 
 /**
  * Gestão hierárquica dos Guias de Estudo:
@@ -37,6 +39,11 @@ export default function GuidesAdminPage({ lang, initialCourses, currentUserRole 
   const [discPanelOpen, setDiscPanelOpen] = useState(false)
   const [discPanelRendered, setDiscPanelRendered] = useState(false)
   const [editingDiscipline, setEditingDiscipline] = useState(null)
+
+  // University slide panel
+  const [univPanelOpen, setUnivPanelOpen] = useState(false)
+  const [univPanelRendered, setUnivPanelRendered] = useState(false)
+  const [editingUniversity, setEditingUniversity] = useState(null)
 
   const reloadCourses = useCallback(async () => {
     const list = await getAllGuideCourses()
@@ -77,6 +84,21 @@ export default function GuidesAdminPage({ lang, initialCourses, currentUserRole 
     setTimeout(() => {
       setDiscPanelRendered(false)
       setEditingDiscipline(null)
+    }, 250)
+  }, [])
+
+  // --- University panel open/close ---
+  const openUnivPanel = useCallback((universidade = null) => {
+    setEditingUniversity(universidade)
+    setUnivPanelRendered(true)
+    requestAnimationFrame(() => setUnivPanelOpen(true))
+  }, [])
+
+  const closeUnivPanel = useCallback(() => {
+    setUnivPanelOpen(false)
+    setTimeout(() => {
+      setUnivPanelRendered(false)
+      setEditingUniversity(null)
     }, 250)
   }, [])
 
@@ -127,6 +149,22 @@ export default function GuidesAdminPage({ lang, initialCourses, currentUserRole 
     if (selectedCourse) await selectCourse(selectedCourse)
     await reloadCourses()
   }, [selectedCourse, selectCourse, reloadCourses])
+
+  // --- University actions ---
+  const handleUnivSaved = useCallback(async (result) => {
+    if (result?.success) {
+      setMessage(editingUniversity ? 'Universidade atualizada com sucesso!' : 'Universidade adicionada com sucesso!')
+      closeUnivPanel()
+      if (selectedCourse) await selectCourse(selectedCourse)
+    }
+  }, [editingUniversity, closeUnivPanel, selectedCourse, selectCourse])
+
+  const handleDeleteUniversity = useCallback(async (universidade) => {
+    if (!window.confirm(`Remover a universidade "${universidade.name}" deste curso? Esta ação é definitiva.`)) return
+    const result = await deleteGuideUniversity(universidade.id)
+    setMessage(result.success ? `Universidade "${universidade.name}" removida.` : `Erro: ${result.error}`)
+    if (selectedCourse) await selectCourse(selectedCourse)
+  }, [selectedCourse, selectCourse])
 
   const statusBadge = (status, isArchived) => {
     if (isArchived) return <span className="admin-badge">Arquivado</span>
@@ -274,6 +312,67 @@ export default function GuidesAdminPage({ lang, initialCourses, currentUserRole 
         </div>
       </div>
 
+      {/* ===== Universidades do curso selecionado ===== */}
+      <div className="admin-card" style={{ marginTop: 24 }}>
+        <div className="admin-card-header">
+          <h2><GraduationCap size={18} style={{ verticalAlign: '-3px', marginRight: 6 }} />Universidades {selectedCourse ? `— ${selectedCourse.name_pt}` : ''}</h2>
+          {selectedCourse && (
+            <button className="admin-btn admin-btn-primary" onClick={() => openUnivPanel()}>
+              <Plus size={16} /> Adicionar Universidade
+            </button>
+          )}
+        </div>
+        <div className="admin-card-body">
+          {!selectedCourse ? (
+            <p className="admin-table-empty">Selecione um curso (botão "Gerir") para gerir as universidades que o lecionam.</p>
+          ) : loadingDetail ? (
+            <p className="admin-table-empty">A carregar universidades...</p>
+          ) : (selectedCourse.universities || []).length === 0 ? (
+            <p className="admin-table-empty">Nenhuma universidade associada a este curso. Adicione as que o lecionam em Angola.</p>
+          ) : (
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Cidade</th>
+                  <th>Tipo</th>
+                  <th>Estado</th>
+                  <th>Links</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {selectedCourse.universities.map((u) => (
+                  <tr key={u.id}>
+                    <td>{u.name}</td>
+                    <td>{u.city || '-'}</td>
+                    <td>
+                      <span className="admin-badge admin-badge-success">{u.is_public ? 'Pública' : 'Privada'}</span>
+                    </td>
+                    <td>{statusBadge(u.status, u.is_archived)}</td>
+                    <td style={{ fontSize: 12 }}>
+                      {u.website_url && <div>Site</div>}
+                      {u.course_url && <div>Curso</div>}
+                      {!u.website_url && !u.course_url && '-'}
+                    </td>
+                    <td>
+                      <div className="admin-table-actions">
+                        <button className="admin-btn admin-btn-sm" onClick={() => openUnivPanel(u)} title="Editar universidade">
+                          <Edit3 size={14} /> Editar
+                        </button>
+                        <button className="admin-btn admin-btn-sm admin-btn-danger" onClick={() => handleDeleteUniversity(u)} title="Remover universidade">
+                          <XCircle size={14} /> Remover
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+
       {/* ===== Slide panels ===== */}
       {coursePanelRendered && (
         <GuideCursoForm
@@ -291,6 +390,16 @@ export default function GuidesAdminPage({ lang, initialCourses, currentUserRole 
           panelOpen={discPanelOpen}
           onClose={closeDiscPanel}
           onSaved={handleDiscSaved}
+        />
+      )}
+
+      {univPanelRendered && selectedCourse && (
+        <GuideUniversidadeForm
+          courseId={selectedCourse.id}
+          universidade={editingUniversity}
+          panelOpen={univPanelOpen}
+          onClose={closeUnivPanel}
+          onSaved={handleUnivSaved}
         />
       )}
     </div>

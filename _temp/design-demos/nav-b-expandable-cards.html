@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Navegação: Cards Expansíveis — Conheça Farmácia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-brand-bg: #fafaf8;
+      --color-brand-bg-alt: #f3f4f1;
+      --color-brand-deep: #0f1a14;
+      --color-brand-accent: #0a844f;
+      --color-brand-accent-soft: rgba(10, 132, 79, 0.08);
+      --color-brand-divider: #e5e7e4;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: var(--font-sans); background: var(--color-brand-bg); color: var(--color-brand-deep); }
+
+    /* HEADER */
+    .site-header {
+      border-bottom: 1px solid var(--color-brand-divider);
+      background: white;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--color-brand-deep);
+      font-weight: 700;
+      font-size: 18px;
+    }
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: var(--color-brand-accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 16px;
+    }
+
+    /* DESKTOP NAV */
+    .desktop-nav {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      list-style: none;
+    }
+    .nav-link {
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-brand-deep);
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      background: none;
+      border: none;
+      font-family: inherit;
+    }
+    .nav-link:hover { background: var(--color-brand-bg-alt); }
+    .nav-link.active { color: var(--color-brand-accent); font-weight: 600; }
+
+    /* EXPANDABLE CARD TRIGGER */
+    .nav-expand {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .nav-expand .chevron {
+      width: 14px; height: 14px;
+      transition: transform 0.2s;
+      opacity: 0.5;
+    }
+    .nav-item.open .nav-expand .chevron { transform: rotate(180deg); }
+
+    /* FULL-WIDTH EXPANDABLE AREA */
+    .nav-expand-area {
+      position: absolute;
+      top: calc(100% + 1px);
+      left: 0;
+      right: 0;
+      background: white;
+      border-bottom: 1px solid var(--color-brand-divider);
+      box-shadow: 0 10px 30px rgba(15, 26, 20, 0.08);
+      padding: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s cubic-bezier(0.22, 1, 0.36, 1), padding 0.3s;
+      z-index: 200;
+    }
+    .nav-item.open .nav-expand-area {
+      max-height: 500px;
+      padding: 24px 0;
+    }
+    .expand-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+    .expand-col-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--color-brand-accent);
+      margin-bottom: 12px;
+    }
+    .expand-link {
+      display: block;
+      padding: 8px 0;
+      font-size: 13px;
+      color: var(--color-brand-deep);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .expand-link:hover { color: var(--color-brand-accent); }
+    .expand-link.active { color: var(--color-brand-accent); font-weight: 600; }
+    .expand-desc {
+      font-size: 11px;
+      color: var(--color-brand-deep);
+      opacity: 0.55;
+      line-height: 1.4;
+      margin-top: 2px;
+    }
+    .expand-card {
+      padding: 14px;
+      background: var(--color-brand-bg-alt);
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+    .expand-card-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    /* HAMBURGER */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      padding: 8px;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .hamburger span {
+      width: 22px; height: 2px;
+      background: var(--color-brand-deep);
+      border-radius: 2px;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* MOBILE DRAWER */
+    .mobile-drawer {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: white;
+      z-index: 150;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .mobile-drawer.open { display: block; }
+    .mobile-nav-list { list-style: none; }
+    .mobile-nav-item { border-bottom: 1px solid var(--color-brand-divider); }
+    .mobile-nav-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 16px 0;
+      font-size: 16px;
+      font-weight: 500;
+      background: none;
+      border: none;
+      color: var(--color-brand-deep);
+      cursor: pointer;
+      font-family: inherit;
+      text-align: left;
+    }
+    .mobile-sub-list {
+      list-style: none;
+      padding: 0 0 12px 16px;
+      display: none;
+    }
+    .mobile-sub-list.open { display: block; }
+    .mobile-sub-link {
+      display: block;
+      padding: 10px 0;
+      font-size: 14px;
+      color: var(--color-brand-accent);
+      text-decoration: none;
+    }
+    .mobile-expand-card {
+      padding: 12px;
+      background: var(--color-brand-bg-alt);
+      border-radius: 8px;
+      margin: 6px 0;
+    }
+    .mobile-expand-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .mobile-expand-desc {
+      font-size: 11px;
+      color: var(--color-brand-deep);
+      opacity: 0.6;
+      line-height: 1.4;
+    }
+
+    /* PAGE PREVIEW */
+    .page-preview {
+      max-width: 1200px;
+      margin: 60px auto;
+      padding: 0 24px;
+    }
+    .page-preview h2 {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+    .page-preview p {
+      font-size: 14px;
+      color: var(--color-brand-deep);
+      opacity: 0.6;
+      margin-bottom: 40px;
+    }
+    .variant-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .variant-card {
+      background: white;
+      border-radius: 14px;
+      border: 1px solid var(--color-brand-divider);
+      padding: 24px;
+    }
+    .variant-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-brand-accent);
+      margin-bottom: 16px;
+    }
+    .variant-desc {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--color-brand-deep);
+      opacity: 0.7;
+      margin-bottom: 16px;
+    }
+    .mini-nav {
+      display: flex;
+      gap: 4px;
+      padding: 10px;
+      background: var(--color-brand-bg);
+      border-radius: 10px;
+      flex-wrap: wrap;
+    }
+    .mini-item {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      background: white;
+      border: 1px solid var(--color-brand-divider);
+      color: var(--color-brand-deep);
+    }
+    .mini-item.active {
+      background: var(--color-brand-accent);
+      color: white;
+      border-color: var(--color-brand-accent);
+    }
+    .pros-cons {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--color-brand-divider);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .pro, .con {
+      font-size: 11px;
+      line-height: 1.5;
+      padding: 8px;
+      border-radius: 6px;
+    }
+    .pro { background: #dcfce7; color: #166534; }
+    .con { background: #fef2f2; color: #991b1b; }
+
+    @media (max-width: 768px) {
+      .desktop-nav { display: none; }
+      .hamburger { display: flex; }
+      .variant-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#" class="logo">
+        <span class="logo-icon">CF</span>
+        Conheça Farmácia
+      </a>
+      <nav>
+        <ul class="desktop-nav" id="desktopNav">
+          <li class="nav-item">
+            <a href="#" class="nav-link active">Início</a>
+          </li>
+          <li class="nav-item" id="nav-ferramentas">
+            <button class="nav-link nav-expand" data-expand="ferramentas">
+              Ferramentas
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="nav-expand-area" id="expand-ferramentas">
+              <div class="expand-inner">
+                <div>
+                  <div class="expand-col-title">Calculadoras</div>
+                  <a href="#" class="expand-link">Interacções entre fármacos</a>
+                  <a href="#" class="expand-link">Dosagem pediátrica</a>
+                  <a href="#" class="expand-link">Conversor de unidades</a>
+                </div>
+                <div>
+                  <div class="expand-col-title">Guias Clínicos</div>
+                  <a href="#" class="expand-link" style="color: var(--color-brand-accent); font-weight: 600;">Protocolos</a>
+                  <a href="#" class="expand-link">Fichas de substâncias</a>
+                  <a href="#" class="expand-link">Algoritmos</a>
+                </div>
+                <div>
+                  <div class="expand-col-title">Recursos</div>
+                  <div class="expand-card">
+                    <div class="expand-card-title">📋 Protocolo destaque</div>
+                    <div class="expand-desc">Hipertensão Arterial Resistente — 4 passos para doente não controlado.</div>
+                  </div>
+                </div>
+                <div>
+                  <div class="expand-col-title" style="opacity: 0;">—</div>
+                  <div class="expand-card" style="background: var(--color-brand-accent-soft); border: 1px solid var(--color-brand-accent);">
+                    <div class="expand-card-title" style="color: var(--color-brand-accent);">🚀 Nova funcionalidade</div>
+                    <div class="expand-desc">Directório de Farmácias já disponível. Encontre a farmácia mais próxima, aberta 24h.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="nav-item" id="nav-guias">
+            <button class="nav-link nav-expand" data-expand="guias">
+              Guias
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="nav-expand-area" id="expand-guias">
+              <div class="expand-inner">
+                <div>
+                  <div class="expand-col-title">Cursos</div>
+                  <a href="#" class="expand-link">Farmácia</a>
+                  <a href="#" class="expand-link">Medicina</a>
+                  <a href="#" class="expand-link">Enfermagem</a>
+                  <a href="#" class="expand-link">Análises Clínicas</a>
+                </div>
+                <div>
+                  <div class="expand-col-title">Temas em destaque</div>
+                  <a href="#" class="expand-link">Cardioprotectores</a>
+                  <a href="#" class="expand-link">Antibióticos</a>
+                  <a href="#" class="expand-link">Saúde Materna</a>
+                  <a href="#" class="expand-link">Geriatria</a>
+                </div>
+                <div>
+                  <div class="expand-col-title">Formato</div>
+                  <a href="#" class="expand-link">📖 Estudo Guiado</a>
+                  <a href="#" class="expand-link">🎬 Vídeo-aulas</a>
+                  <a href="#" class="expand-link">📝 Simulados</a>
+                </div>
+                <div>
+                  <div class="expand-col-title">Em foco</div>
+                  <div class="expand-card">
+                    <div class="expand-card-title">Novo curso</div>
+                    <div class="expand-desc">Farmácia 2026 — actualizado com novos protocolos.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">Artigos</a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">Eventos</a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">Lives</a>
+          </li>
+        </ul>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MOBILE DRAWER -->
+  <div class="mobile-drawer" id="mobileDrawer">
+    <ul class="mobile-nav-list">
+      <li class="mobile-nav-item"><a href="#" class="mobile-nav-link">Início</a></li>
+      <li class="mobile-nav-item">
+        <button class="mobile-nav-link" data-mobile-toggle="mob-ferramentas">
+          Ferramentas
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="mobile-sub-list" id="mob-ferramentas">
+          <a href="#" class="mobile-sub-link">Calculadora de Interacções</a>
+          <a href="#" class="mobile-sub-link">Dosagem</a>
+          <a href="#" class="mobile-sub-link">Conversor</a>
+          <div class="mobile-expand-card">
+            <div class="mobile-expand-title">📋 Protocolo destaque</div>
+            <div class="mobile-expand-desc">Hipertensão Arterial Resistente</div>
+          </div>
+        </div>
+      </li>
+      <li class="mobile-nav-item">
+        <button class="mobile-nav-link" data-mobile-toggle="mob-guias">
+          Guias
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="mobile-sub-list" id="mob-guias">
+          <a href="#" class="mobile-sub-link">Farmácia</a>
+          <a href="#" class="mobile-sub-link">Medicina</a>
+          <a href="#" class="mobile-sub-link">Enfermagem</a>
+          <a href="#" class="mobile-sub-link">Análises Clínicas</a>
+          <div class="mobile-expand-card">
+            <div class="mobile-expand-title">💡 Em foco</div>
+            <div class="mobile-expand-desc">Novo curso Farmácia 2026 já disponível</div>
+          </div>
+        </div>
+      </li>
+      <li class="mobile-nav-item"><a href="#" class="mobile-nav-link">Artigos</a></li>
+      <li class="mobile-nav-item"><a href="#" class="mobile-nav-link">Eventos</a></li>
+      <li class="mobile-nav-item"><a href="#" class="mobile-nav-link">Lives</a></li>
+    </ul>
+  </div>
+
+  <main class="page-preview">
+    <h2>Variante B · Cards Expansíveis (full-width strip)</h2>
+    <p>Em vez de dropdown, clicar num item expande uma faixa full-width abaixo do header com colunas organizadas. Destaque para conteúdo em destaque (cards). Mobile:mega-menu → drawer expansível com placeholder de destaque.</p>
+
+    <div class="variant-grid">
+
+      <div class="variant-card">
+        <div class="variant-label">Desktop · Expansão full-width</div>
+        <div class="variant-desc">Clica em "Ferramentas" ou "Guias" — área expande verticalmente (max-height animado) com até 4 colunas. Inclui coluna de "destaque" com card promocional.</div>
+        <div class="mini-nav">
+          <span class="mini-item active">Início</span>
+          <span class="mini-item" style="background: var(--color-brand-accent-soft); border-color: var(--color-brand-accent); color: var(--color-brand-accent);">Ferramentas ▾</span>
+          <span class="mini-item">Guias</span>
+          <span class="mini-item">Artigos</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pro">✓ Mais espaço vertical<br/>✓ Destaques/CTAs dentro<br/>✓ Toque friendly<br/>✓ Move conteúdo para baixo (não cobre)</div>
+          <div class="con">✗ Empurra página para baixo<br/>✗ Precisa fechar explicitamente<br/>✗ Menos comum (pode confundir)</div>
+        </div>
+      </div>
+
+      <div class="variant-card">
+        <div class="variant-label">Mobile · Drawer expansível</div>
+        <div class="variant-desc">Hamburger → drawer com Ferramentas/Guias expansíveis. Subpáginas + card de destaque inline (não escondido atrás de clique extra).</div>
+        <div class="mini-nav" style="flex-direction: column; gap: 0;">
+          <div style="padding: 10px; border-bottom: 1px solid #e5e7e4; font-size: 13px; font-weight: 600;">☰ Menu</div>
+          <div style="padding: 10px 16px; border-bottom: 1px solid #e5e7e4; font-size: 13px; color: #0a844f; background: #f3f4f1;">▸ Ferramentas ▾</div>
+          <div style="padding: 8px 28px; border-bottom: 1px solid #e5e7e4; font-size: 12px; color: #0a844f;">▪ Interacções</div>
+          <div style="padding: 8px 28px; border-bottom: 1px solid #e5e7e4; font-size: 12px; color: #0a844f;">▪ Dosagem</div>
+          <div style="padding: 10px 16px; border-bottom: 1px solid #e5e7e4; font-size: 13px; background: #fafaf8; border-left: 3px solid #0a844f;">💡 Novo: Directório</div>
+          <div style="padding: 10px 16px; border-bottom: 1px solid #e5e7e4; font-size: 13px;">▸ Guias</div>
+          <div style="padding: 10px 16px; font-size: 13px;">Artigos</div>
+        </div>
+        <div class="pros-cons">
+          <div class="pro">✓ Mobile nativo (accordion)<br/>✓ Ver tudo num scroll<br/>✓ Cards de destaque visíveis</div>
+          <div class="con">✗ Lista longa = muito scroll<br/>✗ Perde contexto do header<br/>✗ Sem breadcrumb</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top: 28px; padding: 16px; background: white; border-radius: 12px; border: 1px solid #e5e7e4;">
+      <div style="font-size: 12px; font-weight: 700; color: #0a844f; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em;">💡 Quando usar esta variante</div>
+      <div style="font-size: 13px; line-height: 1.6; color: #0f1a14; opacity: 0.75;">
+        Melhor para sites com <strong>muitas subpáginas</strong> (6+ por categoria). A faixa full-width no desktop evita o dropdown apertado e permite colocar cards de destaque/actualidade. No mobile, o accordion inline reduz cliques: as subpáginas aparecem logo abaixo do pai, sem sair do drawer. Ideal se queres <strong>promover conteúdo novo</strong> (ex: "Directório já disponível") dentro da própria navegação.
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const navItems = document.querySelectorAll('.nav-item');
+    document.querySelectorAll('[data-expand]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = btn.getAttribute('data-expand');
+        const parent = btn.closest('.nav-item');
+        const wasOpen = parent.classList.contains('open');
+        navItems.forEach(i => i.classList.remove('open'));
+        if (!wasOpen) parent.classList.add('open');
+      });
+    });
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.nav-item')) {
+        navItems.forEach(i => i.classList.remove('open'));
+      }
+    });
+
+    const hamburger = document.getElementById('hamburger');
+    const mobileDrawer = document.getElementById('mobileDrawer');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileDrawer.classList.toggle('open');
+    });
+    document.querySelectorAll('[data-mobile-toggle]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = btn.getAttribute('data-mobile-toggle');
+        document.getElementById(targetId).classList.toggle('open');
+      });
+    });
+  </script>
+</body>
+</html>

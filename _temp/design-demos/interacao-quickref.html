@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Consulta Rápida — Interações | Conheça Farmácia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-brand-bg: #fafaf8;
+      --color-brand-deep: #0f1a14;
+      --color-brand-accent: #0a844f;
+      --color-brand-accent-soft: rgba(10, 132, 79, 0.08);
+      --color-brand-divider: #e5e7e4;
+      --color-critical-bg: #fef2f2;
+      --color-critical-border: #dc2626;
+      --color-critical-text: #991b1b;
+      --color-warning-bg: #fff7ed;
+      --color-warning-border: #ff6c23;
+      --color-warning-text: #c2410c;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-brand-bg);
+      color: var(--color-brand-deep);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Mobile shell */
+    .mobile-shell {
+      max-width: 420px;
+      margin: 0 auto;
+      background: white;
+      min-height: 100vh;
+      box-shadow: 0 0 40px rgba(15, 26, 20, 0.10);
+    }
+
+    /* Top nav */
+    .top-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--color-brand-divider);
+      background: white;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 15px;
+      text-decoration: none;
+      color: var(--color-brand-deep);
+    }
+    .nav-logo-icon {
+      width: 28px; height: 28px;
+      background: var(--color-brand-accent);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 14px;
+    }
+    .nav-back {
+      font-size: 13px;
+      color: var(--color-brand-accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    /* Search bar */
+    .search-bar {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--color-brand-divider);
+    }
+    .search-input {
+      width: 100%;
+      padding: 10px 14px 10px 38px;
+      border: 1px solid var(--color-brand-divider);
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: var(--font-sans);
+      background: var(--color-brand-bg);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230f1a14' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.3-4.3'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: 12px center;
+    }
+    .search-hint {
+      font-size: 11px;
+      color: var(--color-brand-deep);
+      opacity: 0.5;
+      margin-top: 6px;
+    }
+
+    /* Current combo */
+    .combo-strip {
+      padding: 14px 18px;
+      background: var(--color-brand-bg-alt);
+      border-bottom: 1px solid var(--color-brand-divider);
+    }
+    .combo-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--color-brand-deep);
+      opacity: 0.5;
+      margin-bottom: 8px;
+    }
+    .combo-drugs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .combo-chip {
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: white;
+      border: 1px solid var(--color-brand-accent);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-brand-accent);
+    }
+
+    /* Severity indicator strip */
+    .severity-strip {
+      margin: 16px 18px;
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .severity-strip.critical {
+      background: var(--color-critical-bg);
+      border-color: var(--color-critical-border);
+    }
+    .severity-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--color-critical-border);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .severity-strip.warning .severity-icon { background: #ff6c23; }
+    .severity-strip.warning { background: var(--color-warning-bg); border-color: var(--color-warning-border); }
+    .severity-strip.caution { background: #fffbeb; border-color: #f59e0b; }
+    .severity-strip.caution .severity-icon { background: #f59e0b; }
+    .severity-strip.safe { background: var(--color-brand-accent-soft); border-color: var(--color-brand-accent); }
+    .severity-strip.safe .severity-icon { background: var(--color-brand-accent); }
+    .severity-strip-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--color-critical-text);
+      line-height: 1.3;
+    }
+    .severity-strip.warning .severity-strip-title { color: var(--color-warning-text); }
+
+    /* Quick action */
+    .action-box {
+      margin: 0 18px 16px;
+      padding: 14px;
+      background: var(--color-brand-bg-alt);
+      border-radius: 10px;
+      border-left: 3px solid var(--color-brand-accent);
+    }
+    .action-box-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-brand-accent);
+      margin-bottom: 6px;
+    }
+    .action-box p {
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    /* Expandable sections */
+    .expand-section {
+      border-bottom: 1px solid var(--color-brand-divider);
+    }
+    .expand-header {
+      width: 100%;
+      padding: 14px 18px;
+      background: transparent;
+      border: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      text-align: left;
+    }
+    .expand-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-brand-deep);
+      opacity: 0.7;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .expand-chevron {
+      font-size: 12px;
+      opacity: 0.4;
+      transition: transform 0.2s;
+    }
+    .expand-section.open .expand-chevron { transform: rotate(180deg); }
+    .expand-body {
+      display: none;
+      padding: 0 18px 16px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--color-brand-deep);
+      opacity: 0.8;
+    }
+    .expand-section.open .expand-body { display: block; }
+
+    /* Bottom CTA */
+    .bottom-cta {
+      padding: 16px 18px;
+      border-top: 1px solid var(--color-brand-divider);
+      display: flex;
+      gap: 10px;
+    }
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      text-align: center;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--color-brand-accent);
+      color: white;
+    }
+    .btn-secondary {
+      background: white;
+      border: 1px solid var(--color-brand-divider);
+      color: var(--color-brand-deep);
+    }
+
+    /* Desktop wrapper */
+    @media (min-width: 500px) {
+      body { background: #e5e7e4; padding: 24px 0; }
+      .mobile-shell { border-radius: 20px; min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-shell">
+
+    <!-- Top nav -->
+    <div class="top-nav">
+      <a href="#" class="nav-logo">
+        <span class="nav-logo-icon">CF</span>
+        Conheça Farmácia
+      </a>
+      <a href="#" class="nav-back">← Calculadora</a>
+    </div>
+
+    <!-- Search (for adding more drugs) -->
+    <div class="search-bar">
+      <input type="search" class="search-input" placeholder="Adicionar outro fármaco..." />
+      <p class="search-hint">Ex: Amiodarona, Digoxina, Warfarina...</p>
+    </div>
+
+    <!-- Current combo -->
+    <div class="combo-strip">
+      <div class="combo-label">Fármacos em análise</div>
+      <div class="combo-drugs">
+        <span class="combo-chip">Enalapril</span>
+        <span class="combo-chip">Espironolactona</span>
+        <span class="combo-chip">HCTZ</span>
+      </div>
+    </div>
+
+    <!-- Severity strip — most important info first -->
+    <div class="severity-strip critical">
+      <div class="severity-icon">⚠</div>
+      <div class="severity-strip-title">2 interações detectadas<br/>1 grave · 1 moderada</div>
+    </div>
+
+    <!-- Quick action box -->
+    <div class="action-box">
+      <div class="action-box-title">⚡ Acção Imediata</div>
+      <p>
+        <strong>Enalapril + Espironolactona:</strong> Solicitar K+ sérico antes da dispensação. Não dispensar sem confirmação do profissional responsável.
+      </p>
+    </div>
+
+    <!-- Expandable: Descrição -->
+    <div class="expand-section open">
+      <button class="expand-header">
+        <span class="expand-title">Descrição</span>
+        <span class="expand-chevron">▼</span>
+      </button>
+      <div class="expand-body">
+        <p>Associação IECA + diurético poupador de K+. Risco de hipercalemia grave, especialmente em doentes com compromisso renal ou diabetes.</p>
+      </div>
+    </div>
+
+    <!-- Expandable: Monitorização -->
+    <div class="expand-section">
+      <button class="expand-header">
+        <span class="expand-title">Monitorização</span>
+        <span class="expand-chevron">▼</span>
+      </button>
+      <div class="expand-body">
+        <p>K+ sérico em 1 semana após início. Repetir a cada 4–6 semanas nos primeiros 3 meses. Monitorizar PA e função renal.</p>
+      </div>
+    </div>
+
+    <!-- Expandable: Sinais de alerta -->
+    <div class="expand-section">
+      <button class="expand-header">
+        <span class="expand-title">Sinais de Alerta</span>
+        <span class="expand-chevron">▼</span>
+      </button>
+      <div class="expand-body">
+        <p>Fraqueza muscular · Parestesias · Arritmia · Náuseas · Ondas T altas no ECG. Em casos graves: paragem cardiorrespiratória.</p>
+      </div>
+    </div>
+
+    <!-- Expandable: Alternativas -->
+    <div class="expand-section">
+      <button class="expand-header">
+        <span class="expand-title">Alternativas Terapêuticas</span>
+        <span class="expand-chevron">▼</span>
+      </button>
+      <div class="expand-body">
+        <p>Considerar substituição da Espironolactona por Furosemida se o objectivo terapêutico permitir (diurético de ansa com menor impacto no K+).</p>
+      </div>
+    </div>
+
+    <!-- Bottom actions -->
+    <div class="bottom-cta">
+      <button class="btn btn-secondary">📋 Partilhar</button>
+      <button class="btn btn-primary">🖨️ Imprimir</button>
+    </div>
+
+  </div>
+
+</body>
+</html>

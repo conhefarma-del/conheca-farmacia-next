@@ -13,7 +13,7 @@ export default function GuideDisciplinaCard({ disciplina, t }) {
   const [open, setOpen] = useState(false)
 
   return (
-    <div className="guide-discipline-card">
+    <div id={`disciplina-${disciplina.slug}`} className="guide-discipline-card">
       <button
         className="guide-discipline-header"
         aria-expanded={open}

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Banner Artigos Científicos — preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-brand-bg: #fafaf8;
+      --color-brand-deep: #0f1a14;
+      --color-brand-accent: #0a844f;
+      --color-brand-accent-soft: rgba(10, 132, 79, 0.07);
+      --color-brand-divider: #e5e7e4;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-brand-bg);
+      color: var(--color-brand-deep);
+      padding: 48px 24px;
+    }
+
+    /* Contexto: simula o fundo de artigos.html */
+    .page-context {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .context-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--color-brand-deep);
+      opacity: 0.4;
+      margin-bottom: 14px;
+    }
+    .mock-filters {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .mock-chip {
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--color-brand-divider);
+      background: white;
+      font-size: 13px;
+      color: var(--color-brand-deep);
+      opacity: 0.6;
+    }
+
+    /* Separador visual (linha que existiria em artigos.html) */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--color-brand-divider);
+      margin: 0 0 20px;
+    }
+
+    /* ===== BANNER — bloco a prototipar ===== */
+    .sci-banner {
+      background: white;
+      border-radius: 18px;
+      border: 1px solid var(--color-brand-divider);
+      box-shadow: 0 1px 2px rgba(15, 26, 20, 0.04), 0 4px 14px rgba(15, 26, 20, 0.07);
+      overflow: hidden;
+      transition: box-shadow 0.25s, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .sci-banner:hover {
+      box-shadow: 0 8px 28px rgba(15, 26, 20, 0.12), 0 2px 8px rgba(15, 26, 20, 0.07);
+      transform: translateY(-2px);
+    }
+    .sci-banner-link {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      padding: 22px 26px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* Icone lado esquerdo */
+    .sci-banner-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: var(--color-brand-accent-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .sci-banner-icon svg {
+      width: 26px;
+      height: 26px;
+      stroke: var(--color-brand-accent);
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Texto ao centro */
+    .sci-banner-text { flex: 1; min-width: 0; }
+    .sci-banner-title {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+    .sci-banner-desc {
+      font-size: 13px;
+      color: var(--color-brand-deep);
+      opacity: 0.6;
+      line-height: 1.5;
+    }
+
+    /* Seta direita */
+    .sci-banner-arrow {
+      flex-shrink: 0;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--color-brand-accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s;
+    }
+    .sci-banner:hover .sci-banner-arrow { transform: translateX(3px); }
+    .sci-banner-arrow svg {
+      width: 16px;
+      height: 16px;
+      stroke: white;
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Variante compacta (para mostrar opção B lado a lado) */
+    .banner-compact {
+      background: var(--color-brand-accent);
+      border-radius: 14px;
+      margin-top: 16px;
+      transition: box-shadow 0.25s, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .banner-compact:hover {
+      box-shadow: 0 8px 24px rgba(10, 132, 79, 0.22);
+      transform: translateY(-2px);
+    }
+    .banner-compact .sci-banner-link { color: white; }
+    .banner-compact .sci-banner-icon {
+      background: rgba(255,255,255,0.15);
+    }
+    .banner-compact .sci-banner-icon svg { stroke: white; }
+    .banner-compact .sci-banner-desc { color: white; opacity: 0.8; }
+    .banner-compact .sci-banner-arrow { background: white; }
+    .banner-compact .sci-banner-arrow svg { stroke: var(--color-brand-accent); }
+
+    @media (max-width: 520px) {
+      .sci-banner-link { flex-wrap: wrap; }
+      .sci-banner-arrow { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-context">
+    <div class="context-label">Contexto: artigos.html — após secção de filtros</div>
+    <div class="mock-filters">
+      <span class="mock-chip">Todos</span>
+      <span class="mock-chip">Saúde</span>
+      <span class="mock-chip">Bem-estar</span>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- ===== BANNER — VARIANTE A (light / integrada) ===== -->
+    <div class="sci-banner">
+      <a href="cientificos.html" class="sci-banner-link">
+        <div class="sci-banner-icon">
+          <!-- Icon: livro aberto -->
+          <svg viewBox="0 0 24 24">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+        </div>
+        <div class="sci-banner-text">
+          <div class="sci-banner-title">Artigos Científicos</div>
+          <div class="sci-banner-desc">Publicações académicas com revisão, referências e citações exportáveis</div>
+        </div>
+        <div class="sci-banner-arrow">
+          <svg viewBox="0 0 24 24">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </div>
+      </a>
+    </div>
+
+    <!-- ===== BANNER — VARIANTE B (solid accent, mais destaque) ===== -->
+    <div class="banner-compact">
+      <a href="cientificos.html" class="sci-banner-link">
+        <div class="sci-banner-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+        </div>
+        <div class="sci-banner-text">
+          <div class="sci-banner-title">Artigos Científicos</div>
+          <div class="sci-banner-desc">Publicações académicas com revisão, referências e citações exportáveis</div>
+        </div>
+        <div class="sci-banner-arrow">
+          <svg viewBox="0 0 24 24">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </div>
+      </a>
+    </div>
+
+  </div>
+
+</body>
+</html>

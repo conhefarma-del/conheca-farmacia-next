@@ -4,7 +4,6 @@ import { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Search } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
-import Breadcrumb from '@/components/ui/Breadcrumb'
 import ProtocolCard from '@/components/protocolos/ProtocolCard'
 
 export default function ProtocolosPageClient({ lang, categories, protocols }) {
@@ -62,56 +61,73 @@ export default function ProtocolosPageClient({ lang, categories, protocols }) {
   }, [protocols, activeCategory, query])
 
   return (
-    <div>
-      <Breadcrumb items={[
-        { label: t('nav.inicio'), href: '/' + lang },
-        { label: t('protocolos_page.hero_title') },
-      ]} />
-
-      <section className="hero">
-        <h1 className="hero-title">{t('protocolos_page.hero_title')}</h1>
-        <p className="hero-subtitle">{t('protocolos_page.hero_subtitle')}</p>
+    <>
+      {/* Hero */}
+      <section className="events-hero">
+        <div className="container-center">
+          <div className="text-center py-12 md:py-16">
+            <h1 className="text-5xl md:text-7xl font-bold text-brand-deep mb-6">
+              {t('protocolos_page.hero_title')}
+            </h1>
+            <p className="hero-subtitle text-center">
+              {t('protocolos_page.hero_subtitle')}
+            </p>
+          </div>
+        </div>
       </section>
 
-      <nav className="protocol-filters-bar" aria-label={t('protocolos_page.hero_title')}>
-        <button
-          className={`protocol-filter-btn ${activeCategory === 'all' ? 'active' : ''}`}
-          onClick={() => selectCategory('all')}
-        >
-          {t('protocolos_page.todos')}
-        </button>
-        {categories.map((c) => (
-          <button
-            key={c.id}
-            className={`protocol-filter-btn ${activeCategory === c.slug ? 'active' : ''}`}
-            onClick={() => selectCategory(c.slug)}
-          >
-            {c.name}
-          </button>
-        ))}
-        <div className="protocol-search">
-          <Search size={16} aria-hidden="true" />
-          <input
-            ref={searchRef}
-            type="search"
-            className="protocol-search-input"
-            placeholder={t('protocolos_page.placeholder')}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-        </div>
-      </nav>
+      {/* Search + Filtros de categoria */}
+      <section className="articles-filter-section">
+        <div className="container-center">
+          <div className="max-w-4xl mx-auto">
+            <div className="relative mb-8">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-brand-deep/40">
+                <Search size={20} aria-hidden="true" />
+              </span>
+              <input
+                ref={searchRef}
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={t('protocolos_page.placeholder')}
+                className="w-full pl-12 pr-4 py-4 rounded-2xl border border-brand-divider shadow-soft focus:ring-2 focus:ring-brand-accent focus:outline-none transition-all text-brand-deep"
+              />
+            </div>
 
-      <section className="protocolos-section">
-        <div className="protocolos-grid">
-          {filtered.map((p) => (
-            <ProtocolCard key={p.id} protocol={p} lang={lang} t={t} />
-          ))}
+            <div className="flex flex-wrap justify-center gap-3 pb-8">
+              <button
+                className={`protocol-filter-btn${activeCategory === 'all' ? ' active' : ''}`}
+                onClick={() => selectCategory('all')}
+              >
+                {t('protocolos_page.todos')}
+              </button>
+              {categories.map((c) => (
+                <button
+                  key={c.id}
+                  className={`protocol-filter-btn${activeCategory === c.slug ? ' active' : ''}`}
+                  onClick={() => selectCategory(c.slug)}
+                >
+                  {c.name}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
-        {filtered.length === 0 && (
-          <div className="protocol-empty-state">{t('protocolos_page.no_results')}</div>
-        )}
       </section>
-    </div>
+
+      {/* Grid de protocolos */}
+      <section className="section-padding bg-brand-bg-alt">
+        <div className="container-center">
+          <div className="protocolos-grid">
+            {filtered.map((p) => (
+              <ProtocolCard key={p.id} protocol={p} lang={lang} t={t} />
+            ))}
+          </div>
+          {filtered.length === 0 && (
+            <div className="protocol-empty-state">{t('protocolos_page.no_results')}</div>
+          )}
+        </div>
+      </section>
+    </>
   )
 }

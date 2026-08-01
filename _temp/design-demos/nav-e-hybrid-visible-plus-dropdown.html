@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Navegação: Híbrida (visível + dropdown) — Conheça Farmácia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-brand-bg: #fafaf8;
+      --color-brand-bg-alt: #f3f4f1;
+      --color-brand-deep: #0f1a14;
+      --color-brand-accent: #0a844f;
+      --color-brand-accent-soft: rgba(10, 132, 79, 0.08);
+      --color-brand-divider: #e5e7e4;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: var(--font-sans); background: var(--color-brand-bg); color: var(--color-brand-deep); }
+
+    /* HEADER */
+    .site-header {
+      border-bottom: 1px solid var(--color-brand-divider);
+      background: white;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--color-brand-deep); font-weight: 700; font-size: 18px; }
+    .logo-icon { width: 32px; height: 32px; background: var(--color-brand-accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 16px; }
+
+    /* HYBRID NAV */
+    .hybrid-nav {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      list-style: none;
+    }
+    .hybrid-link {
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-brand-deep);
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+    }
+    .hybrid-link:hover { background: var(--color-brand-bg-alt); }
+    .hybrid-link.active { color: var(--color-brand-accent); font-weight: 600; }
+
+    .hybrid-expand {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-brand-deep);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s, color 0.15s;
+    }
+    .hybrid-expand:hover { background: var(--color-brand-bg-alt); }
+    .hybrid-expand .chevron { width: 14px; height: 14px; transition: transform 0.2s; opacity: 0.5; }
+    .hybrid-item.open .hybrid-expand .chevron { transform: rotate(180deg); }
+    .hybrid-item.open .hybrid-expand { background: var(--color-brand-accent-soft); color: var(--color-brand-accent); }
+
+    .hybrid-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(8px);
+      background: white;
+      border: 1px solid var(--color-brand-divider);
+      border-radius: 12px;
+      box-shadow: 0 16px 48px rgba(15, 26, 20, 0.12), 0 4px 12px rgba(15, 26, 20, 0.06);
+      padding: 10px;
+      min-width: 210px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+      z-index: 200;
+    }
+    .hybrid-item.open .hybrid-dropdown {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+    .hybrid-dropdown-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 7px;
+      font-size: 13px;
+      color: var(--color-brand-deep);
+      text-decoration: none;
+      transition: background 0.12s;
+    }
+    .hybrid-dropdown-link:hover { background: var(--color-brand-bg-alt); }
+    .hybrid-dropdown-icon {
+      width: 30px; height: 30px;
+      border-radius: 6px;
+      background: var(--color-brand-accent-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    /* HAMBURGER */
+    .hamburger { display: none; flex-direction: column; gap: 5px; padding: 8px; background: none; border: none; cursor: pointer; }
+    .hamburger span { width: 22px; height: 2px; background: var(--color-brand-deep); border-radius: 2px; }
+
+    /* MOBILE DRAWER */
+    .mobile-drawer { display: none; position: fixed; inset: 0; background: white; z-index: 150; padding: 20px; overflow-y: auto; }
+    .mobile-drawer.open { display: block; }
+    .mobile-nav-list { list-style: none; }
+    .mobile-nav-item { border-bottom: 1px solid var(--color-brand-divider); }
+    .mobile-nav-link {
+      display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 16px 0;
+      font-size: 16px; font-weight: 500; background: none; border: none; color: var(--color-brand-deep);
+      cursor: pointer; font-family: inherit; text-align: left;
+    }
+    .mobile-sub-list { list-style: none; padding: 0 0 10px 16px; display: none; }
+    .mobile-sub-list.open { display: block; }
+    .mobile-sub-link { display: block; padding: 10px 0; font-size: 14px; color: var(--color-brand-accent); text-decoration: none; }
+
+    /* PAGE PREVIEW */
+    .page-preview { max-width: 1200px; margin: 60px auto; padding: 0 24px; }
+    .page-preview h2 { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+    .page-preview p { font-size: 14px; color: var(--color-brand-deep); opacity: 0.6; margin-bottom: 40px; }
+    .variant-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .variant-card { background: white; border-radius: 14px; border: 1px solid var(--color-brand-divider); padding: 24px; }
+    .variant-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-brand-accent); margin-bottom: 16px; }
+    .variant-desc { font-size: 13px; line-height: 1.6; color: var(--color-brand-deep); opacity: 0.7; margin-bottom: 16px; }
+    .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .pro, .con { font-size: 11px; line-height: 1.5; padding: 8px; border-radius: 6px; }
+    .pro { background: #dcfce7; color: #166534; }
+    .con { background: #fef2f2; color: #991b1b; }
+
+    @media (max-width: 768px) {
+      .hybrid-nav { display: none; }
+      .hamburger { display: flex; }
+      .variant-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#" class="logo">
+        <span class="logo-icon">CF</span>
+        Conheça Farmácia
+      </a>
+      <nav>
+        <ul class="hybrid-nav" id="hybridNav">
+          <!-- Visíveis (sem dropdown) -->
+          <li><a href="#" class="hybrid-link active">Início</a></li>
+          <li><a href="#" class="hybrid-link">Artigos</a></li>
+          <li><a href="#" class="hybrid-link">Eventos</a></li>
+          <li><a href="#" class="hybrid-link">Lives</a></li>
+
+          <!-- Com dropdown (só categoriasExpandidas) -->
+          <li class="hybrid-item" id="hybrid-ferramentas">
+            <button class="hybrid-expand" data-hybrid="ferramentas">
+              Ferramentas
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="hybrid-dropdown">
+              <a href="#" class="hybrid-dropdown-link">
+                <div class="hybrid-dropdown-icon">🧮</div>
+                <div><div style="font-weight: 600;">Interacções</div></div>
+              </a>
+              <a href="#" class="hybrid-dropdown-link">
+                <div class="hybrid-dropdown-icon">💊</div>
+                <div><div style="font-weight: 600;">Dosagem</div></div>
+              </a>
+              <a href="#" class="hybrid-dropdown-link">
+                <div class="hybrid-dropdown-icon">🔬</div>
+                <div><div style="font-weight: 600;">Conversor</div></div>
+              </a>
+              <a href="#" class="hybrid-dropdown-link">
+                <div class="hybrid-dropdown-icon">📋</div>
+                <div><div style="font-weight: 600; color: var(--color-brand-accent);">Protocolos</div></div>
+              </a>
+            </div>
+          </li>
+
+          <li class="hybrid-item" id="hybrid-guias">
+            <button class="hybrid-expand" data-hybrid="guias">
+              Guias
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="hybrid-dropdown">
+              <a href="#" class="hybrid-dropdown-link">
+                <div class="hybrid-dropdown-icon">🎓</div>
+                <div><div style="font-weight: 600;">Farmácia</div></div>
+              </a>
+              <a href="#" class="hybrid-dropdown-link">
+                <div class="hybrid-dropdown-icon">🩺</div>
+                <div><div style="font-weight: 600;">Medicina</div></div>
+              </a>
+              <a href="#" class="hybrid-dropdown-link">
+                <div class="hybrid-dropdown-icon">💉</div>
+                <div><div style="font-weight: 600;">Enfermagem</div></div>
+              </a>
+              <a href="#" class="hybrid-dropdown-link">
+                <div class="hybrid-dropdown-icon">🔬</div>
+                <div><div style="font-weight: 600;">Análises Clínicas</div></div>
+              </a>
+            </div>
+          </li>
+        </ul>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MOBILE DRAWER -->
+  <div class="mobile-drawer" id="mobileDrawer">
+    <ul class="mobile-nav-list">
+      <li class="mobile-nav-item"><a href="#" class="mobile-nav-link" style="color: var(--color-brand-accent); font-weight: 600;">Início</a></li>
+      <li class="mobile-nav-item">
+        <button class="mobile-nav-link" data-mobile-toggle="mob-h-ferramentas">
+          Ferramentas ▾
+        </button>
+        <ul class="mobile-sub-list" id="mob-h-ferramentas">
+          <li><a href="#" class="mobile-sub-link">🧮 Interacções</a></li>
+          <li><a href="#" class="mobile-sub-link">💊 Dosagem</a></li>
+          <li><a href="#" class="mobile-sub-link">🔬 Conversor</a></li>
+          <li><a href="#" class="mobile-sub-link">📋 Protocolos</a></li>
+        </ul>
+      </li>
+      <li class="mobile-nav-item">
+        <button class="mobile-nav-link" data-mobile-toggle="mob-h-guias">
+          Guias de Estudo ▾
+        </button>
+        <ul class="mobile-sub-list" id="mob-h-guias">
+          <li><a href="#" class="mobile-sub-link">🎓 Farmácia</a></li>
+          <li><a href="#" class="mobile-sub-link">🩺 Medicina</a></li>
+          <li><a href="#" class="mobile-sub-link">💉 Enfermagem</a></li>
+          <li><a href="#" class="mobile-sub-link">🔬 Análises Clínicas</a></li>
+        </ul>
+      </li>
+      <li class="mobile-nav-item"><a href="#" class="mobile-nav-link">Artigos Científicos</a></li>
+      <li class="mobile-nav-item"><a href="#" class="mobile-nav-link">Eventos</a></li>
+      <li class="mobile-nav-item"><a href="#" class="mobile-nav-link">Lives</a></li>
+    </ul>
+  </div>
+
+  <main class="page-preview">
+    <h2>Variante E · Híbrida (visível + dropdown mínimo)</h2>
+    <p>Apenas as secções que <strong>realmente precisam de subpáginas</strong> (Ferramentas, Guias) ganham dropdown compacto. O resto (Início, Artigos, Eventos, Lives, Directório) fica sempre visível como link simples. A página mais visitada (Início) ganha destaque visual. Resultado: header com apenas 2 dropdowns, mais limpo.</p>
+
+    <div class="variant-grid">
+
+      <div class="variant-card">
+        <div class="variant-label">Desktop · Minimalista</div>
+        <div class="variant-desc">5 links sempre visíveis (Início, Artigos, Eventos, Lives, Directório) + 2 com dropdown compacto (Ferramentas, Guias). Dropdown com ícone 30px + título — sem descrições longas para manter header enxuto.</div>
+        <div style="display: flex; gap: 4px; padding: 12px; background: var(--color-brand-bg); border-radius: 10px; flex-wrap: wrap; margin-bottom: 12px; align-items: center;">
+          <span style="padding: 7px 13px; border-radius: 8px; background: var(--color-brand-accent); color: white; font-size: 13px; font-weight: 600;">Início</span>
+          <span style="padding: 7px 13px; border-radius: 8px; background: white; border: 1px solid var(--color-brand-divider); font-size: 13px;">Artigos</span>
+          <span style="padding: 7px 13px; border-radius: 8px; background: white; border: 1px solid var(--color-brand-divider); font-size: 13px;">Eventos</span>
+          <span style="padding: 7px 13px; border-radius: 8px; background: white; border: 1px solid var(--color-brand-divider); font-size: 13px;">Lives</span>
+          <span style="padding: 7px 13px; border-radius: 8px; background: white; border: 1px solid var(--color-brand-divider); font-size: 13px;">Directório</span>
+          <span style="padding: 7px 13px; border-radius: 8px; background: var(--color-brand-accent-soft); border: 1px solid var(--color-brand-accent); color: var(--color-brand-accent); font-size: 13px; font-weight: 600;">Ferramentas ▾</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pro">✓ Mais conservador (baixo risco)<br/>✓ Header limpo mas não minimal<br/>✓ Boa para sites existentes<br/>✓ Escalável (só adiciona link visível)</div>
+          <div class="con">✗ Ainda tem dropdowns<br/>✗ Não resolve clutter se +6 categorias<br/>✗ Directório compete com Ferramentas por espaço</div>
+        </div>
+      </div>
+
+      <div class="variant-card">
+        <div class="variant-label">Mobile · Drawer standard</div>
+        <div class="variant-desc">Mesmo drawer actual, mas Ferramentas + Guias com sub-listas expansíveis. Directório como link simples (sem subpáginas por enquanto). Padrão familiar — zero surpresa.</div>
+        <div style="display: flex; flex-direction: column; gap: 0; padding: 12px; background: var(--color-brand-bg); border-radius: 10px; margin-bottom: 12px;">
+          <div style="padding: 12px; border-bottom: 1px solid #e5e7e4; font-size: 13px; font-weight: 600;">☰ Menu</div>
+          <div style="padding: 12px; font-size: 13px; color: var(--color-brand-accent); font-weight: 600; background: white; border-left: 3px solid var(--color-brand-accent);">● Início</div>
+          <div style="padding: 12px 14px; font-size: 13px; color: var(--color-brand-accent); background: #f3f4f1;">▸ Ferramentas ▾</div>
+          <div style="padding: 9px 26px; font-size: 12px; color: var(--color-brand-accent);">— Interacções</div>
+          <div style="padding: 9px 26px; font-size: 12px; color: var(--color-brand-accent);">— Dosagem</div>
+          <div style="padding: 12px; font-size: 13px; border-top: 1px solid #e5e7e4;">▸ Guias</div>
+          <div style="padding: 12px; font-size: 13px; border-top: 1px solid #e5e7e4;">Artigos Científicos</div>
+          <div style="padding: 12px; font-size: 13px; border-top: 1px solid #e5e7e4;">Directório</div>
+        </div>
+        <div class="pros-cons">
+          <div class="pro">✓ Zero curva de aprendizado<br/>✓ Padrão que usuários já conhecem<br/>✓ Seguro para migrar</div>
+          <div class="con">✗ Drawer still covers screen<br/>✗ Não resolve problema de clutter<br/>✗ Sem destaque para conteúdo novo</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top: 28px; padding: 16px; background: white; border-radius: 12px; border: 1px solid #e5e7e4;">
+      <div style="font-size: 12px; font-weight: 700; color: #0a844f; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em;">💡 Quando usar esta variante</div>
+      <div style="font-size: 13px; line-height: 1.6; color: #0f1a14; opacity: 0.75;">
+        Escolhe esta se queres <strong>evoluir gradualmente</strong> sem redesign radical. Apenas Ferramentas e Guias ganham dropdown (porque têm 4 subpáginas cada). As restantes secções ficam sempre visíveis, sem comportamento novo. O header actual adapta-se com mudança mínima. Directório fica como link simples até ganhar subpáginas, depois evolui para dropdown. <strong>Baixo risco, boa para migração faseada.</strong>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const hybridItems = document.querySelectorAll('.hybrid-item');
+    document.querySelectorAll('[data-hybrid]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const parent = btn.closest('.hybrid-item');
+        const wasOpen = parent.classList.contains('open');
+        hybridItems.forEach(i => i.classList.remove('open'));
+        if (!wasOpen) parent.classList.add('open');
+      });
+    });
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.hybrid-item')) hybridItems.forEach(i => i.classList.remove('open'));
+    });
+
+    const hamburger = document.getElementById('hamburger');
+    const mobileDrawer = document.getElementById('mobileDrawer');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileDrawer.classList.toggle('open');
+    });
+    document.querySelectorAll('[data-mobile-toggle]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.getElementById(btn.getAttribute('data-mobile-toggle')).classList.toggle('open');
+      });
+    });
+  </script>
+</body>
+</html>

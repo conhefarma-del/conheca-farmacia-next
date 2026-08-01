@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Protocolos Clínicos | Conheça Farmácia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-brand-bg: #fafaf8;
+      --color-brand-bg-alt: #f3f4f1;
+      --color-brand-deep: #0f1a14;
+      --color-brand-accent: #0a844f;
+      --color-brand-accent-soft: rgba(10, 132, 79, 0.08);
+      --color-brand-divider: #e5e7e4;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --shadow-soft: 0 1px 2px rgba(15, 26, 20, 0.04), 0 4px 12px rgba(15, 26, 20, 0.06);
+      --shadow-hover: 0 8px 24px rgba(15, 26, 20, 0.10), 0 2px 8px rgba(15, 26, 20, 0.06);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-brand-bg);
+      color: var(--color-brand-deep);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .site-header {
+      border-bottom: 1px solid var(--color-brand-divider);
+      background: white;
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--color-brand-deep);
+      font-weight: 700;
+      font-size: 18px;
+    }
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: var(--color-brand-accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 16px;
+    }
+    .nav-links { display: flex; list: none; gap: 24px; }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--color-brand-deep);
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    .nav-links a:hover { opacity: 1; }
+    .nav-links a.active { opacity: 1; font-weight: 600; }
+
+    .hero {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 56px 24px 32px;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: clamp(32px, 5vw, 46px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+    .hero-subtitle {
+      font-size: 15px;
+      color: var(--color-brand-deep);
+      opacity: 0.65;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Filters */
+    .filters-bar {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .filter-btn {
+      padding: 7px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--color-brand-divider);
+      background: white;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-brand-deep);
+      cursor: pointer;
+      font-family: var(--font-sans);
+      transition: all 0.15s;
+    }
+    .filter-btn:hover { border-color: var(--color-brand-accent); color: var(--color-brand-accent); }
+    .filter-btn.active { background: var(--color-brand-accent); color: white; border-color: var(--color-brand-accent); }
+    .search-input {
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--color-brand-divider);
+      background: white;
+      font-size: 13px;
+      font-family: var(--font-sans);
+      width: 200px;
+    }
+
+    /* Grid */
+    .protocolos-section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 100px;
+    }
+    .protocolos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    /* Protocol card */
+    .protocol-card {
+      background: white;
+      border-radius: 16px;
+      border: 1px solid var(--color-brand-divider);
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+    }
+    .protocol-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-hover);
+    }
+    .card-top-strip {
+      height: 4px;
+      background: var(--color-brand-accent);
+    }
+    .card-body {
+      padding: 20px 22px;
+      flex: 1;
+    }
+    .card-category {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: var(--color-brand-accent-soft);
+      color: var(--color-brand-accent);
+      margin-bottom: 12px;
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.35;
+      letter-spacing: -0.01em;
+      margin-bottom: 8px;
+    }
+    .card-desc {
+      font-size: 13px;
+      color: var(--color-brand-deep);
+      opacity: 0.65;
+      line-height: 1.55;
+      margin-bottom: 14px;
+      flex: 1;
+    }
+    .card-meta {
+      display: flex;
+      gap: 14px;
+      font-size: 12px;
+      color: var(--color-brand-deep);
+      opacity: 0.5;
+      padding-top: 14px;
+      border-top: 1px solid var(--color-brand-divider);
+    }
+    .card-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .card-updated {
+      font-size: 11px;
+      color: var(--color-brand-accent);
+      font-weight: 600;
+      margin-left: auto;
+    }
+
+    /* Empty */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 24px;
+      color: var(--color-brand-deep);
+      opacity: 0.5;
+    }
+
+    @media (max-width: 640px) {
+      .nav-links { gap: 14px; }
+      .hero { padding: 48px 24px 28px; }
+      .filters-bar { flex-direction: column; align-items: stretch; }
+      .search-input { width: 100%; }
+      .protocolos-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#" class="logo">
+        <span class="logo-icon">CF</span>
+        Conheça Farmácia
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#">Início</a></li>
+          <li><a href="#">Ferramentas</a></li>
+          <li><a href="#" class="active">Protocolos</a></li>
+          <li><a href="#">Guias</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1>Protocolos Clínicos</h1>
+    <p class="hero-subtitle">Guias de tratamento validados por especialistas — consulte no balcão ou na consulta.</p>
+  </section>
+
+  <nav class="filters-bar">
+    <button class="filter-btn active">Todos</button>
+    <button class="filter-btn">Cardiologia</button>
+    <button class="filter-btn">Infecciologia</button>
+    <button class="filter-btn">Pediatria</button>
+    <button class="filter-btn">Endocrinologia</button>
+    <button class="filter-btn">Saúde Mental</button>
+    <input type="search" class="search-input" placeholder="Pesquisar protocolo..." />
+  </nav>
+
+  <section class="protocolos-section">
+    <div class="protocolos-grid">
+
+      <a href="#" class="protocol-card">
+        <div class="card-top-strip"></div>
+        <div class="card-body">
+          <span class="card-category">Cardiologia</span>
+          <h2 class="card-title">Hipertensão Arterial Resistente</h2>
+          <p class="card-desc">Abordagem terapêutica passo a passo para doentes que não atingem alvo pressórico com triple terapia.</p>
+          <div class="card-meta">
+            <span class="card-meta-item">📋 4 passos</span>
+            <span class="card-meta-item">📅 2026-04</span>
+            <span class="card-updated">Actualizado</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="#" class="protocol-card">
+        <div class="card-top-strip"></div>
+        <div class="card-body">
+          <span class="card-category">Infecciologia</span>
+          <h2 class="card-title">Infeção Urinária Recorrente — Adulto</h2>
+          <p class="card-desc">Profilaxia e tratamento curto de ITU de repetição: esquemas, doses e duração recomendada.</p>
+          <div class="card-meta">
+            <span class="card-meta-item">📋 3 passos</span>
+            <span class="card-meta-item">📅 2026-03</span>
+            <span class="card-updated">Actualizado</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="#" class="protocol-card">
+        <div class="card-top-strip"></div>
+        <div class="card-body">
+          <span class="card-category">Endocrinologia</span>
+          <h2 class="card-title">Diabetes Tipo 2 — Início Terapêutico</h2>
+          <p class="card-desc">Escolha de antidiabético segundo perfil do doente: função renal, idade, risco hipoglicémia.</p>
+          <div class="card-meta">
+            <span class="card-meta-item">📋 5 passos</span>
+            <span class="card-meta-item">📅 2026-02</span>
+            <span class="card-updated">Actualizado</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="#" class="protocol-card">
+        <div class="card-top-strip"></div>
+        <div class="card-body">
+          <span class="card-category">Pediatria</span>
+          <h2 class="card-title">Desidratação Aguda — Menores de 5 anos</h2>
+          <p class="card-desc">Pl Terapia de Rehidratação Oral: cálculo de volume, vista e critérios de referenciação.</p>
+          <div class="card-meta">
+            <span class="card-meta-item">📋 2 passos</span>
+            <span class="card-meta-item">📅 2025-11</span>
+            <span class="card-updated">Actualizado</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="#" class="protocol-card">
+        <div class="card-top-strip"></div>
+        <div class="card-body">
+          <span class="card-category">Saúde Mental</span>
+          <h2 class="card-title">Ansiedade Generalizada — Abordagem em Cuidados Primários</h2>
+          <p class="card-desc">Critérios de referenciação, opções farmacológicas não-benzodiazepínicas e acompanhamento.</p>
+          <div class="card-meta">
+            <span class="card-meta-item">📋 4 passos</span>
+            <span class="card-meta-item">📅 2025-09</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="#" class="protocol-card">
+        <div class="card-top-strip"></div>
+        <div class="card-body">
+          <span class="card-category">Farmacovigilância</span>
+          <h2 class="card-title">Notificação de Reacção Adversa</h2>
+          <p class="card-desc">Fluxo de notificação ao Infarmed: preencher formulário, gravidade, desfecho e medicação suspeita.</p>
+          <div class="card-meta">
+            <span class="card-meta-item">📋 3 passos</span>
+            <span class="card-meta-item">📅 2026-01</span>
+            <span class="card-updated">Actualizado</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+</body>
+</html>

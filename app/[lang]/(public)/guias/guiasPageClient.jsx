@@ -3,22 +3,15 @@
 import { useContext } from 'react'
 import { LangContext } from '@/lib/contexts'
 import GuideCourseCard from '@/components/guias/GuideCourseCard'
-import Breadcrumb from '@/components/ui/Breadcrumb'
 
 export default function GuiasPageClient({ lang, courses }) {
   const { t } = useContext(LangContext)
-
-  const breadcrumbItems = [
-    { label: t('nav.inicio'), href: `/${lang}` },
-    { label: t('guias_page.hero_title') },
-  ]
 
   return (
     <>
       {/* Hero */}
       <section className="hero">
         <div className="container-center">
-          <Breadcrumb items={breadcrumbItems} />
           <div className="text-center py-12 md:py-16">
             <h1 className="text-5xl md:text-7xl font-bold text-brand-deep mb-6">
               {t('guias_page.hero_title')}

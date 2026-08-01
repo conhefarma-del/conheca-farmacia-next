@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Farmácia Central do Patriota — Directório | Conheça Farmácia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-brand-bg: #fafaf8;
+      --color-brand-bg-alt: #f3f4f1;
+      --color-brand-deep: #0f1a14;
+      --color-brand-accent: #0a844f;
+      --color-brand-accent-soft: rgba(10, 132, 79, 0.08);
+      --color-brand-divider: #e5e7e4;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-brand-bg);
+      color: var(--color-brand-deep);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .site-header {
+      border-bottom: 1px solid var(--color-brand-divider);
+      background: white;
+    }
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--color-brand-deep);
+      font-weight: 700;
+      font-size: 18px;
+    }
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: var(--color-brand-accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 16px;
+    }
+    .back-link {
+      font-size: 13px;
+      color: var(--color-brand-accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .back-link:hover { text-decoration: underline; }
+
+    .detail-layout {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 100px;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 40px;
+      align-items: start;
+    }
+
+    /* Main */
+    .detail-main {}
+
+    .breadcrumb {
+      padding: 18px 0 0;
+      font-size: 13px;
+      color: var(--color-brand-deep);
+      opacity: 0.5;
+    }
+    .breadcrumb a { color: inherit; text-decoration: none; }
+    .breadcrumb a:hover { opacity: 1; }
+    .breadcrumb span { margin: 0 6px; opacity: 0.4; }
+
+    /* Hero card */
+    .pharmacy-hero {
+      background: white;
+      border-radius: 18px;
+      border: 1px solid var(--color-brand-divider);
+      padding: 28px 30px;
+      margin-top: 20px;
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .pharmacy-hero-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 16px;
+      background: var(--color-brand-accent-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      flex-shrink: 0;
+    }
+    .pharmacy-hero-info { flex: 1; }
+    .pharmacy-hero-name {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    .pharmacy-hero-address {
+      font-size: 14px;
+      color: var(--color-brand-deep);
+      opacity: 0.65;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+    .pharmacy-hero-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 999px;
+    }
+    .badge-open { background: #dcfce7; color: #166534; }
+    .badge-24h { background: #dbeafe; color: #1e40af; }
+    .badge-type { background: var(--color-brand-bg-alt); color: var(--color-brand-deep); opacity: 0.7; border: 1px solid var(--color-brand-divider); }
+
+    /* Sections */
+    .section-card {
+      background: white;
+      border-radius: 14px;
+      border: 1px solid var(--color-brand-divider);
+      padding: 22px 24px;
+      margin-top: 16px;
+    }
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--color-brand-deep);
+      opacity: 0.45;
+      margin-bottom: 14px;
+    }
+    .hours-grid {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px 16px;
+      font-size: 14px;
+    }
+    .hours-day {
+      font-weight: 600;
+      color: var(--color-brand-deep);
+      opacity: 0.7;
+    }
+    .hours-time {
+      color: var(--color-brand-deep);
+      opacity: 0.55;
+    }
+    .hours-time.closed {
+      color: #dc2626;
+      opacity: 0.8;
+      font-weight: 600;
+    }
+
+    /* Services */
+    .services-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .service-chip {
+      padding: 8px 14px;
+      border-radius: 10px;
+      background: var(--color-brand-accent-soft);
+      border: 1px solid var(--color-brand-accent);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-brand-accent);
+    }
+
+    /* Contact */
+    .contact-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--color-brand-divider);
+      font-size: 14px;
+    }
+    .contact-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .contact-icon {
+      width: 20px;
+      text-align: center;
+      opacity: 0.5;
+    }
+    .contact-link {
+      color: var(--color-brand-accent);
+      text-decoration: none;
+    }
+    .contact-link:hover { text-decoration: underline; }
+
+    /* Map placeholder */
+    .map-placeholder {
+      background: var(--color-brand-bg-alt);
+      border-radius: 14px;
+      border: 1px solid var(--color-brand-divider);
+      height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      color: var(--color-brand-deep);
+      opacity: 0.2;
+    }
+
+    /* Sidebar */
+    .detail-sidebar { position: sticky; top: 90px; }
+    .sidebar-card {
+      background: white;
+      border-radius: 14px;
+      border: 1px solid var(--color-brand-divider);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+    .sidebar-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--color-brand-deep);
+      opacity: 0.4;
+      margin-bottom: 12px;
+    }
+    .action-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      text-align: center;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      transition: background 0.15s;
+    }
+    .btn-call {
+      background: var(--color-brand-accent);
+      color: white;
+    }
+    .btn-call:hover { background: #0d6b3f; }
+    .btn-directions {
+      background: white;
+      border: 1px solid var(--color-brand-divider);
+      color: var(--color-brand-deep);
+    }
+    .btn-directions:hover { background: var(--color-brand-bg-alt); }
+    .btn-report {
+      background: white;
+      border: 1px solid var(--color-brand-divider);
+      color: var(--color-brand-deep);
+      font-size: 12px;
+      padding: 9px;
+    }
+    .info-row {
+      display: flex;
+      gap: 10px;
+      font-size: 13px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--color-brand-divider);
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-label {
+      font-weight: 600;
+      color: var(--color-brand-deep);
+      opacity: 0.6;
+      min-width: 90px;
+    }
+    .info-value {
+      color: var(--color-brand-deep);
+      opacity: 0.85;
+    }
+
+    @media (max-width: 840px) {
+      .detail-layout { grid-template-columns: 1fr; gap: 32px; }
+      .detail-sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#" class="logo">
+        <span class="logo-icon">CF</span>
+        Conheça Farmácia
+      </a>
+      <a href="#" class="back-link">← Directório</a>
+    </div>
+  </header>
+
+  <div class="detail-layout">
+
+    <!-- COLUNA PRINCIPAL -->
+    <main class="detail-main">
+
+      <nav class="breadcrumb">
+        <a href="#">Directório</a> <span>/</span> Farmácias <span>/</span> Central do Patriota
+      </nav>
+
+      <div class="pharmacy-hero">
+        <div class="pharmacy-hero-icon">💊</div>
+        <div class="pharmacy-hero-info">
+          <h1 class="pharmacy-hero-name">Farmácia Central do Patriota</h1>
+          <p class="pharmacy-hero-address">
+            📍 Rua Comandante Gika, Bairro Patriota, Luanda · 1.2 km
+          </p>
+          <div class="pharmacy-hero-badges">
+            <span class="badge badge-open">● Aberta agora</span>
+            <span class="badge badge-24h">24h</span>
+            <span class="badge badge-type">Farmácia Comunitária</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Horários -->
+      <div class="section-card">
+        <div class="section-title">Horário de Funcionamento</div>
+        <div class="hours-grid">
+          <div class="hours-day">Segunda</div><div class="hours-time">00:00 — 24:00</div>
+          <div class="hours-day">Terça</div><div class="hours-time">00:00 — 24:00</div>
+          <div class="hours-day">Quarta</div><div class="hours-time">00:00 — 24:00</div>
+          <div class="hours-day">Quinta</div><div class="hours-time">00:00 — 24:00</div>
+          <div class="hours-day">Sexta</div><div class="hours-time">00:00 — 24:00</div>
+          <div class="hours-day">Sábado</div><div class="hours-time">00:00 — 24:00</div>
+          <div class="hours-day">Domingo</div><div class="hours-time">00:00 — 24:00</div>
+        </div>
+      </div>
+
+      <!-- Serviços -->
+      <div class="section-card">
+        <div class="section-title">Serviços Disponíveis</div>
+        <div class="services-list">
+          <span class="service-chip">💉 Vacinação</span>
+          <span class="service-chip">📋 Medicação controlada</span>
+          <span class="service-chip">🚚 Delivery</span>
+          <span class="service-chip">🧪 Análises rápidas</span>
+          <span class="service-chip">🩸 Glicemia capilar</span>
+          <span class="service-chip">💊 Manipulação</span>
+          <span class="service-chip">🩺 Consulta farmacêutica</span>
+        </div>
+      </div>
+
+      <!-- Mapa (placeholder) -->
+      <div class="section-card" style="padding: 0; overflow: hidden;">
+        <div class="section-title" style="padding: 22px 24px 0;">Localização</div>
+        <div class="map-placeholder">🗺️</div>
+        <div style="padding: 14px 24px; font-size: 13px; color: var(--color-brand-deep); opacity: 0.6;">
+          Rua Comandante Gika, Bairro Patriota, Luanda, Angola
+        </div>
+      </div>
+
+    </main>
+
+    <!-- SIDEBAR -->
+    <aside class="detail-sidebar">
+
+      <div class="sidebar-card">
+        <button class="action-btn btn-call">📞 Ligar agora</button>
+        <button class="action-btn btn-directions">🧭 Como chegar</button>
+        <button class="action-btn btn-report">⚠ Reportar informação errada</button>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-label">Informações</div>
+        <div class="info-row">
+          <span class="info-label">Telefone</span>
+          <span class="info-value">+244 923 456 789</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Email</span>
+          <span class="info-value">
+            <a href="#" class="contact-link">central.patriota@farmacia.ao</a>
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Licença</span>
+          <span class="info-value">INFARMED-AG-0042/2023</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Proprietário</span>
+          <span class="info-value">Dr. António Manuel</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Estado</span>
+          <span class="info-value" style="color: #0a844f; font-weight: 600;">Licenciada · Operacional</span>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-label">Partilhar</div>
+        <div style="display: flex; gap: 8px;">
+          <button class="action-btn btn-directions" style="margin: 0; flex: 1;">💬 WhatsApp</button>
+          <button class="action-btn btn-directions" style="margin: 0; flex: 1;">📋 Copiar</button>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-label">Próximas Farmácias</div>
+        <a href="#" class="related-card" style="display: block; padding: 10px; border-radius: 10px; text-decoration: none; color: inherit; margin-bottom: 6px; border: 1px solid var(--color-brand-divider);">
+          <div style="font-size: 13px; font-weight: 600;">Farmácia Nova Vida</div>
+          <div style="font-size: 11px; opacity: 0.5;">0.8 km · Maianga</div>
+        </a>
+        <a href="#" class="related-card" style="display: block; padding: 10px; border-radius: 10px; text-decoration: none; color: inherit; border: 1px solid var(--color-brand-divider);">
+          <div style="font-size: 13px; font-weight: 600;">Farmácia Kings</div>
+          <div style="font-size: 11px; opacity: 0.5;">1.5 km · Ingombota</div>
+        </a>
+      </div>
+
+    </aside>
+
+  </div>
+
+</body>
+</html>

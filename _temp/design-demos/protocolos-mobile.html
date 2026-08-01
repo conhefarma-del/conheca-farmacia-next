@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Consulta Rápida — Protocolos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-brand-bg: #fafaf8;
+      --color-brand-bg-alt: #f3f4f1;
+      --color-brand-deep: #0f1a14;
+      --color-brand-accent: #0a844f;
+      --color-brand-accent-soft: rgba(10, 132, 79, 0.08);
+      --color-brand-divider: #e5e7e4;
+      --color-warning-bg: #fffbeb;
+      --color-warning-border: #f59e0b;
+      --color-warning-text: #92400e;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-sans);
+      background: #e5e7e4;
+      color: var(--color-brand-deep);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .mobile-shell {
+      max-width: 420px;
+      margin: 0 auto;
+      background: var(--color-brand-bg);
+      min-height: 100vh;
+      box-shadow: 0 0 40px rgba(15, 26, 20, 0.10);
+    }
+
+    /* Top nav */
+    .top-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      background: white;
+      border-bottom: 1px solid var(--color-brand-divider);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 15px;
+      text-decoration: none;
+      color: var(--color-brand-deep);
+    }
+    .nav-logo-icon {
+      width: 28px; height: 28px;
+      background: var(--color-brand-accent);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    /* Search */
+    .search-bar {
+      padding: 14px 18px;
+      background: white;
+      border-bottom: 1px solid var(--color-brand-divider);
+    }
+    .search-input {
+      width: 100%;
+      padding: 10px 14px 10px 36px;
+      border: 1px solid var(--color-brand-divider);
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: var(--font-sans);
+      background: var(--color-brand-bg);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230f1a14' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.3-4.3'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: 12px center;
+    }
+
+    /* Protocol hero — compact */
+    .protocol-hero {
+      padding: 18px;
+      background: white;
+      border-bottom: 1px solid var(--color-brand-divider);
+    }
+    .protocol-category {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: var(--color-brand-accent-soft);
+      color: var(--color-brand-accent);
+      margin-bottom: 10px;
+    }
+    .protocol-hero h1 {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+    .protocol-hero-meta {
+      font-size: 12px;
+      color: var(--color-brand-deep);
+      opacity: 0.55;
+    }
+
+    /* Quick summary — always visible */
+    .quick-summary {
+      margin: 14px 18px;
+      padding: 14px;
+      background: var(--color-brand-bg-alt);
+      border-radius: 12px;
+      border-left: 4px solid var(--color-brand-accent);
+    }
+    .qs-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--color-brand-accent);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .qs-text {
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    /* Steps — numbered cards */
+    .step {
+      margin: 0 18px 10px;
+      padding: 14px 16px;
+      background: white;
+      border-radius: 12px;
+      border: 1px solid var(--color-brand-divider);
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .step-number {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--color-brand-accent);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .step-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+    .step-body {
+      font-size: 12px;
+      line-height: 1.55;
+      color: var(--color-brand-deep);
+      opacity: 0.8;
+    }
+    .step-drug {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: var(--color-brand-accent-soft);
+      border: 1px solid var(--color-brand-accent);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--color-brand-accent);
+      margin-top: 6px;
+    }
+
+    /* Alert box */
+    .alert-box {
+      margin: 14px 18px;
+      padding: 14px;
+      background: var(--color-warning-bg);
+      border-radius: 10px;
+      border: 1px solid var(--color-warning-border);
+    }
+    .alert-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--color-warning-text);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .alert-body {
+      font-size: 12px;
+      line-height: 1.55;
+      color: var(--color-warning-text);
+    }
+
+    /* Bottom actions */
+    .bottom-actions {
+      padding: 14px 18px;
+      border-top: 1px solid var(--color-brand-divider);
+      display: flex;
+      gap: 10px;
+      background: white;
+      position: sticky;
+      bottom: 0;
+    }
+    .action-btn {
+      flex: 1;
+      padding: 11px;
+      border-radius: 10px;
+      border: none;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      text-align: center;
+    }
+    .btn-primary {
+      background: var(--color-brand-accent);
+      color: white;
+    }
+    .btn-secondary {
+      background: var(--color-brand-bg-alt);
+      color: var(--color-brand-deep);
+    }
+
+    @media (min-width: 500px) {
+      body { padding: 24px 0; }
+      .mobile-shell { border-radius: 20px; min-height: auto; max-height: 800px; overflow-y: auto; }
+      .bottom-actions { position: sticky; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-shell">
+
+    <div class="top-nav">
+      <a href="#" class="nav-logo">
+        <span class="nav-logo-icon">CF</span>
+        Conheça Farmácia
+      </a>
+      <span style="font-size: 12px; opacity: 0.5;">Protocolos</span>
+    </div>
+
+    <div class="search-bar">
+      <input type="search" class="search-input" placeholder="Pesquisar protocolo..." />
+    </div>
+
+    <div class="protocol-hero">
+      <span class="protocol-category">Cardiologia</span>
+      <h1>Hipertensão Arterial Resistente</h1>
+      <div class="protocol-hero-meta">
+        📅 Abril 2026 · 📋 4 passos · ⏱️ 15 min
+      </div>
+    </div>
+
+    <div class="quick-summary">
+      <div class="qs-title">⚡ Resumo Rápido</div>
+      <p class="qs-text">PA não controlada com 3 fármacos (incluindo diurético) em doses óptimas. Confirmar aderência, excluir pseudo-resistência, propor quadrupla.</p>
+    </div>
+
+    <div class="step">
+      <div class="step-number">1</div>
+      <div>
+        <div class="step-title">Confirmar resistência</div>
+        <div class="step-body">Excluir pseudo-resistência: técnica de medição, AINEs, álcool, white-coat. Confirmar aderência.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-number">2</div>
+      <div>
+        <div class="step-title">Causas secundárias</div>
+        <div class="step-body">AOS, hiperaldosteronismo, feocromocitoma, estenose renal, síndrome de Cushing.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-number">3</div>
+      <div>
+        <div class="step-title">Optimizar terapia</div>
+        <div class="step-body">IECA/ARB II + espironolactona 25mg + tiazídico + bloqueador cálcio. Monitorizar K+ em 7–14 dias.</div>
+        <span class="step-drug">Espironolactona 25mg</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-number">4</div>
+      <div>
+        <div class="step-title">Referenciar</div>
+        <div class="step-body">Se PA não controlada após quadrupla: encaminhar para secundário. Documentar todos os fármacos e doses.</div>
+      </div>
+    </div>
+
+    <div class="alert-box">
+      <div class="alert-title">⚠️ Segurança</div>
+      <div class="alert-body">IECA + espironolactona + diurético poupador de K+ = risco de hipercalemia. Verificar K+ basal antes de iniciar. Não usar se eGFR &lt; 30 sem orientação especializada.</div>
+    </div>
+
+    <div class="bottom-actions">
+      <button class="action-btn btn-secondary">📥 PDF</button>
+      <button class="action-btn btn-primary">📋 Partilhar</button>
+    </div>
+
+  </div>
+
+</body>
+</html>

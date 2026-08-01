@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Directório de Farmácias | Conheça Farmácia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-brand-bg: #fafaf8;
+      --color-brand-bg-alt: #f3f4f1;
+      --color-brand-deep: #0f1a14;
+      --color-brand-accent: #0a844f;
+      --color-brand-accent-soft: rgba(10, 132, 79, 0.08);
+      --color-brand-divider: #e5e7e4;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --shadow-soft: 0 1px 2px rgba(15, 26, 20, 0.04), 0 4px 12px rgba(15, 26, 20, 0.06);
+      --shadow-hover: 0 8px 24px rgba(15, 26, 20, 0.10), 0 2px 8px rgba(15, 26, 20, 0.06);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-brand-bg);
+      color: var(--color-brand-deep);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    .site-header {
+      border-bottom: 1px solid var(--color-brand-divider);
+      background: white;
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--color-brand-deep);
+      font-weight: 700;
+      font-size: 18px;
+    }
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: var(--color-brand-accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 16px;
+    }
+    .nav-links { display: flex; list: none; gap: 24px; }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--color-brand-deep);
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    .nav-links a:hover { opacity: 1; }
+    .nav-links a.active { opacity: 1; font-weight: 600; }
+
+    /* Hero */
+    .hero {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 56px 24px 32px;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: clamp(32px, 5vw, 46px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+    .hero-subtitle {
+      font-size: 15px;
+      color: var(--color-brand-deep);
+      opacity: 0.65;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Search + Filters */
+    .search-section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px 24px;
+    }
+    .search-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .search-input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid var(--color-brand-divider);
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: var(--font-sans);
+      background: white;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: var(--color-brand-accent);
+      box-shadow: 0 0 0 3px rgba(10, 132, 79, 0.1);
+    }
+    .location-btn {
+      padding: 12px 16px;
+      border: 1px solid var(--color-brand-divider);
+      border-radius: 10px;
+      background: white;
+      font-size: 14px;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: border-color 0.2s;
+    }
+    .location-btn:hover { border-color: var(--color-brand-accent); }
+    .filter-chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .filter-chip {
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--color-brand-divider);
+      background: white;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      color: var(--color-brand-deep);
+      transition: all 0.15s;
+    }
+    .filter-chip:hover { border-color: var(--color-brand-accent); }
+    .filter-chip.active {
+      background: var(--color-brand-accent);
+      color: white;
+      border-color: var(--color-brand-accent);
+    }
+
+    /* Toggle view */
+    .view-toggle {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .results-count {
+      font-size: 13px;
+      color: var(--color-brand-deep);
+      opacity: 0.6;
+    }
+    .toggle-btns {
+      display: flex;
+      border: 1px solid var(--color-brand-divider);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .toggle-btn {
+      padding: 7px 12px;
+      border: none;
+      background: white;
+      font-size: 13px;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      transition: background 0.15s;
+    }
+    .toggle-btn.active {
+      background: var(--color-brand-accent-soft);
+      color: var(--color-brand-accent);
+      font-weight: 600;
+    }
+
+    /* Grid */
+    .directory-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 100px;
+    }
+    .pharmacy-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 20px;
+    }
+    .pharmacy-grid.list-view {
+      grid-template-columns: 1fr;
+      max-width: 900px;
+    }
+
+    /* Pharmacy Card */
+    .pharmacy-card {
+      background: white;
+      border-radius: 16px;
+      border: 1px solid var(--color-brand-divider);
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+    }
+    .pharmacy-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-hover);
+    }
+    .card-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--color-brand-divider);
+      display: flex;
+      gap: 14px;
+    }
+    .pharmacy-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--color-brand-accent-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    .pharmacy-info { flex: 1; min-width: 0; }
+    .pharmacy-name {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+    .pharmacy-location {
+      font-size: 12px;
+      color: var(--color-brand-deep);
+      opacity: 0.6;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .open-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .badge-open { background: #dcfce7; color: #166534; }
+    .badge-closed { background: #fee2e2; color: #991b1b; }
+    .badge-24h { background: #dbeafe; color: #1e40af; }
+
+    .card-body {
+      padding: 14px 20px;
+      flex: 1;
+    }
+    .pharmacy-services {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .service-tag {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 9px;
+      border-radius: 6px;
+      background: var(--color-brand-bg-alt);
+      color: var(--color-brand-deep);
+      opacity: 0.7;
+    }
+    .pharmacy-hours {
+      font-size: 12px;
+      color: var(--color-brand-deep);
+      opacity: 0.6;
+      line-height: 1.5;
+    }
+    .pharmacy-hours strong {
+      color: var(--color-brand-deep);
+      opacity: 0.85;
+    }
+    .card-footer {
+      padding: 12px 20px;
+      border-top: 1px solid var(--color-brand-divider);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--color-brand-accent);
+      font-weight: 600;
+    }
+    .distance {
+      font-size: 12px;
+      color: var(--color-brand-deep);
+      opacity: 0.5;
+    }
+
+    @media (max-width: 640px) {
+      .nav-links { gap: 14px; }
+      .search-bar { flex-direction: column; }
+      .pharmacy-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#" class="logo">
+        <span class="logo-icon">CF</span>
+        Conheça Farmácia
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#">Início</a></li>
+          <li><a href="#">Ferramentas</a></li>
+          <li><a href="#" class="active">Farmácias</a></li>
+          <li><a href="#">Guias</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1>Directório de Farmácias</h1>
+    <p class="hero-subtitle">Encontre farmácias, postos de saúde e serviços farmacêuticos em todo o território nacional.</p>
+  </section>
+
+  <section class="search-section">
+    <div class="search-bar">
+      <input type="search" class="search-input" placeholder="Pesquisar por nome, bairro, município..." />
+      <button class="location-btn">📍 Luanda</button>
+    </div>
+    <div class="filter-chips">
+      <button class="filter-chip active">Todas</button>
+      <button class="filter-chip">Farmácia Comunitária</button>
+      <button class="filter-chip">Farmácia Hospitalar</button>
+      <button class="filter-chip">Posto de Saúde</button>
+      <button class="filter-chip">24h</button>
+      <button class="filter-chip">Com Delivery</button>
+    </div>
+  </section>
+
+  <div class="view-toggle">
+    <div class="results-count">12 resultados · Luanda</div>
+    <div class="toggle-btns">
+      <button class="toggle-btn active">⊞ Lista</button>
+      <button class="toggle-btn">◎ Mapa</button>
+    </div>
+  </div>
+
+  <section class="directory-section">
+    <div class="pharmacy-grid list-view">
+
+      <!-- Card 1 — Aberta -->
+      <a href="#" class="pharmacy-card">
+        <div class="card-header">
+          <div class="pharmacy-icon">💊</div>
+          <div class="pharmacy-info">
+            <div class="pharmacy-name">Farmácia Central do Patriota</div>
+            <div class="pharmacy-location">📍 Rua Comandante Gika, Patriota, Luanda</div>
+          </div>
+          <span class="open-badge badge-open">Aberta</span>
+        </div>
+        <div class="card-body">
+          <div class="pharmacy-services">
+            <span class="service-tag">Comunidade</span>
+            <span class="service-tag">Vacinação</span>
+            <span class="service-tag">Medicação controlada</span>
+            <span class="service-tag">24h</span>
+          </div>
+          <div class="pharmacy-hours">
+            <strong>Horário:</strong> Aberta 24h · Todos os dias
+          </div>
+        </div>
+        <div class="card-footer">
+          <span>Ver detalhe →</span>
+          <span class="distance">1.2 km</span>
+        </div>
+      </a>
+
+      <!-- Card 2 -->
+      <a href="#" class="pharmacy-card">
+        <div class="card-header">
+          <div class="pharmacy-icon">🏥</div>
+          <div class="pharmacy-info">
+            <div class="pharmacy-name">Farmácia do Hospital Municipal de Luanda</div>
+            <div class="pharmacy-location">📍 Hospital Municipal, Luanda Sul</div>
+          </div>
+          <span class="open-badge badge-24h">24h</span>
+        </div>
+        <div class="card-body">
+          <div class="pharmacy-services">
+            <span class="service-tag">Hospitalar</span>
+            <span class="service-tag">Emergência</span>
+            <span class="service-tag">Internamento</span>
+          </div>
+          <div class="pharmacy-hours">
+            <strong>Horário:</strong> 24h · Acesso por urgência + consulta externa
+          </div>
+        </div>
+        <div class="card-footer">
+          <span>Ver detalhe →</span>
+          <span class="distance">3.4 km</span>
+        </div>
+      </a>
+
+      <!-- Card 3 -->
+      <a href="#" class="pharmacy-card">
+        <div class="card-header">
+          <div class="pharmacy-icon">💊</div>
+          <div class="pharmacy-info">
+            <div class="pharmacy-name">Farmácia Nova Vida</div>
+            <div class="pharmacy-location">📍 Maianga, Rua da Missão, Luanda</div>
+          </div>
+          <span class="open-badge badge-open">Aberta</span>
+        </div>
+        <div class="card-body">
+          <div class="pharmacy-services">
+            <span class="service-tag">Comunidade</span>
+            <span class="service-tag">Delivery</span>
+            <span class="service-tag">Suplementos</span>
+          </div>
+          <div class="pharmacy-hours">
+            <strong>Horário:</strong> Seg–Sex: 8h–20h · Sáb: 8h–14h · Dom: Fechado
+          </div>
+        </div>
+        <div class="card-footer">
+          <span>Ver detalhe →</span>
+          <span class="distance">0.8 km</span>
+        </div>
+      </a>
+
+      <!-- Card 4 -->
+      <a href="#" class="pharmacy-card">
+        <div class="card-header">
+          <div class="pharmacy-icon">🏥</div>
+          <div class="pharmacy-info">
+            <div class="pharmacy-name">Posto de Saúde de Viana</div>
+            <div class="pharmacy-location">📍 Viana, Bairro Postal, Luanda</div>
+          </div>
+          <span class="open-badge badge-closed">Fechada</span>
+        </div>
+        <div class="card-body">
+          <div class="pharmacy-services">
+            <span class="service-tag">Posto de Saúde</span>
+            <span class="service-tag">Vacinação infantil</span>
+          </div>
+          <div class="pharmacy-hours">
+            <strong>Horário:</strong> Seg–Sex: 7h–15h
+          </div>
+        </div>
+        <div class="card-footer">
+          <span>Ver detalhe →</span>
+          <span class="distance">5.1 km</span>
+        </div>
+      </a>
+
+      <!-- Card 5 -->
+      <a href="#" class="pharmacy-card">
+        <div class="card-header">
+          <div class="pharmacy-icon">💊</div>
+          <div class="pharmacy-info">
+            <div class="pharmacy-name">Farmácia Kings</div>
+            <div class="pharmacy-location">📍 Ingombota, Luanda</div>
+          </div>
+          <span class="open-badge badge-open">Aberta</span>
+        </div>
+        <div class="card-body">
+          <div class="pharmacy-services">
+            <span class="service-tag">Comunidade</span>
+            <span class="service-tag">Manipulação</span>
+            <span class="service-tag">Perfumaria</span>
+          </div>
+          <div class="pharmacy-hours">
+            <strong>Horário:</strong> Seg–Sáb: 8h–21h
+          </div>
+        </div>
+        <div class="card-footer">
+          <span>Ver detalhe →</span>
+          <span class="distance">2.3 km</span>
+        </div>
+      </a>
+
+      <!-- Card 6 -->
+      <a href="#" class="pharmacy-card">
+        <div class="card-header">
+          <div class="pharmacy-icon">🏥</div>
+          <div class="pharmacy-info">
+            <div class="pharmacy-name">Farmácia do Hospital Geral de Luanda</div>
+            <div class="pharmacy-location">📍 Hospital Geral, Luanda</div>
+          </div>
+          <span class="open-badge badge-24h">24h</span>
+        </div>
+        <div class="card-body">
+          <div class="pharmacy-services">
+            <span class="service-tag">Hospitalar</span>
+            <span class="service-tag">Pediatria</span>
+            <span class="service-tag">Quimioterapia</span>
+          </div>
+          <div class="pharmacy-hours">
+            <strong>Horário:</strong> 24h · Serviço de urgência
+          </div>
+        </div>
+        <div class="card-footer">
+          <span>Ver detalhe →</span>
+          <span class="distance">4.0 km</span>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+</body>
+</html>

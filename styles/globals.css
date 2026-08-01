@@ -321,42 +321,75 @@ html.dark .form-note {
   }
   .nav-dropdown-chevron { transition: transform 0.2s ease; }
   .nav-dropdown-chevron.is-open { transform: rotate(180deg); }
-  .nav-dropdown-menu {
+  /* Desktop mega menu ("Ferramentas" → Guias de Estudo / Protocolos) */
+  .nav-item { position: relative; }
+  .mega-menu {
     position: absolute;
     top: calc(100% + 8px);
-    left: 0;
-    min-width: 200px;
+    right: 0;
+    min-width: 520px;
+    max-width: 680px;
     background: var(--color-brand-bg);
     border: 1px solid var(--color-brand-divider);
-    border-radius: 12px;
-    padding: 8px;
-    box-shadow: 0 8px 24px rgba(15, 26, 20, 0.10);
-    display: none;
-    z-index: 60;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 20px 60px rgba(15, 26, 20, 0.12), 0 4px 16px rgba(15, 26, 20, 0.06);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+    z-index: 200;
   }
-  .nav-dropdown-menu.is-open { display: flex; flex-direction: column; gap: 2px; }
-  .nav-dropdown-menu a {
-    display: block;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 0.925rem;
-    font-weight: 500;
-    color: var(--color-brand-deep);
+  .mega-menu.is-open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  .mega-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+  .mega-link {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 10px;
     text-decoration: none;
-    white-space: nowrap;
+    transition: background 0.15s;
   }
-  .nav-dropdown-menu a:hover {
+  .mega-link:hover {
     background: rgba(0, 73, 58, 0.06);
+  }
+  .mega-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(10, 132, 79, 0.08);
     color: var(--color-brand-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
   }
-  .nav-dropdown-menu a.nav-link-active {
-    background: rgba(0, 73, 58, 0.12);
-    color: var(--color-brand-primary);
+  .mega-body { display: block; }
+  .mega-label {
+    display: block;
+    font-size: 14px;
     font-weight: 600;
-  }
-  html.dark .nav-dropdown-btn,
-  html.dark .nav-dropdown-menu a {
     color: var(--color-brand-deep);
+    margin-bottom: 2px;
+  }
+  .mega-desc {
+    display: block;
+    font-size: 12px;
+    color: var(--color-brand-deep);
+    opacity: 0.6;
+    line-height: 1.4;
+  }
+  html.dark .mega-menu {
+    border-color: rgba(255, 255, 255, 0.12);
   }
 
   /* Drawer link active dark mode */
@@ -3922,10 +3955,58 @@ html.dark .privacy-toc-link--active {
   opacity: 0.7;
   margin-bottom: 0.75rem;
 }
+.guide-course-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 0.25rem;
+}
 .guide-course-count {
+  display: inline-flex;
+  align-items: center;
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--color-brand-accent);
+  padding: 4px 12px;
+  border-radius: 999px;
+  transition: background 0.15s;
+}
+.guide-course-card:hover .guide-course-count {
+  background: rgba(10, 132, 79, 0.1);
+}
+.guide-course-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  color: var(--color-brand-accent);
+  transition: background 0.15s, color 0.15s, transform 0.15s;
+}
+.guide-course-card:hover .guide-course-arrow {
+  background: var(--color-brand-accent);
+  color: #fff;
+  transform: translateX(2px);
+}
+.guide-view-all-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  border: 1px solid var(--color-brand-accent);
+  color: var(--color-brand-accent);
+  background: transparent;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+.guide-view-all-btn:hover {
+  background: var(--color-brand-accent);
+  color: #fff;
 }
 
 /* Course page — discipline cards */
@@ -4127,19 +4208,273 @@ html.dark .guide-resource-icon { background: rgba(255, 255, 255, 0.08); }
 }
 
 /* ==========================================================
+   GUIDE DETAIL — /[lang]/guias/[slug] (stats, timeline, sidebar)
+   ========================================================== */
+
+/* Hero stats — derivadas do conteúdo */
+.guide-hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+}
+.guide-hero-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--color-brand-divider);
+  background: var(--color-brand-bg);
+  font-size: 13px;
+  color: var(--color-brand-deep);
+  opacity: 0.85;
+}
+.guide-hero-stat svg { color: var(--color-brand-accent); flex-shrink: 0; }
+.guide-hero-stat strong { font-weight: 700; color: var(--color-brand-deep); }
+
+/* Layout 2 colunas: conteúdo + sidebar */
+.guide-detail-layout {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 100px;
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 48px;
+  align-items: start;
+}
+.guide-detail-main { min-width: 0; }
+
+/* Cabeçalho de secção */
+.guide-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.guide-section-heading svg { color: var(--color-brand-accent); flex-shrink: 0; }
+.guide-section-heading h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-brand-deep);
+  letter-spacing: -0.01em;
+}
+
+/* Timeline por fases */
+.guide-timeline-phase {
+  display: flex;
+  gap: 18px;
+}
+.guide-timeline-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 18px;
+  flex-shrink: 0;
+}
+.guide-timeline-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--color-brand-accent);
+  border: 3px solid var(--color-brand-bg);
+  box-shadow: 0 0 0 1px var(--color-brand-accent);
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+.guide-timeline-line {
+  flex: 1;
+  width: 2px;
+  min-height: 24px;
+  background: var(--color-brand-divider);
+  margin: 6px 0;
+}
+.guide-timeline-content { flex: 1; min-width: 0; padding-bottom: 32px; }
+.guide-timeline-cards { display: flex; flex-direction: column; gap: 16px; }
+.guide-timeline-phase-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-brand-accent);
+  margin-bottom: 14px;
+}
+
+/* Âncoras de disciplina — compensa o header sticky no scroll */
+.guide-discipline-card { scroll-margin-top: 90px; }
+
+/* Sidebar de progresso */
+.guide-sidebar { position: sticky; top: 90px; }
+.sidebar-empty { font-size: 13px; color: var(--color-brand-deep); opacity: 0.55; font-style: italic; }
+.guide-progress-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-brand-divider);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.guide-progress-fill {
+  height: 100%;
+  background: var(--color-brand-accent);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+.guide-progress-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-brand-deep);
+  opacity: 0.6;
+  margin-bottom: 10px;
+}
+.guide-progress-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.guide-progress-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  padding: 5px 6px;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--color-brand-deep);
+  opacity: 0.85;
+  cursor: pointer;
+  transition: background-color 0.15s, opacity 0.15s;
+}
+.guide-progress-item:hover { background: rgba(0, 42, 50, 0.04); }
+.guide-progress-item svg { color: var(--color-brand-accent); flex-shrink: 0; }
+.guide-progress-item.is-done { opacity: 0.5; text-decoration: line-through; }
+.guide-progress-item.is-done svg { color: var(--color-brand-accent); }
+.guide-progress-reset {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--color-brand-divider);
+  background: var(--color-brand-bg);
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-brand-deep);
+  opacity: 0.7;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, opacity 0.15s;
+}
+.guide-progress-reset:hover { border-color: var(--color-brand-accent); color: var(--color-brand-accent); opacity: 1; }
+
+/* Onde estudar este curso */
+.guide-university-section { margin-top: 56px; padding-top: 40px; border-top: 1px solid var(--color-brand-divider); }
+.guide-university-desc {
+  font-size: 14px;
+  color: var(--color-brand-deep);
+  opacity: 0.65;
+  margin: -8px 0 22px;
+}
+.guide-university-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+.guide-university-card {
+  background: var(--color-brand-bg);
+  border: 1px solid var(--color-brand-divider);
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.guide-university-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.guide-university-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-brand-deep);
+  line-height: 1.35;
+}
+.guide-university-type {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(10, 132, 79, 0.08);
+  color: var(--color-brand-accent);
+}
+.guide-university-type.is-private {
+  background: rgba(157, 23, 77, 0.08);
+  color: #9d174d;
+}
+.guide-university-city {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--color-brand-deep);
+  opacity: 0.65;
+}
+.guide-university-city svg { color: var(--color-brand-accent); flex-shrink: 0; }
+.guide-university-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 4px;
+}
+.guide-university-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-brand-accent);
+  text-decoration: none;
+  padding: 6px 12px;
+  border: 1px solid var(--color-brand-divider);
+  border-radius: 999px;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+.guide-university-links a:hover { border-color: var(--color-brand-accent); background: rgba(10, 132, 79, 0.06); }
+
+/* Dark mode */
+html.dark .guide-hero-stat,
+html.dark .guide-university-card { background: var(--color-brand-bg-alt); }
+html.dark .guide-timeline-line { background: rgba(255, 255, 255, 0.12); }
+html.dark .guide-progress-item:hover { background: rgba(255, 255, 255, 0.05); }
+html.dark .guide-university-type.is-private { background: rgba(251, 113, 133, 0.15); color: #f9a8d4; }
+
+/* Responsivo — colapsa para 1 coluna (sidebar por cima do conteúdo) */
+@media (max-width: 840px) {
+  .guide-detail-layout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 24px 20px 80px;
+  }
+  .guide-sidebar { position: static; }
+}
+
+/* ==========================================================
    CLINICAL PROTOCOLS — /[lang]/protocolos
    ========================================================== */
 
 /* ----- Lista: filtros ----- */
-.protocol-filters-bar {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 8px 24px 28px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  align-items: center;
-}
 .protocol-filter-btn {
   padding: 7px 16px;
   border-radius: 999px;
@@ -4153,21 +4488,8 @@ html.dark .guide-resource-icon { background: rgba(255, 255, 255, 0.08); }
 }
 .protocol-filter-btn:hover { border-color: var(--color-brand-accent); color: var(--color-brand-accent); }
 .protocol-filter-btn.active { background: var(--color-brand-accent); color: #fff; border-color: var(--color-brand-accent); }
-.protocol-search { position: relative; display: flex; align-items: center; margin-left: auto; color: var(--color-brand-deep); opacity: 0.55; }
-.protocol-search svg { position: absolute; left: 10px; pointer-events: none; }
-.protocol-search-input {
-  padding: 8px 12px 8px 32px;
-  border-radius: 10px;
-  border: 1px solid var(--color-brand-divider);
-  background: var(--color-brand-bg);
-  font-size: 13px;
-  width: 220px;
-  color: var(--color-brand-deep);
-}
-.protocol-search-input:focus { outline: 2px solid var(--color-brand-accent); outline-offset: 1px; }
 
 /* ----- Lista: grid + cards ----- */
-.protocolos-section { max-width: 1100px; margin: 0 auto; padding: 0 24px 100px; }
 .protocolos-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -4229,7 +4551,7 @@ html.dark .guide-resource-icon { background: rgba(255, 255, 255, 0.08); }
 }
 .protocol-card-meta-item { display: inline-flex; align-items: center; gap: 5px; }
 .protocol-card-updated { font-size: 11px; color: var(--color-brand-accent); font-weight: 600; margin-left: auto; }
-.protocol-empty-state { grid-column: 1 / -1; text-align: center; padding: 60px 24px; color: var(--color-brand-deep); opacity: 0.5; }
+.protocol-empty-state { text-align: center; padding: 60px 24px; color: var(--color-brand-deep); opacity: 0.5; }
 
 /* ----- Detalhe: progresso ----- */
 .protocol-progress {
@@ -4611,8 +4933,7 @@ html.dark .protocol-hero,
 html.dark .protocol-step,
 html.dark .sidebar-card,
 html.dark .quiz-box { background: var(--color-brand-bg-alt); }
-html.dark .protocol-filter-btn,
-html.dark .protocol-search-input { background: var(--color-brand-bg-alt); }
+html.dark .protocol-filter-btn { background: var(--color-brand-bg-alt); }
 html.dark .red-flags-box { background: rgba(220, 38, 38, 0.10); border-color: rgba(220, 38, 38, 0.5); }
 html.dark .red-flags-box .rf-title,
 html.dark .red-flags-box .rf-body { color: #fca5a5; }
@@ -4656,9 +4977,6 @@ html { scroll-behavior: smooth; }
   .protocol-progress { top: 0; }
 }
 @media (max-width: 640px) {
-  .protocol-filters-bar { flex-direction: column; align-items: stretch; }
-  .protocol-search { margin-left: 0; width: 100%; }
-  .protocol-search-input { width: 100%; }
   .protocolos-grid { grid-template-columns: 1fr; }
   .protocol-hero { padding: 22px 20px; }
 }

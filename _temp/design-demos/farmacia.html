@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Farmácia — Guias de Estudo | Conheça Farmácia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-brand-bg: #fafaf8;
+      --color-brand-bg-alt: #f3f4f1;
+      --color-brand-deep: #0f1a14;
+      --color-brand-accent: #0a844f;
+      --color-brand-accent-soft: rgba(10, 132, 79, 0.08);
+      --color-brand-divider: #e5e7e4;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --shadow-soft: 0 1px 2px rgba(15, 26, 20, 0.04), 0 4px 12px rgba(15, 26, 20, 0.06);
+      --shadow-hover: 0 8px 24px rgba(15, 26, 20, 0.10), 0 2px 8px rgba(15, 26, 20, 0.06);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-brand-bg);
+      color: var(--color-brand-deep);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(250, 250, 248, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--color-brand-divider);
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--color-brand-deep);
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--color-brand-accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 16px;
+    }
+
+    .nav-links {
+      display: flex;
+      list: none;
+      gap: 32px;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--color-brand-deep);
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 0.75;
+      transition: opacity 0.2s;
+    }
+
+    .nav-links a:hover { opacity: 1; }
+
+    /* Breadcrumb */
+    .breadcrumb-bar {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 24px 0;
+      font-size: 13px;
+      color: var(--color-brand-deep);
+      opacity: 0.55;
+    }
+
+    .breadcrumb-bar a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .breadcrumb-bar a:hover { opacity: 1; }
+
+    /* Course Hero */
+    .course-hero {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 24px 56px;
+      text-align: center;
+    }
+
+    .course-emoji {
+      font-size: 72px;
+      line-height: 1;
+      margin-bottom: 24px;
+    }
+
+    .course-hero h1 {
+      font-size: clamp(36px, 5vw, 52px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .course-hero-subtitle {
+      font-size: 18px;
+      color: var(--color-brand-deep);
+      opacity: 0.65;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Disciplines */
+    .disciplines-section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px 100px;
+    }
+
+    .disciplines-header {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--color-brand-accent);
+      margin-bottom: 24px;
+    }
+
+    /* Discipline Card */
+    .discipline-card {
+      background: white;
+      border-radius: 16px;
+      border: 1px solid var(--color-brand-divider);
+      box-shadow: var(--shadow-soft);
+      margin-bottom: 16px;
+      overflow: hidden;
+      transition: box-shadow 0.2s;
+    }
+
+    .discipline-card:hover {
+      box-shadow: var(--shadow-hover);
+    }
+
+    .discipline-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .discipline-header-left {
+      flex: 1;
+    }
+
+    .discipline-name {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .discipline-desc {
+      font-size: 13px;
+      color: var(--color-brand-deep);
+      opacity: 0.55;
+      line-height: 1.5;
+    }
+
+    .discipline-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-left: 24px;
+    }
+
+    .discipline-phase {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: var(--color-brand-accent-soft);
+      color: var(--color-brand-accent);
+      white-space: nowrap;
+    }
+
+    .discipline-toggle {
+      width: 20px;
+      height: 20px;
+      color: var(--color-brand-deep);
+      opacity: 0.4;
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s;
+      flex-shrink: 0;
+    }
+
+    .discipline-card.open .discipline-toggle {
+      transform: rotate(180deg);
+      opacity: 0.75;
+    }
+
+    /* Disipline Content */
+    .discipline-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .discipline-card.open .discipline-content {
+      max-height: 2000px;
+    }
+
+    .discipline-content-inner {
+      padding: 0 24px 24px;
+      border-top: 1px solid var(--color-brand-divider);
+    }
+
+    /* Importance Box */
+    .importance-box {
+      background: var(--color-brand-accent-soft);
+      border-left: 3px solid var(--color-brand-accent);
+      border-radius: 0 12px 12px 0;
+      padding: 16px 20px;
+      margin: 20px 0;
+    }
+
+    .importance-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--color-brand-accent);
+      margin-bottom: 6px;
+    }
+
+    .importance-text {
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--color-brand-deep);
+      opacity: 0.8;
+    }
+
+    /* Section Label */
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-brand-deep);
+      opacity: 0.35;
+      margin: 24px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--color-brand-divider);
+    }
+
+    /* Book Card */
+    .book-card {
+      display: flex;
+      gap: 18px;
+      padding: 16px;
+      background: var(--color-brand-bg-alt);
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+
+    .book-cover {
+      width: 80px;
+      height: 120px;
+      background: white;
+      border-radius: 6px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      color: var(--color-brand-accent);
+      font-weight: 800;
+      font-size: 11px;
+      text-align: center;
+      line-height: 1.2;
+      padding: 4px;
+    }
+
+    .book-info { flex: 1; }
+
+    .book-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      line-height: 1.35;
+    }
+
+    .book-meta {
+      font-size: 12px;
+      color: var(--color-brand-deep);
+      opacity: 0.5;
+      margin-bottom: 8px;
+    }
+
+    .book-desc {
+      font-size: 13px;
+      color: var(--color-brand-deep);
+      opacity: 0.7;
+      line-height: 1.55;
+      margin-bottom: 10px;
+    }
+
+    .book-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .book-link {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--color-brand-accent);
+      color: var(--color-brand-accent);
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .book-link:hover {
+      background: var(--color-brand-accent);
+      color: white;
+    }
+
+    /* Resource Link */
+    .resource-link {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.15s;
+      margin-bottom: 8px;
+    }
+
+    .resource-link:hover {
+      background: var(--color-brand-bg-alt);
+    }
+
+    .resource-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--color-brand-accent-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .resource-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 1px;
+    }
+
+    .resource-desc {
+      font-size: 12px;
+      color: var(--color-brand-deep);
+      opacity: 0.55;
+    }
+
+    /* Other courses */
+    .other-courses {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .other-course-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--color-brand-divider);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-brand-deep);
+      opacity: 0.7;
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s, opacity 0.2s;
+    }
+
+    .other-course-link:hover {
+      border-color: var(--color-brand-accent);
+      color: var(--color-brand-accent);
+      opacity: 1;
+    }
+
+    /* Footer */
+    .site-footer {
+      border-top: 1px solid var(--color-brand-divider);
+      padding: 32px 24px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--color-brand-deep);
+      opacity: 0.5;
+    }
+
+    @media (max-width: 640px) {
+      .nav-links { gap: 16px; }
+      .discipline-header { flex-wrap: wrap; }
+      .discipline-right { margin-left: 0; margin-top: 12px; width: 100%; justify-content: space-between; }
+      .book-card { flex-direction: column; }
+      .book-cover { width: 100%; height: 80px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="guias.html" class="logo">
+        <span class="logo-icon">CF</span>
+        Conheça Farmácia
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#">Início</a></li>
+          <li><a href="#">Artigos</a></li>
+          <li><a href="guias.html">Guias</a></li>
+          <li><a href="#">Sobre</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <nav class="breadcrumb-bar">
+    <a href="guias.html">Guias de Estudo</a> / Farmácia
+  </nav>
+
+  <section class="course-hero">
+    <div class="course-emoji">💊</div>
+    <h1>Farmácia</h1>
+    <p class="course-hero-subtitle">
+      Do laboratório ao balcão — a ciência que protege a saúde.
+    </p>
+  </section>
+
+  <section class="disciplines-section">
+    <p class="disciplines-header">Disciplinas</p>
+
+    <!-- Disciplina 1 -->
+    <div class="discipline-card open">
+      <div class="discipline-header">
+        <div class="discipline-header-left">
+          <div class="discipline-name">Farmacologia</div>
+          <div class="discipline-desc">Mecanismos de ação, efeitos terapêuticos e adversos dos fármacos.</div>
+        </div>
+        <div class="discipline-right">
+          <span class="discipline-phase">2º Ano</span>
+          <svg class="discipline-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </div>
+      </div>
+      <div class="discipline-content">
+        <div class="discipline-content-inner">
+
+          <div class="importance-box">
+            <div class="importance-label">Porquê é essencial</div>
+            <p class="importance-text">
+              Base fundamental para qualquer profissional que lida com medicamentos. Sem farmacologia, o farmacêutico não consegue compreender interações nem aconselhar doentes.
+            </p>
+          </div>
+
+          <div class="section-label">Livros Essenciais</div>
+
+          <div class="book-card">
+            <div class="book-cover">G & G<br/>14ª ed</div>
+            <div class="book-info">
+              <div class="book-title">Goodman & Gilman's — The Pharmacological Basis of Therapeutics</div>
+              <div class="book-meta">Brunton · Knollmann · 2023</div>
+              <div class="book-desc">Considerado a bíblia da farmacologia. Essencial para compreensão profunda dos mecanismos de ação.</div>
+              <div class="book-links">
+                <a href="#" class="book-link">Comprar na Amazon</a>
+                <a href="#" class="book-link">Ver na Editora</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="book-card">
+            <div class="book-cover">Rang<br/>& Dale</div>
+            <div class="book-info">
+              <div class="book-title">Rang & Dale's Pharmacology</div>
+              <div class="book-meta">Ritter · Flower · 2022</div>
+              <div class="book-desc">Introdução clara e visual à farmacologia, ideal para os primeiros anos.</div>
+              <div class="book-links">
+                <a href="#" class="book-link">Comprar na Amazon</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-label">Recursos Gratuitos</div>
+
+          <a href="#" class="resource-link">
+            <div class="resource-icon">📄</div>
+            <div>
+              <div class="resource-title">Lista de Medicamentos Essenciais OMS 2025</div>
+              <div class="resource-desc">Organização Mundial da Saúde — atualizada 2025</div>
+            </div>
+          </a>
+
+          <a href="#" class="resource-link">
+            <div class="resource-icon">📋</div>
+            <div>
+              <div class="resource-title">Diretrizes Terapêuticas — Portugal</div>
+              <div class="resource-desc">Infarmed —protocolos clínicos oficiais</div>
+            </div>
+          </a>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Disciplina 2 -->
+    <div class="discipline-card">
+      <div class="discipline-header">
+        <div class="discipline-header-left">
+          <div class="discipline-name">Química Farmacêutica</div>
+          <div class="discipline-desc">Síntese, caracterização e formulação de princípios ativos.</div>
+        </div>
+        <div class="discipline-right">
+          <span class="discipline-phase">2º Ano</span>
+          <svg class="discipline-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </div>
+      </div>
+      <div class="discipline-content">
+        <div class="discipline-content-inner">
+          <div class="importance-box">
+            <div class="importance-label">Porquê é essencial</div>
+            <p class="importance-text">A química é a linguagem do fármaco. Do átomo à molécula, esta disciplina ensina a "ler" e a "desenhar" medicamentos.</p>
+          </div>
+          <div class="section-label">Livros Essenciais</div>
+          <div class="book-card">
+            <div class="book-cover">PC<br/>3rd ed</div>
+            <div class="book-info">
+              <div class="book-title">Principles of Chemical Science — Farmacêutica</div>
+              <div class="book-meta">Cox · 2021</div>
+              <div class="book-links"><a href="#" class="book-link">Comprar</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Disciplina 3 -->
+    <div class="discipline-card">
+      <div class="discipline-header">
+        <div class="discipline-header-left">
+          <div class="discipline-name">Farmácia Clínica</div>
+          <div class="discipline-desc">Atenção farmacêutica, acompanhamento terapêutico e gestão da terapia.</div>
+        </div>
+        <div class="discipline-right">
+          <span class="discipline-phase">3º Ano</span>
+          <svg class="discipline-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </div>
+      </div>
+      <div class="discipline-content">
+        <div class="discipline-content-inner">
+          <p style="font-size:14px;opacity:0.65;padding:12px 0;">Conteúdo em preparação.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Disciplina 4 -->
+    <div class="discipline-card">
+      <div class="discipline-header">
+        <div class="discipline-header-left">
+          <div class="discipline-name">Botânica Farmacêutica</div>
+          <div class="discipline-desc">Plantas medicinais, princípios ativos naturais e farmacognosia.</div>
+        </div>
+        <div class="discipline-right">
+          <span class="discipline-phase">1º Ano</span>
+          <svg class="discipline-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </div>
+      </div>
+      <div class="discipline-content">
+        <div class="discipline-content-inner">
+          <p style="font-size:14px;opacity:0.65;padding:12px 0;">Conteúdo em preparação.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Disciplina 5 -->
+    <div class="discipline-card">
+      <div class="discipline-header">
+        <div class="discipline-header-left">
+          <div class="discipline-name">Microbiologia Farmacêutica</div>
+          <div class="discipline-desc">Controlo microbiológico, esterilização e qualidade de medicamentos.</div>
+        </div>
+        <div class="discipline-right">
+          <span class="discipline-phase">2º Ano</span>
+          <svg class="discipline-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </div>
+      </div>
+      <div class="discipline-content">
+        <div class="discipline-content-inner">
+          <p style="font-size:14px;opacity:0.65;padding:12px 0;">Conteúdo em preparação.</p>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <section class="disciplines-section" style="padding-top: 0;">
+    <div class="section-label" style="margin-bottom: 16px;">Outros Cursos</div>
+    <div class="other-courses">
+      <a href="#" class="other-course-link">🩺 Medicina</a>
+      <a href="#" class="other-course-link">🩹 Enfermagem</a>
+      <a href="#" class="other-course-link">🔬 Análises Clínicas</a>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    © 2026 Conheça Farmácia — Guias de Estudo
+  </footer>
+
+  <script>
+    // Toggle expand/collapse com animação suave
+    document.querySelectorAll('.discipline-header').forEach(header => {
+      header.addEventListener('click', () => {
+        const card = header.closest('.discipline-card');
+        const wasOpen = card.classList.contains('open');
+
+        // Fecha todos os outros (accordion)
+        document.querySelectorAll('.discipline-card.open').forEach(openCard => {
+          openCard.classList.remove('open');
+        });
+
+        // Se não estava aberto, abre este
+        if (!wasOpen) {
+          card.classList.add('open');
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

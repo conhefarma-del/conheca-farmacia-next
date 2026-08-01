@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { ChevronDown } from 'lucide-react'
+import { BookOpen, ChevronDown, ClipboardList } from 'lucide-react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import { getSectionHref } from '@/lib/i18n-routes'
 
@@ -42,10 +42,22 @@ export default function Header({ lang, t, onToggleDrawer }) {
     { href: getSectionHref(lang, 'sobre'), label: t('nav.sobre'), path: 'sobre' },
   ]
 
-  // Sub-menu "Ferramentas": Guias de Estudo + Protocolos
+  // Sub-menu "Ferramentas": Guias de Estudo + Protocolos (mega menu com ícones e descrições)
   const toolsLinks = [
-    { href: getSectionHref(lang, 'guias'), label: t('nav.guias'), path: 'guias' },
-    { href: getSectionHref(lang, 'protocolos'), label: t('nav.protocolos'), path: 'protocolos' },
+    {
+      href: getSectionHref(lang, 'guias'),
+      label: t('nav.guias'),
+      desc: t('nav.guias_desc'),
+      path: 'guias',
+      icon: <BookOpen size={18} aria-hidden="true" />,
+    },
+    {
+      href: getSectionHref(lang, 'protocolos'),
+      label: t('nav.protocolos'),
+      desc: t('nav.protocolos_desc'),
+      path: 'protocolos',
+      icon: <ClipboardList size={18} aria-hidden="true" />,
+    },
   ]
 
   const toolsActive = toolsLinks.some((l) => isActive(l.path))
@@ -65,7 +77,7 @@ export default function Header({ lang, t, onToggleDrawer }) {
           ))}
 
           <div
-            className="nav-dropdown"
+            className="nav-item"
             ref={toolsRef}
             onMouseEnter={() => setToolsOpen(true)}
             onMouseLeave={() => setToolsOpen(false)}
@@ -83,17 +95,23 @@ export default function Header({ lang, t, onToggleDrawer }) {
                 className={`nav-dropdown-chevron${toolsOpen ? ' is-open' : ''}`}
               />
             </button>
-            <div className={`nav-dropdown-menu${toolsOpen ? ' is-open' : ''}`}>
-              {toolsLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  href={link.href}
-                  className={isActive(link.path)}
-                  onClick={() => setToolsOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
+            <div className={`mega-menu${toolsOpen ? ' is-open' : ''}`}>
+              <div className="mega-grid">
+                {toolsLinks.map((link) => (
+                  <Link
+                    key={link.path}
+                    href={link.href}
+                    className="mega-link"
+                    onClick={() => setToolsOpen(false)}
+                  >
+                    <span className="mega-icon">{link.icon}</span>
+                    <span className="mega-body">
+                      <span className="mega-label">{link.label}</span>
+                      <span className="mega-desc">{link.desc}</span>
+                    </span>
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
         </div>

@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora de Interações Medicamentosas | Conheça Farmácia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-brand-bg: #fafaf8;
+      --color-brand-bg-alt: #f3f4f1;
+      --color-brand-deep: #0f1a14;
+      --color-brand-accent: #0a844f;
+      --color-brand-accent-soft: rgba(10, 132, 79, 0.08);
+      --color-brand-divider: #e5e7e4;
+      --color-warning-bg: #fff7ed;
+      --color-warning-border: #ff6c23;
+      --color-warning-text: #c2410c;
+      --color-critical-bg: #fef2f2;
+      --color-critical-border: #dc2626;
+      --color-critical-text: #991b1b;
+      --color-caution-bg: #fffbeb;
+      --color-caution-border: #f59e0b;
+      --color-caution-text: #92400e;
+      --color-safe-bg: #f0fdf4;
+      --color-safe-border: #0a844f;
+      --color-safe-text: #0a844f;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-serif: 'Source Serif 4', Georgia, serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-brand-bg);
+      color: var(--color-brand-deep);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    .site-header {
+      border-bottom: 1px solid var(--color-brand-divider);
+      background: white;
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--color-brand-deep);
+      font-weight: 700;
+      font-size: 18px;
+    }
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: var(--color-brand-accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 16px;
+    }
+    .nav-links { display: flex; list: none; gap: 24px; }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--color-brand-deep);
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 0.7;
+    }
+    .nav-links a:hover { opacity: 1; }
+
+    /* Tool Grid */
+    .tools-bar {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--color-brand-divider);
+      background: white;
+    }
+    .tool-chip {
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1px solid var(--color-brand-divider);
+      background: transparent;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      color: var(--color-brand-deep);
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .tool-chip:hover { background: var(--color-brand-bg-alt); }
+    .tool-chip.active {
+      background: var(--color-brand-accent);
+      color: white;
+      border-color: var(--color-brand-accent);
+    }
+
+    /* Hero */
+    .hero {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 56px 24px 32px;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-brand-accent);
+      margin-bottom: 14px;
+      padding: 5px 12px;
+      background: var(--color-brand-accent-soft);
+      border-radius: 999px;
+    }
+    .hero h1 {
+      font-size: clamp(32px, 5vw, 48px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 14px;
+    }
+    .hero-subtitle {
+      font-size: 15px;
+      color: var(--color-brand-deep);
+      opacity: 0.65;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Calculator layout: inputs left, results right */
+    .calc-layout {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 100px;
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* Input panel */
+    .calc-input-panel {
+      background: white;
+      border-radius: 16px;
+      border: 1px solid var(--color-brand-divider);
+      padding: 24px;
+      position: sticky;
+      top: 90px;
+    }
+    .panel-title {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--color-brand-deep);
+      opacity: 0.5;
+      margin-bottom: 16px;
+    }
+    .drug-input-group {
+      margin-bottom: 16px;
+    }
+    .drug-label {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .drug-number {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--color-brand-accent);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .drug-input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--color-brand-divider);
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: var(--font-sans);
+      background: white;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .drug-input:focus {
+      outline: none;
+      border-color: var(--color-brand-accent);
+      box-shadow: 0 0 0 3px rgba(10, 132, 79, 0.1);
+    }
+    .drug-input.has-value {
+      border-color: var(--color-brand-accent);
+      background: var(--color-brand-accent-soft);
+    }
+    .suggestions-dropdown {
+      background: white;
+      border: 1px solid var(--color-brand-divider);
+      border-radius: 10px;
+      margin-top: 6px;
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+    }
+    .suggestion-item {
+      padding: 10px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.15s;
+      border-bottom: 1px solid var(--color-brand-divider);
+    }
+    .suggestion-item:last-child { border-bottom: none; }
+    .suggestion-item:hover { background: var(--color-brand-bg-alt); }
+    .suggestion-item.selected { background: var(--color-brand-accent-soft); }
+    .suggestion-name { font-weight: 600; margin-bottom: 1px; }
+    .suggestion-detail { font-size: 11px; opacity: 0.6; }
+    .add-btn {
+      width: 100%;
+      padding: 9px;
+      border: 1px dashed var(--color-brand-divider);
+      border-radius: 8px;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-brand-deep);
+      opacity: 0.6;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      transition: border-color 0.15s, opacity 0.15s;
+    }
+    .add-btn:hover { border-color: var(--color-brand-accent); opacity: 1; color: var(--color-brand-accent); }
+    .check-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--color-brand-accent);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      margin-top: 8px;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .check-btn:hover { background: #0d6b3f; }
+    .check-btn:active { transform: scale(0.98); }
+    .disclaimer {
+      font-size: 11px;
+      color: var(--color-brand-deep);
+      opacity: 0.5;
+      line-height: 1.5;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--color-brand-divider);
+    }
+
+    /* Results panel */
+    .calc-results-panel { min-width: 0; }
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--color-brand-divider);
+    }
+    .results-title {
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .results-count {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--color-critical-bg);
+      color: var(--color-critical-text);
+      border: 1px solid var(--color-critical-border);
+    }
+    .selected-drugs-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .drug-tag {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--color-brand-accent-soft);
+      border: 1px solid var(--color-brand-accent);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-brand-accent);
+    }
+    .drug-tag-remove {
+      cursor: pointer;
+      font-weight: 700;
+      opacity: 0.6;
+      transition: opacity 0.15s;
+    }
+    .drug-tag-remove:hover { opacity: 1; }
+
+    /* Interaction cards */
+    .interaction-card {
+      background: white;
+      border-radius: 14px;
+      border: 1px solid var(--color-brand-divider);
+      padding: 20px;
+      margin-bottom: 12px;
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .interaction-card:hover {
+      box-shadow: 0 4px 16px rgba(15, 26, 20, 0.08);
+    }
+    .interaction-card.critical { border-left: 4px solid var(--color-critical-border); }
+    .interaction-card.warning { border-left: 4px solid var(--color-warning-border); }
+    .interaction-card.caution { border-left: 4px solid var(--color-caution-border); }
+    .interaction-card.safe { border-left: 4px solid var(--color-safe-border); }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .severity-badge {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+    .severity-badge.critical { background: var(--color-critical-bg); color: var(--color-critical-text); border: 1px solid var(--color-critical-border); }
+    .severity-badge.warning { background: var(--color-warning-bg); color: var(--color-warning-text); border: 1px solid var(--color-warning-border); }
+    .severity-badge.caution { background: var(--color-caution-bg); color: var(--color-caution-text); border: 1px solid var(--color-caution-border); }
+    .severity-badge.safe { background: var(--color-safe-bg); color: var(--color-safe-text); border: 1px solid var(--color-safe-border); }
+    .card-drugs {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .card-drug {
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .card-vs {
+      font-size: 13px;
+      opacity: 0.4;
+      font-weight: 600;
+    }
+    .card-description {
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--color-brand-deep);
+      opacity: 0.8;
+      margin-bottom: 12px;
+    }
+    .card-recommendation {
+      background: var(--color-brand-bg-alt);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 13px;
+      line-height: 1.55;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .rec-icon {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--color-brand-accent);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 800;
+      margin-top: 1px;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 60px 30px;
+      color: var(--color-brand-deep);
+      opacity: 0.5;
+    }
+    .empty-icon {
+      font-size: 56px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .calc-layout { grid-template-columns: 1fr; }
+      .calc-input-panel { position: static; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#" class="logo">
+        <span class="logo-icon">CF</span>
+        Conheça Farmácia
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#">Início</a></li>
+          <li><a href="#">Ferramentas</a></li>
+          <li><a href="#" class="active">Interações</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <nav class="tools-bar">
+    <button class="tool-chip">📊 Dashboard</button>
+    <button class="tool-chip active">⚗️ Interações</button>
+    <button class="tool-chip">💊 Guia Terapêutico</button>
+    <button class="tool-chip">📋 Protocolos</button>
+    <button class="tool-chip">🔬 Artigos</button>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-eyebrow">⚗️ Ferramenta Clínica</div>
+    <h1>Calculadora de Interações</h1>
+    <p class="hero-subtitle">Verifique interações entre medicamentos em tempo real. Baseado em referências farmacológicas validadas.</p>
+  </section>
+
+  <div class="calc-layout">
+
+    <!-- PAINEL DE INPUT (esquerda) -->
+    <aside class="calc-input-panel">
+      <div class="panel-title">Fármacos a verificar</div>
+
+      <div class="drug-input-group">
+        <label class="drug-label">
+          <span class="drug-number">1</span>
+          Fármaco A
+        </label>
+        <input
+          type="text"
+          class="drug-input has-value"
+          value="Enalapril 20mg"
+          placeholder="Digite o nome do fármaco..."
+        />
+      </div>
+
+      <div class="drug-input-group">
+        <label class="drug-label">
+          <span class="drug-number">2</span>
+          Fármaco B
+        </label>
+        <input
+          type="text"
+          class="drug-input"
+          value="Espironolactona 25mg"
+          placeholder="Digite o nome do fármaco..."
+        />
+      </div>
+
+      <div class="drug-input-group">
+        <label class="drug-label">
+          <span class="drug-number">3</span>
+          Fármaco C <span style="font-weight:400;opacity:0.5;">(opcional)</span>
+        </label>
+        <input
+          type="text"
+          class="drug-input"
+          placeholder="Adicione um terceiro fármaco..."
+        />
+      </div>
+
+      <button class="add-btn">+ Adicionar outro fármaco</button>
+
+      <button class="check-btn">Verificar Interações</button>
+
+      <p class="disclaimer">
+        ⚕️ Ferramenta de apoio clínico. Sempre confirme com a literatura especializada e o julgamento profissional. Não substitui a prescrição médica.
+      </p>
+    </aside>
+
+    <!-- PAINEL DE RESULTADOS (direita) -->
+    <main class="calc-results-panel">
+
+      <div class="results-header">
+        <div class="results-title">Resultados da Análise</div>
+        <div class="results-count">2 interações encontradas</div>
+      </div>
+
+      <div class="selected-drugs-bar">
+        <div class="drug-tag">
+          Enalapril 20mg
+          <span class="drug-tag-remove">×</span>
+        </div>
+        <div class="drug-tag">
+          Espironolactona 25mg
+          <span class="drug-tag-remove">×</span>
+        </div>
+        <div class="drug-tag">
+          Hidroclorotiazida 12.5mg
+          <span class="drug-tag-remove">×</span>
+        </div>
+      </div>
+
+      <!-- Interação 1 — Grave -->
+      <div class="interaction-card critical">
+        <div class="card-header">
+          <div class="card-drugs">
+            <span class="card-drug">Enalapril</span>
+            <span class="card-vs">+</span>
+            <span class="card-drug">Espironolactona</span>
+          </div>
+          <span class="severity-badge critical">⚠️ Grave</span>
+        </div>
+        <p class="card-description">
+          <strong>Hipercalemia grave.</strong> A combinação de um IECA (Enalapril) com um diurético poupador de potássio (Espironolactona) aumenta significativamente o risco de hipercalemia, especialmente em doentes com compromisso renal, diabetes ou em uso de suplementos de potássio.
+        </p>
+        <div class="card-recommendation">
+          <span class="rec-icon">i</span>
+          <span><strong>Recomendação:</strong> Monitorizar K+ sérico em 1 semana após início. Considerar redução de dose ou alternativa farmacológica. Alertar doente para sintomas: fraqueza muscular, parestesias, arritmia.</span>
+        </div>
+      </div>
+
+      <!-- Interação 2 — Moderada -->
+      <div class="interaction-card warning">
+        <div class="card-header">
+          <div class="card-drugs">
+            <span class="card-drug">Enalapril</span>
+            <span class="card-vs">+</span>
+            <span class="card-drug">Hidroclorotiazida</span>
+          </div>
+          <span class="severity-badge warning">⚡ Moderada</span>
+        </div>
+        <p class="card-description">
+          <strong>Potencialização hipotensora.</strong> A associação pode levar a hipotensão sintomática nas primeiras semanas, particularmente em doentes com depleção de volume prévia. O diurético tiazídico reduz o efeito antihipertensivo inicial do IECA em alguns doentes.
+        </p>
+        <div class="card-recommendation">
+          <span class="rec-icon">i</span>
+          <span><strong>Recomendação:</strong> Iniciar com doses baixas. Monitorizar PA e função renal nas primeiras 2 semanas. Ajustar doses conforme resposta clínica.</span>
+        </div>
+      </div>
+
+      <!-- Sem interação grave entre Espironolactona + HCTZ -->
+      <div class="interaction-card safe">
+        <div class="card-header">
+          <div class="card-drugs">
+            <span class="card-drug">Espironolactona</span>
+            <span class="card-vs">+</span>
+            <span class="card-drug">Hidroclorotiazida</span>
+          </div>
+          <span class="severity-badge safe">✓ Sem relevância</span>
+        </div>
+        <p class="card-description">
+          Nenhuma interação clinicamente relevante identificada. A combinação é ocasionalmente usada intencionalmente paraefeito diurético sinérgico com minimização de hipocaliemia.
+        </p>
+      </div>
+
+    </main>
+  </div>
+
+</body>
+</html>

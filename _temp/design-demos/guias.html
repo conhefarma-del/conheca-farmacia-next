@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guias de Estudo | Conheça Farmácia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-brand-bg: #fafaf8;
+      --color-brand-bg-alt: #f3f4f1;
+      --color-brand-deep: #0f1a14;
+      --color-brand-accent: #0a844f;
+      --color-brand-accent-hover: #0d6b3f;
+      --color-brand-divider: #e5e7e4;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --shadow-soft: 0 1px 2px rgba(15, 26, 20, 0.04), 0 4px 12px rgba(15, 26, 20, 0.06);
+      --shadow-hover: 0 8px 24px rgba(15, 26, 20, 0.10), 0 2px 8px rgba(15, 26, 20, 0.06);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-brand-bg);
+      color: var(--color-brand-deep);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(250, 250, 248, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--color-brand-divider);
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--color-brand-deep);
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--color-brand-accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 16px;
+    }
+
+    .nav-links {
+      display: flex;
+      list: none;
+      gap: 32px;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--color-brand-deep);
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 0.75;
+      transition: opacity 0.2s;
+    }
+
+    .nav-links a:hover { opacity: 1; }
+    .nav-links a.active { opacity: 1; font-weight: 600; }
+
+    /* Hero */
+    .hero {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 80px 24px 48px;
+      text-align: center;
+    }
+
+    .hero-eyebrow {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-brand-accent);
+      margin-bottom: 16px;
+    }
+
+    .hero h1 {
+      font-size: clamp(36px, 5vw, 56px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+    }
+
+    .hero-subtitle {
+      font-size: 17px;
+      color: var(--color-brand-deep);
+      opacity: 0.65;
+      max-width: 560px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Course Grid */
+    .courses-section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 100px;
+    }
+
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+    }
+
+    /* Course Card */
+    .course-card {
+      background: white;
+      border-radius: 20px;
+      padding: 32px 28px;
+      border: 1px solid var(--color-brand-divider);
+      box-shadow: var(--shadow-soft);
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+                  box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .course-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .card-emoji {
+      font-size: 44px;
+      line-height: 1;
+      margin-bottom: 20px;
+    }
+
+    .card-name {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+
+    .card-desc {
+      font-size: 14px;
+      color: var(--color-brand-deep);
+      opacity: 0.6;
+      line-height: 1.55;
+      margin-bottom: 24px;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 20px;
+      border-top: 1px solid var(--color-brand-divider);
+    }
+
+    .card-count {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-brand-accent);
+      background: rgba(10, 132, 79, 0.08);
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    .card-arrow {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--color-brand-accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      transition: transform 0.2s;
+    }
+
+    .course-card:hover .card-arrow {
+      transform: translateX(2px);
+    }
+
+    /* Footer */
+    .site-footer {
+      border-top: 1px solid var(--color-brand-divider);
+      padding: 32px 24px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--color-brand-deep);
+      opacity: 0.5;
+    }
+
+    @media (max-width: 640px) {
+      .nav-links { gap: 16px; }
+      .hero { padding: 56px 24px 32px; }
+      .courses-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#" class="logo">
+        <span class="logo-icon">CF</span>
+        Conheça Farmácia
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#">Início</a></li>
+          <li><a href="#">Artigos</a></li>
+          <li><a href="#">Eventos</a></li>
+          <li><a href="#" class="active">Guias</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="hero-eyebrow">Saúde · Educação</p>
+      <h1>Guias de Estudo</h1>
+      <p class="hero-subtitle">
+        Disciplinas, livros e recursos essenciais para os principais cursos da área da saúde.
+      </p>
+    </section>
+
+    <section class="courses-section">
+      <div class="courses-grid">
+
+        <a href="farmacia.html" class="course-card">
+          <div class="card-emoji">💊</div>
+          <h2 class="card-name">Farmácia</h2>
+          <p class="card-desc">
+            Da descoberta ao uso racional de medicamentos — farmacologia, química e prática clínica.
+          </p>
+          <div class="card-footer">
+            <span class="card-count">5 disciplinas</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </a>
+
+        <a href="#" class="course-card">
+          <div class="card-emoji">🩺</div>
+          <h2 class="card-name">Medicina</h2>
+          <p class="card-desc">
+            Anatomia, fisiologia e patologia — a formação médica em todas as suas dimensões.
+          </p>
+          <div class="card-footer">
+            <span class="card-count">5 disciplinas</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </a>
+
+        <a href="#" class="course-card">
+          <div class="card-emoji">🩹</div>
+          <h2 class="card-name">Enfermagem</h2>
+          <p class="card-desc">
+            Cuidado, técnica e humanização — o núcleo do exercício em enfermagem.
+          </p>
+          <div class="card-footer">
+            <span class="card-count">Em breve</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </a>
+
+        <a href="#" class="course-card">
+          <div class="card-emoji">🔬</div>
+          <h2 class="card-name">Análises Clínicas</h2>
+          <p class="card-desc">
+            Diagnóstico laboratorial, microbiologia e controlo de qualidade.
+          </p>
+          <div class="card-footer">
+            <span class="card-count">Em breve</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </a>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    © 2026 Conheça Farmácia — Guias de Estudo
+  </footer>
+
+</body>
+</html>
