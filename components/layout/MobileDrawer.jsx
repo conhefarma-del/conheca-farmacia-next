@@ -1,14 +1,16 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
+import { ChevronDown } from 'lucide-react'
 import { getSectionHref } from '@/lib/i18n-routes'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 
 export default function MobileDrawer({ lang, t, open, onClose }) {
   const pathname = usePathname()
+  const [toolsOpen, setToolsOpen] = useState(false)
 
   // Map subpaths to their parent section (matches MPA PAGE_SECTION_MAP)
   const SECTION_MAP = {
@@ -37,10 +39,16 @@ export default function MobileDrawer({ lang, t, open, onClose }) {
     { href: getSectionHref(lang, 'artigos'), label: t('nav.artigos'), path: 'artigos' },
     { href: getSectionHref(lang, 'eventos'), label: t('nav.eventos'), path: 'eventos' },
     { href: getSectionHref(lang, 'lives'), label: t('nav.lives'), path: 'lives' },
-    { href: getSectionHref(lang, 'guias'), label: t('nav.guias'), path: 'guias' },
-    { href: getSectionHref(lang, 'protocolos'), label: t('nav.protocolos'), path: 'protocolos' },
     { href: getSectionHref(lang, 'sobre'), label: t('nav.sobre'), path: 'sobre' },
   ]
+
+  // Sub-menu "Ferramentas": Guias de Estudo + Protocolos
+  const toolsLinks = [
+    { href: getSectionHref(lang, 'guias'), label: t('nav.guias'), path: 'guias' },
+    { href: getSectionHref(lang, 'protocolos'), label: t('nav.protocolos'), path: 'protocolos' },
+  ]
+
+  const toolsActive = toolsLinks.some((l) => isActive(l.path))
 
   const handleClose = () => {
     onClose()
@@ -72,6 +80,31 @@ export default function MobileDrawer({ lang, t, open, onClose }) {
               </Link>
             </li>
           ))}
+          <li>
+            <button
+              className={`drawer-submenu-btn${toolsActive ? ' drawer-submenu-btn--active' : ''}`}
+              onClick={() => setToolsOpen((o) => !o)}
+              aria-expanded={toolsOpen}
+            >
+              {t('nav.ferramentas')}
+              <ChevronDown
+                size={16}
+                aria-hidden="true"
+                className={toolsOpen ? 'is-open' : ''}
+              />
+            </button>
+            {toolsOpen && (
+              <ul className="drawer-submenu">
+                {toolsLinks.map((link) => (
+                  <li key={link.path}>
+                    <Link href={link.href} className={isActive(link.path)} onClick={handleClose}>
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
         </ul>
 
         <div className="drawer-footer">

@@ -29,11 +29,18 @@ export default function Footer({ lang }) {
               <li><Link href={getSectionHref(lang, 'artigos')}>{t('nav.artigos')}</Link></li>
               <li><Link href={getSectionHref(lang, 'eventos')}>{t('nav.eventos')}</Link></li>
               <li><Link href={getSectionHref(lang, 'lives')}>{t('nav.lives')}</Link></li>
-              <li><Link href={getSectionHref(lang, 'guias')}>{t('footer.guias')}</Link></li>
-              <li><Link href={getSectionHref(lang, 'protocolos')}>{t('footer.protocolos')}</Link></li>
               <li><Link href={getSectionHref(lang, 'sobre')}>{t('nav.sobre')}</Link></li>
               <li><Link href={getSectionHref(lang, 'faq')}>{t('footer.faq')}</Link></li>
               <li><Link href={getSectionHref(lang, 'politica-privacidade')}>{t('footer.privacidade')}</Link></li>
+            </ul>
+          </div>
+
+          {/* Ferramentas */}
+          <div className="footer-links">
+            <h4>{t('nav.ferramentas')}</h4>
+            <ul>
+              <li><Link href={getSectionHref(lang, 'guias')}>{t('footer.guias')}</Link></li>
+              <li><Link href={getSectionHref(lang, 'protocolos')}>{t('footer.protocolos')}</Link></li>
             </ul>
           </div>
 
