@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { BookOpen, ChevronDown, ClipboardList } from 'lucide-react'
+import { BookOpen, ChevronDown, ClipboardList, Pill } from 'lucide-react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import { getSectionHref } from '@/lib/i18n-routes'
 
@@ -57,6 +57,13 @@ export default function Header({ lang, t, onToggleDrawer }) {
       desc: t('nav.protocolos_desc'),
       path: 'protocolos',
       icon: <ClipboardList size={18} aria-hidden="true" />,
+    },
+    {
+      href: getSectionHref(lang, 'interacoes'),
+      label: t('nav.interacoes'),
+      desc: t('nav.interacoes_desc'),
+      path: 'interacoes',
+      icon: <Pill size={18} aria-hidden="true" />,
     },
   ]
 

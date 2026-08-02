@@ -22,6 +22,7 @@ import {
   Shield,
   BookOpen,
   ClipboardList,
+  Pill,
 } from 'lucide-react'
 
 export default function AdminSidebar({ lang, user, onLogout }) {
@@ -36,6 +37,7 @@ export default function AdminSidebar({ lang, user, onLogout }) {
     { href: `/${lang}/admin/lives`, label: 'Lives', icon: Video },
     { href: `/${lang}/admin/guias`, label: 'Guias de Estudo', icon: BookOpen },
     { href: `/${lang}/admin/protocolos`, label: 'Protocolos Clínicos', icon: ClipboardList },
+    { href: `/${lang}/admin/interacoes`, label: 'Interações', icon: Pill },
     { href: `/${lang}/admin/traducoes`, label: 'Traduções EN', icon: Languages },
     { href: `/${lang}/admin/newsletter`, label: 'Newsletter', icon: Mail },
     { href: `/${lang}/admin/inscritos`, label: 'Inscritos', icon: Users },

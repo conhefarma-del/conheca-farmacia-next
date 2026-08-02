@@ -2728,3 +2728,58 @@ html.dark .settings-error {
   height: 18px;
   accent-color: var(--admin-accent);
 }
+
+/* Badges de estado — usados em todas as listas admin (Protocolos, FAQ, Interações, ...)
+   Base pill; variantes de cor seguem o padrão .admin-status-* acima. */
+.admin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.admin-badge-success {
+  background: var(--admin-success-bg);
+  color: var(--admin-success);
+}
+
+.admin-badge-warning {
+  background: var(--admin-warning-bg);
+  color: var(--admin-warning);
+}
+
+.admin-badge-danger {
+  background: var(--admin-danger-bg);
+  color: var(--admin-danger);
+}
+
+.admin-badge-archived {
+  background: var(--admin-input-readonly-bg, var(--admin-bg));
+  color: var(--admin-text-muted);
+}
+
+/* Tabelas admin — helpers de layout partilhados entre listas */
+.admin-table-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.admin-table-empty {
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--admin-text-muted);
+  font-size: 0.9rem;
+}
+
+.admin-table-row-archived td {
+  opacity: 0.55;
+}
+
+.admin-table-row-archived td:first-child {
+  text-decoration: line-through;
+}

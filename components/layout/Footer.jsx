@@ -41,6 +41,7 @@ export default function Footer({ lang }) {
             <ul>
               <li><Link href={getSectionHref(lang, 'guias')}>{t('footer.guias')}</Link></li>
               <li><Link href={getSectionHref(lang, 'protocolos')}>{t('footer.protocolos')}</Link></li>
+              <li><Link href={getSectionHref(lang, 'interacoes')}>{t('footer.interacoes')}</Link></li>
             </ul>
           </div>
 

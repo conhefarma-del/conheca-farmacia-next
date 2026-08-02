@@ -4,7 +4,7 @@ import { useState, useEffect, useContext, useCallback } from 'react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { BookOpen, CalendarDays, ClipboardList, FileText, Search, Video } from 'lucide-react'
+import { BookOpen, CalendarDays, ClipboardList, FileText, Pill, Search, Video } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
 import { searchAllContent } from '@/lib/api/search'
 import { escapeHtml } from '@/lib/security'
@@ -80,6 +80,7 @@ export default function PesquisaPageClient({ lang }) {
     allResults.lives.forEach(item => items.push({ ...item, type: 'lives' }))
     allResults.guides.forEach(item => items.push({ ...item, type: 'guias' }))
     allResults.protocolos.forEach(item => items.push({ ...item, type: 'protocolos' }))
+    allResults.farmacos.forEach(item => items.push({ ...item, type: 'farmacos' }))
 
     items.sort((a, b) => {
       const da = a.published_date || a.date || ''
@@ -114,7 +115,7 @@ export default function PesquisaPageClient({ lang }) {
       updateUrl(q, tVal || tipo, o || ordem, 1)
     } catch (err) {
       console.error('Search error:', err)
-      setAllResults({ articles: [], events: [], lives: [], guides: [], protocolos: [], total: 0 })
+      setAllResults({ articles: [], events: [], lives: [], guides: [], protocolos: [], farmacos: [], total: 0 })
     } finally {
       setLoading(false)
     }
@@ -167,6 +168,7 @@ export default function PesquisaPageClient({ lang }) {
     if (item.type === 'lives') return `/${lang}/lives/${item.slug}`
     if (item.type === 'guias') return `/${lang}/guias/${item.slug}`
     if (item.type === 'protocolos') return `/${lang}/protocolos/${item.slug}`
+    if (item.type === 'farmacos') return `/${lang}/interacoes?farmaco=${item.slug}`
     return '#'
   }
 
@@ -194,6 +196,7 @@ export default function PesquisaPageClient({ lang }) {
     lives: Video,
     guias: BookOpen,
     protocolos: ClipboardList,
+    farmacos: Pill,
   }
   const TYPE_KEYS = {
     articles: 'search.artigos',
@@ -201,6 +204,7 @@ export default function PesquisaPageClient({ lang }) {
     lives: 'search.lives',
     guias: 'search.guias',
     protocolos: 'search.protocolos',
+    farmacos: 'search.farmacos',
   }
   const renderTypeBadge = (type) => {
     const Icon = TYPE_ICONS[type]
@@ -269,7 +273,7 @@ export default function PesquisaPageClient({ lang }) {
           {/* Filters & Sort */}
           <div className="search-filters">
             <div className="search-type-filters">
-              {['todos', 'artigos', 'eventos', 'lives', 'guias', 'protocolos'].map((key) => (
+              {['todos', 'artigos', 'eventos', 'lives', 'guias', 'protocolos', 'farmacos'].map((key) => (
                 <button
                   key={key}
                   className={`filter-btn ${tipo === key ? 'active' : ''}`}
