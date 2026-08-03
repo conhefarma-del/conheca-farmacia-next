@@ -2,7 +2,7 @@
 
 import { useContext, useMemo } from 'react'
 import Link from 'next/link'
-import { ArrowRight, ArrowUpRight, BookOpen, CalendarDays, FileText, GraduationCap, ListChecks, MapPin } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, BookOpen, CalendarDays, FileText, GraduationCap, Info, ListChecks, MapPin } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
 import GuideCourseCard from '@/components/guias/GuideCourseCard'
 import GuideDisciplinaCard from '@/components/guias/GuideDisciplinaCard'
@@ -88,6 +88,16 @@ export default function GuiasCursoClient({ lang, course, otherCourses = [] }) {
       {/* Detalhe: conteúdo + sidebar */}
       <div className="guide-detail-layout">
         <div className="guide-detail-main">
+          {/* Aviso: calendários e disciplinas variam por universidade */}
+          <div className="guide-notice">
+            <Info size={20} className="guide-notice-icon" aria-hidden="true" />
+            <div>
+              <div className="guide-notice-title">{t('guias_curso.aviso_calendario_title')}</div>
+              <p className="guide-notice-text">{t('guias_curso.aviso_calendario_p1')}</p>
+              <p className="guide-notice-text">{t('guias_curso.aviso_calendario_p2')}</p>
+            </div>
+          </div>
+
           {/* Plano por fases (timeline) */}
           <section>
             <div className="guide-section-heading">

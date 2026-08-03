@@ -4243,6 +4243,34 @@ html.dark .guide-resource-icon { background: rgba(255, 255, 255, 0.08); }
   letter-spacing: -0.01em;
 }
 
+/* Aviso: calendários e disciplinas variam por universidade */
+.guide-notice {
+  background: var(--color-brand-bg-alt);
+  border-radius: 14px;
+  padding: 18px 22px;
+  margin-bottom: 32px;
+  border-left: 4px solid var(--color-brand-accent);
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.guide-notice-icon { flex-shrink: 0; color: var(--color-brand-accent); margin-top: 2px; }
+.guide-notice-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-brand-accent);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.guide-notice-text {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--color-brand-deep);
+  opacity: 0.85;
+}
+.guide-notice-text + .guide-notice-text { margin-top: 8px; }
+
 /* Timeline por fases */
 .guide-timeline-phase {
   display: flex;
