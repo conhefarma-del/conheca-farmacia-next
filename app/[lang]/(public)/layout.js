@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { motion, MotionConfig } from 'framer-motion'
 import { LangContext } from '@/lib/contexts'
 import { useContext } from 'react'
 import UtilityBar from '@/components/layout/UtilityBar'
@@ -57,19 +58,35 @@ export default function PublicLayout({ children }) {
   const HEADER_HEIGHT = 80
   const MAIN_PADDING_TOP = utilityBarVisible ? UTILITY_HEIGHT + HEADER_HEIGHT : HEADER_HEIGHT
 
+  // Spring partilhado: utility bar e header usam a MESMA física de mola, por isso
+  // deslizam em sincronia num único movimento suave quando a utility some no scroll.
+  const slideSpring = { type: 'spring', stiffness: 380, damping: 38, mass: 0.9 }
+
   return (
-    <>
-      {/* Chrome superior: utility bar + header movem-se como UMA única unidade
-          fixa. O scroll esconde/revela a utility bar deslocando o bloco inteiro
-          -60px — a utility sai e o header aterra no topo num único movimento.
-          O drawer (mobile) empurra apenas o conteúdo interno (.site-header-inner),
-          mantendo utility + header sempre alinhados entre si e com o main. */}
-      <div className="site-header">
-        <div className="site-header-inner">
-          <UtilityBar lang={lang} t={t} />
-          <Header lang={lang} t={t} onToggleDrawer={() => setDrawerOpen(!drawerOpen)} />
-        </div>
-      </div>
+    <MotionConfig reducedMotion="user">
+      {/* A utility bar mantém-se como elemento separado, sempre visível acima do
+          header. No scroll desliza para cima (-60px) enquanto o header sobe 60px
+          em simultâneo, animados pela mesma mola (framer-motion) — movimento único,
+          sem «cola». O drawer (mobile) empurra apenas o header + conteúdo, deixando
+          a utility bar visível por cima. */}
+      <motion.div
+        className="utility-bar-wrapper"
+        initial={false}
+        animate={{ y: utilityBarVisible ? 0 : -UTILITY_HEIGHT }}
+        transition={slideSpring}
+        style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 60, willChange: 'transform' }}
+      >
+        <UtilityBar lang={lang} t={t} />
+      </motion.div>
+      <motion.div
+        className="header-wrapper"
+        initial={false}
+        animate={{ y: utilityBarVisible ? UTILITY_HEIGHT : 0 }}
+        transition={slideSpring}
+        style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, willChange: 'transform' }}
+      >
+        <Header lang={lang} t={t} onToggleDrawer={() => setDrawerOpen(!drawerOpen)} />
+      </motion.div>
       <MobileDrawer
         lang={lang}
         t={t}
@@ -78,6 +95,6 @@ export default function PublicLayout({ children }) {
       />
       <main style={{ paddingTop: MAIN_PADDING_TOP }}>{children}</main>
       <Footer lang={lang} t={t} />
-    </>
+    </MotionConfig>
   )
 }

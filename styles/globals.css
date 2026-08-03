@@ -119,31 +119,10 @@ html.dark .form-note {
     @apply h-12 md:h-14 w-auto object-contain;
   }
 
-  /* Chrome superior unificado (ver PublicLayout JSX): a utility bar e o header
-     são UMA única unidade fixa. O scroll desloca o bloco inteiro -60px (altura
-     da utility bar): a utility sai e o header aterra no topo num só movimento.
-     Antes eram dois wrappers fixos separados, o que causava desync/«cola». */
-  .site-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 50;
-    transform: translateY(0);
-    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-    will-change: transform;
-  }
-
-  body.utility-hidden .site-header {
-    transform: translateY(-60px);
-  }
-
-  /* Conteúdo interno: é este que o drawer (mobile) empurra para o lado,
-     enquanto o .site-header (pai) trata apenas do esconder-no-scroll. */
-  .site-header-inner {
-    border-radius: 0;
-  }
-
+  /* Chrome superior fixo: a utility bar e o header são wrappers separados (ver
+     PublicLayout JSX). A animação de esconder/revelar no scroll é feita pelo
+     framer-motion (mesma mola em ambos), mantendo a utility bar como elemento
+     independente que fica visível acima do drawer. */
   .header {
     @apply bg-brand-bg shadow-sm;
   }
@@ -651,9 +630,8 @@ html.dark .form-note {
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .site-header,
-    .site-header-inner,
-    main {
+    main,
+    .header {
       transition: none !important;
     }
   }
@@ -665,23 +643,23 @@ html.dark .form-note {
     }
 
     /* Base transitions for smooth open AND close */
-    .site-header-inner {
+    .header {
       transition:
         transform 1.1s cubic-bezier(0.16, 1, 0.3, 1),
         border-radius 1.1s cubic-bezier(0.16, 1, 0.3, 1),
         box-shadow 1.1s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    /* Push: main + chrome superior deslizam juntos */
+    /* Push: main + header deslizam juntos (a utility bar mantém-se visível) */
     body.drawer-open main,
-    body.drawer-open .site-header-inner {
+    body.drawer-open .header {
       transform: translateX(-72%);
       border-radius: 20px 0 0 20px;
       box-shadow: -4px 0 30px rgba(0, 42, 50, 0.15);
     }
 
-    /* Chrome fica abaixo do overlay + drawer */
-    body.drawer-open .site-header {
+    /* Header fica abaixo do overlay + drawer */
+    body.drawer-open .header {
       z-index: 30;
     }
 
@@ -689,11 +667,12 @@ html.dark .form-note {
       overflow: hidden;
     }
 
-    /* When the utility bar is hidden (scrolled down), the unified .site-header
-       slides to translateY(-60px), so the header lands at top: 0. The drawer
-       must stay aligned with the header (open BESIDE it), so its top edge also
-       goes to 0 — otherwise a gap appears above the drawer where the
-       pushed-aside header used to be. */
+    /* When the utility bar is hidden (scrolled down), framer-motion desliza a
+       utility bar para cima (-60px) e o header sobe 60px em simultâneo (mesma
+       mola), aterrando no topo. O drawer deve manter-se alinhado com o header
+       (abre AO LADO dele), por isso a sua aresta superior também vai para 0 —
+       caso contrário apareceria um espaço acima do drawer onde o header
+       empurrado costumava estar. */
     body.utility-hidden .mobile-drawer {
       top: 0;
       height: 100dvh;
