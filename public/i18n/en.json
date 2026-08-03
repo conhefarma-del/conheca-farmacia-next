@@ -501,13 +501,12 @@
     "erro_carregar": "Could not load the interaction checker.",
     "disclaimer": "Clinical and educational support tool. The information does not replace a medical prescription or the opinion of a qualified healthcare professional. Always confirm with specialised literature and professional judgement before any therapeutic decision.",
     "fontes_title": "Sources and references",
-    "fontes_subtitle": "The content of this checker is based on recognised pharmacological databases and approved product summaries.",
-    "fonte_ashp": "American Society of Health-System Pharmacists (ASHP)",
-    "fonte_multum": "Cerner Multum",
-    "fonte_micromedex": "Micromedex (Merative)",
-    "fonte_harvard": "Harvard Health Publishing",
-    "fonte_infarmed": "INFARMED — Summary of Product Characteristics (SmPC)",
-    "fonte_angola": "Ministry of Health of Angola — National Formulary"
+    "fontes_subtitle": "The documented interactions are anchored to FDA-approved labels, via DailyMed (NIH/NLM), and to publicly accessible NIH clinical sources (MedlinePlus, PubMed). Each interaction shows its references next to its description. Official European SmPCs can be consulted on the EMA and, in Portugal, on the INFARMED portal.",
+    "fonte_dailymed": "DailyMed — FDA-approved labels (NIH/NLM)",
+    "fonte_medlineplus": "MedlinePlus — drug monographs (NIH/NLM)",
+    "fonte_pubmed": "PubMed — indexed biomedical literature (NIH/NLM)",
+    "fonte_ema": "EMA — European medicines information in Portuguese",
+    "fonte_infarmed": "INFARMED — SmPC (official Portuguese portal, via Infomed)"
   },
   "interacoes_faq": {
     "title": "Frequently asked questions about the checker",
@@ -521,7 +520,7 @@
     "substitui_medico_q": "Does the tool replace medical evaluation?",
     "substitui_medico_a": "No. This is an educational support tool. The therapeutic decision always belongs to a qualified healthcare professional who considers the patient as a whole.",
     "fontes_q": "Which sources are used?",
-    "fontes_a": "The documented interactions are based on recognised databases such as ASHP, Micromedex and Stockley's Drug Interactions, complemented by approved summaries (SmPC).",
+    "fontes_a": "The documented interactions are anchored to FDA-approved labels, through DailyMed (NIH/NLM), complemented by MedlinePlus monographs and PubMed literature. Official European product information can be consulted on the EMA and, in Portugal, on the INFARMED portal (Infomed).",
     "mais_de_dois_q": "Can I check more than two drugs at once?",
     "mais_de_dois_a": "Yes. Add as many drugs as you want; the pairs among all selected drugs are calculated."
   }

@@ -501,13 +501,12 @@
     "erro_carregar": "Não foi possível carregar a calculadora de interações.",
     "disclaimer": "Ferramenta de apoio clínico e educativo. A informação não substitui a prescrição médica nem o parecer de um profissional de saúde qualificado. Confirme sempre com a literatura especializada e o julgamento profissional antes de qualquer decisão terapêutica.",
     "fontes_title": "Fontes e referências",
-    "fontes_subtitle": "O conteúdo desta calculadora baseia-se em bases de dados farmacológicas reconhecidas e em fichas técnicas aprovadas.",
-    "fonte_ashp": "American Society of Health-System Pharmacists (ASHP)",
-    "fonte_multum": "Cerner Multum",
-    "fonte_micromedex": "Micromedex (Merative)",
-    "fonte_harvard": "Harvard Health Publishing",
-    "fonte_infarmed": "INFARMED — Resumo das Características do Medicamento (RCM)",
-    "fonte_angola": "Ministério da Saúde de Angola — Formulário e Bulário Nacional"
+    "fontes_subtitle": "As interações documentadas são ancoradas aos rótulos aprovados pela FDA, via DailyMed (NIH/NLM), e a fontes clínicas de acesso público da NIH (MedlinePlus, PubMed). Cada interação exibe as referências ao lado da sua descrição. Os RCM oficiais europeus podem ser consultados na EMA e, em Portugal, no portal do INFARMED.",
+    "fonte_dailymed": "DailyMed — rótulos aprovados pela FDA (NIH/NLM)",
+    "fonte_medlineplus": "MedlinePlus — monografias de medicamentos (NIH/NLM)",
+    "fonte_pubmed": "PubMed — literatura biomédica indexada (NIH/NLM)",
+    "fonte_ema": "EMA — ficha europeia do medicamento em português",
+    "fonte_infarmed": "INFARMED — RCM (portal oficial português, via Infomed)"
   },
   "interacoes_faq": {
     "title": "Perguntas frequentes sobre a calculadora",
@@ -521,7 +520,7 @@
     "substitui_medico_q": "A ferramenta substitui a avaliação médica?",
     "substitui_medico_a": "Não. Esta é uma ferramenta educativa de apoio. A decisão terapêutica cabe sempre a um profissional de saúde qualificado, que considera o doente como um todo.",
     "fontes_q": "Que fontes são utilizadas?",
-    "fontes_a": "As interações documentadas baseiam-se em bases reconhecidas como ASHP, Micromedex e Stockley's Drug Interactions, complementadas pelos RCM aprovados (INFARMED).",
+    "fontes_a": "As interações documentadas são ancoradas aos rótulos aprovados pela FDA, através do DailyMed (NIH/NLM), complementadas por monografias do MedlinePlus e literatura do PubMed. As fichas oficiais europeias podem ser consultadas na EMA e, em Portugal, no portal do INFARMED (Infomed).",
     "mais_de_dois_q": "Posso verificar mais de dois medicamentos em simultâneo?",
     "mais_de_dois_a": "Sim. Adicione quantos fármacos quiser; serão calculados os pares entre todos os selecionados."
   }

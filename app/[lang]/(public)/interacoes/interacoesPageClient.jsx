@@ -46,14 +46,17 @@ const FAQ_ITEMS = [
   { q: 'interacoes_faq.mais_de_dois_q', a: 'interacoes_faq.mais_de_dois_a' },
 ]
 
-// Fontes utilizadas para a criação do seed, seguindo a prática da drugs.com.
+// Fontes reais do seed (domínio público, sem violar direitos autorais):
+// cada par é ancorado aos rótulos aprovados pela FDA via DailyMed (NIH/NLM) —
+// ver migration 051 — complementados por fontes clínicas NIH (MedlinePlus,
+// PubMed). Os RCM oficiais europeus são consultáveis na EMA e, em Portugal,
+// no portal do INFARMED (Infomed).
 const SOURCES = [
-  { name: 'interacoes_page.fonte_ashp', url: 'https://www.ashp.org' },
-  { name: 'interacoes_page.fonte_multum', url: 'https://www.cerner.com' },
-  { name: 'interacoes_page.fonte_micromedex', url: 'https://www.micromedexsolutions.com/' },
-  { name: 'interacoes_page.fonte_harvard', url: 'https://www.health.harvard.edu' },
+  { name: 'interacoes_page.fonte_dailymed', url: 'https://dailymed.nlm.nih.gov' },
+  { name: 'interacoes_page.fonte_medlineplus', url: 'https://medlineplus.gov' },
+  { name: 'interacoes_page.fonte_pubmed', url: 'https://pubmed.ncbi.nlm.nih.gov' },
+  { name: 'interacoes_page.fonte_ema', url: 'https://www.ema.europa.eu' },
   { name: 'interacoes_page.fonte_infarmed', url: 'https://www.infarmed.pt' },
-  { name: 'interacoes_page.fonte_angola', url: 'https://www.minsa.gov.ao' },
 ]
 
 export default function InteracoesPageClient({ lang, drugs, interactions }) {
