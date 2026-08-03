@@ -12,20 +12,16 @@ export default async function CertificadoPublicoPage({ params }) {
   }
 
   const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('inscricoes')
-    .select(`
-      id, nome, created_at, compareceu, certificado_token,
-      evento:events (
-        id, title, date, location,
-        certificado_cor, certificado_texto, certificado_logo_url,
-        certificado_carga_horaria,
-        certificado_assinante_1_nome, certificado_assinante_1_cargo,
-        certificado_assinante_2_nome, certificado_assinante_2_cargo
-      )
-    `)
-    .eq('certificado_token', token)
-    .maybeSingle()
+
+  // SEC-UMN-05 (auditoria "O Sentinela" #2): leitura via SECURITY DEFINER
+  // get_certificado_by_token em vez de .from('inscricoes').select(...) direto.
+  // A tabela tem RLS ativa e sem policy SELECT para anon — a leitura direta
+  // devolvia sempre vazio (página partida em produção). A RPC devolve apenas
+  // a linha cujo certificado_token coincide (capability), mantendo RLS a
+  // bloquear SELECT anónimo em massa. Requer migration 048 antes do deploy.
+  const { data, error } = await supabase.rpc('get_certificado_by_token', {
+    p_token: token,
+  })
 
   if (error || !data) {
     return <CertificadoInvalido />
