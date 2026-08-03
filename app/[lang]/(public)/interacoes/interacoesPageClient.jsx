@@ -4,10 +4,12 @@ import { useContext, useMemo, useState } from 'react'
 import {
   AlertTriangle,
   ArrowUpRight,
+  BookOpen,
   Check,
   CheckCircle2,
   ChevronDown,
   Info,
+  Library,
   Plus,
   Search,
   Share2,
@@ -16,18 +18,43 @@ import {
 } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
 
-const SEVERITY_ORDER = { critical: 0, moderate: 1, minor: 2, none: 3 }
+// Ordem de apresentação: documentadas primeiro, depois desconhecidas.
+// `unknown` = par SEM registo na base (não confundir com `none` da BD,
+// que significa interação confirmadamente sem relevância clínica).
+const SEVERITY_ORDER = { critical: 0, moderate: 1, minor: 2, none: 3, unknown: 4 }
 
 const SEVERITY_META = {
   critical: { icon: ShieldAlert },
   moderate: { icon: AlertTriangle },
   minor: { icon: Info },
   none: { icon: CheckCircle2 },
+  unknown: { icon: BookOpen },
 }
 
 function severityLabelKey(severity) {
   return `interacoes_page.severidade_${severity}`
 }
+
+// Conteúdo estático do FAQ da calculadora (i18n). Espelha o padrão de
+// <details> nativo já usado em components/faq, mas sem depender da BD.
+const FAQ_ITEMS = [
+  { q: 'interacoes_faq.o_que_e_q', a: 'interacoes_faq.o_que_e_a' },
+  { q: 'interacoes_faq.severidade_q', a: 'interacoes_faq.severidade_a' },
+  { q: 'interacoes_faq.nao_avaliada_q', a: 'interacoes_faq.nao_avaliada_a' },
+  { q: 'interacoes_faq.substitui_medico_q', a: 'interacoes_faq.substitui_medico_a' },
+  { q: 'interacoes_faq.fontes_q', a: 'interacoes_faq.fontes_a' },
+  { q: 'interacoes_faq.mais_de_dois_q', a: 'interacoes_faq.mais_de_dois_a' },
+]
+
+// Fontes utilizadas para a criação do seed, seguindo a prática da drugs.com.
+const SOURCES = [
+  { name: 'interacoes_page.fonte_ashp', url: 'https://www.ashp.org' },
+  { name: 'interacoes_page.fonte_multum', url: 'https://www.cerner.com' },
+  { name: 'interacoes_page.fonte_micromedex', url: 'https://www.micromedexsolutions.com/' },
+  { name: 'interacoes_page.fonte_harvard', url: 'https://www.health.harvard.edu' },
+  { name: 'interacoes_page.fonte_infarmed', url: 'https://www.infarmed.pt' },
+  { name: 'interacoes_page.fonte_angola', url: 'https://www.minsa.gov.ao' },
+]
 
 export default function InteracoesPageClient({ lang, drugs, interactions }) {
   const { t } = useContext(LangContext)
@@ -49,8 +76,6 @@ export default function InteracoesPageClient({ lang, drugs, interactions }) {
   })
   const [query, setQuery] = useState('')
   const [focused, setFocused] = useState(false)
-  const [verified, setVerified] = useState(false)
-  const [expanded, setExpanded] = useState({})
   const [copied, setCopied] = useState(false)
 
   const drugsById = useMemo(() => {
@@ -81,54 +106,10 @@ export default function InteracoesPageClient({ lang, drugs, interactions }) {
 
   const removeDrug = (id) => {
     setSelectedIds(selectedIds.filter((x) => x !== id))
-    setExpanded({})
   }
 
   const clearAll = () => {
     setSelectedIds([])
-    setVerified(false)
-    setExpanded({})
-  }
-
-  // Todos os pares possíveis, com a interação documentada (se existir)
-  const results = useMemo(() => {
-    const pairs = []
-    for (let i = 0; i < selectedIds.length; i++) {
-      for (let j = i + 1; j < selectedIds.length; j++) {
-        const a = selectedIds[i]
-        const b = selectedIds[j]
-        const inter = interactions.find(
-          (x) =>
-            (x.drugAId === a && x.drugBId === b) ||
-            (x.drugAId === b && x.drugBId === a)
-        ) || null
-        pairs.push({ a, b, interaction: inter })
-      }
-    }
-    const rank = (p) =>
-      p.interaction ? SEVERITY_ORDER[p.interaction.severity] : SEVERITY_ORDER.none
-    return pairs.sort((p1, p2) => {
-      const diff = rank(p1) - rank(p2)
-      if (diff !== 0) return diff
-      return (drugsById[p1.a]?.name || '').localeCompare(drugsById[p2.a]?.name || '')
-    })
-  }, [selectedIds, interactions, drugsById])
-
-  const counts = useMemo(() => {
-    const c = { critical: 0, moderate: 0, minor: 0, none: 0 }
-    results.forEach((p) => {
-      const s = p.interaction ? p.interaction.severity : 'none'
-      c[s] += 1
-    })
-    return c
-  }, [results])
-
-  const handleVerify = () => {
-    setVerified(true)
-  }
-
-  const toggleExpand = (key) => {
-    setExpanded((prev) => ({ ...prev, [key]: !prev[key] }))
   }
 
   const handleShare = async () => {
@@ -144,8 +125,56 @@ export default function InteracoesPageClient({ lang, drugs, interactions }) {
     }
   }
 
-  const canVerify = selectedIds.length >= 2
-  const showResults = verified && canVerify
+  // Resultados:
+  //  - 1 fármaco → todas as interações DOCUMENTADAS em que esse fármaco participa
+  //    (o "explora tudo do primeiro fármaco").
+  //  - 2+ fármacos → pares entre os selecionados, marcando unknown os sem registo.
+  const results = useMemo(() => {
+    const pairs = []
+    if (selectedIds.length === 1) {
+      const soloId = selectedIds[0]
+      interactions.forEach((inter) => {
+        let partnerId = null
+        if (inter.drugAId === soloId) partnerId = inter.drugBId
+        else if (inter.drugBId === soloId) partnerId = inter.drugAId
+        if (partnerId == null) return
+        pairs.push({ a: soloId, b: partnerId, interaction: inter })
+      })
+    } else {
+      for (let i = 0; i < selectedIds.length; i++) {
+        for (let j = i + 1; j < selectedIds.length; j++) {
+          const a = selectedIds[i]
+          const b = selectedIds[j]
+          const inter = interactions.find(
+            (x) =>
+              (x.drugAId === a && x.drugBId === b) ||
+              (x.drugAId === b && x.drugBId === a)
+          ) || null
+          pairs.push({ a, b, interaction: inter })
+        }
+      }
+    }
+    const rank = (p) =>
+      p.interaction ? SEVERITY_ORDER[p.interaction.severity] : SEVERITY_ORDER.unknown
+    return pairs.sort((p1, p2) => {
+      const diff = rank(p1) - rank(p2)
+      if (diff !== 0) return diff
+      return (drugsById[p1.a]?.name || '').localeCompare(drugsById[p2.a]?.name || '')
+    })
+  }, [selectedIds, interactions, drugsById])
+
+  const counts = useMemo(() => {
+    const c = { critical: 0, moderate: 0, minor: 0, none: 0, unknown: 0 }
+    results.forEach((p) => {
+      const s = p.interaction ? p.interaction.severity : 'unknown'
+      c[s] += 1
+    })
+    return c
+  }, [results])
+
+  const hasSelection = selectedIds.length > 0
+  const isSingleDrug = selectedIds.length === 1
+  const firstName = drugsById[selectedIds[0]]?.name || ''
 
   return (
     <>
@@ -234,11 +263,9 @@ export default function InteracoesPageClient({ lang, drugs, interactions }) {
               {t('interacoes_page.adicionar_outro')}
             </button>
 
-            <button className="check-btn" onClick={handleVerify} disabled={!canVerify}>
-              {t('interacoes_page.verificar')}
-            </button>
+            <span className="flow-hint">{t('interacoes_page.flow_hint')}</span>
 
-            {selectedIds.length > 1 && (
+            {selectedIds.length > 0 && (
               <button className="clear-btn" onClick={clearAll}>
                 {t('interacoes_page.limpar')}
               </button>
@@ -249,17 +276,32 @@ export default function InteracoesPageClient({ lang, drugs, interactions }) {
 
           {/* Painel de resultados */}
           <main className="calc-results-panel">
-            {!showResults ? (
+            {!hasSelection ? (
               <div className="results-empty">
                 <div className="search-empty-icon">
                   <Search size={28} aria-hidden="true" />
                 </div>
                 <p>{t('interacoes_page.adicionar_pelo_menos')}</p>
               </div>
+            ) : results.length === 0 ? (
+              <div className="results-empty">
+                <div className="search-empty-icon">
+                  <BookOpen size={28} aria-hidden="true" />
+                </div>
+                <p>
+                  {isSingleDrug
+                    ? t('interacoes_page.sem_interacoes_farmaco', { name: firstName })
+                    : t('interacoes_page.adicionar_pelo_menos')}
+                </p>
+              </div>
             ) : (
               <>
                 <div className="results-header">
-                  <div className="results-title">{t('interacoes_page.resultados')}</div>
+                  <div className="results-title">
+                    {isSingleDrug
+                      ? t('interacoes_page.interacoes_de', { name: firstName })
+                      : t('interacoes_page.resultados')}
+                  </div>
                   <div className="results-count">
                     {results.length} {t('interacoes_page.interacoes_encontradas')}
                   </div>
@@ -311,17 +353,15 @@ export default function InteracoesPageClient({ lang, drugs, interactions }) {
                   const drugA = drugsById[pair.a]
                   const drugB = drugsById[pair.b]
                   const inter = pair.interaction
-                  const severity = inter ? inter.severity : 'none'
+                  const severity = inter ? inter.severity : 'unknown'
                   const Icon = SEVERITY_META[severity].icon
-                  const key = `${pair.a}-${pair.b}`
-                  const isExpanded = !!expanded[key]
                   const hasDetails = inter && (
                     inter.mechanism || inter.monitoring || inter.redFlags ||
                     inter.management || inter.source
                   )
 
                   return (
-                    <div key={key} className={`interaction-card is-${severity}`}>
+                    <div key={`${pair.a}-${pair.b}`} className={`interaction-card is-${severity}`}>
                       <div className="card-header">
                         <div className="card-drugs">
                           <span className="card-drug">{drugA?.name || '—'}</span>
@@ -339,67 +379,58 @@ export default function InteracoesPageClient({ lang, drugs, interactions }) {
                       </p>
 
                       {hasDetails && (
-                        <button
-                          className="card-toggle"
-                          onClick={() => toggleExpand(key)}
-                          aria-expanded={isExpanded}
-                        >
-                          {t(isExpanded ? 'interacoes_page.recolher' : 'interacoes_page.expandir')}
-                          <ChevronDown
-                            size={14}
-                            aria-hidden="true"
-                            className={isExpanded ? 'is-open' : ''}
-                          />
-                        </button>
-                      )}
-
-                      {isExpanded && inter && (
-                        <div className="interaction-detail">
-                          {inter.mechanism && (
-                            <div className="detail-block">
-                              <h4 className="detail-title">{t('interacoes_page.mecanismo')}</h4>
-                              <p>{inter.mechanism}</p>
-                            </div>
-                          )}
-                          {inter.monitoring && (
-                            <div className="detail-block">
-                              <h4 className="detail-title">{t('interacoes_page.monitorizacao')}</h4>
-                              <p>{inter.monitoring}</p>
-                            </div>
-                          )}
-                          {inter.redFlags && (
-                            <div className="detail-block detail-red-flags">
-                              <h4 className="detail-title">
-                                <ShieldAlert size={13} aria-hidden="true" />
-                                {t('interacoes_page.sinais_alerta')}
-                              </h4>
-                              <p>{inter.redFlags}</p>
-                            </div>
-                          )}
-                          {inter.management && (
-                            <div className="detail-block detail-recommendation">
-                              <h4 className="detail-title">{t('interacoes_page.recomendacao')}</h4>
-                              <p>{inter.management}</p>
-                            </div>
-                          )}
-                          {inter.source && (
-                            <div className="detail-block detail-source">
-                              <h4 className="detail-title">{t('interacoes_page.fonte')}</h4>
-                              <p>
-                                {inter.source}
-                                {inter.sourceUrl && (
-                                  <a
-                                    href={inter.sourceUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    <ArrowUpRight size={13} aria-hidden="true" />
-                                  </a>
-                                )}
-                              </p>
-                            </div>
-                          )}
-                        </div>
+                        <details className="card-details">
+                          <summary className="card-toggle">
+                            {t('interacoes_page.expandir')}
+                            <ChevronDown size={14} aria-hidden="true" />
+                          </summary>
+                          <div className="interaction-detail">
+                            {inter.mechanism && (
+                              <div className="detail-block">
+                                <h4 className="detail-title">{t('interacoes_page.mecanismo')}</h4>
+                                <p>{inter.mechanism}</p>
+                              </div>
+                            )}
+                            {inter.monitoring && (
+                              <div className="detail-block">
+                                <h4 className="detail-title">{t('interacoes_page.monitorizacao')}</h4>
+                                <p>{inter.monitoring}</p>
+                              </div>
+                            )}
+                            {inter.redFlags && (
+                              <div className="detail-block detail-red-flags">
+                                <h4 className="detail-title">
+                                  <ShieldAlert size={13} aria-hidden="true" />
+                                  {t('interacoes_page.sinais_alerta')}
+                                </h4>
+                                <p>{inter.redFlags}</p>
+                              </div>
+                            )}
+                            {inter.management && (
+                              <div className="detail-block detail-recommendation">
+                                <h4 className="detail-title">{t('interacoes_page.recomendacao')}</h4>
+                                <p>{inter.management}</p>
+                              </div>
+                            )}
+                            {inter.source && (
+                              <div className="detail-block detail-source">
+                                <h4 className="detail-title">{t('interacoes_page.fonte')}</h4>
+                                <p>
+                                  {inter.source}
+                                  {inter.sourceUrl && (
+                                    <a
+                                      href={inter.sourceUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      <ArrowUpRight size={13} aria-hidden="true" />
+                                    </a>
+                                  )}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </details>
                       )}
                     </div>
                   )
@@ -407,6 +438,50 @@ export default function InteracoesPageClient({ lang, drugs, interactions }) {
               </>
             )}
           </main>
+        </div>
+
+        {/* ---- Secção Fontes ---- */}
+        <div className="sources-section">
+          <div className="section-heading-row">
+            <Library size={18} aria-hidden="true" />
+            <h2 className="sources-title">{t('interacoes_page.fontes_title')}</h2>
+          </div>
+          <p className="sources-subtitle">{t('interacoes_page.fontes_subtitle')}</p>
+          <ul className="sources-list">
+            {SOURCES.map((s) => (
+              <li key={s.name}>
+                <a href={s.url} target="_blank" rel="noopener noreferrer">
+                  {t(s.name)}
+                  <ArrowUpRight size={13} aria-hidden="true" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* ---- Secção FAQ ---- */}
+        <div className="interacoes-faq section-padding">
+          <div className="container-center max-w-3xl">
+            <div className="section-heading text-center mb-8">
+              <h2 className="text-3xl md:text-4xl font-bold text-brand-deep">
+                {t('interacoes_faq.title')}
+              </h2>
+              <p className="hero-subtitle text-center">{t('interacoes_faq.subtitle')}</p>
+            </div>
+            <div className="faq-tabs">
+              {FAQ_ITEMS.map((item) => (
+                <details className="faq-item" key={item.q}>
+                  <summary className="faq-item-summary">
+                    <span>{t(item.q)}</span>
+                    <ChevronDown size={20} className="faq-item-chevron" />
+                  </summary>
+                  <div className="faq-item-answer prose prose-muted dark:prose-invert max-w-none">
+                    {t(item.a)}
+                  </div>
+                </details>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </>

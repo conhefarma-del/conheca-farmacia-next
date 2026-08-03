@@ -5308,6 +5308,11 @@ html { scroll-behavior: smooth; }
 .severity-badge.is-moderate { background: #fff7ed; color: #c2410c; border-color: #ff6c23; }
 .severity-badge.is-minor { background: #fffbeb; color: #92400e; border-color: #f59e0b; }
 .severity-badge.is-none { background: #f0fdf4; color: var(--color-brand-accent); border-color: var(--color-brand-accent); }
+.severity-badge.is-unknown { background: #f8fafc; color: #475569; border-color: #94a3b8; }
+
+.interaction-card.is-unknown { border-left: 4px solid #94a3b8; }
+
+.summary-chip.is-unknown { background: #f8fafc; color: #475569; border-color: #94a3b8; }
 
 .card-description {
   font-size: 14px;
@@ -5390,6 +5395,80 @@ html { scroll-behavior: smooth; }
   vertical-align: middle;
 }
 
+/* Dica de fluxo junto ao autocomplete */
+.flow-hint {
+  display: block;
+  font-size: 12px;
+  color: var(--color-brand-deep);
+  opacity: 0.55;
+  line-height: 1.5;
+  margin: 10px 0 4px;
+}
+
+/* Expansão nativa (details/summary) nos cartões de interação */
+.card-details { margin-top: 2px; }
+.card-details summary.card-toggle { cursor: pointer; list-style: none; }
+.card-details summary.card-toggle::-webkit-details-marker { display: none; }
+
+/* ---- Secção Fontes ---- */
+.sources-section {
+  margin: 48px auto 8px;
+  max-width: 900px;
+  padding: 24px;
+  background: var(--color-brand-bg-alt);
+  border: 1px solid var(--color-brand-divider);
+  border-radius: 14px;
+}
+
+.section-heading-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sources-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-brand-deep);
+  margin: 0;
+}
+
+.sources-subtitle {
+  font-size: 14px;
+  color: var(--color-brand-deep);
+  opacity: 0.65;
+  margin: 8px 0 16px;
+  line-height: 1.6;
+}
+
+.sources-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sources-list li a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-brand-accent);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.sources-list li a:hover { color: #0d6b3f; }
+
+/* ---- FAQ inline da calculadora ---- */
+.interacoes-faq {
+  margin: 8px 0 0;
+  border-top: 1px solid var(--color-brand-divider);
+}
+
 /* Responsivo */
 @media (max-width: 900px) {
   .calc-layout { grid-template-columns: 1fr; padding: 24px 0 72px; }
@@ -5417,6 +5496,10 @@ html.dark .severity-badge.is-moderate { background: rgba(255, 108, 35, 0.12); co
 
 html.dark .summary-chip.is-minor,
 html.dark .severity-badge.is-minor { background: rgba(245, 158, 11, 0.12); color: #fcd34d; border-color: rgba(245, 158, 11, 0.5); }
+
+html.dark .severity-badge.is-unknown,
+html.dark .summary-chip.is-unknown { background: rgba(148, 163, 184, 0.12); color: #cbd5e1; border-color: rgba(148, 163, 184, 0.5); }
+html.dark .interaction-card.is-unknown { border-left-color: #94a3b8; }
 
 html.dark .results-count { background: rgba(220, 38, 38, 0.12); color: #fca5a5; border-color: rgba(220, 38, 38, 0.5); }
 
