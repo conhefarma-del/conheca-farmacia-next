@@ -32,7 +32,7 @@ export default function NewsletterSection({ keys = 'artigos_page' }) {
     setStatus('loading')
     try {
       const supabase = createClient()
-      const { error } = await supabase.rpc('subscribe_newsletter', {
+      const { data, error } = await supabase.rpc('subscribe_newsletter', {
         p_email: email.toLowerCase().trim(),
       })
       if (error) {
@@ -44,8 +44,10 @@ export default function NewsletterSection({ keys = 'artigos_page' }) {
       } else {
         setStatus('success')
         setEmail('')
-        // Enviar email de boas-vindas (fire-and-forget)
-        sendWelcomeEmail(email.toLowerCase().trim()).catch(() => {})
+        // Enviar email de boas-vindas (fire-and-forget). A RPC devolve o
+        // unsubscribe_token (migration 050), evitando a leitura anon a
+        // newsletter que o RLS bloqueia — corrige o bug do #9.
+        sendWelcomeEmail(email.toLowerCase().trim(), data?.unsubscribe_token).catch(() => {})
       }
     } catch {
       setStatus('error')
