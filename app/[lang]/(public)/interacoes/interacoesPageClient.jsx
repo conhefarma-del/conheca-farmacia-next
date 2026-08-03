@@ -185,7 +185,7 @@ export default function InteracoesPageClient({ lang, drugs, interactions }) {
       <section className="events-hero">
         <div className="container-center">
           <div className="text-center py-12 md:py-16">
-            <h1 className="text-5xl md:text-7xl font-bold text-brand-deep mb-6">
+            <h1 className="text-5xl md:text-7xl font-bold text-brand-deep mb-6 break-words">
               {t('interacoes_page.hero_title')}
             </h1>
             <p className="hero-subtitle text-center">

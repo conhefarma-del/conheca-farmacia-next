@@ -53,38 +53,22 @@ export default function PublicLayout({ children }) {
   }, [utilityBarVisible])
 
   // utility=60 + header=80 (h-20)
-  const HEADER_OFFSET = utilityBarVisible ? 60 : 0
-  const MAIN_PADDING_TOP = utilityBarVisible ? 140 : 80
+  const UTILITY_HEIGHT = 60
+  const HEADER_HEIGHT = 80
+  const MAIN_PADDING_TOP = utilityBarVisible ? UTILITY_HEIGHT + HEADER_HEIGHT : HEADER_HEIGHT
 
   return (
     <>
-      <div
-        className="utility-bar-wrapper"
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 60,
-          transform: utilityBarVisible ? 'translateY(0)' : 'translateY(-100%)',
-          transition: 'transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
-        }}
-      >
-        <UtilityBar lang={lang} t={t} />
-      </div>
-      <div
-        className="header-wrapper"
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 50,
-          transform: `translateY(${HEADER_OFFSET}px)`,
-          transition: 'transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
-        }}
-      >
-        <Header lang={lang} t={t} onToggleDrawer={() => setDrawerOpen(!drawerOpen)} />
+      {/* Chrome superior: utility bar + header movem-se como UMA única unidade
+          fixa. O scroll esconde/revela a utility bar deslocando o bloco inteiro
+          -60px — a utility sai e o header aterra no topo num único movimento.
+          O drawer (mobile) empurra apenas o conteúdo interno (.site-header-inner),
+          mantendo utility + header sempre alinhados entre si e com o main. */}
+      <div className="site-header">
+        <div className="site-header-inner">
+          <UtilityBar lang={lang} t={t} />
+          <Header lang={lang} t={t} onToggleDrawer={() => setDrawerOpen(!drawerOpen)} />
+        </div>
       </div>
       <MobileDrawer
         lang={lang}
