@@ -1,0 +1,90 @@
+{
+  "slug": "ciencias-farmaceuticas",
+  "nome": "Ciências Farmacêuticas",
+  "duracaoAnos": 5,
+  "descricao": "Guia de estudo baseado no currículo ISIA (única fonte disponível com grade completa). Ajustado para padrão de 5 anos (ISIA tem 4 anos). Disciplinas organizadas por ano de consenso.",
+  "universidadesReferencia": [
+    { "nome": "ISIA", "url": "https://isia.co.ao/cursos", "duracao": 4 },
+    { "nome": "UPRA", "url": "https://www.upra.ao/licenciaturas", "duracao": 0, "nota": "Não oferece" },
+    { "nome": "PIAGET", "url": "https://www.unipiaget-angola.org/curso?cienciasfarmaceuticas", "duracao": 0, "nota": "Link apenas" },
+    { "nome": "UNIBELAS", "url": "https://unibelas.online/courses/farmacia/", "duracao": 0, "nota": "Link apenas" }
+  ],
+  "ano1": {
+    "nome": "1º Ano - Base Científica Farmacêutica",
+    "disciplinas": [
+      { "nome": "Anatomia Humana I e II", "frequencia": "1/1", "essencial": true },
+      { "nome": "Biologia Celular e Molecular / Genética Humana", "frequencia": "1/1", "essencial": true },
+      { "nome": "Histologia e Embriologia Humana", "frequencia": "1/1", "essencial": true },
+      { "nome": "Química Geral", "frequencia": "1/1", "essencial": true },
+      { "nome": "Química Inorgânica I", "frequencia": "1/1", "essencial": true },
+      { "nome": "Química Orgânica I e II", "frequencia": "1/1", "essencial": true },
+      { "nome": "Botânica Aplicada à Farmácia / Farmacognosia (introd.)", "frequencia": "1/1", "essencial": true },
+      { "nome": "Física / Biofísica", "frequencia": "1/1", "essencial": true },
+      { "nome": "Matemática / Bioestatística", "frequencia": "1/1", "essencial": true },
+      { "nome": "Informática Aplicada", "frequencia": "1/1", "essencial": true },
+      { "nome": "Metodologia de Investigação Científica", "frequencia": "1/1", "essencial": true },
+      { "nome": "Língua Portuguesa I e II", "frequencia": "1/1", "essencial": true },
+      { "nome": "Língua Inglesa I e II (Técnica/Científica)", "frequencia": "1/1", "essencial": true },
+      { "nome": "Introdução ao Curso, Ética e Legislação Farmacêutica", "frequencia": "1/1", "essencial": true },
+      { "nome": "Tecnologia Básica Farmacêutica", "frequencia": "1/1", "essencial": true }
+    ]
+  },
+  "ano2": {
+    "nome": "2º Ano - Química Avançada e Ciências Biomédicas",
+    "disciplinas": [
+      { "nome": "Bioquímica I e II", "frequencia": "1/1", "essencial": true },
+      { "nome": "Fisiologia Humana I e II", "frequencia": "1/1", "essencial": true },
+      { "nome": "Biofísica", "frequencia": "1/1", "essencial": true },
+      { "nome": "Química Analítica I e II", "frequencia": "1/1", "essencial": true },
+      { "nome": "Química Física dos Colóides", "frequencia": "1/1", "essencial": true },
+      { "nome": "Química Orgânica II (Avançada)", "frequencia": "1/1", "essencial": true },
+      { "nome": "Microbiologia", "frequencia": "1/1", "essencial": true },
+      { "nome": "Farmacognosia", "frequencia": "1/1", "essencial": true },
+      { "nome": "Imunologia Geral", "frequencia": "1/1", "essencial": true },
+      { "nome": "Parasitologia", "frequencia": "1/1", "essencial": true },
+      { "nome": "Nutrição e Dietética", "frequencia": "1/1", "essencial": true },
+      { "nome": "Toxicologia (Introdução)", "frequencia": "1/1", "essencial": true },
+      { "nome": "Tecnologia Instrumental", "frequencia": "1/1", "essencial": true },
+      { "nome": "Embriologia Humana", "frequencia": "1/1", "essencial": true },
+      { "nome": "Primeiros Socorros", "frequencia": "1/1", "essencial": true },
+      { "nome": "Psicologia Aplicada à Farmácia", "frequencia": "1/1", "essencial": false }
+    ]
+  },
+  "ano3": {
+    "nome": "3º Ano - Farmacotécnica, Farmacologia e Química Farmacêutica",
+    "disciplinas": [
+      { "nome": "Farmacologia I e II", "frequencia": "1/1", "essencial": true },
+      { "nome": "Química Farmacêutica I e II", "frequencia": "1/1", "essencial": true },
+      { "nome": "Farmácia Galénica / Farmacotécnica", "frequencia": "1/1", "essencial": true },
+      { "nome": "Biofarmácia I e II", "frequencia": "1/1", "essencial": true },
+      { "nome": "Fitoterapia e Produtos Naturais", "frequencia": "1/1", "essencial": true },
+      { "nome": "Controle de Qualidade de Medicamentos", "frequencia": "1/1", "essencial": true },
+      { "nome": "Bromatologia e Hidrologia (Análise de Alimentos/Águas)", "frequencia": "1/1", "essencial": true },
+      { "nome": "Epidemiologia", "frequencia": "1/1", "essencial": true },
+      { "nome": "Economia e Administração Farmacêutica", "frequencia": "1/1", "essencial": true },
+      { "nome": "Cosmetologia", "frequencia": "1/1", "essencial": true },
+      { "nome": "Farmacotécnica Homeopática", "frequencia": "1/1", "essencial": true },
+      { "nome": "Toxicologia Avançada", "frequencia": "1/1", "essencial": true },
+      { "nome": "Língua Inglesa III (Técnica Avançada)", "frequencia": "1/1", "essencial": true },
+      { "nome": "Bio-patologia", "frequencia": "1/1", "essencial": true }
+    ]
+  },
+  "ano4": {
+    "nome": "4º Ano - Prática Profissional e Estágios",
+    "disciplinas": [
+      { "nome": "Farmácia Clínica", "frequencia": "1/1", "essencial": true },
+      { "nome": "Farmácia Hospitalar", "frequencia": "1/1", "essencial": true },
+      { "nome": "Estágio Supervisionado I", "frequencia": "1/1", "essencial": true },
+      { "nome": "Metodologia de Investigação Científica Avançada", "frequencia": "1/1", "essencial": true },
+      { "nome": "Pedagogia e Didática", "frequencia": "1/1", "essencial": true }
+    ]
+  },
+  "ano5": {
+    "nome": "5º Ano - Integração Final e TCC",
+    "disciplinas": [
+      { "nome": "Estágio Supervisionado II", "frequencia": "1/1", "essencial": true },
+      { "nome": "Trabalho de Fim de Curso / Monografia", "frequencia": "1/1", "essencial": true },
+      { "nome": "Metodologia da Redação Científica / Monografia", "frequencia": "1/1", "essencial": true }
+    ]
+  }
+}

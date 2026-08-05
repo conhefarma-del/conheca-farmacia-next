@@ -1,0 +1,68 @@
+{
+  "slug": "enfermagem",
+  "nome": "Enfermagem",
+  "duracaoAnos": 4,
+  "descricao": "Guia de estudo baseado na comparação curricular entre ISIA, UPRA, PIAGET e UNIBELAS. Disciplinas selecionadas por frequência de aparição nas grades curriculares (consenso ≥ 75%).",
+  "universidadesReferencia": [
+    { "nome": "ISIA", "url": "https://isia.co.ao/cursos", "duracao": 4 },
+    { "nome": "UPRA", "url": "https://www.upra.ao/licenciaturas", "duracao": 5 },
+    { "nome": "PIAGET", "url": "https://www.unipiaget-angola.org/curso?enfermagem", "duracao": 4 },
+    { "nome": "UNIBELAS", "url": "https://unibelas.online/courses/enfermagem/", "duracao": 4 }
+  ],
+  "ano1": {
+    "nome": "1º Ano - Base Científica e Fundamentos",
+    "disciplinas": [
+      { "nome": "Anatomia Humana I e II", "frequencia": "4/4", "essencial": true },
+      { "nome": "Biologia Celular e Molecular / Genética Humana", "frequencia": "4/4", "essencial": true },
+      { "nome": "Histologia e Embriologia", "frequencia": "4/4", "essencial": true },
+      { "nome": "Microbiologia", "frequencia": "4/4", "essencial": true },
+      { "nome": "Parasitologia", "frequencia": "3/4", "essencial": true },
+      { "nome": "Epidemiologia", "frequencia": "4/4", "essencial": true },
+      { "nome": "Bioestatística", "frequencia": "4/4", "essencial": true },
+      { "nome": "Metodologia de Investigação Científica", "frequencia": "4/4", "essencial": true },
+      { "nome": "Língua Portuguesa I e II", "frequencia": "4/4", "essencial": true },
+      { "nome": "Sociologia / Antropologia Aplicada à Saúde", "frequencia": "4/4", "essencial": true },
+      { "nome": "Psicologia (Desenvolvimento / Aplicada)", "frequencia": "4/4", "essencial": true },
+      { "nome": "Ética e Legislação em Enfermagem / Bioética", "frequencia": "3/4", "essencial": true },
+      { "nome": "Informática Aplicada à Saúde", "frequencia": "3/4", "essencial": true },
+      { "nome": "Química Geral / Bioquímica Básica", "frequencia": "2/4", "essencial": false }
+    ]
+  },
+  "ano2": {
+    "nome": "2º Ano - Ciências Pré-Clínicas e Fundamentos de Enfermagem",
+    "disciplinas": [
+      { "nome": "Farmacologia I e II", "frequencia": "4/4", "essencial": true },
+      { "nome": "Fisiologia Humana I e II", "frequencia": "2/4", "essencial": true },
+      { "nome": "Bioquímica I e II", "frequencia": "2/4", "essencial": true },
+      { "nome": "Imunologia", "frequencia": "3/4", "essencial": true },
+      { "nome": "Nutrição e Dietética", "frequencia": "4/4", "essencial": true },
+      { "nome": "Patologia Geral / Processos Patológicos", "frequencia": "4/4", "essencial": true },
+      { "nome": "Semiologia e Semiotécnica", "frequencia": "2/4", "essencial": true },
+      { "nome": "Saúde Pública e Ambiental / Epidemiologia Avançada", "frequencia": "3/4", "essencial": true },
+      { "nome": "Enfermagem Fundamental I e II", "frequencia": "2/4", "essencial": true }
+    ]
+  },
+  "ano3": {
+    "nome": "3º Ano - Especialidades Clínicas e Estágios",
+    "disciplinas": [
+      { "nome": "Enfermagem em Saúde do Adulto I e II (Médico-Cirúrgica)", "frequencia": "3/4", "essencial": true },
+      { "nome": "Enfermagem em Saúde da Mulher I e II (Materna/Obstétrica)", "frequencia": "3/4", "essencial": true },
+      { "nome": "Enfermagem em Saúde da Criança e Adolescente I e II (Pediatria)", "frequencia": "3/4", "essencial": true },
+      { "nome": "Enfermagem em Saúde do Idoso I e II (Geriátrica)", "frequencia": "3/4", "essencial": true },
+      { "nome": "Enfermagem em Saúde Mental e Psiquiátrica", "frequencia": "3/4", "essencial": true },
+      { "nome": "Enfermagem em Centro Cirúrgico e Esterilização", "frequencia": "3/4", "essencial": true },
+      { "nome": "Enfermagem Comunitária / Cuidados Primários", "frequencia": "2/4", "essencial": true },
+      { "nome": "Administração em Enfermagem / Gestão Hospitalar", "frequencia": "4/4", "essencial": true },
+      { "nome": "Didática / Pedagogia Aplicada à Enfermagem", "frequencia": "4/4", "essencial": true },
+      { "nome": "Estágios Específicos / Ensino Clínico Supervisionado", "frequencia": "4/4", "essencial": true }
+    ]
+  },
+  "ano4": {
+    "nome": "4º Ano - Integração Profissional e TCC",
+    "disciplinas": [
+      { "nome": "Estágio Curricular Supervisionado I e II", "frequencia": "4/4", "essencial": true },
+      { "nome": "Trabalho de Fim de Curso / Monografia", "frequencia": "4/4", "essencial": true },
+      { "nome": "Metodologia de Investigação Avançada / Redação Científica", "frequencia": "2/4", "essencial": true }
+    ]
+  }
+}

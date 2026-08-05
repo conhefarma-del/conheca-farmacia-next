@@ -1,0 +1,97 @@
+{
+  "slug": "medicina",
+  "nome": "Medicina",
+  "duracaoAnos": 6,
+  "descricao": "Guia de estudo baseado na comparação curricular entre UPRA (6 anos) e PIAGET (6 anos). Disciplinas selecionadas por consenso total (2/2 universidades). Medicina Dentária da ISIA NÃO incluída por ser curso distinto.",
+  "universidadesReferencia": [
+    { "nome": "UPRA", "url": "https://www.upra.ao/licenciaturas", "duracao": 6 },
+    { "nome": "PIAGET", "url": "https://www.unipiaget-angola.org/curso?medicina", "duracao": 6 },
+    { "nome": "ISIA", "url": "https://isia.co.ao/cursos", "duracao": 5, "nota": "Oferece Medicina Dentária, não Medicina" },
+    { "nome": "UNIBELAS", "url": "https://unibelas.online/", "duracao": 0, "nota": "Não oferece Medicina" }
+  ],
+  "ano1": {
+    "nome": "1º Ano - Base Morfofuncional e Metodológica",
+    "disciplinas": [
+      { "nome": "Anatomia Humana (Sistemática + Topográfica) - Módulos I a IV", "frequencia": "2/2", "essencial": true },
+      { "nome": "Biologia Celular e Molecular / Genética Médica", "frequencia": "2/2", "essencial": true },
+      { "nome": "Histologia e Embriologia (Geral + Especial + Sistemas)", "frequencia": "2/2", "essencial": true },
+      { "nome": "Biofísica / Física Médica", "frequencia": "2/2", "essencial": true },
+      { "nome": "Bioquímica (Estrutural + Metabolismo)", "frequencia": "1/2", "essencial": true },
+      { "nome": "Bioestatística e Informática em Saúde", "frequencia": "2/2", "essencial": true },
+      { "nome": "Metodologia de Investigação Científica / Trabalho de Campo", "frequencia": "2/2", "essencial": true },
+      { "nome": "Higiene, Epidemiologia e Demografia Sanitária", "frequencia": "2/2", "essencial": true },
+      { "nome": "Língua Portuguesa + Inglês Médico/Científico", "frequencia": "2/2", "essencial": true },
+      { "nome": "Sociologia / Psicologia Médica / Antropologia da Saúde", "frequencia": "2/2", "essencial": true },
+      { "nome": "Bioética / Filosofia das Ciências / História da Medicina", "frequencia": "2/2", "essencial": true },
+      { "nome": "Química Geral (Básica para Bioquímica)", "frequencia": "1/2", "essencial": false }
+    ]
+  },
+  "ano2": {
+    "nome": "2º Ano - Função Orgânica, Agentes de Doença e Propedêutica",
+    "disciplinas": [
+      { "nome": "Fisiologia Humana (Geral + Sistemas / Especial)", "frequencia": "2/2", "essencial": true },
+      { "nome": "Bioquímica Geral / Metabolismo Avançado", "frequencia": "1/2", "essencial": true },
+      { "nome": "Histologia e Embriologia II (Sistemas de Órgãos)", "frequencia": "2/2", "essencial": true },
+      { "nome": "Microbiologia e Parasitologia (Geral + Especial / Clínica)", "frequencia": "2/2", "essencial": true },
+      { "nome": "Imunologia Básica e Clínica", "frequencia": "2/2", "essencial": true },
+      { "nome": "Farmacologia Geral (Farmacocinética + Farmacodinâmica)", "frequencia": "1/2", "essencial": true },
+      { "nome": "Nutrição em Saúde e Doença", "frequencia": "1/2", "essencial": true },
+      { "nome": "Saúde Pública / Epidemiologia Avançada / Administração em Saúde", "frequencia": "2/2", "essencial": true },
+      { "nome": "Ética e Legislação Médica / História da Medicina", "frequencia": "2/2", "essencial": true },
+      { "nome": "Propedêutica / Semiologia (Início - Anamnese + Exame Físico)", "frequencia": "2/2", "essencial": true }
+    ]
+  },
+  "ano3": {
+    "nome": "3º Ano - Semiologia Completa e Patologia Sistêmica Inicial",
+    "disciplinas": [
+      { "nome": "Semiologia e Fisiopatologia Médica I e II", "frequencia": "2/2", "essencial": true },
+      { "nome": "Semiologia e Fisiopatologia Cirúrgica I e II", "frequencia": "2/2", "essencial": true },
+      { "nome": "Laboratório Clínico / Patologia Clínica (Interpretação)", "frequencia": "1/2", "essencial": true },
+      { "nome": "Imagiologia / Radiologia (Convencional + Especial)", "frequencia": "2/2", "essencial": true },
+      { "nome": "Farmacologia Clínica (Por Sistemas/Especialidades)", "frequencia": "2/2", "essencial": true },
+      { "nome": "Patologia Geral / Anatomia Patológica", "frequencia": "2/2", "essencial": true },
+      { "nome": "Psicologia Clínica / Psiquiatria Introdutória", "frequencia": "2/2", "essencial": true },
+      { "nome": "Primeiros Socorros / Emergências Médicas", "frequencia": "1/2", "essencial": true },
+      { "nome": "Doenças Infecto-Contagiosas / Microbiologia Clínica", "frequencia": "1/2", "essencial": true },
+      { "nome": "Início Clínicas Sistêmicas: Cardiologia, Pneumologia, Nefrologia, Gastroenterologia, Endocrinologia, Hematologia, Neurologia", "frequencia": "1/2", "essencial": true }
+    ]
+  },
+  "ano4": {
+    "nome": "4º Ano - Clínica Médica e Cirúrgica Avançada",
+    "disciplinas": [
+      { "nome": "Medicina Interna (Módulos: Cardiologia, Pneumologia, Gastroenterologia, Nefrologia, Hematologia, Oncologia, Reumatologia, Infectologia, Neurologia Clínica, Endocrinologia, Dermatologia, Medicina Crítica/Cuidados Intensivos)", "frequencia": "2/2", "essencial": true },
+      { "nome": "Cirurgia Geral + Fundamentos Cirúrgicos", "frequencia": "1/2", "essencial": true },
+      { "nome": "Anestesiologia, Reanimação e Terapia da Dor", "frequencia": "1/2", "essencial": true },
+      { "nome": "Medicina Física e Reabilitação", "frequencia": "2/2", "essencial": true },
+      { "nome": "Gestão em Saúde / Administração Hospitalar / Economia da Saúde", "frequencia": "2/2", "essencial": true },
+      { "nome": "Urologia", "frequencia": "1/2", "essencial": true },
+      { "nome": "Continuação Clínicas Sistêmicas Avançadas", "frequencia": "1/2", "essencial": true }
+    ]
+  },
+  "ano5": {
+    "nome": "5º Ano - Grandes Áreas Clínicas e Especialidades",
+    "disciplinas": [
+      { "nome": "Ginecologia e Obstetrícia I e II (OBGYN Completa)", "frequencia": "2/2", "essencial": true },
+      { "nome": "Neonatologia e Pediatria I e II (Pediatria Geral + Neonatologia)", "frequencia": "2/2", "essencial": true },
+      { "nome": "Cirurgia Especializada: Abdômen, Torácica, Neurocirurgia, Ortopedia/Traumatologia, Oftalmologia, Otorrinolaringologia, Urologia", "frequencia": "2/2", "essencial": true },
+      { "nome": "Psiquiatria Clínica / Neurologia Clínica Avançada", "frequencia": "2/2", "essencial": true },
+      { "nome": "Medicina Legal e Deontologia Médica", "frequencia": "2/2", "essencial": true },
+      { "nome": "Geriatria / Medicina do Idoso", "frequencia": "1/2", "essencial": true },
+      { "nome": "Gestão de Saúde / Saúde Pública Avançada / Medicina Tropical", "frequencia": "1/2", "essencial": true }
+    ]
+  },
+  "ano6": {
+    "nome": "6º Ano - Internato Rotativo (Rotações Obrigatórias) e TCC",
+    "disciplinas": [
+      { "nome": "Internato/Estágio - Medicina Interna (Rotação Longa)", "frequencia": "2/2", "essencial": true },
+      { "nome": "Internato/Estágio - Cirurgia Geral (Rotação Longa)", "frequencia": "2/2", "essencial": true },
+      { "nome": "Internato/Estágio - Pediatria (Incl. Neonatologia)", "frequencia": "2/2", "essencial": true },
+      { "nome": "Internato/Estágio - Ginecologia e Obstetrícia", "frequencia": "2/2", "essencial": true },
+      { "nome": "Internato/Estágio - Saúde Pública / Medicina Preventiva e Tropical / Medicina de Família", "frequencia": "2/2", "essencial": true },
+      { "nome": "Trabalho de Fim de Curso / Monografia / Tese", "frequencia": "2/2", "essencial": true },
+      { "nome": "Ética e Deontologia Médica (Síntese Final)", "frequencia": "1/2", "essencial": true },
+      { "nome": "Medicina Legal (se não cursada no 5º ano)", "frequencia": "1/2", "essencial": true },
+      { "nome": "Oncologia Clínica / Genética Molecular Médica / Imagem Avançada (Eletivas/Complementares)", "frequencia": "1/2", "essencial": false }
+    ]
+  }
+}

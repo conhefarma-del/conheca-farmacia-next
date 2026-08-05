@@ -45,3 +45,20 @@ check-supabase.mjs
 
 # Vercel CLI
 .vercel
+
+# Agent tooling / private local state — never committed
+.zcode/
+.freebuff/
+skills/
+C.password.io..TEMP/
+REBOOT_RECOVERY_NOTES.md
+
+# Reference source documents (copyrighted PDFs / large binaries) — never committed
+fontes_interacoes/
+guia-de-estudo/**/*.pdf
+
+# Temp build/lint artifacts
+_temp/*.exit
+_temp/lint*.txt
+_temp/list_drugs.py
+

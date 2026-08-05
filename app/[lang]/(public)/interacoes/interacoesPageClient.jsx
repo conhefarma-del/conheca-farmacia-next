@@ -10,17 +10,21 @@ import {
   Check,
   CheckCircle2,
   ChevronDown,
+  Copy,
   HeartPulse,
   Info,
   Library,
+  MessageCircle,
   Pill,
   Plus,
+  Printer,
   Search,
   Share2,
   ShieldAlert,
   X,
 } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
+import { INTERACOES_FAQ_ITEMS } from '@/lib/interacoes-faq'
 
 // Ordem de apresentação: documentadas primeiro, depois desconhecidas.
 // `unknown` = par SEM registo na base (não confundir com `none` da BD,
@@ -39,25 +43,30 @@ function severityLabelKey(severity) {
   return `interacoes_page.severidade_${severity}`
 }
 
-// Mapeia a categoria de gestação para a classe de severidade do card
-// (barra lateral colorida). Reutiliza as classes .interaction-card.is-*.
-function pregnancyBarClass(category) {
-  if (category === 'contraindicated') return 'is-critical'
-  if (category === 'caution') return 'is-moderate'
-  if (category === 'compatible') return 'is-none'
-  return 'is-unknown'
+// Mapeia a categoria de gestação para uma severidade (barra lateral + filtro).
+// Reutiliza as classes .interaction-card.is-* / níveis de severidade existentes.
+function pregnancySeverity(category) {
+  if (category === 'contraindicated') return 'critical'
+  if (category === 'caution') return 'moderate'
+  if (category === 'compatible') return 'none'
+  return 'unknown'
 }
 
-// Conteúdo estático do FAQ da calculadora (i18n). Espelha o padrão de
-// <details> nativo já usado em components/faq, mas sem depender da BD.
-const FAQ_ITEMS = [
-  { q: 'interacoes_faq.quais_tipos_q', a: 'interacoes_faq.quais_tipos_a' },
-  { q: 'interacoes_faq.o_que_e_q', a: 'interacoes_faq.o_que_e_a' },
-  { q: 'interacoes_faq.severidade_q', a: 'interacoes_faq.severidade_a' },
-  { q: 'interacoes_faq.nao_avaliada_q', a: 'interacoes_faq.nao_avaliada_a' },
-  { q: 'interacoes_faq.substitui_medico_q', a: 'interacoes_faq.substitui_medico_a' },
-  { q: 'interacoes_faq.fontes_q', a: 'interacoes_faq.fontes_a' },
-  { q: 'interacoes_faq.mais_de_dois_q', a: 'interacoes_faq.mais_de_dois_a' },
+function pregnancyBarClass(category) {
+  return `is-${pregnancySeverity(category)}`
+}
+
+// Conteúdo estático do FAQ da calculadora (i18n) — partilhado com o server
+// para o schema FAQPage (ver lib/interacoes-faq.js).
+const FAQ_ITEMS = INTERACOES_FAQ_ITEMS
+
+// Maneiras de filtrar por severidade (chips). Reutiliza os rótulos de severidade.
+const SEVERITY_FILTERS = [
+  { value: 'all', labelKey: 'interacoes_page.filter_todas' },
+  { value: 'critical', labelKey: 'interacoes_page.severidade_critical' },
+  { value: 'moderate', labelKey: 'interacoes_page.severidade_moderate' },
+  { value: 'minor', labelKey: 'interacoes_page.severidade_minor' },
+  { value: 'none', labelKey: 'interacoes_page.severidade_none' },
 ]
 
 // Fontes reais do seed (domínio público, sem violar direitos autorais):
@@ -93,6 +102,7 @@ export default function InteracoesPageClient({
 }) {
   const { t } = useContext(LangContext)
   const [activeTab, setActiveTab] = useState(0)
+  const [severityFilter, setSeverityFilter] = useState('all')
   const [selectedIds, setSelectedIds] = useState(() => {
     if (typeof window === 'undefined') return []
     const params = new URLSearchParams(window.location.search)
@@ -112,6 +122,7 @@ export default function InteracoesPageClient({
   const [query, setQuery] = useState('')
   const [focused, setFocused] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [copiedSummary, setCopiedSummary] = useState(false)
 
   const drugsById = useMemo(() => {
     const map = {}
@@ -145,19 +156,6 @@ export default function InteracoesPageClient({
 
   const clearAll = () => {
     setSelectedIds([])
-  }
-
-  const handleShare = async () => {
-    const slugs = selectedIds.map((id) => drugsById[id]?.slug).filter(Boolean)
-    if (slugs.length === 0) return
-    const url = `${window.location.origin}${window.location.pathname}?farmacos=${slugs.join(',')}`
-    try {
-      await navigator.clipboard.writeText(url)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch {
-      // clipboard indisponível — ignora silenciosamente
-    }
   }
 
   // Resultados:
@@ -198,15 +196,6 @@ export default function InteracoesPageClient({
     })
   }, [selectedIds, interactions, drugsById])
 
-  const counts = useMemo(() => {
-    const c = { critical: 0, moderate: 0, minor: 0, none: 0, unknown: 0 }
-    results.forEach((p) => {
-      const s = p.interaction ? p.interaction.severity : 'unknown'
-      c[s] += 1
-    })
-    return c
-  }, [results])
-
   // Dados por tipo (Fluxo 2), filtrados pelos fármacos selecionados.
   const foodForSelection = useMemo(
     () => foodInteractions.filter((x) => selectedIds.includes(x.drugId)),
@@ -222,12 +211,125 @@ export default function InteracoesPageClient({
     [pregnancyInfo, selectedIds],
   )
 
+  // Filtro de severidade (aplica-se às 4 abas; gravidez mapeia a categoria).
+  const filteredResults = useMemo(
+    () =>
+      results.filter((p) => {
+        const s = p.interaction ? p.interaction.severity : 'unknown'
+        return severityFilter === 'all' || severityFilter === s
+      }),
+    [results, severityFilter],
+  )
+  const filteredFood = useMemo(
+    () => foodForSelection.filter((x) => severityFilter === 'all' || severityFilter === x.severity),
+    [foodForSelection, severityFilter],
+  )
+  const filteredDisease = useMemo(
+    () => diseaseForSelection.filter((x) => severityFilter === 'all' || severityFilter === x.severity),
+    [diseaseForSelection, severityFilter],
+  )
+  const filteredPregnancy = useMemo(
+    () =>
+      pregnancyForSelection.filter(
+        (x) => severityFilter === 'all' || severityFilter === pregnancySeverity(x.pregnancyCategory)
+      ),
+    [pregnancyForSelection, severityFilter],
+  )
+
+  const counts = useMemo(() => {
+    const c = { critical: 0, moderate: 0, minor: 0, none: 0, unknown: 0 }
+    filteredResults.forEach((p) => {
+      const s = p.interaction ? p.interaction.severity : 'unknown'
+      c[s] += 1
+    })
+    return c
+  }, [filteredResults])
+
+  const calcUrl = () => {
+    const slugs = selectedIds.map((id) => drugsById[id]?.slug).filter(Boolean)
+    if (slugs.length === 0) return ''
+    const qs = slugs.length === 1 ? `?farmaco=${slugs[0]}` : `?farmacos=${slugs.join(',')}`
+    return `${window.location.origin}${window.location.pathname}${qs}`
+  }
+
+  const handleShare = async () => {
+    const url = calcUrl()
+    if (!url) return
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // clipboard indisponível — ignora silenciosamente
+    }
+  }
+
+  const handleCopySummary = async () => {
+    if (selectedIds.length === 0) return
+    try {
+      await navigator.clipboard.writeText(buildSummaryText())
+      setCopiedSummary(true)
+      setTimeout(() => setCopiedSummary(false), 2000)
+    } catch {
+      // clipboard indisponível — ignora silenciosamente
+    }
+  }
+
+  const handleWhatsApp = () => {
+    const url = calcUrl()
+    if (!url) return
+    const text = `${t('interacoes_page.hero_title')} — ${t('interacoes_page.farmacos_a_verificar')}: ${selectedIds
+      .map((id) => drugsById[id]?.name)
+      .filter(Boolean)
+      .join(', ')}`
+    window.open(`https://wa.me/?text=${encodeURIComponent(`${text}\n${url}`)}`, '_blank', 'noopener,noreferrer')
+  }
+
+  const handlePrint = () => {
+    if (typeof window !== 'undefined') window.print()
+  }
+
+  // Resumo de texto simples (para copiar/colar) com todas as dimensões.
+  const buildSummaryText = () => {
+    const sev = (s) => t(severityLabelKey(s))
+    const link = calcUrl()
+    const drugLine = selectedIds.map((id) => drugsById[id]?.name).filter(Boolean).join(' + ')
+    const lines = [`${t('interacoes_page.hero_title')} — ${drugLine}`]
+    if (results.length) {
+      lines.push('', t('interacoes_page.tab_farmacos') + ':')
+      results.forEach((p) => {
+        const s = p.interaction ? p.interaction.severity : 'unknown'
+        lines.push(`• ${drugsById[p.a]?.name} + ${drugsById[p.b]?.name} — ${sev(s)}${p.interaction?.summary ? `: ${p.interaction.summary}` : ''}`)
+      })
+    }
+    if (foodForSelection.length) {
+      lines.push('', t('interacoes_page.tab_alimentos') + ':')
+      foodForSelection.forEach((x) => {
+        lines.push(`• ${drugsById[x.drugId]?.name} × ${x.entity} — ${sev(x.severity)}${x.mechanism ? `: ${x.mechanism}` : ''}`)
+      })
+    }
+    if (diseaseForSelection.length) {
+      lines.push('', t('interacoes_page.tab_doencas') + ':')
+      diseaseForSelection.forEach((x) => {
+        lines.push(`• ${drugsById[x.drugId]?.name} × ${x.condition} — ${x.interactionType === 'contraindication' ? t('interacoes_page.tipo_contraindicacao') : t('interacoes_page.tipo_precaucao')} (${sev(x.severity)})${x.reason ? `: ${x.reason}` : ''}`)
+      })
+    }
+    if (pregnancyForSelection.length) {
+      lines.push('', t('interacoes_page.tab_gravidez') + ':')
+      pregnancyForSelection.forEach((x) => {
+        lines.push(`• ${drugsById[x.drugId]?.name} — ${x.pregnancyCategory === 'contraindicated' ? t('interacoes_page.tipo_contraindicacao') : t('interacoes_page.categoria_gravidez')} (${sev(pregnancySeverity(x.pregnancyCategory))})${x.risk ? `: ${x.risk}` : ''}`)
+      })
+    }
+    lines.push('', `${t('interacoes_page.disclaimer')}`, link)
+    return lines.join('\n')
+  }
+
   const hasSelection = selectedIds.length > 0
   const isSingleDrug = selectedIds.length === 1
   const firstName = drugsById[selectedIds[0]]?.name || ''
 
   return (
-    <>
+    <div className="interacoes-page">
       {/* Hero */}
       <section className="events-hero">
         <div className="container-center">
@@ -348,6 +450,46 @@ export default function InteracoesPageClient({
               ))}
             </div>
 
+            {/* Barra de ferramentas: filtro de severidade + ações (copiar/partilhar/imprimir) */}
+            {hasSelection && (
+              <div className="interacoes-toolbar">
+                <div
+                  className="severity-filters"
+                  role="group"
+                  aria-label={t('interacoes_page.filter_aria_label')}
+                >
+                  {SEVERITY_FILTERS.map((f) => (
+                    <button
+                      key={f.value}
+                      className={`severity-filter-chip${severityFilter === f.value ? ' is-active' : ''}`}
+                      aria-pressed={severityFilter === f.value}
+                      onClick={() => setSeverityFilter(f.value)}
+                    >
+                      {t(f.labelKey)}
+                    </button>
+                  ))}
+                </div>
+                <div className="interacoes-actions">
+                  <button className="toolbar-btn" onClick={handleCopySummary}>
+                    {copiedSummary ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
+                    {copiedSummary ? t('interacoes_page.copiado_resumo') : t('interacoes_page.copiar_resumo')}
+                  </button>
+                  <button className="toolbar-btn" onClick={handleShare}>
+                    {copied ? <Check size={14} aria-hidden="true" /> : <Share2 size={14} aria-hidden="true" />}
+                    {copied ? t('interacoes_page.copiado') : t('interacoes_page.partilhar')}
+                  </button>
+                  <button className="toolbar-btn" onClick={handleWhatsApp}>
+                    <MessageCircle size={14} aria-hidden="true" />
+                    {t('interacoes_page.partilhar_whatsapp')}
+                  </button>
+                  <button className="toolbar-btn" onClick={handlePrint}>
+                    <Printer size={14} aria-hidden="true" />
+                    {t('interacoes_page.imprimir')}
+                  </button>
+                </div>
+              </div>
+            )}
+
             {!hasSelection ? (
               <div className="results-empty">
                 <div className="search-empty-icon">
@@ -375,6 +517,13 @@ export default function InteracoesPageClient({
                           : t('interacoes_page.adicionar_pelo_menos')}
                       </p>
                     </div>
+                  ) : filteredResults.length === 0 ? (
+                    <div className="results-empty">
+                      <div className="search-empty-icon">
+                        <BookOpen size={28} aria-hidden="true" />
+                      </div>
+                      <p>{t('interacoes_page.filter_sem_resultados')}</p>
+                    </div>
                   ) : (
                     <>
                       <div className="results-header">
@@ -384,7 +533,7 @@ export default function InteracoesPageClient({
                             : t('interacoes_page.resultados')}
                         </div>
                         <div className="results-count">
-                          {results.length} {t('interacoes_page.interacoes_encontradas')}
+                          {filteredResults.length} {t('interacoes_page.interacoes_encontradas')}
                         </div>
                       </div>
 
@@ -420,17 +569,9 @@ export default function InteracoesPageClient({
                           if (!d) return null
                           return <span key={id} className="drug-tag">{d.name}</span>
                         })}
-                        <button className="share-btn" onClick={handleShare}>
-                          {copied ? (
-                            <Check size={13} aria-hidden="true" />
-                          ) : (
-                            <Share2 size={13} aria-hidden="true" />
-                          )}
-                          {copied ? t('interacoes_page.copiado') : t('interacoes_page.partilhar')}
-                        </button>
                       </div>
 
-                      {results.map((pair) => {
+                      {filteredResults.map((pair) => {
                         const drugA = drugsById[pair.a]
                         const drugB = drugsById[pair.b]
                         const inter = pair.interaction
@@ -534,6 +675,13 @@ export default function InteracoesPageClient({
                       </div>
                       <p>{t('interacoes_page.sem_alimentos_tab')}</p>
                     </div>
+                  ) : filteredFood.length === 0 ? (
+                    <div className="results-empty">
+                      <div className="search-empty-icon">
+                        <Apple size={28} aria-hidden="true" />
+                      </div>
+                      <p>{t('interacoes_page.filter_sem_resultados')}</p>
+                    </div>
                   ) : (
                     <>
                       <div className="results-header">
@@ -543,10 +691,10 @@ export default function InteracoesPageClient({
                             : t('interacoes_page.tab_alimentos')}
                         </div>
                         <div className="results-count">
-                          {foodForSelection.length} {t('interacoes_page.interacoes_encontradas')}
+                          {filteredFood.length} {t('interacoes_page.interacoes_encontradas')}
                         </div>
                       </div>
-                      {foodForSelection.map((item) => {
+                      {filteredFood.map((item) => {
                         const Icon = SEVERITY_META[item.severity]?.icon || Info
                         const drugName = drugsById[item.drugId]?.name || '—'
                         return (
@@ -609,6 +757,13 @@ export default function InteracoesPageClient({
                       </div>
                       <p>{t('interacoes_page.sem_doencas_tab')}</p>
                     </div>
+                  ) : filteredDisease.length === 0 ? (
+                    <div className="results-empty">
+                      <div className="search-empty-icon">
+                        <HeartPulse size={28} aria-hidden="true" />
+                      </div>
+                      <p>{t('interacoes_page.filter_sem_resultados')}</p>
+                    </div>
                   ) : (
                     <>
                       <div className="results-header">
@@ -618,10 +773,10 @@ export default function InteracoesPageClient({
                             : t('interacoes_page.tab_doencas')}
                         </div>
                         <div className="results-count">
-                          {diseaseForSelection.length} {t('interacoes_page.interacoes_encontradas')}
+                          {filteredDisease.length} {t('interacoes_page.interacoes_encontradas')}
                         </div>
                       </div>
-                      {diseaseForSelection.map((item) => {
+                      {filteredDisease.map((item) => {
                         const drugName = drugsById[item.drugId]?.name || '—'
                         const isCI = item.interactionType === 'contraindication'
                         return (
@@ -686,6 +841,13 @@ export default function InteracoesPageClient({
                       </div>
                       <p>{t('interacoes_page.sem_gravidez_tab')}</p>
                     </div>
+                  ) : filteredPregnancy.length === 0 ? (
+                    <div className="results-empty">
+                      <div className="search-empty-icon">
+                        <Baby size={28} aria-hidden="true" />
+                      </div>
+                      <p>{t('interacoes_page.filter_sem_resultados')}</p>
+                    </div>
                   ) : (
                     <>
                       <div className="results-header">
@@ -695,10 +857,10 @@ export default function InteracoesPageClient({
                             : t('interacoes_page.tab_gravidez')}
                         </div>
                         <div className="results-count">
-                          {pregnancyForSelection.length} {t('interacoes_page.interacoes_encontradas')}
+                          {filteredPregnancy.length} {t('interacoes_page.interacoes_encontradas')}
                         </div>
                       </div>
-                      {pregnancyForSelection.map((item) => {
+                      {filteredPregnancy.map((item) => {
                         const drugName = drugsById[item.drugId]?.name || '—'
                         const isCI = item.pregnancyCategory === 'contraindicated'
                         return (
@@ -807,6 +969,6 @@ export default function InteracoesPageClient({
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }

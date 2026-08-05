@@ -1,4 +1,5 @@
 import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
+import { buildInteractionCheckerSchema } from '@/lib/seo'
 import {
   getPublicDrugs,
   getPublishedInteractions,
@@ -34,14 +35,26 @@ export default async function InteracoesPage({ params }) {
       getPublishedDiseaseInteractions(safeLang),
       getPublishedPregnancyInfo(safeLang),
     ])
+  const translations = loadTranslations(safeLang)
+  const tFn = (key) => t(translations, key)
+  const schemas = buildInteractionCheckerSchema(tFn, safeLang)
   return (
-    <InteracoesPageClient
-      lang={safeLang}
-      drugs={drugs}
-      interactions={interactions}
-      foodInteractions={foodInteractions}
-      diseaseInteractions={diseaseInteractions}
-      pregnancyInfo={pregnancyInfo}
-    />
+    <>
+      {schemas.map((schema, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      ))}
+      <InteracoesPageClient
+        lang={safeLang}
+        drugs={drugs}
+        interactions={interactions}
+        foodInteractions={foodInteractions}
+        diseaseInteractions={diseaseInteractions}
+        pregnancyInfo={pregnancyInfo}
+      />
+    </>
   )
 }

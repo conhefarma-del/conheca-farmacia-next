@@ -1,0 +1,73 @@
+{
+  "slug": "analises-clinicas",
+  "nome": "Análises Clínicas e Saúde Pública",
+  "duracaoAnos": 4,
+  "descricao": "Guia de estudo baseado no currículo ISIA (única fonte com grade completa). Curso de 4 anos focado em diagnóstico laboratorial e saúde pública.",
+  "universidadesReferencia": [
+    { "nome": "ISIA", "url": "https://isia.co.ao/cursos", "duracao": 4 },
+    { "nome": "UPRA", "url": "https://www.upra.ao/licenciaturas", "duracao": 0, "nota": "Não oferece" },
+    { "nome": "UNIBELAS", "url": "https://unibelas.online/courses/analises-clinica/", "duracao": 0, "nota": "Link apenas" },
+    { "nome": "PIAGET", "url": "https://www.unipiaget-angola.org/", "duracao": 0, "nota": "Não oferece" }
+  ],
+  "ano1": {
+    "nome": "1º Ano - Base Científica Laboratorial",
+    "disciplinas": [
+      { "nome": "Anatomia Humana I e II", "frequencia": "1/1", "essencial": true },
+      { "nome": "Biologia Celular e Molecular / Genética Humana", "frequencia": "1/1", "essencial": true },
+      { "nome": "Histologia e Embriologia Humana I/II", "frequencia": "1/1", "essencial": true },
+      { "nome": "Química Geral e Orgânica", "frequencia": "1/1", "essencial": true },
+      { "nome": "Bioestatística", "frequencia": "1/1", "essencial": true },
+      { "nome": "Biofísica", "frequencia": "1/1", "essencial": true },
+      { "nome": "Microbiologia (Introdução)", "frequencia": "1/1", "essencial": true },
+      { "nome": "Metodologia de Investigação Científica", "frequencia": "1/1", "essencial": true },
+      { "nome": "Língua Portuguesa I e II", "frequencia": "1/1", "essencial": true },
+      { "nome": "Sociologia e Antropologia Aplicada à Saúde", "frequencia": "1/1", "essencial": true },
+      { "nome": "Ética e Legislação / Biossegurança (Introdução)", "frequencia": "1/1", "essencial": true },
+      { "nome": "Informática / Tecnologia Básica Laboratorial", "frequencia": "1/1", "essencial": true }
+    ]
+  },
+  "ano2": {
+    "nome": "2º Ano - Ciências Laboratoriais Básicas",
+    "disciplinas": [
+      { "nome": "Bioquímica Geral e Clínica I", "frequencia": "1/1", "essencial": true },
+      { "nome": "Fisiologia Humana I e II", "frequencia": "1/1", "essencial": true },
+      { "nome": "Hematologia I e II", "frequencia": "1/1", "essencial": true },
+      { "nome": "Microbiologia / Bacteriologia", "frequencia": "1/1", "essencial": true },
+      { "nome": "Imunologia I e II", "frequencia": "1/1", "essencial": true },
+      { "nome": "Parasitologia", "frequencia": "1/1", "essencial": true },
+      { "nome": "Biossegurança", "frequencia": "1/1", "essencial": true },
+      { "nome": "Tecnologia Instrumental", "frequencia": "1/1", "essencial": true },
+      { "nome": "Primeiros Socorros", "frequencia": "1/1", "essencial": true },
+      { "nome": "Psicologia", "frequencia": "1/1", "essencial": false }
+    ]
+  },
+  "ano3": {
+    "nome": "3º Ano - Análises Clínicas Especializadas e Saúde Pública",
+    "disciplinas": [
+      { "nome": "Bioquímica Clínica II", "frequencia": "1/1", "essencial": true },
+      { "nome": "Hemoterapia / Banco de Sangue", "frequencia": "1/1", "essencial": true },
+      { "nome": "Virologia e Micologia", "frequencia": "1/1", "essencial": true },
+      { "nome": "Urinálise e Outros Fluidos Orgânicos", "frequencia": "1/1", "essencial": true },
+      { "nome": "Análises e Tratamento de Águas e Alimentos (Bromatologia)", "frequencia": "1/1", "essencial": true },
+      { "nome": "Controle de Qualidade e Amostragem", "frequencia": "1/1", "essencial": true },
+      { "nome": "Toxicologia", "frequencia": "1/1", "essencial": true },
+      { "nome": "Epidemiologia / Saúde Ambiental", "frequencia": "1/1", "essencial": true },
+      { "nome": "Doenças Emergentes, Grandes Endemias e Pandemia", "frequencia": "1/1", "essencial": true },
+      { "nome": "Gestão Hospitalar / Gestão de Laboratório", "frequencia": "1/1", "essencial": true },
+      { "nome": "Farmacologia (Básica para Interpretação)", "frequencia": "1/1", "essencial": true },
+      { "nome": "Pedagogia e Didática", "frequencia": "1/1", "essencial": true },
+      { "nome": "Biopatologia", "frequencia": "1/1", "essencial": true }
+    ]
+  },
+  "ano4": {
+    "nome": "4º Ano - Prática Profissional e TCC",
+    "disciplinas": [
+      { "nome": "Estágio Curricular Supervisionado I e II", "frequencia": "1/1", "essencial": true },
+      { "nome": "Gestão de Laboratório de Análises Clínicas", "frequencia": "1/1", "essencial": true },
+      { "nome": "Diagnóstico de Doenças Tropicais Negligenciadas", "frequencia": "1/1", "essencial": true },
+      { "nome": "Metodologia de Investigação Científica Avançada", "frequencia": "1/1", "essencial": true },
+      { "nome": "Trabalho de Fim de Curso / Monografia", "frequencia": "1/1", "essencial": true },
+      { "nome": "Elaboração de Monografias / Redação Científica", "frequencia": "1/1", "essencial": true }
+    ]
+  }
+}
