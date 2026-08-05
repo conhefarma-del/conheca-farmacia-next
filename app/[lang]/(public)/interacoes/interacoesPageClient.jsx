@@ -42,6 +42,7 @@ function severityLabelKey(severity) {
 // Conteúdo estático do FAQ da calculadora (i18n). Espelha o padrão de
 // <details> nativo já usado em components/faq, mas sem depender da BD.
 const FAQ_ITEMS = [
+  { q: 'interacoes_faq.quais_tipos_q', a: 'interacoes_faq.quais_tipos_a' },
   { q: 'interacoes_faq.o_que_e_q', a: 'interacoes_faq.o_que_e_a' },
   { q: 'interacoes_faq.severidade_q', a: 'interacoes_faq.severidade_a' },
   { q: 'interacoes_faq.nao_avaliada_q', a: 'interacoes_faq.nao_avaliada_a' },
@@ -61,6 +62,8 @@ const SOURCES = [
   { name: 'interacoes_page.fonte_pubmed', url: 'https://pubmed.ncbi.nlm.nih.gov' },
   { name: 'interacoes_page.fonte_ema', url: 'https://www.ema.europa.eu' },
   { name: 'interacoes_page.fonte_infarmed', url: 'https://www.infarmed.pt' },
+  { name: 'interacoes_page.fonte_emcuk', url: 'https://www.medicines.org.uk/emc' },
+  { name: 'interacoes_page.fonte_healthcanada', url: 'https://health-products.canada.ca/dpd-bdpp/' },
 ]
 
 // Abas por tipo de interação (Fluxo 1 = fármaco-fármaco; Fluxo 2 = o resto).
