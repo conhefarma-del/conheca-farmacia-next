@@ -3,13 +3,17 @@
 import { useContext, useMemo, useState } from 'react'
 import {
   AlertTriangle,
+  Apple,
   ArrowUpRight,
+  Baby,
   BookOpen,
   Check,
   CheckCircle2,
   ChevronDown,
+  HeartPulse,
   Info,
   Library,
+  Pill,
   Plus,
   Search,
   Share2,
@@ -59,8 +63,24 @@ const SOURCES = [
   { name: 'interacoes_page.fonte_infarmed', url: 'https://www.infarmed.pt' },
 ]
 
-export default function InteracoesPageClient({ lang, drugs, interactions }) {
+// Abas por tipo de interação (Fluxo 1 = fármaco-fármaco; Fluxo 2 = o resto).
+const TYPES_TABS = [
+  { key: 'tab_farmacos', icon: Pill },
+  { key: 'tab_alimentos', icon: Apple },
+  { key: 'tab_doencas', icon: HeartPulse },
+  { key: 'tab_gravidez', icon: Baby },
+]
+
+export default function InteracoesPageClient({
+  lang,
+  drugs,
+  interactions,
+  foodInteractions = [],
+  diseaseInteractions = [],
+  pregnancyInfo = [],
+}) {
   const { t } = useContext(LangContext)
+  const [activeTab, setActiveTab] = useState(0)
   const [selectedIds, setSelectedIds] = useState(() => {
     if (typeof window === 'undefined') return []
     const params = new URLSearchParams(window.location.search)
@@ -175,6 +195,21 @@ export default function InteracoesPageClient({ lang, drugs, interactions }) {
     return c
   }, [results])
 
+  // Dados por tipo (Fluxo 2), filtrados pelos fármacos selecionados.
+  const foodForSelection = useMemo(
+    () => foodInteractions.filter((x) => selectedIds.includes(x.drugId)),
+    [foodInteractions, selectedIds],
+  )
+  const diseaseForSelection = useMemo(
+    () => diseaseInteractions.filter((x) => selectedIds.includes(x.drugId)),
+    [diseaseInteractions, selectedIds],
+  )
+  // Gestação é 1:1 por fármaco (a chave é drugId).
+  const pregnancyForSelection = useMemo(
+    () => pregnancyInfo.filter((x) => selectedIds.includes(x.drugId)),
+    [pregnancyInfo, selectedIds],
+  )
+
   const hasSelection = selectedIds.length > 0
   const isSingleDrug = selectedIds.length === 1
   const firstName = drugsById[selectedIds[0]]?.name || ''
@@ -279,6 +314,28 @@ export default function InteracoesPageClient({ lang, drugs, interactions }) {
 
           {/* Painel de resultados */}
           <main className="calc-results-panel">
+            {/* Barra de abas por tipo de interação */}
+            <div
+              className="calc-type-tabs faq-tab-bar"
+              role="tablist"
+              aria-label={t('interacoes_page.tabs_aria_label')}
+            >
+              {TYPES_TABS.map((tab, i) => (
+                <button
+                  key={tab.key}
+                  role="tab"
+                  id={`type-tab-${i}`}
+                  aria-selected={activeTab === i}
+                  aria-controls={`type-panel-${i}`}
+                  className={`faq-tab${activeTab === i ? ' faq-tab--active' : ''}`}
+                  onClick={() => setActiveTab(i)}
+                >
+                  <tab.icon size={15} aria-hidden="true" className="calc-type-tab-icon" />
+                  {t(`interacoes_page.${tab.key}`)}
+                </button>
+              ))}
+            </div>
+
             {!hasSelection ? (
               <div className="results-empty">
                 <div className="search-empty-icon">
@@ -286,158 +343,415 @@ export default function InteracoesPageClient({ lang, drugs, interactions }) {
                 </div>
                 <p>{t('interacoes_page.adicionar_pelo_menos')}</p>
               </div>
-            ) : results.length === 0 ? (
-              <div className="results-empty">
-                <div className="search-empty-icon">
-                  <BookOpen size={28} aria-hidden="true" />
-                </div>
-                <p>
-                  {isSingleDrug
-                    ? t('interacoes_page.sem_interacoes_farmaco', { name: firstName })
-                    : t('interacoes_page.adicionar_pelo_menos')}
-                </p>
-              </div>
             ) : (
               <>
-                <div className="results-header">
-                  <div className="results-title">
-                    {isSingleDrug
-                      ? t('interacoes_page.interacoes_de', { name: firstName })
-                      : t('interacoes_page.resultados')}
-                  </div>
-                  <div className="results-count">
-                    {results.length} {t('interacoes_page.interacoes_encontradas')}
-                  </div>
-                </div>
-
-                {(counts.critical > 0 || counts.moderate > 0 || counts.minor > 0) && (
-                  <div className="interaction-summary-bar">
-                    {counts.critical > 0 && (
-                      <span className="summary-chip is-critical">
-                        <ShieldAlert size={13} aria-hidden="true" />
-                        {counts.critical} {t('interacoes_page.severidade_critical')}
-                        {counts.critical !== 1 ? 's' : ''}
-                      </span>
-                    )}
-                    {counts.moderate > 0 && (
-                      <span className="summary-chip is-moderate">
-                        <AlertTriangle size={13} aria-hidden="true" />
-                        {counts.moderate} {t('interacoes_page.severidade_moderate')}
-                        {counts.moderate !== 1 ? 's' : ''}
-                      </span>
-                    )}
-                    {counts.minor > 0 && (
-                      <span className="summary-chip is-minor">
-                        <Info size={13} aria-hidden="true" />
-                        {counts.minor} {t('interacoes_page.severidade_minor')}
-                        {counts.minor !== 1 ? 's' : ''}
-                      </span>
-                    )}
-                  </div>
-                )}
-
-                <div className="selected-drugs-bar">
-                  {selectedIds.map((id) => {
-                    const d = drugsById[id]
-                    if (!d) return null
-                    return <span key={id} className="drug-tag">{d.name}</span>
-                  })}
-                  <button className="share-btn" onClick={handleShare}>
-                    {copied ? (
-                      <Check size={13} aria-hidden="true" />
-                    ) : (
-                      <Share2 size={13} aria-hidden="true" />
-                    )}
-                    {copied ? t('interacoes_page.copiado') : t('interacoes_page.partilhar')}
-                  </button>
-                </div>
-
-                {results.map((pair) => {
-                  const drugA = drugsById[pair.a]
-                  const drugB = drugsById[pair.b]
-                  const inter = pair.interaction
-                  const severity = inter ? inter.severity : 'unknown'
-                  const Icon = SEVERITY_META[severity].icon
-                  const hasDetails = inter && (
-                    inter.mechanism || inter.monitoring || inter.redFlags ||
-                    inter.management || inter.source
-                  )
-
-                  return (
-                    <div key={`${pair.a}-${pair.b}`} className={`interaction-card is-${severity}`}>
-                      <div className="card-header">
-                        <div className="card-drugs">
-                          <span className="card-drug">{drugA?.name || '—'}</span>
-                          <span className="card-vs">+</span>
-                          <span className="card-drug">{drugB?.name || '—'}</span>
+                {/* ---- Aba 0: Fármaco-fármaco ---- */}
+                <div
+                  role="tabpanel"
+                  id="type-panel-0"
+                  className="calc-tab-panel"
+                  hidden={activeTab !== 0}
+                >
+                  {results.length === 0 ? (
+                    <div className="results-empty">
+                      <div className="search-empty-icon">
+                        <BookOpen size={28} aria-hidden="true" />
+                      </div>
+                      <p>
+                        {isSingleDrug
+                          ? t('interacoes_page.sem_interacoes_farmaco', { name: firstName })
+                          : t('interacoes_page.adicionar_pelo_menos')}
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="results-header">
+                        <div className="results-title">
+                          {isSingleDrug
+                            ? t('interacoes_page.interacoes_de', { name: firstName })
+                            : t('interacoes_page.resultados')}
                         </div>
-                        <span className={`severity-badge is-${severity}`}>
-                          <Icon size={12} aria-hidden="true" />
-                          {t(severityLabelKey(severity))}
-                        </span>
+                        <div className="results-count">
+                          {results.length} {t('interacoes_page.interacoes_encontradas')}
+                        </div>
                       </div>
 
-                      <p className="card-description">
-                        {inter ? inter.summary : t('interacoes_page.sem_registo_desc')}
-                      </p>
+                      {(counts.critical > 0 || counts.moderate > 0 || counts.minor > 0) && (
+                        <div className="interaction-summary-bar">
+                          {counts.critical > 0 && (
+                            <span className="summary-chip is-critical">
+                              <ShieldAlert size={13} aria-hidden="true" />
+                              {counts.critical} {t('interacoes_page.severidade_critical')}
+                              {counts.critical !== 1 ? 's' : ''}
+                            </span>
+                          )}
+                          {counts.moderate > 0 && (
+                            <span className="summary-chip is-moderate">
+                              <AlertTriangle size={13} aria-hidden="true" />
+                              {counts.moderate} {t('interacoes_page.severidade_moderate')}
+                              {counts.moderate !== 1 ? 's' : ''}
+                            </span>
+                          )}
+                          {counts.minor > 0 && (
+                            <span className="summary-chip is-minor">
+                              <Info size={13} aria-hidden="true" />
+                              {counts.minor} {t('interacoes_page.severidade_minor')}
+                              {counts.minor !== 1 ? 's' : ''}
+                            </span>
+                          )}
+                        </div>
+                      )}
 
-                      {hasDetails && (
-                        <details className="card-details">
-                          <summary className="card-toggle">
-                            {t('interacoes_page.expandir')}
-                            <ChevronDown size={14} aria-hidden="true" />
-                          </summary>
-                          <div className="interaction-detail">
-                            {inter.mechanism && (
-                              <div className="detail-block">
-                                <h4 className="detail-title">{t('interacoes_page.mecanismo')}</h4>
-                                <p>{inter.mechanism}</p>
+                      <div className="selected-drugs-bar">
+                        {selectedIds.map((id) => {
+                          const d = drugsById[id]
+                          if (!d) return null
+                          return <span key={id} className="drug-tag">{d.name}</span>
+                        })}
+                        <button className="share-btn" onClick={handleShare}>
+                          {copied ? (
+                            <Check size={13} aria-hidden="true" />
+                          ) : (
+                            <Share2 size={13} aria-hidden="true" />
+                          )}
+                          {copied ? t('interacoes_page.copiado') : t('interacoes_page.partilhar')}
+                        </button>
+                      </div>
+
+                      {results.map((pair) => {
+                        const drugA = drugsById[pair.a]
+                        const drugB = drugsById[pair.b]
+                        const inter = pair.interaction
+                        const severity = inter ? inter.severity : 'unknown'
+                        const Icon = SEVERITY_META[severity].icon
+                        const hasDetails = inter && (
+                          inter.mechanism || inter.monitoring || inter.redFlags ||
+                          inter.management || inter.source
+                        )
+
+                        return (
+                          <div key={`${pair.a}-${pair.b}`} className={`interaction-card is-${severity}`}>
+                            <div className="card-header">
+                              <div className="card-drugs">
+                                <span className="card-drug">{drugA?.name || '—'}</span>
+                                <span className="card-vs">+</span>
+                                <span className="card-drug">{drugB?.name || '—'}</span>
                               </div>
-                            )}
-                            {inter.monitoring && (
-                              <div className="detail-block">
-                                <h4 className="detail-title">{t('interacoes_page.monitorizacao')}</h4>
-                                <p>{inter.monitoring}</p>
-                              </div>
-                            )}
-                            {inter.redFlags && (
-                              <div className="detail-block detail-red-flags">
-                                <h4 className="detail-title">
-                                  <ShieldAlert size={13} aria-hidden="true" />
-                                  {t('interacoes_page.sinais_alerta')}
-                                </h4>
-                                <p>{inter.redFlags}</p>
-                              </div>
-                            )}
-                            {inter.management && (
-                              <div className="detail-block detail-recommendation">
-                                <h4 className="detail-title">{t('interacoes_page.recomendacao')}</h4>
-                                <p>{inter.management}</p>
-                              </div>
-                            )}
-                            {inter.source && (
-                              <div className="detail-block detail-source">
-                                <h4 className="detail-title">{t('interacoes_page.fonte')}</h4>
-                                <p>
-                                  {inter.source}
-                                  {inter.sourceUrl && (
-                                    <a
-                                      href={inter.sourceUrl}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                    >
-                                      <ArrowUpRight size={13} aria-hidden="true" />
-                                    </a>
+                              <span className={`severity-badge is-${severity}`}>
+                                <Icon size={12} aria-hidden="true" />
+                                {t(severityLabelKey(severity))}
+                              </span>
+                            </div>
+
+                            <p className="card-description">
+                              {inter ? inter.summary : t('interacoes_page.sem_registo_desc')}
+                            </p>
+
+                            {hasDetails && (
+                              <details className="card-details">
+                                <summary className="card-toggle">
+                                  {t('interacoes_page.expandir')}
+                                  <ChevronDown size={14} aria-hidden="true" />
+                                </summary>
+                                <div className="interaction-detail">
+                                  {inter.mechanism && (
+                                    <div className="detail-block">
+                                      <h4 className="detail-title">{t('interacoes_page.mecanismo')}</h4>
+                                      <p>{inter.mechanism}</p>
+                                    </div>
                                   )}
-                                </p>
-                              </div>
+                                  {inter.monitoring && (
+                                    <div className="detail-block">
+                                      <h4 className="detail-title">{t('interacoes_page.monitorizacao')}</h4>
+                                      <p>{inter.monitoring}</p>
+                                    </div>
+                                  )}
+                                  {inter.redFlags && (
+                                    <div className="detail-block detail-red-flags">
+                                      <h4 className="detail-title">
+                                        <ShieldAlert size={13} aria-hidden="true" />
+                                        {t('interacoes_page.sinais_alerta')}
+                                      </h4>
+                                      <p>{inter.redFlags}</p>
+                                    </div>
+                                  )}
+                                  {inter.management && (
+                                    <div className="detail-block detail-recommendation">
+                                      <h4 className="detail-title">{t('interacoes_page.recomendacao')}</h4>
+                                      <p>{inter.management}</p>
+                                    </div>
+                                  )}
+                                  {inter.source && (
+                                    <div className="detail-block detail-source">
+                                      <h4 className="detail-title">{t('interacoes_page.fonte')}</h4>
+                                      <p>
+                                        {inter.source}
+                                        {inter.sourceUrl && (
+                                          <a
+                                            href={inter.sourceUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                          >
+                                            <ArrowUpRight size={13} aria-hidden="true" />
+                                          </a>
+                                        )}
+                                      </p>
+                                    </div>
+                                  )}
+                                </div>
+                              </details>
                             )}
                           </div>
-                        </details>
-                      )}
+                        )
+                      })}
+                    </>
+                  )}
+                </div>
+
+                {/* ---- Aba 1: Alimento / Bebida ---- */}
+                <div
+                  role="tabpanel"
+                  id="type-panel-1"
+                  className="calc-tab-panel"
+                  hidden={activeTab !== 1}
+                >
+                  {foodForSelection.length === 0 ? (
+                    <div className="results-empty">
+                      <div className="search-empty-icon">
+                        <Apple size={28} aria-hidden="true" />
+                      </div>
+                      <p>{t('interacoes_page.sem_alimentos_tab')}</p>
                     </div>
-                  )
-                })}
+                  ) : (
+                    <>
+                      <div className="results-header">
+                        <div className="results-title">
+                          {isSingleDrug
+                            ? t('interacoes_page.interacoes_de', { name: firstName })
+                            : t('interacoes_page.tab_alimentos')}
+                        </div>
+                        <div className="results-count">
+                          {foodForSelection.length} {t('interacoes_page.interacoes_encontradas')}
+                        </div>
+                      </div>
+                      {foodForSelection.map((item) => {
+                        const Icon = SEVERITY_META[item.severity]?.icon || Info
+                        const drugName = drugsById[item.drugId]?.name || '—'
+                        return (
+                          <div
+                            key={`${item.drugId}-${item.entitySlug}`}
+                            className={`interaction-card is-${item.severity}`}
+                          >
+                            <div className="card-header">
+                              <div className="card-drugs">
+                                <span className="card-drug">{drugName}</span>
+                                <span className="card-vs">×</span>
+                                <span className="card-drug">{item.entity}</span>
+                              </div>
+                              <span className={`severity-badge is-${item.severity}`}>
+                                <Icon size={12} aria-hidden="true" />
+                                {t(severityLabelKey(item.severity))}
+                              </span>
+                            </div>
+                            <details className="card-details">
+                              <summary className="card-toggle">
+                                {t('interacoes_page.expandir')}
+                                <ChevronDown size={14} aria-hidden="true" />
+                              </summary>
+                              <div className="interaction-detail">
+                                {item.mechanism && (
+                                  <div className="detail-block">
+                                    <h4 className="detail-title">{t('interacoes_page.mecanismo')}</h4>
+                                    <p>{item.mechanism}</p>
+                                  </div>
+                                )}
+                                {item.advice && (
+                                  <div className="detail-block detail-recommendation">
+                                    <h4 className="detail-title">{t('interacoes_page.recomendacao')}</h4>
+                                    <p>{item.advice}</p>
+                                  </div>
+                                )}
+                                {item.source && (
+                                  <div className="detail-block detail-source">
+                                    <h4 className="detail-title">{t('interacoes_page.fonte')}</h4>
+                                    <p>{item.source}</p>
+                                  </div>
+                                )}
+                              </div>
+                            </details>
+                          </div>
+                        )
+                      })}
+                    </>
+                  )}
+                </div>
+
+                {/* ---- Aba 2: Doença ---- */}
+                <div
+                  role="tabpanel"
+                  id="type-panel-2"
+                  className="calc-tab-panel"
+                  hidden={activeTab !== 2}
+                >
+                  {diseaseForSelection.length === 0 ? (
+                    <div className="results-empty">
+                      <div className="search-empty-icon">
+                        <HeartPulse size={28} aria-hidden="true" />
+                      </div>
+                      <p>{t('interacoes_page.sem_doencas_tab')}</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="results-header">
+                        <div className="results-title">
+                          {isSingleDrug
+                            ? t('interacoes_page.interacoes_de', { name: firstName })
+                            : t('interacoes_page.tab_doencas')}
+                        </div>
+                        <div className="results-count">
+                          {diseaseForSelection.length} {t('interacoes_page.interacoes_encontradas')}
+                        </div>
+                      </div>
+                      {diseaseForSelection.map((item) => {
+                        const drugName = drugsById[item.drugId]?.name || '—'
+                        const isCI = item.interactionType === 'contraindication'
+                        return (
+                          <div
+                            key={`${item.drugId}-${item.conditionSlug}`}
+                            className={`interaction-card is-${item.severity}`}
+                          >
+                            <div className="card-header">
+                              <div className="card-drugs">
+                                <span className="card-drug">{drugName}</span>
+                                <span className="card-vs">×</span>
+                                <span className="card-drug">{item.condition}</span>
+                              </div>
+                              <span className={`type-badge ${isCI ? 'is-ci' : 'is-precaution'}`}>
+                                <HeartPulse size={12} aria-hidden="true" />
+                                {isCI
+                                  ? t('interacoes_page.tipo_contraindicacao')
+                                  : t('interacoes_page.tipo_precaucao')}
+                              </span>
+                            </div>
+                            <details className="card-details">
+                              <summary className="card-toggle">
+                                {t('interacoes_page.expandir')}
+                                <ChevronDown size={14} aria-hidden="true" />
+                              </summary>
+                              <div className="interaction-detail">
+                                {item.reason && (
+                                  <div className="detail-block">
+                                    <h4 className="detail-title">{t('interacoes_page.motivo')}</h4>
+                                    <p>{item.reason}</p>
+                                  </div>
+                                )}
+                                {item.advice && (
+                                  <div className="detail-block detail-recommendation">
+                                    <h4 className="detail-title">{t('interacoes_page.recomendacao')}</h4>
+                                    <p>{item.advice}</p>
+                                  </div>
+                                )}
+                                {item.source && (
+                                  <div className="detail-block detail-source">
+                                    <h4 className="detail-title">{t('interacoes_page.fonte')}</h4>
+                                    <p>{item.source}</p>
+                                  </div>
+                                )}
+                              </div>
+                            </details>
+                          </div>
+                        )
+                      })}
+                    </>
+                  )}
+                </div>
+
+                {/* ---- Aba 3: Gestação ---- */}
+                <div
+                  role="tabpanel"
+                  id="type-panel-3"
+                  className="calc-tab-panel"
+                  hidden={activeTab !== 3}
+                >
+                  {pregnancyForSelection.length === 0 ? (
+                    <div className="results-empty">
+                      <div className="search-empty-icon">
+                        <Baby size={28} aria-hidden="true" />
+                      </div>
+                      <p>{t('interacoes_page.sem_gravidez_tab')}</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="results-header">
+                        <div className="results-title">
+                          {isSingleDrug
+                            ? t('interacoes_page.interacoes_de', { name: firstName })
+                            : t('interacoes_page.tab_gravidez')}
+                        </div>
+                        <div className="results-count">
+                          {pregnancyForSelection.length} {t('interacoes_page.interacoes_encontradas')}
+                        </div>
+                      </div>
+                      {pregnancyForSelection.map((item) => {
+                        const drugName = drugsById[item.drugId]?.name || '—'
+                        const isCI = item.pregnancyCategory === 'contraindicated'
+                        return (
+                          <div key={item.drugId} className="interaction-card">
+                            <div className="card-header">
+                              <div className="card-drugs">
+                                <span className="card-drug">{drugName}</span>
+                              </div>
+                              <span className={`type-badge ${isCI ? 'is-ci' : 'is-pregnancy'}`}>
+                                <Baby size={12} aria-hidden="true" />
+                                {isCI
+                                  ? t('interacoes_page.tipo_contraindicacao')
+                                  : t('interacoes_page.categoria_gravidez')}
+                              </span>
+                            </div>
+                            <details className="card-details">
+                              <summary className="card-toggle">
+                                {t('interacoes_page.expandir')}
+                                <ChevronDown size={14} aria-hidden="true" />
+                              </summary>
+                              <div className="interaction-detail">
+                                {item.risk && (
+                                  <div className="detail-block">
+                                    <h4 className="detail-title">{t('interacoes_page.categoria_gravidez')}</h4>
+                                    <p>{item.risk}</p>
+                                  </div>
+                                )}
+                                {item.trimester && (
+                                  <div className="detail-block">
+                                    <h4 className="detail-title">{t('interacoes_page.trimestre')}</h4>
+                                    <p>{item.trimester}</p>
+                                  </div>
+                                )}
+                                {item.lactation && (
+                                  <div className="detail-block">
+                                    <h4 className="detail-title">{t('interacoes_page.lactacao')}</h4>
+                                    <p>{item.lactation}</p>
+                                  </div>
+                                )}
+                                {item.contraception && (
+                                  <div className="detail-block detail-recommendation">
+                                    <h4 className="detail-title">{t('interacoes_page.contracepcao')}</h4>
+                                    <p>{item.contraception}</p>
+                                  </div>
+                                )}
+                                {item.source && (
+                                  <div className="detail-block detail-source">
+                                    <h4 className="detail-title">{t('interacoes_page.fonte')}</h4>
+                                    <p>{item.source}</p>
+                                  </div>
+                                )}
+                              </div>
+                            </details>
+                          </div>
+                        )
+                      })}
+                    </>
+                  )}
+                </div>
               </>
             )}
           </main>

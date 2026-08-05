@@ -506,7 +506,22 @@
     "fonte_medlineplus": "MedlinePlus — drug monographs (NIH/NLM)",
     "fonte_pubmed": "PubMed — indexed biomedical literature (NIH/NLM)",
     "fonte_ema": "EMA — European medicines information in Portuguese",
-    "fonte_infarmed": "INFARMED — SmPC (official Portuguese portal, via Infomed)"
+    "fonte_infarmed": "INFARMED — SmPC (official Portuguese portal, via Infomed)",
+    "tabs_aria_label": "Interaction types",
+    "tab_farmacos": "Drug–drug",
+    "tab_alimentos": "Food & drink",
+    "tab_doencas": "Diseases",
+    "tab_gravidez": "Pregnancy",
+    "sem_alimentos_tab": "No documented food or drink interactions were found for the selected drugs.",
+    "sem_doencas_tab": "No documented disease interactions were found for the selected drugs.",
+    "sem_gravidez_tab": "No documented pregnancy information was found for the selected drugs.",
+    "tipo_contraindicacao": "Contraindication",
+    "tipo_precaucao": "Precaution",
+    "categoria_gravidez": "Pregnancy risk",
+    "motivo": "Reason",
+    "trimestre": "Trimesters",
+    "lactacao": "Breastfeeding",
+    "contracepcao": "Contraception"
   },
   "interacoes_faq": {
     "title": "Frequently asked questions about the checker",

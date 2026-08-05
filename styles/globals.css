@@ -5232,6 +5232,25 @@ html { scroll-behavior: smooth; }
 /* Painel de resultados */
 .calc-results-panel { min-width: 0; }
 
+/* Barra de abas por tipo de interação (reutiliza .faq-tab-bar; override
+   do sticky que é pensado para a página FAQ). */
+.calc-type-tabs {
+  position: static;
+  top: auto;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  border: 1px solid var(--color-brand-divider);
+  border-bottom: 2px solid var(--color-brand-divider);
+  padding: 0 4px;
+}
+
+.calc-type-tab-icon {
+  margin-right: 6px;
+  vertical-align: -2px;
+}
+
+.calc-tab-panel { min-width: 0; }
+
 .results-empty {
   text-align: center;
   padding: 72px 24px;
@@ -5359,6 +5378,25 @@ html { scroll-behavior: smooth; }
 .severity-badge.is-unknown { background: #f8fafc; color: #475569; border-color: #94a3b8; }
 
 .interaction-card.is-unknown { border-left: 4px solid #94a3b8; }
+
+/* Badge de tipo (contraindicação/precaução/gestação) nas abas do Fluxo 2 */
+.type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.type-badge.is-ci { background: #fef2f2; color: #991b1b; border-color: #dc2626; }
+.type-badge.is-precaution { background: #fffbeb; color: #92400e; border-color: #f59e0b; }
+.type-badge.is-pregnancy { background: #f5f3ff; color: #6d28d9; border-color: #a78bfa; }
 
 .summary-chip.is-unknown { background: #f8fafc; color: #475569; border-color: #94a3b8; }
 
@@ -5550,6 +5588,10 @@ html.dark .summary-chip.is-unknown { background: rgba(148, 163, 184, 0.12); colo
 html.dark .interaction-card.is-unknown { border-left-color: #94a3b8; }
 
 html.dark .results-count { background: rgba(220, 38, 38, 0.12); color: #fca5a5; border-color: rgba(220, 38, 38, 0.5); }
+
+html.dark .type-badge.is-ci { background: rgba(220, 38, 38, 0.12); color: #fca5a5; border-color: rgba(220, 38, 38, 0.5); }
+html.dark .type-badge.is-precaution { background: rgba(245, 158, 11, 0.12); color: #fcd34d; border-color: rgba(245, 158, 11, 0.5); }
+html.dark .type-badge.is-pregnancy { background: rgba(167, 139, 250, 0.14); color: #c4b5fd; border-color: rgba(167, 139, 250, 0.5); }
 
 html.dark .detail-red-flags { background: rgba(220, 38, 38, 0.10); border-color: rgba(220, 38, 38, 0.5); }
 html.dark .detail-red-flags .detail-title,

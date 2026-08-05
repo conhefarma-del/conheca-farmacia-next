@@ -506,7 +506,22 @@
     "fonte_medlineplus": "MedlinePlus — monografias de medicamentos (NIH/NLM)",
     "fonte_pubmed": "PubMed — literatura biomédica indexada (NIH/NLM)",
     "fonte_ema": "EMA — ficha europeia do medicamento em português",
-    "fonte_infarmed": "INFARMED — RCM (portal oficial português, via Infomed)"
+    "fonte_infarmed": "INFARMED — RCM (portal oficial português, via Infomed)",
+    "tabs_aria_label": "Tipos de interação",
+    "tab_farmacos": "Fármaco–fármaco",
+    "tab_alimentos": "Alimentos & bebidas",
+    "tab_doencas": "Doenças",
+    "tab_gravidez": "Gestação",
+    "sem_alimentos_tab": "Não foram encontradas interações documentadas com alimentos ou bebidas para os fármacos selecionados.",
+    "sem_doencas_tab": "Não foram encontradas interações documentadas com doenças para os fármacos selecionados.",
+    "sem_gravidez_tab": "Não foi encontrada informação documentada sobre gestação para os fármacos selecionados.",
+    "tipo_contraindicacao": "Contraindicação",
+    "tipo_precaucao": "Precaução",
+    "categoria_gravidez": "Risco na gestação",
+    "motivo": "Motivo",
+    "trimestre": "Trimestres",
+    "lactacao": "Amamentação",
+    "contracepcao": "Contraceção"
   },
   "interacoes_faq": {
     "title": "Perguntas frequentes sobre a calculadora",
