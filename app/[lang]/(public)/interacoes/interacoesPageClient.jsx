@@ -39,6 +39,15 @@ function severityLabelKey(severity) {
   return `interacoes_page.severidade_${severity}`
 }
 
+// Mapeia a categoria de gestação para a classe de severidade do card
+// (barra lateral colorida). Reutiliza as classes .interaction-card.is-*.
+function pregnancyBarClass(category) {
+  if (category === 'contraindicated') return 'is-critical'
+  if (category === 'caution') return 'is-moderate'
+  if (category === 'compatible') return 'is-none'
+  return 'is-unknown'
+}
+
 // Conteúdo estático do FAQ da calculadora (i18n). Espelha o padrão de
 // <details> nativo já usado em components/faq, mas sem depender da BD.
 const FAQ_ITEMS = [
@@ -556,18 +565,15 @@ export default function InteracoesPageClient({
                                 {t(severityLabelKey(item.severity))}
                               </span>
                             </div>
+                            {item.mechanism && (
+                              <p className="card-description">{item.mechanism}</p>
+                            )}
                             <details className="card-details">
                               <summary className="card-toggle">
                                 {t('interacoes_page.expandir')}
                                 <ChevronDown size={14} aria-hidden="true" />
                               </summary>
                               <div className="interaction-detail">
-                                {item.mechanism && (
-                                  <div className="detail-block">
-                                    <h4 className="detail-title">{t('interacoes_page.mecanismo')}</h4>
-                                    <p>{item.mechanism}</p>
-                                  </div>
-                                )}
                                 {item.advice && (
                                   <div className="detail-block detail-recommendation">
                                     <h4 className="detail-title">{t('interacoes_page.recomendacao')}</h4>
@@ -636,18 +642,15 @@ export default function InteracoesPageClient({
                                   : t('interacoes_page.tipo_precaucao')}
                               </span>
                             </div>
+                            {item.reason && (
+                              <p className="card-description">{item.reason}</p>
+                            )}
                             <details className="card-details">
                               <summary className="card-toggle">
                                 {t('interacoes_page.expandir')}
                                 <ChevronDown size={14} aria-hidden="true" />
                               </summary>
                               <div className="interaction-detail">
-                                {item.reason && (
-                                  <div className="detail-block">
-                                    <h4 className="detail-title">{t('interacoes_page.motivo')}</h4>
-                                    <p>{item.reason}</p>
-                                  </div>
-                                )}
                                 {item.advice && (
                                   <div className="detail-block detail-recommendation">
                                     <h4 className="detail-title">{t('interacoes_page.recomendacao')}</h4>
@@ -699,7 +702,10 @@ export default function InteracoesPageClient({
                         const drugName = drugsById[item.drugId]?.name || '—'
                         const isCI = item.pregnancyCategory === 'contraindicated'
                         return (
-                          <div key={item.drugId} className="interaction-card">
+                          <div
+                            key={item.drugId}
+                            className={`interaction-card ${pregnancyBarClass(item.pregnancyCategory)}`}
+                          >
                             <div className="card-header">
                               <div className="card-drugs">
                                 <span className="card-drug">{drugName}</span>
@@ -711,18 +717,15 @@ export default function InteracoesPageClient({
                                   : t('interacoes_page.categoria_gravidez')}
                               </span>
                             </div>
+                            {item.risk && (
+                              <p className="card-description">{item.risk}</p>
+                            )}
                             <details className="card-details">
                               <summary className="card-toggle">
                                 {t('interacoes_page.expandir')}
                                 <ChevronDown size={14} aria-hidden="true" />
                               </summary>
                               <div className="interaction-detail">
-                                {item.risk && (
-                                  <div className="detail-block">
-                                    <h4 className="detail-title">{t('interacoes_page.categoria_gravidez')}</h4>
-                                    <p>{item.risk}</p>
-                                  </div>
-                                )}
                                 {item.trimester && (
                                   <div className="detail-block">
                                     <h4 className="detail-title">{t('interacoes_page.trimestre')}</h4>
