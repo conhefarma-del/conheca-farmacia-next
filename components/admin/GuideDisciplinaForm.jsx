@@ -199,6 +199,10 @@ export default function GuideDisciplinaForm({ courseId, discipline, panelOpen, o
   const [phaseEn, setPhaseEn] = useState(discipline?.phase_en || '')
   const [importancePt, setImportancePt] = useState(discipline?.importance_pt || '')
   const [importanceEn, setImportanceEn] = useState(discipline?.importance_en || '')
+  const [practicePt, setPracticePt] = useState(discipline?.practice_pt || '')
+  const [practiceEn, setPracticeEn] = useState(discipline?.practice_en || '')
+  const [learningPt, setLearningPt] = useState(discipline?.learning_pt || '')
+  const [learningEn, setLearningEn] = useState(discipline?.learning_en || '')
   const [status, setStatus] = useState(discipline?.status === 'published' ? 'published' : 'draft')
   const [sortOrder, setSortOrder] = useState(discipline?.sort_order ?? 0)
   const [books, setBooks] = useState(
@@ -245,6 +249,10 @@ export default function GuideDisciplinaForm({ courseId, discipline, panelOpen, o
         phase_en: phaseEn,
         importance_pt: importancePt,
         importance_en: importanceEn,
+        practice_pt: practicePt,
+        practice_en: practiceEn,
+        learning_pt: learningPt,
+        learning_en: learningEn,
         status,
         sort_order: parseInt(sortOrder, 10) || 0,
       }
@@ -420,6 +428,26 @@ export default function GuideDisciplinaForm({ courseId, discipline, panelOpen, o
           <div style={{ marginBottom: 24 }}>
             <label style={labelStyle}>Why it matters (EN)</label>
             <textarea value={importanceEn} onChange={(e) => setImportanceEn(e.target.value)} style={{ ...inputStyle, resize: 'vertical', minHeight: 64, lineHeight: 1.5 }} rows={3} />
+          </div>
+
+          <div style={{ marginBottom: 24 }}>
+            <label style={labelStyle}>No dia a dia do profissional (PT)</label>
+            <textarea value={practicePt} onChange={(e) => setPracticePt(e.target.value)} style={{ ...inputStyle, resize: 'vertical', minHeight: 64, lineHeight: 1.5 }} rows={3} />
+          </div>
+
+          <div style={{ marginBottom: 24 }}>
+            <label style={labelStyle}>In the professional daily practice (EN)</label>
+            <textarea value={practiceEn} onChange={(e) => setPracticeEn(e.target.value)} style={{ ...inputStyle, resize: 'vertical', minHeight: 64, lineHeight: 1.5 }} rows={3} />
+          </div>
+
+          <div style={{ marginBottom: 24 }}>
+            <label style={labelStyle}>Importância na formação (PT)</label>
+            <textarea value={learningPt} onChange={(e) => setLearningPt(e.target.value)} style={{ ...inputStyle, resize: 'vertical', minHeight: 64, lineHeight: 1.5 }} rows={3} />
+          </div>
+
+          <div style={{ marginBottom: 24 }}>
+            <label style={labelStyle}>Importance in training (EN)</label>
+            <textarea value={learningEn} onChange={(e) => setLearningEn(e.target.value)} style={{ ...inputStyle, resize: 'vertical', minHeight: 64, lineHeight: 1.5 }} rows={3} />
           </div>
 
           <div style={{ display: 'flex', gap: 20, marginBottom: 28, alignItems: 'center' }}>

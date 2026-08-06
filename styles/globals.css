@@ -4365,6 +4365,54 @@ html.dark .guide-resource-icon { background: rgba(255, 255, 255, 0.08); }
   margin-bottom: 14px;
 }
 
+/* Cabeçalho colapsável da fase/ano */
+.guide-phase-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  padding: 1rem 0.5rem;
+  cursor: pointer;
+  text-align: left;
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  border-radius: 0.75rem;
+  transition: background-color 0.2s ease;
+  margin-bottom: 0.5rem;
+}
+.guide-phase-header:hover { background: rgba(0, 42, 50, 0.03); }
+.guide-phase-header:focus-visible { outline: 2px solid var(--color-brand-accent); outline-offset: 2px; }
+.guide-phase-count {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(0, 42, 50, 0.05);
+  color: var(--color-brand-primary);
+  white-space: nowrap;
+}
+
+/* Variações das caixas de importância */
+.guide-learning-box {
+  border-left-color: var(--color-brand-primary);
+  background: rgba(0, 132, 79, 0.05);
+}
+.guide-learning-box .guide-importance-label { color: var(--color-brand-primary); }
+
+.guide-practice-box {
+  border-left-color: var(--color-brand-accent);
+  background: rgba(255, 102, 0, 0.05);
+}
+.guide-practice-box .guide-importance-label { color: var(--color-brand-accent); }
+
+/* Dark mode para as novas caixas */
+html.dark .guide-learning-box { background: rgba(0, 132, 79, 0.12); }
+html.dark .guide-practice-box { background: rgba(255, 102, 0, 0.12); }
+html.dark .guide-phase-header:hover { background: rgba(255, 255, 255, 0.05); }
+
 /* Âncoras de disciplina — compensa o header sticky no scroll */
 .guide-discipline-card { scroll-margin-top: 90px; }
 

@@ -419,7 +419,10 @@
     "universidade_publica": "Pública",
     "universidade_privada": "Privada",
     "site": "Site da universidade",
-    "pagina_curso": "Página do curso"
+    "pagina_curso": "Página do curso",
+    "no_dia_a_dia": "No dia a dia do profissional",
+    "importancia_formacao": "Importância na formação",
+    "disciplinas": "disciplinas"
   },
   "protocolos_page": {
     "hero_title": "Protocolos Clínicos",

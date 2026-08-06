@@ -7,7 +7,7 @@ import GuideResourceLink from './GuideResourceLink'
 
 /**
  * Accordion de disciplina na página de detalhe do curso.
- * Expande para mostrar "porquê é essencial", livros e recursos.
+ * Expande para mostrar "porquê é essencial", importância na formação, dia a dia do profissional, livros e recursos.
  */
 export default function GuideDisciplinaCard({ disciplina, t }) {
   const [open, setOpen] = useState(false)
@@ -42,6 +42,20 @@ export default function GuideDisciplinaCard({ disciplina, t }) {
             <div className="guide-importance-box">
               <div className="guide-importance-label">{t('guias_curso.porque_essencial')}</div>
               <p>{disciplina.importance}</p>
+            </div>
+          )}
+
+          {disciplina.learning && (
+            <div className="guide-importance-box guide-learning-box">
+              <div className="guide-importance-label">{t('guias_curso.importancia_formacao')}</div>
+              <p>{disciplina.learning}</p>
+            </div>
+          )}
+
+          {disciplina.practice && (
+            <div className="guide-importance-box guide-practice-box">
+              <div className="guide-importance-label">{t('guias_curso.no_dia_a_dia')}</div>
+              <p>{disciplina.practice}</p>
             </div>
           )}
 

@@ -1,8 +1,8 @@
 'use client'
 
-import { useContext, useMemo } from 'react'
+import { useContext, useMemo, useState, useRef, useCallback } from 'react'
 import Link from 'next/link'
-import { ArrowRight, ArrowUpRight, BookOpen, CalendarDays, FileText, GraduationCap, Info, ListChecks, MapPin } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, BookOpen, CalendarDays, FileText, GraduationCap, Info, ListChecks, MapPin, ChevronDown } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
 import GuideCourseCard from '@/components/guias/GuideCourseCard'
 import GuideDisciplinaCard from '@/components/guias/GuideDisciplinaCard'
@@ -15,6 +15,36 @@ export default function GuiasCursoClient({ lang, course, otherCourses = [] }) {
 
   const disciplines = course.disciplines || []
   const universities = course.universities || []
+
+  // Estado para controlar quais fases/anos estão expandidos
+  const [openPhases, setOpenPhases] = useState(() => new Set())
+  // Refs para cada fase (para scrollIntoView)
+  const phaseRefs = useRef({})
+
+  const togglePhase = useCallback((phaseKey) => {
+    setOpenPhases((prev) => {
+      const next = new Set(prev)
+      if (next.has(phaseKey)) next.delete(phaseKey)
+      else next.add(phaseKey)
+      return next
+    })
+  }, [])
+
+  // Expande a fase e faz scroll até à disciplina
+  const expandAndScroll = useCallback((phaseKey, disciplineSlug) => {
+    setOpenPhases((prev) => {
+      const next = new Set(prev)
+      next.add(phaseKey)
+      return next
+    })
+    // Pequeno delay para garantir que o DOM já expandiu
+    setTimeout(() => {
+      const el = document.getElementById(`disciplina-${disciplineSlug}`)
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }, 100)
+  }, [])
 
   // Stats do hero — derivadas do conteúdo (mantêm-se atualizadas automaticamente)
   const bookCount = disciplines.reduce((acc, d) => acc + (d.books?.length || 0), 0)
@@ -120,12 +150,31 @@ export default function GuiasCursoClient({ lang, course, otherCourses = [] }) {
                       )}
                     </div>
                     <div className="guide-timeline-content">
-                      <h3 className="guide-timeline-phase-title">{group.phase}</h3>
-                      <div className="guide-timeline-cards">
-                        {group.items.map((disc) => (
-                          <GuideDisciplinaCard key={disc.id} disciplina={disc} t={t} />
-                        ))}
-                      </div>
+                      {/* Cabeçalho da fase colapsável */}
+                      <button
+                        ref={(el) => { phaseRefs.current[group.phase] = el }}
+                        className="guide-phase-header"
+                        aria-expanded={openPhases.has(group.phase)}
+                        onClick={() => togglePhase(group.phase)}
+                        type="button"
+                      >
+                        <h3 className="guide-timeline-phase-title">{group.phase}</h3>
+                        <span className="guide-phase-count">{group.items.length} {t('guias_curso.disciplinas')}</span>
+                        <ChevronDown
+                          size={20}
+                          className={`guide-discipline-toggle${openPhases.has(group.phase) ? ' expanded' : ''}`}
+                          aria-hidden="true"
+                        />
+                      </button>
+
+                      {/* Conteúdo da fase (disciplinas) — colapsado por defeito */}
+                      {openPhases.has(group.phase) && (
+                        <div className="guide-timeline-cards">
+                          {group.items.map((disc) => (
+                            <GuideDisciplinaCard key={disc.id} disciplina={disc} t={t} />
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -179,7 +228,7 @@ export default function GuiasCursoClient({ lang, course, otherCourses = [] }) {
           )}
         </div>
 
-        <GuideSidebar course={course} t={t} />
+        <GuideSidebar course={course} t={t} onSelectDiscipline={expandAndScroll} />
       </div>
 
       {/* Outros Cursos — leva de volta à lista de cursos */}

@@ -8,7 +8,7 @@ import { CheckCircle2, Circle, RotateCcw } from 'lucide-react'
  * TOC com âncoras para cada disciplina (scrollspy — destaca a disciplina visível)
  * e checklist de progresso do leitor, persistida em localStorage.
  */
-export default function GuideSidebar({ course, t }) {
+export default function GuideSidebar({ course, t, onSelectDiscipline }) {
   const disciplines = course.disciplines || []
   const storageKey = `cf_guia_progress_${course.slug}`
   const [active, setActive] = useState(-1)
@@ -61,6 +61,14 @@ export default function GuideSidebar({ course, t }) {
     )
   }
 
+  const handleDisciplineClick = (slug) => {
+    // Encontrar a fase desta disciplina
+    const discipline = disciplines.find((d) => d.slug === slug)
+    if (discipline && onSelectDiscipline) {
+      onSelectDiscipline(discipline.phase || '', slug)
+    }
+  }
+
   const total = disciplines.length
   const doneCount = done.length
   const pct = total > 0 ? Math.round((doneCount / total) * 100) : 0
@@ -74,7 +82,15 @@ export default function GuideSidebar({ course, t }) {
             <p className="sidebar-empty">{t('guias_curso.sidebar_vazio')}</p>
           )}
           {disciplines.map((d, i) => (
-            <a key={d.id} href={`#disciplina-${d.slug}`} className={`toc-link ${active === i ? 'is-active' : ''}`}>
+            <a
+              key={d.id}
+              href={`#disciplina-${d.slug}`}
+              className={`toc-link ${active === i ? 'is-active' : ''}`}
+              onClick={(e) => {
+                e.preventDefault()
+                handleDisciplineClick(d.slug)
+              }}
+            >
               <span className="toc-num">{i + 1}</span>
               {d.name}
             </a>

@@ -419,7 +419,10 @@
     "universidade_publica": "Public",
     "universidade_privada": "Private",
     "site": "University website",
-    "pagina_curso": "Course page"
+    "pagina_curso": "Course page",
+    "no_dia_a_dia": "In the professional daily practice",
+    "importancia_formacao": "Importance in training",
+    "disciplinas": "disciplines"
   },
   "protocolos_page": {
     "hero_title": "Clinical Protocols",
