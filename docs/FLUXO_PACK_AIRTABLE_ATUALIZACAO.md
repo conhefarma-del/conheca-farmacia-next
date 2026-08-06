@@ -29,7 +29,7 @@ Dois documentos irmãos:
         ▼
  [3. Gerar pack]  python scripts/generate_airtable_pack.py
         ▼
- [4. Importar no Airtable]  7 tabelas (97/95/216/10/23/23/5) — §4
+ [4. Importar no Airtable]  7 tabelas (176/279/384/116/97/198/102) — §4
         ▼
  [5. Ligar registos]  python _temp/airtable-pack/link_records_api.py [--run]  — §5
         ▼
@@ -87,6 +87,10 @@ Padrões que o gerador (`generate_airtable_pack.py`) reconhece (semântica do Po
   WHERE a.slug = 'x' AND b.slug = 'y'
   ON CONFLICT (drug_a_id, drug_b_id) DO NOTHING;
   ```
+  O gerador também aceita o estilo das migrações 062–069 para pares —
+  `INSERT ... SELECT ... FROM (VALUES …) AS v(slug_a, slug_b, …) JOIN public.drugs a
+  ON a.slug = v.slug_a …` (a severidade pode vir como `v.severity` ou como literal na
+  lista SELECT).
 - **INSERT das 3 dimensões novas** (fármaco que já existe em `drugs`; `drug_id` resolve-se
   pelo `slug`, com ou sem subscritura `JOIN (VALUES ...)`):
   ```sql
@@ -181,7 +185,7 @@ AIRTABLE_BASE_ID=appXXXX AIRTABLE_PAT=patXXXX python _temp/airtable-pack/link_re
 AIRTABLE_BASE_ID=appXXXX AIRTABLE_PAT=patXXXX python _temp/airtable-pack/verify_links.py
 ```
 
-Conta registos de ligação não-vazia por campo e confirma o baseline esperado (216/216/216/10/23/23/5).
+Conta registos de ligação não-vazia por campo e confirma o baseline esperado (384/384/116/198/198/102).
 
 ---
 

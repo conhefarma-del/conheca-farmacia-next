@@ -1,13 +1,23 @@
 ﻿slug,nome_generico_pt,nome_generico_en,marcas,classe_pt,classe_en,atc,estado
+acetazolamida,Acetazolamida,Acetazolamide,Diamox,Inibidor da anidrase carbónica (diurético),Carbonic anhydrase inhibitor (diuretic),,publicado
+acetilcisteina,Acetilcisteína,Acetylcysteine,,Mucolítico / expectorante,Mucolytic / expectorant,,rascunho
+acido_ascorbico,Ácido ascórbico (vitamina C),Ascorbic acid (vitamin C),,Vitamina hidrossolúvel (C),Water-soluble vitamin (C),,rascunho
+acido_folico,Ácido fólico,Folic acid,,Antianémico (folato),Antianaemic (folate),,rascunho
+acido_tranexamico,Ácido tranexâmico,Tranexamic acid,,Anti-hemorrágico (antifibrinolítico),Antihaemorrhagic (antifibrinolytic),,rascunho
+acido_ursodesoxicolico,Ácido ursodesoxicólico,Ursodeoxycholic acid,,Ácido biliar (colerético / litolítico),Bile acid (choleretic / litholytic),,rascunho
+adrenalina,Adrenalina,Epinephrine,,Simpaticomimético (catecolamina α/β),Sympathomimetic (α/β catecholamine),,rascunho
+alendronato,Alendronato sódico,Sodium alendronate,,Bifosfonato (anti-reabsortivo ósseo),Bisphosphonate (anti-resorptive),,rascunho
 alopurinol,Alopurinol,Allopurinol,Zyloric,Inibidor da xantina oxidase,Xanthine oxidase inhibitor,,publicado
 alprazolam,Alprazolam,Alprazolam,Xanax,Benzodiazepina ansiolítica de curta duração,Short-acting anxiolytic benzodiazepine,,publicado
 amicacina,Amicacina,Amikacin,Amikin,"Aminoglicosídeo bactericida (largo espetro, incl. Pseudomonas)","Bactericidal aminoglycoside (broad spectrum, incl. Pseudomonas)",,publicado
+aminoacidos,Aminoácidos,Amino acids,,Nutrição parentérica (solução de aminoácidos),Parenteral nutrition (amino acid solution),,rascunho
 amiodarona,Amiodarona,Amiodarone,Cordarone,Antiarrítmico classe III,Class III antiarrhythmic,,publicado
 amlodipina,Amlodipina,Amlodipine,Norvasc,Bloqueador dos canais de cálcio,Calcium channel blocker,,publicado
 amoxicilina,Amoxicilina,Amoxicillin,Amoxil,Penicilina,Penicillin,,publicado
 amoxicilina-clavulanato,Amoxicilina + Ácido Clavulânico,Amoxicillin and Clavulanate,,Aminopenicilina + inibidor de β-lactamase (ácido clavulânico),Aminopenicillin + β-lactamase inhibitor (clavulanate),,publicado
 ampicilina,Ampicilina,Ampicillin,,Penicilina semissintética (aminopenicilina; antibacteriano β-lactâmico),Semisynthetic penicillin (aminopenicillin; β-lactam antibacterial),,publicado
 antiacidos,Antiácidos,Antacids,,Antiácidos (alumínio e magnésio),Antacids (aluminium and magnesium),,publicado
+apixabano,Apixabano,Apixaban,,Anticoagulante oral direto (inibidor do fator Xa),Direct oral anticoagulant (factor Xa inhibitor),,publicado
 artemeter-lumefantrina,Arteméter + Lumefantrina,Artemether + Lumefantrine,Coartem,"Antimalárico (combinação com artemisinina, ACT)","Antimalarial (artemisinin-based combination, ACT)",,publicado
 artesunato,Artesunato,Artesunate,Artesunato injetável,Antimalárico (derivado da artemisinina; injetável — malária grave),Antimalarial (artemisinin derivative; injectable — severe malaria),,publicado
 artesunato-amodiaquina,Artesunato + Amodiaquina,Artesunate + Amodiaquine,Coarsucam,"Antimalárico (combinação com artemisinina, ACT)","Antimalarial (artemisinin-based combination, ACT)",,publicado
@@ -19,8 +29,14 @@ azatioprina,Azatioprina,Azathioprine,Imuran,Imunossupressor,Immunosuppressant,,p
 azitromicina,Azitromicina,Azithromycin,,Macrólido (azálido) bacteriostático,Bacteriostatic macrolide (azalide),,publicado
 bedaquilina,Bedaquilina,Bedaquiline,Sirturo,Diarilquinolina (tuberculostático de 2.ª linha; prolonga o QT),Diarylquinoline (2nd-line antituberculosis agent; QT prolongation),,publicado
 benzilpenicilina-benzatina,Benzilpenicilina benzatínica,Penicillin G Benzathine,,"Penicilina natural de ação prolongada (benzilpenicilina, via IM)","Natural long-acting penicillin (benzylpenicillin, IM)",,publicado
+budesonida,Budesonida,Budesonide,,Corticosteroide inalado (CSI),Inhaled corticosteroid (ICS),,rascunho
+bumetanida,Bumetanida,Bumetanide,Burinex,Diurético de ansa,Loop diuretic,,publicado
+buprenorfina,Buprenorfina,Buprenorphine,buprenorphine,Analgésico opioide (agonista parcial),Opioid analgesic (partial agonist),,publicado
+butilbrometo_hioscina,Butilbrometo de hioscina,Hyoscine butylbromide,,Antiespasmódico (anticolinérgico),Antispasmodic (antimuscarinic),,rascunho
+calcitriol,Calcitriol,Calcitriol,,Hormona da vitamina D (regulação do cálcio/fósforo),Vitamin D hormone (calcium/phosphate regulation),,rascunho
 captopril,Captopril,Captopril,Capoten,IECA (Inibidor da ECA),ACE inhibitor,,publicado
 carbamazepina,Carbamazepina,Carbamazepine,Tegretol,Antiepiléptico,Antiepileptic,,publicado
+carbonato_calcio,Carbonato de cálcio,Calcium carbonate,,Sais minerais (cálcio),Mineral supplement (calcium),,rascunho
 cefalexina,Cefalexina,Cephalexin,,Cefalosporina de 1.ª geração (oral),First-generation cephalosporin (oral),,publicado
 cefazolina,Cefazolina,Cefazolin,,Cefalosporina de 1.ª geração (injetável),First-generation cephalosporin (injectable),,publicado
 cefepima,Cefepima,Cefepime,,Cefalosporina de 4.ª geração,Fourth-generation cephalosporin,,publicado
@@ -28,71 +44,134 @@ cefotaxima,Cefotaxima,Cefotaxime,,Cefalosporina de 3.ª geração,Third-generati
 ceftazidima,Ceftazidima,Ceftazidime,,Cefalosporina de 3.ª geração (anti-Pseudomonas),Third-generation cephalosporin (anti-Pseudomonas),,publicado
 ceftriaxona,Ceftriaxona,Ceftriaxone,,Cefalosporina de 3.ª geração,Third-generation cephalosporin,,publicado
 cefuroxima,Cefuroxima,Cefuroxime,,Cefalosporina de 2.ª geração,Second-generation cephalosporin,,publicado
+celecoxib,Celecoxib,Celecoxib,,AINE seletivo COX-2 (coxibe),Selective COX-2 NSAID (coxib),,publicado
+cetirizina,Cetirizina,Cetirizine,,Anti-histamínico H1 de 2.ª geração (piperazina),Second-generation H1 antihistamine (piperazine),,rascunho
 cetoconazol,Cetoconazol,Ketoconazole,,Antifúngico azólico (imidazol; inibidor potente do CYP3A4),Azole antifungal (imidazole; potent CYP3A4 inhibitor),,publicado
+cianocobalamina,Cianocobalamina (vitamina B12),Cyanocobalamin (vitamin B12),,Antianémico (vitamina B12),Antianaemic (vitamin B12),,rascunho
 ciprofloxacina,Ciprofloxacina,Ciprofloxacin,Ciprobay,Fluorquinolona,Fluoroquinolone,,publicado
 claritromicina,Claritromicina,Clarithromycin,Klacid,Macrólido,Macrolide,,publicado
 clopidogrel,Clopidogrel,Clopidogrel,Plavix,Antiagregante plaquetário,Antiplatelet agent,,publicado
+cloreto_potassio,Cloreto de potássio,Potassium chloride,,Eletrólito (potássio),Electrolyte (potassium),,rascunho
 cloroquina,Cloroquina,Chloroquine,Cloroquina fosfato,Antimalárico (4-aminoquinolina),Antimalarial (4-aminoquinoline),,publicado
 clozapina,Clozapina,Clozapine,,Antipsicótico atípico,Atypical antipsychotic,,publicado
+codeina,Codeína,Codeine,codeine phosphate,Analgésico opioide (fraco),Opioid analgesic (weak),,publicado
+colchicina,Colchicina,Colchicine,,Alcaloide antigotoso (anti-inflamatório dos microtúbulos),Antigout alkaloid (anti-inflammatory via microtubules),,publicado
+colecalciferol,Colecalciferol (vitamina D3),Cholecalciferol (vitamin D3),,Vitamina lipossolúvel (D3),Fat-soluble vitamin (D3),,rascunho
 cotrimoxazol,Cotrimoxazol,Co-trimoxazole,Bactrim,Sulfametoxazol + trimetoprim,Sulfamethoxazole + trimethoprim,,publicado
+dabigatrano,Dabigatrano (etexilato),Dabigatran (etexilate),,Anticoagulante oral direto (inibidor da trombina),Direct oral anticoagulant (thrombin inhibitor),,publicado
 daptomicina,Daptomicina,Daptomycin,Cubicin,Lipopéptido cíclico (gram+ multirresistentes),Cyclic lipopeptide (multidrug-resistant gram+),,publicado
+desloratadina,Desloratadina,Desloratadine,,Anti-histamínico H1 de 2.ª geração (metabolito ativo da loratadina),Second-generation H1 antihistamine (active loratadine metabolite),,rascunho
+dexametasona,Dexametasona,Dexamethasone,,Corticosteroide sistémico (glucocorticoide),Systemic corticosteroid (glucocorticoid),,rascunho
+dextrometorfano,Dextrometorfano,Dextromethorphan,,Antitússico (supressor da tosse),Antitussive (cough suppressant),,rascunho
 diclofenac,Diclofenac,Diclofenac,Voltaren,Anti-inflamatório não esteroide (AINE),Nonsteroidal anti-inflammatory drug (NSAID),,publicado
+difenidramina,Difenidramina,Diphenhydramine,,Anti-histamínico H1 de 1.ª geração (sedativo),First-generation H1 antihistamine (sedating),,rascunho
 digoxina,Digoxina,Digoxin,,Glicósido cardíaco,Cardiac glycoside,,publicado
 diidroartemisinina-piperaquina,Dihidroartemisinina + Piperaquina,Dihydroartemisinin + Piperaquine,Eurartesim,"Antimalárico (combinação com artemisinina, ACT)","Antimalarial (artemisinin-based combination, ACT)",,publicado
+domperidona,Domperidona,Domperidone,,Procinético / antiemético (antagonista dopaminérgico periférico),Prokinetic / antiemetic (peripheral dopamine antagonist),,publicado
+donepezilo,Donepezilo,Donepezil,Aricept,Inibidor da acetilcolinesterase (doença de Alzheimer),Acetylcholinesterase inhibitor (Alzheimer's disease),,publicado
 doxiciclina,Doxiciclina,Doxycycline,,Tetraciclina,Tetracycline,,publicado
 efavirenz,Efavirenz,Efavirenz,,"Antirretroviral INNTR, indutor enzimático","Antiretroviral NNRTI, enzyme inducer",,publicado
+emulsao_lipidica,Emulsão lipídica,Lipid emulsion,,Nutrição parentérica (emulsão lipídica),Parenteral nutrition (lipid emulsion),,rascunho
 enalapril,Enalapril,Enalapril,Renitec,IECA (Inibidor da ECA),ACE inhibitor,,publicado
+enoxaparina,Enoxaparina,Enoxaparin,,Heparina de baixo peso molecular (antitrombótico),Low-molecular-weight heparin (antithrombotic),,rascunho
+epoetina_alfa,Epoetina alfa,Epoetin alfa,,Fator de crescimento hematopoiético (eritropoietina),Haematopoietic growth factor (erythropoietin),,rascunho
 eritromicina,Eritromicina,Erythromycin,,Macrólido bacteriostático,Bacteriostatic macrolide,,publicado
 espironolactona,Espironolactona,Spironolactone,Aldactone,Diurético poupador de potássio,Potassium-sparing diuretic,,publicado
 estreptomicina,Estreptomicina,Streptomycin,Estreptomicina,Aminoglicósido (tuberculostático injetável),Aminoglycoside (injectable antituberculosis agent),,publicado
 etambutol,Etambutol,Ethambutol,Myambutol,Antituberculoso (etilenodiamina),Antituberculosis agent (ethylenediamine),,publicado
+etilefrina,Etilefrina,Etilefrine,Effortil,Simpaticomimético (agonista alfa/beta),Sympathomimetic (α/β agonist),,publicado
+famotidina,Famotidina,Famotidine,,Antiácidos e anti-ulcerosos — antagonista dos recetores H2,Antacids and anti-ulcer agents — histamine H2-receptor antagonist,,publicado
+febuxostat,Febuxostat,Febuxostat,,Inibidor da xantina-oxidase (redutor da uricemia),Xanthine oxidase inhibitor (uric-lowering),,publicado
 fenitoina,Fenitoína,Phenytoin,,Antiepiléptico (bloqueador de canais de sódio),Antiepileptic (sodium channel blocker),,publicado
 fenobarbital,Fenobarbital,Phenobarbital,,"Barbitúrico antiepiléptico, indutor enzimático","Antiepileptic barbiturate, enzyme inducer",,publicado
 fenoximetilpenicilina,Fenoximetilpenicilina,Penicillin V Potassium,,Penicilina natural oral (penicilina V),Natural oral penicillin (penicillin V),,publicado
+fentanilo,Fentanilo,Fentanyl,fentanil,Analgésico opioide potente,Potent opioid analgesic,,publicado
+ferro,Ferro (sulfato ferroso),Iron (ferrous sulfate),,Antianémico (ferro),Antianaemic (iron),,rascunho
+fexofenadina,Fexofenadina,Fexofenadine,,Anti-histamínico H1 de 2.ª/3.ª geração (metabolito da terfenadina),Second/third-generation H1 antihistamine (terfenadine metabolite),,rascunho
+filgrastim,Filgrastim,Filgrastim,,Fator de crescimento hematopoiético (G-CSF),Haematopoietic growth factor (G-CSF),,rascunho
+fitomenadiona,Fitomenadiona (vitamina K1),Phytomenadione (vitamin K1),,Anti-hemorrágico (vitamina K),Antihaemorrhagic (vitamin K),,rascunho
+flecainida,Flecainida,Flecainide,,Antiarrítmico classe Ic,Class Ic antiarrhythmic,,publicado
 fluconazol,Fluconazol,Fluconazole,,Antifúngico azólico (triazol; inibidor do CYP2C9/CYP3A4),Azole antifungal (triazole; CYP2C9/CYP3A4 inhibitor),,publicado
 fluoxetina,Fluoxetina,Fluoxetine,Prozac,Inibidor seletivo da recaptação da serotonina (ISRS),Selective serotonin reuptake inhibitor (SSRI),,publicado
+fondaparinux,Fondaparinux,Fondaparinux,,Antitrombótico (inibidor seletivo do fator Xa),Antithrombotic (selective factor Xa inhibitor),,publicado
+formoterol,Formoterol,Formoterol,,Broncodilatador β2-agonista de ação prolongada (LABA),Long-acting β2-agonist (LABA),,rascunho
 fosfomicina,Fosfomicina,Fosfomycin trometamol,Monuril,Derivado do ácido fosfónico (infeções urinárias),Phosphonic acid derivative (urinary tract),,publicado
 furosemida,Furosemida,Furosemide,Lasix,Diurético de ansa,Loop diuretic,,publicado
 gentamicina,Gentamicina,Gentamicin,,Aminoglicosídeo bactericida (aeróbios gram-negativos),Bactericidal aminoglycoside (aerobic gram-negative),,publicado
 glibenclamida,Glibenclamida,Glibenclamide,Daonil,Sulfonilureia,Sulfonylurea,,publicado
+glicose,Glicose (dextrose),Glucose (dextrose),,Nutrição entérica (fonte glucídica),Enteral nutrition (carbohydrate source),,rascunho
 haloperidol,Haloperidol,Haloperidol,Haldol,Antipsicótico (butirofenona),Antipsychotic (butyrophenone),,publicado
 hidroclorotiazida,Hidroclorotiazida,Hydrochlorothiazide,HCTZ,Diurético tiazídico,Thiazide diuretic,,publicado
+hidromorfona,Hidromorfona,Hydromorphone,Dilaudid,Analgésico opioide potente,Potent opioid analgesic,,publicado
 hidroxicloroquina,Hidroxicloroquina,Hydroxychloroquine,Plaquenil,Antimalárico e antirreumático (4-aminoquinolina),Antimalarial and antirheumatic (4-aminoquinoline),,publicado
 ibuprofeno,Ibuprofeno,Ibuprofen,Brufen,Anti-inflamatório não esteroide (AINE),Nonsteroidal anti-inflammatory drug (NSAID),,publicado
+indapamida,Indapamida,Indapamide,Natrilix,Diurético tiazídico,Thiazide-like diuretic,,publicado
+ipratropio,Brometo de ipratrópio,Ipratropium bromide,,Broncodilatador anticolinérgico de ação curta (SAMA),Short-acting antimuscarinic (SAMA),,rascunho
 isoniazida,Isoniazida,Isoniazid,,Antituberculoso (hidrazida do ácido isonicotínico),Antituberculosis agent (isonicotinic acid hydrazide),,publicado
 itraconazol,Itraconazol,Itraconazole,,Antifúngico azólico (triazol; inibidor potente do CYP3A4 e da glicoproteína-P),Azole antifungal (triazole; potent CYP3A4 and P-glycoprotein inhibitor),,publicado
 lamivudina,Lamivudina,Lamivudine,,Antirretroviral INTR,Antiretroviral NRTI,,publicado
 lamotrigina,Lamotrigina,Lamotrigine,Lamictal,Antiepiléptico (bloqueador de canais de sódio),Antiepileptic (sodium channel blocker),,publicado
+leflunomida,Leflunomida,Leflunomide,,DMARD (inibidor da síntese de pirimidinas),DMARD (pyrimidine synthesis inhibitor),,rascunho
+levocetirizina,Levocetirizina,Levocetirizine,,Anti-histamínico H1 de 2.ª geração (enantiómero ativo da cetirizina),Second-generation H1 antihistamine (active cetirizine enantiomer),,rascunho
 levofloxacina,Levofloxacina,Levofloxacin,,Quinolona (fluorquinolona) de largo espetro,Broad-spectrum fluoroquinolone,,publicado
 levotiroxina,Levotiroxina,Levothyroxine,,Hormona tiroideia,Thyroid hormone,,publicado
 linezolida,Linezolida,Linezolid,Zyvox,Oxazolidinona (tuberculostático de 2.ª linha; inibidor da MAO),Oxazolidinone (2nd-line antituberculosis agent; MAO inhibitor),,publicado
 litio,Lítio,Lithium,,Estabilizador do humor (psicofármaco),Mood stabilizer (psychotropic),,rascunho
+loperamida,Loperamida,Loperamide,,Antidiarreico (agonista opioide de ação periférica),Antidiarrhoeal (peripheral opioid agonist),,publicado
+loratadina,Loratadina,Loratadine,,Anti-histamínico H1 de 2.ª geração (tricíclico),Second-generation H1 antihistamine (tricyclic),,rascunho
 losartano,Losartano,Losartan,Cozaar,Antagonista da angiotensina II (ARA II),Angiotensin II receptor blocker,,publicado
 mefloquina,Mefloquina,Mefloquine,Lariam,Antimalárico (aminoálcool de quinolina),Antimalarial (quinoline methanol),,publicado
+memantina,Memantina,Memantine,,Antagonista do recetor NMDA (doença de Alzheimer),NMDA receptor antagonist (Alzheimer's disease),,publicado
+mesalazina,Mesalazina,Mesalazine,,Anti-inflamatório intestinal (derivado do ácido 5-aminossalicílico),Intestinal anti-inflammatory (5-aminosalicylic acid derivative),,rascunho
+metamizol,Metamizol,Metamizole,,Analgésico e antipirético (pirazolona),Analgesic and antipyretic (pyrazolone),,rascunho
 metformina,Metformina,Metformin,Glucophage,Biguanida (antidiabético oral),Biguanide,,publicado
+metoclopramida,Metoclopramida,Metoclopramide,,Procinético / antiemético (antagonista dopaminérgico),Prokinetic / antiemetic (dopamine antagonist),,rascunho
+metotrexato,Metotrexato,Methotrexate,,DMARD anti-metabólito (antifólico),DMARD anti-metabolite (antifolate),,publicado
 metronidazol,Metronidazol,Metronidazole,Flagyl,Antibacteriano/antiparasitário (nitroimidazol),Antibacterial/antiparasitic (nitroimidazole),,publicado
+midodrina,Midodrina,Midodrine,Gutron,Simpaticomimético (agonista alfa-1),Sympathomimetic (α-1 agonist),,publicado
+montelukast,Montelucaste,Montelukast,,Antagonista dos recetores dos leucotrienos (LTRA),Leukotriene receptor antagonist (LTRA),,rascunho
+morfina,Morfina,Morphine,,Analgésico opioide,Opioid analgesic,,rascunho
 moxifloxacina,Moxifloxacina,Moxifloxacin,,Quinolona (fluorquinolona) de largo espetro,Broad-spectrum fluoroquinolone,,publicado
+naproxeno,Naproxeno,Naproxen,,AINE não seletivo (anti-inflamatório/analgésico),Non-steroidal anti-inflammatory (NSAID),,rascunho
 nevirapina,Nevirapina,Nevirapine,Viramune,"Antirretroviral inibidor não nucleósido da transcriptase reversa (INNTR), indutor enzimático","Antiretroviral non-nucleoside reverse transcriptase inhibitor (NNRTI), enzyme inducer",,publicado
+nistatina,Nistatina,Nystatin,,Antifúngico poliénico (uso oral),Polyene antifungal (oral use),,rascunho
 nitroglicerina,Nitroglicerina,Nitroglycerin,,Nitrato orgânico,Organic nitrate,,publicado
 omeprazol,Omeprazol,Omeprazole,Losec,Inibidor da bomba de protões (IBP),Proton pump inhibitor (PPI),,publicado
+ondansetron,Ondansetrom,Ondansetron,,Antiemético (antagonista dos recetores 5-HT3),Antiemetic (5-HT3 receptor antagonist),,rascunho
+orlistat,Orlistato,Orlistat,,Inibidor das lipases gastrintestinais (anti-obesidade),Gastrointestinal lipase inhibitor (anti-obesity),,rascunho
 paracetamol,Paracetamol,Paracetamol,Acetaminofeno,Analgésico e antipirético,Analgesic and antipyretic,,publicado
 piperacilina-tazobactam,Piperacilina + Tazobactam,Piperacillin and Tazobactam,Piperacilina/Tazobactam,Penicilina anti-Pseudomonas + inibidor de β-lactamase (tazobactam),Anti-Pseudomonas penicillin + β-lactamase inhibitor (tazobactam),,publicado
 pirazinamida,Pirazinamida,Pyrazinamide,,Antituberculoso (análogo da nicotinamida),Antituberculosis agent (nicotinamide analogue),,publicado
+poractant_alfa,Poractanto alfa,Poractant alfa,,Tensioativo pulmonar (surfactante),Pulmonary surfactant (tensioactive),,rascunho
 praziquantel,Praziquantel,Praziquantel,Biltricide,Anti-helmíntico (céstodos e tremátodos),Anthelmintic (cestodes and trematodes),,publicado
 prednisolona,Prednisolona,Prednisolone,,Corticosteroide,Corticosteroid,,publicado
 primaquina,Primaquina,Primaquine,Primaquina fosfato,Antimalárico (8-aminoquinolina),Antimalarial (8-aminoquinoline),,publicado
+propafenona,Propafenona,Propafenone,Rytmonorm,Antiarrítmico classe Ic,Class Ic antiarrhythmic,,publicado
+pseudoefedrina,Pseudoefedrina,Pseudoephedrine,,Simpaticomimético (descongestionante nasal α-agonista),Sympathomimetic (α-agonist nasal decongestant),,rascunho
 quinina,Quinina,Quinine,,Antimalárico (alcaloide da cinchona),Antimalarial (cinchona alkaloid),,publicado
+ramipril,Ramipril,Ramipril,Tritace,IECA (modificador do eixo renina-angiotensina),ACE inhibitor (renin-angiotensin axis),,publicado
 rifabutina,Rifabutina,Rifabutin,Mycobutin,Antituberculoso (ansamicina; indutor mais fraco que a rifampicina),Antituberculosis agent (ansamycin; weaker inducer than rifampin),,publicado
 rifampicina,Rifampicina,Rifampin,,Antituberculoso (ansamicina; indutor enzimático potente),Antituberculosis agent (ansamycin; potent enzyme inducer),,publicado
 ritonavir,Ritonavir,Ritonavir,Norvir,Antirretroviral inibidor da protease (IP) — potente inibidor do CYP3A4/P-gp,Antiretroviral protease inhibitor (PI) — potent CYP3A4/P-gp inhibitor,,publicado
+rivaroxabano,Rivaroxabano,Rivaroxaban,,Anticoagulante oral direto (inibidor do fator Xa),Direct oral anticoagulant (factor Xa inhibitor),,publicado
+salbutamol,Salbutamol,Salbutamol,,Broncodilatador β2-agonista de ação curta (SABA),Short-acting β2-agonist (SABA),,rascunho
+salmeterol,Salmeterol,Salmeterol,,Broncodilatador β2-agonista de ação prolongada (LABA),Long-acting β2-agonist (LABA),,rascunho
 sertralina,Sertralina,Sertraline,Zoloft,Inibidor seletivo da recaptação da serotonina (ISRS),Selective serotonin reuptake inhibitor (SSRI),,publicado
 sildenafil,Sildenafil,Sildenafil,Viagra,Inibidor da fosfodiesterase-5,PDE-5 inhibitor,,publicado
+sotalol,Sotalol,Sotalol,Sotalex,Antiarrítmico classe III (betabloqueador),Class III antiarrhythmic (β-blocker),,publicado
+sucralfato,Sucralfato,Sucralfate,,Citoprotetor da mucosa gástrica (anti-ulceroso),Gastric mucosal cytoprotectant (anti-ulcer),,rascunho
 sulfadoxina-pirimetamina,Sulfadoxina + Pirimetamina,Sulfadoxine + Pyrimethamine,Fansidar,Antimalárico antifólico (sulfonamida + diamino-pirimidina),Antimalarial antifolate (sulfonamide + diaminopyrimidine),,publicado
+sulfassalazina,Sulfassalazina,Sulfasalazine,,Anti-inflamatório intestinal (pró-fármaco de 5-ASA + sulfapiridina),Intestinal anti-inflammatory (prodrug of 5-ASA + sulfapyridine),,rascunho
+sulfato_magnesio,Sulfato de magnésio,Magnesium sulfate,,Eletrólito (magnésio),Electrolyte (magnesium),,rascunho
 tafenoquina,Tafenoquina,Tafenoquine,Krintafel,Antimalárico (8-aminoquinolina),Antimalarial (8-aminoquinoline),,publicado
+teofilina,Teofilina,Theophylline,,Broncodilatador metilxantina,Methylxanthine bronchodilator,,rascunho
+tiotropio,Tiotrópio,Tiotropium,,Broncodilatador anticolinérgico de ação prolongada (LAMA),Long-acting antimuscarinic (LAMA),,publicado
 tobramicina,Tobramicina,Tobramycin,,Aminoglicosídeo bactericida (anti-Pseudomonas),Bactericidal aminoglycoside (anti-Pseudomonas),,publicado
 tramadol,Tramadol,Tramadol,Tramal,Analgésico opioide,Opioid analgesic,,publicado
 valproato,Valproato,Valproic acid,,Antiepiléptico (estabilizador de membrana; inibidor da GABA transaminase),Antiepileptic (membrane stabilizer; GABA transaminase inhibitor),,rascunho
+valsartana,Valsartana,Valsartan,Diovan,ARA II (modificador do eixo renina-angiotensina),ARB (renin-angiotensin axis),,publicado
 vancomicina,Vancomicina,Vancomycin,,Glicopéptido ativo contra gram+ (incl. MRSA),Glycopeptide active against gram+ (incl. MRSA),,publicado
 voriconazol,Voriconazol,Voriconazole,,Antifúngico azólico (triazol; inibidor do CYP2C19/CYP2C9/CYP3A4),Azole antifungal (triazole; CYP2C19/CYP2C9/CYP3A4 inhibitor),,publicado
 warfarina,Warfarina,Warfarin,Marevan,Anticoagulante oral,Oral anticoagulant,,publicado
 zidovudina,Zidovudina,Zidovudine,,Antirretroviral inibidor nucleósido da transcriptase reversa (INTR),Antiretroviral nucleoside reverse transcriptase inhibitor (NRTI),,publicado
+zinco,Zinco (sulfato de zinco),Zinc (zinc sulfate),,Oligoelemento (zinco),Trace element (zinc),,rascunho

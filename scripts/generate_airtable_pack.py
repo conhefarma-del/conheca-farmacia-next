@@ -201,6 +201,19 @@ def pair_slugs(token, var_map):
     raise ValueError('não consegui extrair o par de: %s' % token[:100])
 
 
+# Nos pares INSERT ... SELECT, a severidade vem OU como coluna v.severity OU
+# como literal na lista SELECT (variante 062: ... GREATEST(..), 'moderate',
+# v.summary_pt ...). Captura o literal, quando existir.
+SELECT_SEVERITY_RE = re.compile(
+    r"SELECT\s+LEAST\(a\.id,\s*b\.id\)\s*,\s*GREATEST\(a\.id,\s*b\.id\)\s*,\s*"
+    r"'([^']+)'")
+
+
+def select_severity_literal(text):
+    m = SELECT_SEVERITY_RE.search(text)
+    return m.group(1) if m else None
+
+
 def statement_end(s, start=0):
     """Índice do primeiro ';' fora de literais de string (as citações têm ';')."""
     quote = None
@@ -225,11 +238,14 @@ def statement_end(s, start=0):
 
 
 def parse_join_values(text):
-    """Padrão JOIN (VALUES (t1),(t2)) AS v(c1, c2, ...).
-    Devolve lista de (v_cols, [tuplas de tokens]) — uma por bloco JOIN (VALUES.
-    Comentários SQL entre tuplos são ignorados."""
+    """Padrão (JOIN|FROM) (VALUES (t1),(t2)) AS v(c1, c2, ...).
+    Devolve lista de (v_cols, [tuplas de tokens]) — uma por bloco
+    (VALUES ...) AS v(...). Comentários SQL entre tuplos são ignorados.
+
+    Caso `FROM (VALUES` (pares fármaco-fármaco nas migrações 062+): o bloco
+    chega no `SELECT ... FROM (VALUES ...) AS v(slug_a, slug_b, ...)`."""
     blocks = []
-    for m in re.finditer(r'JOIN\s*\(VALUES', text):
+    for m in re.finditer(r'(?:JOIN|FROM)\s*\(VALUES', text):
         outer_open = m.end() - len('VALUES') - 1  # '(' imediatamente antes de VALUES
         i = skip_ws(text, outer_open + len('VALUES') + 1)  # depois de '(VALUES'
         tuples = []
@@ -359,6 +375,48 @@ def main():
                     'fonte_pt': s(row, 'source_pt'), 'fonte_en': s(row, 'source_en'),
                     'estado': estado(s(row, 'status')),
                     'data_revisao': s(row, 'updated_at')[:10],
+                }
+
+        # Pares no estilo 062+: INSERT INTO drug_interactions (...) SELECT ...
+        # FROM (VALUES ...) AS v(slug_a, slug_b, [severity,] ...) JOIN drugs ...
+        # (o parser de VALUES acima não apanha este padrão SELECT/FROM).
+        for v_cols, tuples in parse_new_dim_blocks(text, 'drug_interactions'):
+            try:
+                ia = v_cols.index('slug_a')
+                ib = v_cols.index('slug_b')
+            except ValueError:
+                continue
+            sev_col = v_cols.index('severity') if 'severity' in v_cols else None
+            sev_lit = select_severity_literal(text)
+            for t in tuples:
+                if len(t) != len(v_cols):
+                    continue
+                a = unquote(t[ia])
+                b = unquote(t[ib])
+                if not a or not b:
+                    continue
+                key = tuple(sorted([a, b]))
+                if key in pairs:
+                    continue
+                if sev_col is not None:
+                    sev = s(dict(zip(v_cols, t)), 'severity')
+                elif sev_lit:
+                    sev = sev_lit
+                else:
+                    sev = ''
+                r = dict(zip(v_cols, t))
+                pairs[key] = {
+                    'a': key[0], 'b': key[1],
+                    'severidade': sev,
+                    'resumo_pt': s(r, 'summary_pt'), 'resumo_en': s(r, 'summary_en'),
+                    'mecanismo_pt': s(r, 'mechanism_pt'), 'mecanismo_en': s(r, 'mechanism_en'),
+                    'conselho_pt': s(r, 'management_pt'), 'conselho_en': s(r, 'management_en'),
+                    'monitorizacao_pt': s(r, 'monitoring_pt'),
+                    'monitorizacao_en': s(r, 'monitoring_en'),
+                    'red_flags_pt': s(r, 'red_flags_pt'), 'red_flags_en': s(r, 'red_flags_en'),
+                    'fonte_pt': s(r, 'source_pt'), 'fonte_en': s(r, 'source_en'),
+                    'estado': estado(s(r, 'status')),
+                    'data_revisao': s(r, 'updated_at')[:10],
                 }
 
         # UPDATEs de drug_interactions: aplicam apenas os campos indicados.

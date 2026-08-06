@@ -10,17 +10,20 @@ vice-versa, como no arranque atual).
 
 | Ficheiro | Tabela no Airtable | Registos |
 |---|---|---|
-| `01-farmacos.csv` | **Fármacos** | 97 |
-| `02-fontes.csv` | **Fontes** | 95 |
-| `03-interacoes-farmaco-farmaco.csv` | **Interações Fármaco-Fármaco** | 216 |
-| `04-interacoes-alimento-bebida.csv` | **Interações Alimento/Bebida** | 10 |
-| `05-doencas.csv` | **Doenças** | 23 |
-| `06-interacoes-doenca.csv` | **Interações Doença** | 23 |
-| `07-gravidez-lactacao.csv` | **Gravidez/Lactação** | 5 |
+| `01-farmacos.csv` | **Fármacos** | 176 |
+| `02-fontes.csv` | **Fontes** | 279 |
+| `03-interacoes-farmaco-farmaco.csv` | **Interações Fármaco-Fármaco** | 384 |
+| `04-interacoes-alimento-bebida.csv` | **Interações Alimento/Bebida** | 116 |
+| `05-doencas.csv` | **Doenças** | 97 |
+| `06-interacoes-doenca.csv` | **Interações Doença** | 198 |
+| `07-gravidez-lactacao.csv` | **Gravidez/Lactação** | 102 |
 
 Dados atuais: fármacos de uso comum em Angola + antimaláricos + antituberculares
-+ antifúngicos + antibacterianos + antirretrovirais (044–058), e as 3 novas
-dimensões (alimento/doença/gravidez) para os 5 fármacos piloto (061).
++ antifúngicos + antibacterianos + antirretrovirais (044–058), SNC/analgésicos
+(062), cardiovasculares (063), hematologia (064), respiratórios (065),
+digestivos (066), músculo-esqueléticas (067), antialérgicos (068) e nutrição
+(069), com as 3 dimensões novas (alimento/doença/gravidez) para os fármacos de
+todas as secções (061–069).
 
 ## Como importar
 
@@ -109,8 +112,13 @@ saltos) são apanhadas automaticamente. A semântica é a do Postgres:
 
 Para o gerador apanhar novos dados, mantém esses padrões nas futuras migrações:
 
-- Fármacos e pares: `INSERT ... VALUES` (pares via `LEAST/GREATEST` com
-  `(SELECT id FROM public.drugs WHERE slug = '…')`).
+- Fármacos: `INSERT ... VALUES`.
+- Pares fármaco-fármaco (2 estilos suportados):
+  `INSERT ... VALUES` com `LEAST/GREATEST` + `(SELECT id FROM public.drugs
+  WHERE slug = '…')`, **ou** `INSERT ... SELECT ... FROM (VALUES …) AS
+  v(slug_a, slug_b, …) JOIN public.drugs a ON a.slug = v.slug_a …` (migrações
+  062–069). A severidade pode vir como coluna `v.severity` ou como literal na
+  lista SELECT — ambos são lidos.
 - Novas dimensões: `INSERT INTO <tabela> (...) SELECT d.id, v.* FROM drugs d
   JOIN (VALUES …) AS v(slug, …) ON d.slug = v.slug ON CONFLICT … DO NOTHING`.
 - Correções de conteúdo: `UPDATE` do campo (severidade, fonte, resumo, …).

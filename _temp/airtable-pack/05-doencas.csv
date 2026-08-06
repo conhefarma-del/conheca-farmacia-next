@@ -1,24 +1,98 @@
 ﻿slug,nome_pt,nome_en
 acidose_metabolica,Acidose metabólica aguda,Acute metabolic acidosis
+agranulocitose_historico,História de agranulocitose induzida por metamizol,History of metamizole-induced agranulocytosis
+alcoolismo,Alcoolismo,Alcoholism
+alergia_sulfonamidas,Alergia a sulfonamidas,Sulphonamide allergy
+anemia_nao_diagnosticada,Anemia sem diagnóstico etiológico,Anaemia without an established cause
+angioedema_previo,Angioedema prévio (IECA/hereditário),Previous angioedema (ACE-i/hereditary)
+anuria,Anúria,Anuria
+asma,Asma (broncospasmo),Asthma (bronchospasm)
+asma_aine,Asma induzida por AINE,NSAID-induced asthma
+asma_dpoc,Asma / DPOC,Asthma / COPD
+asma_grave,Asma grave do doente / asma induzida por opioides,Severe asthma / opioid-induced asthma
 avc_hemorragico,AVC hemorrágico,Haemorrhagic stroke
 avc_hemorragico_previo,AVC hemorrágico prévio,Prior haemorrhagic stroke
 bloqueio_av,Bloqueio auriculoventricular,Atrioventricular block
+cardiopatia_estrutural,Cardiopatia estrutural (disfunção ventricular),Structural heart disease (ventricular dysfunction)
+cardiopatia_isquemica,Cardiopatia isquémica,Ischaemic heart disease
+cirrose_hepatica,Cirrose hepática,Hepatic cirrhosis
+colestase,Colestase,Cholestasis
+colestase_obstrutiva,Colestase obstrutiva (obstrução biliar),Obstructive cholestasis (biliary obstruction)
+colite_ulcerosa_aguda,Colite ulcerosa aguda / colite pseudomembranosa,Acute ulcerative colitis / pseudomembranous colitis
 contraste_iodado,Contraste iodado intravascular,Intravascular iodinated contrast
+criancas,Crianças (idade < 12 anos),Children (age < 12 years)
+deficiencia_g6pd,Défice de glicose-6-fosfato desidrogenase,Glucose-6-phosphate dehydrogenase deficiency
 deficiencia_proteina_c,Défice de proteína C ou S,Protein C or S deficiency
+deficiencia_tpmt,Deficiência de TPMT,TPMT deficiency
+dependencia_opioides,Doentes dependentes de opioides,Opioid-dependent patients
 depressao_medula_ossea,Depressão da medula óssea (história),History of bone marrow depression
+depressao_respiratoria,Depressão respiratória (hipoxias/hipocapnia),Respiratory depression (hypoxias/hypocapnia)
+diabetes_mellitus,Diabetes mellitus,Diabetes mellitus
 doenca_cardiovascular,Doença cardiovascular,Cardiovascular disease
+doenca_de_leber,Doença de Leber (atrofia ótica hereditária),Leber's disease (hereditary optic atrophy)
+doenca_esofagica,Doença esofágica,Oesophageal disease
+doenca_gastrointestinal,Doença gastrointestinal,Gastrointestinal disease
+doenca_hepatica,Doença hepática (insuficiência hepática),Hepatic disease (hepatic impairment)
 doenca_hepatica_ativa,Doença hepática ativa,Active liver disease
+doenca_hepatica_grave,Insuficiência hepática moderada a grave,Moderate to severe hepatic impairment
+doenca_no_sinusal,Doença do nó sinusal / distúrbios de condução,Sick sinus syndrome / conduction disorders
+doenca_parkinson,Doença de Parkinson,Parkinson's disease
+doenca_pulmonar_intersticial,Doença pulmonar intersticial,Interstitial lung disease
+doenca_renal_cronica,Doença renal crónica,Chronic kidney disease
+doenca_renal_grave,Doença renal grave,Severe renal disease
+doenca_retina,Doença da retina (maculopatia),Retinal disease (maculopathy)
+encefalopatia_hepatica,Encefalopatia hepática,Hepatic encephalopathy
 enfarte_agudo_miocardio,Enfarte agudo do miocárdio,Acute myocardial infarction
+epilepsia,Epilepsia / convulsões,Epilepsy / seizures
+estenose_arteria_renal,Estenose bilateral das artérias renais,Bilateral renal artery stenosis
 fatores_rabdomiolise,Fatores predisponentes de rabdomiólise,Predisposing factors for rhabdomyolysis
+febre,Febre / calor externo,Fever / external heat
+feocromocitoma,Feocromocitoma,Phaeochromocytoma
+glaucoma,Glaucoma,Glaucoma
+glaucoma_angulo_fechado,Glaucoma de ângulo fechado,Angle-closure glaucoma
+hemocromatose,Hemocromatose / sobrecarga de ferro,Haemochromatosis / iron overload
+hemorragia_ativa,Hemorragia ativa clinicamente significativa,Clinically significant active bleeding
 hemorragia_significativa,Hemorragia clinicamente significativa,Clinically significant bleeding
+hipercalcemia,Hipercalcémia,Hypercalcaemia
+hipercaliemia,Hipercaliemia,Hyperkalaemia
+hipertensao_arterial,Hipertensão arterial,Hypertension
+hipertensao_arterial_grave,Hipertensão arterial grave,Severe hypertension
+hipertensao_grave,Hipertensão grave,Severe hypertension
+hipertensao_nao_controlada,Hipertensão não controlada,Uncontrolled hypertension
+hipertensao_supina,Hipertensão em decúbito,Supine hypertension
+hipertiroidismo,Hipertiroidismo,Hyperthyroidism
+hipertrigliceridemia,Hipertrigliceridemia grave,Severe hypertriglyceridaemia
+hipertrofia_prostatica,Hipertrofia prostática benigna,Benign prostatic hyperplasia
+hipocalcemia,Hipocalcémia,Hypocalcaemia
+hipocaliemia,Hipocaliemia,Hypokalaemia
+hipomagnesemia,Hipomagnesemia,Hypomagnesaemia
 hiponatremia,Hiponatremia / baixa de sódio,Hyponatraemia / low sodium
 hipoxia_tecidual,Condições com hipóxia tecidual,Conditions causing tissue hypoxia
 historia_doenca_hepatica,História de doença hepática,History of liver disease
 hla_b1502,Alelo HLA-B*1502 (populações asiáticas),HLA-B*1502 carrier (Asian populations)
+ileo_paralitico,Íleo paralítico,Paralytic ileus
+infeccao_ativa,Infeção ativa,Active infection
+insuf_respiratoria,Insuficiência respiratória grave,Severe respiratory impairment
 insuficiencia_adrenal,Insuficiência suprarrenal não corrigida,Uncorrected adrenal insufficiency
 insuficiencia_hepatica,Insuficiência hepática,Hepatic insufficiency
+insuficiencia_hepatica_grave,Insuficiência hepática grave (Child-Pugh C),Severe hepatic impairment (Child-Pugh C)
+insuficiencia_renal,Insuficiência renal (incluindo disfunção leve),Renal impairment (including mild dysfunction)
 insuficiencia_renal_grave,Insuficiência renal grave,Severe renal impairment
+litase_renal,Litíase renal,Renal lithiasis
 melas_midd,"Doenças mitocondriais (MELAS, MIDD)","Mitochondrial diseases (MELAS, MIDD)"
+miastenia_gravis,Miastenia gravis,Myasthenia gravis
+nefrolitiase,Nefrolitíase (litíase oxálica),Nephrolithiasis (oxalate stones)
+osteoporose,Osteoporose / risco de fratura,Osteoporosis / fracture risk
+pancreatite,Pancreatite (associada a lípidos),Pancreatitis (lipid-associated)
 porfiria_hepatica,Porfiria hepática,Hepatic porphyria
+prolongamento_qt,Prolongamento do intervalo QT,QT interval prolongation
+retencao_urinaria,Retenção urinária / hiperplasia prostática,Urinary retention / prostatic hyperplasia
+sarcoidose,Sarcoidose,Sarcoidosis
+sindrome_hipersensibilidade,Síndrome de hipersensibilidade (história),Hypersensitivity syndrome (history)
+sindrome_malabsorcao,Síndrome de má absorção crónica,Chronic malabsorption syndrome
 tireotoxicose,Tireotoxicose não tratada,Untreated thyrotoxicosis
+trombocitopenia_hir,Trombocitopenia induzida por heparina (TIH),Heparin-induced thrombocytopenia (HIT)
+trombose_ativa,Trombose venosa/arterial ativa,Active venous/arterial thrombosis
+tuberculose,Tuberculose (ativa ou latente),Tuberculosis (active or latent)
+ulcera_peptica,História de úlcera péptica / uso de AINE,History of peptic ulcer / NSAID use
 ulcera_peptica_ativa,Úlcera péptica ativa,Active peptic ulceration

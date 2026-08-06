@@ -17,12 +17,12 @@ def get(path):
         return json.loads(r.read().decode('utf-8'))
 
 CHECKS = [
-    ('Interações Fármaco-Fármaco', 'farmaco_a', 216),
-    ('Interações Fármaco-Fármaco', 'farmaco_b', 216),
-    ('Interações Alimento/Bebida', 'farmaco', 10),
-    ('Interações Doença', 'farmaco', 23),
-    ('Interações Doença', 'doenca', 23),
-    ('Gravidez/Lactação', 'farmaco', 5),
+    ('Interações Fármaco-Fármaco', 'farmaco_a', 384),
+    ('Interações Fármaco-Fármaco', 'farmaco_b', 384),
+    ('Interações Alimento/Bebida', 'farmaco', 116),
+    ('Interações Doença', 'farmaco', 198),
+    ('Interações Doença', 'doenca', 198),
+    ('Gravidez/Lactação', 'farmaco', 102),
 ]
 def get_all(table, field):
     out = []
