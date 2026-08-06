@@ -101,7 +101,12 @@ export default function InteracoesPageClient({
   pregnancyInfo = [],
 }) {
   const { t } = useContext(LangContext)
-  const [activeTab, setActiveTab] = useState(0)
+  const [activeTab, setActiveTab] = useState(() => {
+    if (typeof window === 'undefined') return 0
+    const params = new URLSearchParams(window.location.search)
+    const tab = parseInt(params.get('aba'), 10)
+    return Number.isInteger(tab) && tab >= 0 && tab <= 3 ? tab : 0
+  })
   const [severityFilter, setSeverityFilter] = useState('all')
   const [selectedIds, setSelectedIds] = useState(() => {
     if (typeof window === 'undefined') return []

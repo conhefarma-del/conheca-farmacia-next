@@ -2305,6 +2305,40 @@ html.dark .lang-option + .lang-option {
     max-width: auto;
   }
 
+  /* Estado expandido: pesquisa ocupa a largura toda, esconde a língua */
+  .utility-bar-container.search-open .utility-language-toggle,
+  .utility-bar-container.search-open .utility-lang {
+    display: none;
+  }
+
+  .utility-search.mobile-open {
+    flex: 1;
+    max-width: none;
+  }
+
+  .utility-search.mobile-open .utility-search-input {
+    display: block;
+  }
+
+  .utility-search-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    border-radius: 6px;
+  }
+
+  .utility-search-close:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+  }
 }
 
 /* =============================================

@@ -48,7 +48,9 @@
     "pesquisa": "Pesquisa",
     "hero_title": "Pesquisa",
     "hero_subtitle": "Pesquise por artigos, eventos, lives, guias de estudo, protocolos clínicos e fármacos na nossa plataforma.",
-    "empty_hint": "Escreva o que pretende pesquisar."
+    "empty_hint": "Escreva o que pretende pesquisar.",
+    "interacoes": "Interações",
+    "fechar_pesquisa": "Fechar pesquisa"
   },
   "content": {
     "artigo": "Artigo",

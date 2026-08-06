@@ -48,7 +48,9 @@
     "pesquisa": "Search",
     "hero_title": "Search",
     "hero_subtitle": "Search for articles, events, lives, study guides, clinical protocols and drugs on our platform.",
-    "empty_hint": "Type what you want to search for."
+    "empty_hint": "Type what you want to search for.",
+    "interacoes": "Interactions",
+    "fechar_pesquisa": "Close search"
   },
   "content": {
     "artigo": "Article",
