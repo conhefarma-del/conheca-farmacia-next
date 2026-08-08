@@ -11,6 +11,7 @@ import {
   BookOpen,
   CheckCircle2,
   ChevronDown,
+  FlaskConical,
   HeartPulse,
   Info,
   Pill,
@@ -84,7 +85,10 @@ function InteractionCard({ titleA, titleB, severity, description, children }) {
 function InfoList({ titleKey, text }) {
   const { t } = useContext(LangContext);
   if (!text) return null;
+  // Normaliza o literal "\n" (backslash+n) de seeds antigos para quebras de
+  // linha reais, além das quebras reais já existentes — garante a lista.
   const items = text
+    .replace(/\\n/g, "\n")
     .split("\n")
     .map((s) => s.trim())
     .filter(Boolean);
@@ -107,6 +111,17 @@ function DetailBlock({ titleKey, children, className }) {
     <div className={`detail-block ${className || ""}`}>
       <h4 className="detail-title">{t(titleKey)}</h4>
       <p>{children}</p>
+    </div>
+  );
+}
+
+function PharmacologyBlock({ titleKey, text }) {
+  const { t } = useContext(LangContext);
+  if (!text) return null;
+  return (
+    <div className="pharmacology-block">
+      <h4 className="pharmacology-title">{t(titleKey)}</h4>
+      <p>{text}</p>
     </div>
   );
 }
@@ -289,6 +304,48 @@ export default function MedicamentoDetailClient({
               titleKey="medicamento_detalhe.precautions"
               text={drug.profile.precautions}
             />
+          </section>
+        )}
+
+        {/* ---- Farmacologia ---- */}
+        {drug.pharmacology && (
+          <section className="medicamento-section">
+            <h2 className="medicamento-section-title">
+              <FlaskConical size={18} aria-hidden="true" />
+              {t("medicamento_detalhe.secao_farmacologia")}
+            </h2>
+            <div className="medicamento-cards">
+              <div className="pharmacology-grid">
+                <PharmacologyBlock
+                  titleKey="medicamento_detalhe.farmacodinamica"
+                  text={drug.pharmacology.pharmacodynamics}
+                />
+                <PharmacologyBlock
+                  titleKey="medicamento_detalhe.mecanismo_acao"
+                  text={drug.pharmacology.mechanism}
+                />
+                <PharmacologyBlock
+                  titleKey="medicamento_detalhe.absorcao"
+                  text={drug.pharmacology.absorption}
+                />
+                <PharmacologyBlock
+                  titleKey="medicamento_detalhe.metabolismo"
+                  text={drug.pharmacology.metabolism}
+                />
+                <PharmacologyBlock
+                  titleKey="medicamento_detalhe.meia_vida"
+                  text={drug.pharmacology.halfLife}
+                />
+              </div>
+              {drug.pharmacology.source && (
+                <p className="medicamento-source">
+                  <span className="detail-title">
+                    {t("interacoes_page.fonte")}
+                  </span>
+                  <span>{drug.pharmacology.source}</span>
+                </p>
+              )}
+            </div>
           </section>
         )}
 

@@ -10,7 +10,8 @@ import {
 import DrugForm from './DrugForm'
 import DrugInteractionForm from './DrugInteractionForm'
 import DrugProfileForm from './DrugProfileForm'
-import { getDrugProfile } from '@/lib/actions/medicamentos'
+import DrugPharmacologyForm from './DrugPharmacologyForm'
+import { getDrugPharmacology, getDrugProfile } from '@/lib/actions/medicamentos'
 
 function statusBadge(status) {
   if (status === 'published') return <span className="admin-badge admin-badge-success">Publicado</span>
@@ -47,6 +48,12 @@ export default function InteracoesAdminPage({ lang, initialDrugs, initialInterac
   const [profilePanelRendered, setProfilePanelRendered] = useState(false)
   const [editingProfile, setEditingProfile] = useState(null)
   const [editingProfileDrug, setEditingProfileDrug] = useState(null)
+
+  // Painel: Farmacologia de fármaco
+  const [pharmacologyPanelOpen, setPharmacologyPanelOpen] = useState(false)
+  const [pharmacologyPanelRendered, setPharmacologyPanelRendered] = useState(false)
+  const [editingPharmacology, setEditingPharmacology] = useState(null)
+  const [editingPharmacologyDrug, setEditingPharmacologyDrug] = useState(null)
 
   const openPanel = (renderedSetter, openSetter) => {
     renderedSetter(true)
@@ -95,6 +102,12 @@ export default function InteracoesAdminPage({ lang, initialDrugs, initialInterac
     setEditingProfile(profile)
     openPanel(setProfilePanelRendered, setProfilePanelOpen)
   }
+  const openPharmacologyForm = async (drug) => {
+    const pharmacology = await getDrugPharmacology(drug.id)
+    setEditingPharmacologyDrug(drug)
+    setEditingPharmacology(pharmacology)
+    openPanel(setPharmacologyPanelRendered, setPharmacologyPanelOpen)
+  }
 
   const isSuper = currentUserRole === 'superadmin'
 
@@ -119,7 +132,7 @@ export default function InteracoesAdminPage({ lang, initialDrugs, initialInterac
           ) : (
             <table className="admin-table">
               <thead>
-                <tr><th>Nome</th><th>Classe</th><th>Slug</th><th>Estado</th><th>Interações</th><th>Perfil</th><th>Ordem</th><th>Ações</th></tr>
+                <tr><th>Nome</th><th>Classe</th><th>Slug</th><th>Estado</th><th>Interações</th><th>Perfil</th><th>Farmacologia</th><th>Ordem</th><th>Ações</th></tr>
               </thead>
               <tbody>
                 {drugs.map((d) => (
@@ -130,10 +143,12 @@ export default function InteracoesAdminPage({ lang, initialDrugs, initialInterac
                     <td>{statusBadge(d.is_archived ? 'archived' : d.status)}</td>
                     <td>{d.interactionCount}</td>
                     <td>{d.profileStatus ? statusBadge(d.profileStatus) : <span className="admin-badge">—</span>}</td>
+                    <td>{d.pharmacologyStatus ? statusBadge(d.pharmacologyStatus) : <span className="admin-badge">—</span>}</td>
                     <td>{d.sort_order}</td>
                     <td>
                       <div className="admin-table-actions">
                         <button className="admin-btn admin-btn-sm" onClick={() => openProfileForm(d)}>Perfil</button>
+                        <button className="admin-btn admin-btn-sm" onClick={() => openPharmacologyForm(d)}>Farmacologia</button>
                         <button className="admin-btn admin-btn-sm" onClick={() => openDrugForm(d)}>Editar</button>
                         {!d.is_archived ? (
                           <button className="admin-btn admin-btn-sm" onClick={() => run(() => archiveDrug(d.id), 'Fármaco arquivado.')}>Arquivar</button>
@@ -232,6 +247,16 @@ export default function InteracoesAdminPage({ lang, initialDrugs, initialInterac
           panelOpen={profilePanelOpen}
           onClose={() => closePanel(setProfilePanelOpen, setProfilePanelRendered)}
           onSaved={(ok, text) => { showMessage(ok, text); if (ok) reload(); closePanel(setProfilePanelOpen, setProfilePanelRendered) }}
+        />
+      )}
+
+      {pharmacologyPanelRendered && (
+        <DrugPharmacologyForm
+          drug={editingPharmacologyDrug}
+          pharmacology={editingPharmacology}
+          panelOpen={pharmacologyPanelOpen}
+          onClose={() => closePanel(setPharmacologyPanelOpen, setPharmacologyPanelRendered)}
+          onSaved={(ok, text) => { showMessage(ok, text); if (ok) reload(); closePanel(setPharmacologyPanelOpen, setPharmacologyPanelRendered) }}
         />
       )}
     </div>

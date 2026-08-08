@@ -176,8 +176,11 @@ export default function MedicamentosPageClient({ lang, drugs }) {
   const severityLabelKey = (sev) => `interacoes_page.severidade_${sev}`;
 
   // Secção de grupo colapsável: cabeçalho clicável com seta e contagem.
+  // Durante a pesquisa o fluxo de colapsar não se aplica — os grupos ficam
+  // sempre abertos e o cabeçalho deixa de ser interativo (sem seta).
   const renderGroup = ({ key, label, list, className }) => {
-    const isOpen = openGroups.has(key);
+    const searching = query.trim().length > 0;
+    const isOpen = searching || openGroups.has(key);
     return (
       <section
         key={key}
@@ -188,15 +191,17 @@ export default function MedicamentosPageClient({ lang, drugs }) {
           className="drug-list-group-toggle"
           aria-expanded={isOpen}
           aria-controls={`grupo-${key}`}
+          disabled={searching}
           onClick={() => toggleGroup(key)}
         >
           <span className="drug-list-group-label">{label}</span>
           <span className="drug-list-group-count">{list.length}</span>
-          {isOpen ? (
-            <ChevronUp size={18} aria-hidden="true" />
-          ) : (
-            <ChevronDown size={18} aria-hidden="true" />
-          )}
+          {!searching &&
+            (isOpen ? (
+              <ChevronUp size={18} aria-hidden="true" />
+            ) : (
+              <ChevronDown size={18} aria-hidden="true" />
+            ))}
         </button>
         {isOpen && (
           <div id={`grupo-${key}`} className="drug-list-group-body">
