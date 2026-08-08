@@ -28,6 +28,15 @@ const SEVERITY_META = {
   unknown: { icon: BookOpen },
 };
 
+// Chips de filtro por severidade (mesmo padrão do checker).
+const SEVERITY_FILTERS = [
+  { value: "all", labelKey: "interacoes_page.filter_todas" },
+  { value: "critical", labelKey: "interacoes_page.severidade_critical" },
+  { value: "moderate", labelKey: "interacoes_page.severidade_moderate" },
+  { value: "minor", labelKey: "interacoes_page.severidade_minor" },
+  { value: "none", labelKey: "interacoes_page.severidade_none" },
+];
+
 function severityLabelKey(severity) {
   return `interacoes_page.severidade_${severity}`;
 }
@@ -110,9 +119,12 @@ export default function MedicamentoDetailClient({
 }) {
   const { t } = useContext(LangContext);
   const [audience, setAudience] = useState("public");
+  const [severityFilter, setSeverityFilter] = useState("all");
 
   const listPath = `/${lang}/${lang === "pt" ? "medicamentos" : "medicines"}`;
   const checkerPath = `/${lang}/${lang === "pt" ? "interacoes" : "interactions"}?farmaco=${drug.slug}`;
+  const detailPath = (slug) =>
+    `/${lang}/${lang === "pt" ? "medicamento" : "medicine"}/${slug}`;
   const drugsById = useMemo(() => {
     const map = {};
     drugs.forEach((d) => {
@@ -120,6 +132,48 @@ export default function MedicamentoDetailClient({
     });
     return map;
   }, [drugs]);
+
+  // Fármacos relacionados/similares: mesmo subgrupo químico ATC (prefixo 4),
+  // depois subgrupo farmacológico (prefixo 3), por fim a mesma classe.
+  const relatedDrugs = useMemo(() => {
+    const atc = drug.atcCode || "";
+    const pool = [];
+    const pushUnique = (list) => {
+      list.forEach((d) => {
+        if (d.id !== drug.id && !pool.some((x) => x.id === d.id)) pool.push(d);
+      });
+    };
+    if (atc.length >= 4)
+      pushUnique(
+        drugs.filter((d) => d.atcCode?.slice(0, 4) === atc.slice(0, 4))
+      );
+    if (atc.length >= 3)
+      pushUnique(
+        drugs.filter((d) => d.atcCode?.slice(0, 3) === atc.slice(0, 3))
+      );
+    pushUnique(
+      drugs.filter((d) => d.className && d.className === drug.className)
+    );
+    return pool.sort((a, b) => a.name.localeCompare(b.name)).slice(0, 10);
+  }, [drug, drugs]);
+
+  // Filtro de severidade aplicado às 4 secções de interações.
+  const hasInteractions =
+    interactions.drugDrug.length > 0 ||
+    interactions.food.length > 0 ||
+    interactions.disease.length > 0 ||
+    interactions.pregnancy.length > 0;
+  const sevMatches = (s) => severityFilter === "all" || severityFilter === s;
+  const filteredDrugDrug = interactions.drugDrug.filter((p) =>
+    sevMatches(p.severity)
+  );
+  const filteredFood = interactions.food.filter((x) => sevMatches(x.severity));
+  const filteredDisease = interactions.disease.filter((x) =>
+    sevMatches(x.severity)
+  );
+  const filteredPregnancy = interactions.pregnancy.filter((x) =>
+    sevMatches(pregnancySeverity(x.pregnancyCategory))
+  );
 
   const partnerName = (pair) => {
     const partnerId = pair.drugAId === drug.id ? pair.drugBId : pair.drugAId;
@@ -238,6 +292,58 @@ export default function MedicamentoDetailClient({
           </section>
         )}
 
+        {/* ---- Fármacos relacionados/similares ---- */}
+        {relatedDrugs.length > 0 && (
+          <section className="medicamento-section">
+            <h2 className="medicamento-section-title">
+              <BookOpen size={18} aria-hidden="true" />
+              {t("medicamento_detalhe.secao_relacionados")}
+            </h2>
+            <p className="medicamento-section-subtitle">
+              {t("medicamento_detalhe.relacionados_subtitle")}
+            </p>
+            <div className="related-drugs">
+              {relatedDrugs.map((d) => (
+                <Link
+                  key={d.id}
+                  href={detailPath(d.slug)}
+                  className="related-drug-chip"
+                >
+                  <span className="related-drug-name">{d.name}</span>
+                  {d.className && (
+                    <span className="related-drug-class">{d.className}</span>
+                  )}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ---- Filtro de severidade das interações ---- */}
+        {hasInteractions && (
+          <div className="medicamento-filter-bar">
+            <span className="medicamento-filter-label">
+              {t("interacoes_page.filter_aria_label")}
+            </span>
+            <div
+              className="severity-filters"
+              role="group"
+              aria-label={t("interacoes_page.filter_aria_label")}
+            >
+              {SEVERITY_FILTERS.map((f) => (
+                <button
+                  key={f.value}
+                  className={`severity-filter-chip${severityFilter === f.value ? " is-active" : ""}`}
+                  aria-pressed={severityFilter === f.value}
+                  onClick={() => setSeverityFilter(f.value)}
+                >
+                  {t(f.labelKey)}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* ---- Interações fármaco-fármaco ---- */}
         <section className="medicamento-section">
           <h2 className="medicamento-section-title">
@@ -248,9 +354,13 @@ export default function MedicamentoDetailClient({
             <p className="medicamento-empty">
               {t("medicamento_detalhe.sem_interacoes")}
             </p>
+          ) : filteredDrugDrug.length === 0 ? (
+            <p className="medicamento-empty">
+              {t("interacoes_page.filter_sem_resultados")}
+            </p>
           ) : (
             <div className="medicamento-cards">
-              {interactions.drugDrug.map((pair) => (
+              {filteredDrugDrug.map((pair) => (
                 <InteractionCard
                   key={pair.id}
                   titleA={drug.name}
@@ -313,9 +423,13 @@ export default function MedicamentoDetailClient({
             <p className="medicamento-empty">
               {t("medicamento_detalhe.sem_alimentos")}
             </p>
+          ) : filteredFood.length === 0 ? (
+            <p className="medicamento-empty">
+              {t("interacoes_page.filter_sem_resultados")}
+            </p>
           ) : (
             <div className="medicamento-cards">
-              {interactions.food.map((item) => (
+              {filteredFood.map((item) => (
                 <InteractionCard
                   key={item.id}
                   titleA={drug.name}
@@ -351,9 +465,13 @@ export default function MedicamentoDetailClient({
             <p className="medicamento-empty">
               {t("medicamento_detalhe.sem_doencas")}
             </p>
+          ) : filteredDisease.length === 0 ? (
+            <p className="medicamento-empty">
+              {t("interacoes_page.filter_sem_resultados")}
+            </p>
           ) : (
             <div className="medicamento-cards">
-              {interactions.disease.map((item) => {
+              {filteredDisease.map((item) => {
                 const isCI = item.interactionType === "contraindication";
                 return (
                   <InteractionCard
@@ -392,9 +510,13 @@ export default function MedicamentoDetailClient({
             <p className="medicamento-empty">
               {t("medicamento_detalhe.sem_gravidez")}
             </p>
+          ) : filteredPregnancy.length === 0 ? (
+            <p className="medicamento-empty">
+              {t("interacoes_page.filter_sem_resultados")}
+            </p>
           ) : (
             <div className="medicamento-cards">
-              {interactions.pregnancy.map((item) => {
+              {filteredPregnancy.map((item) => {
                 const sev = pregnancySeverity(item.pregnancyCategory);
                 const isCI = item.pregnancyCategory === "contraindicated";
                 return (

@@ -581,6 +581,8 @@
     "audiencia_publico": "Para o público",
     "audiencia_profissionais": "Para profissionais",
     "secao_interacoes": "Interações medicamentosas",
+    "secao_relacionados": "Fármacos relacionados",
+    "relacionados_subtitle": "Medicamentos do mesmo grupo terapêutico (classificação ATC) ou da mesma classe farmacológica.",
     "secao_alimentos": "Alimentos & bebidas",
     "secao_doencas": "Doenças",
     "secao_gravidez": "Gestação",

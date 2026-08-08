@@ -1,9 +1,11 @@
 "use client";
 
-import { useContext, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
+  ChevronDown,
+  ChevronUp,
   ListOrdered,
   Search,
   ShieldAlert,
@@ -35,10 +37,67 @@ const MODES = [
   { value: "risk", icon: ShieldAlert },
 ];
 
+// Chaves de grupo válidas para persistir no URL (formato "modo:grupo").
+const GROUP_KEY_RE = /^(alpha|group|risk):.+$/;
+
 export default function MedicamentosPageClient({ lang, drugs }) {
   const { t } = useContext(LangContext);
   const [query, setQuery] = useState("");
   const [mode, setMode] = useState("alpha");
+  // Grupos colapsáveis por modo: chave "modo:grupo" -> aberto.
+  // Por predefinição começam todos fechados (contagem visível no cabeçalho).
+  const [openGroups, setOpenGroups] = useState(() => new Set());
+
+  const toggleGroup = (key) => {
+    setOpenGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
+
+  // Restaura o estado a partir do URL após a hidratação e em back/forward.
+  useEffect(() => {
+    const applyFromUrl = () => {
+      const params = new URLSearchParams(window.location.search);
+      const q = params.get("q") || "";
+      const modo = params.get("modo");
+      const raw = params.get("abertos") || "";
+      const open = new Set(
+        raw
+          .split(",")
+          .map((k) => k.trim())
+          .filter((k) => GROUP_KEY_RE.test(k))
+      );
+      setQuery(q);
+      if (MODES.some((m) => m.value === modo)) setMode(modo);
+      setOpenGroups(open);
+    };
+    applyFromUrl();
+    window.addEventListener("popstate", applyFromUrl);
+    return () => window.removeEventListener("popstate", applyFromUrl);
+  }, []);
+
+  // Persiste o estado no URL (partilhável e recuperável entre navegações).
+  // A primeira execução é ignorada: no mount quem aplica o URL é o restore.
+  const firstWrite = useRef(true);
+  useEffect(() => {
+    if (firstWrite.current) {
+      firstWrite.current = false;
+      return;
+    }
+    const params = new URLSearchParams();
+    if (query) params.set("q", query);
+    if (mode !== "alpha") params.set("modo", mode);
+    const open = [...openGroups].filter((k) => GROUP_KEY_RE.test(k));
+    if (open.length) params.set("abertos", open.join(","));
+    const qs = params.toString();
+    const url = qs
+      ? `${window.location.pathname}?${qs}`
+      : window.location.pathname;
+    history.replaceState(history.state, "", url);
+  }, [query, mode, openGroups]);
 
   const detailPath = (slug) =>
     `/${lang}/${lang === "pt" ? "medicamento" : "medicine"}/${slug}`;
@@ -58,6 +117,22 @@ export default function MedicamentosPageClient({ lang, drugs }) {
     return [...filtered].sort((a, b) => a.name.localeCompare(b.name));
   }, [filtered]);
 
+  // Modo "alfabético": grupos pela letra inicial do nome (sem acentos).
+  const groupedByAlpha = useMemo(() => {
+    const map = {};
+    sorted.forEach((d) => {
+      const letter =
+        (d.name || "")
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .charAt(0)
+          .toUpperCase() || "—";
+      if (!map[letter]) map[letter] = [];
+      map[letter].push(d);
+    });
+    return Object.entries(map).sort(([a], [b]) => a.localeCompare(b));
+  }, [sorted]);
+
   // Modo "grupo": classificação ATC nível 1 (letra A–V); dentro, alfabético.
   const groupedByAtc = useMemo(() => {
     const map = {};
@@ -71,7 +146,9 @@ export default function MedicamentosPageClient({ lang, drugs }) {
   }, [sorted]);
 
   const atcLabelKey = (letter) =>
-    letter === "—" ? "medicamentos_page.atc_sem_grupo" : `medicamentos_page.atc_${letter}`;
+    letter === "—"
+      ? "medicamentos_page.atc_sem_grupo"
+      : `medicamentos_page.atc_${letter}`;
 
   // Modo "risco": baldes por severidade máxima; dentro, alfabético.
   const groupedByRisk = useMemo(() => {
@@ -97,6 +174,38 @@ export default function MedicamentosPageClient({ lang, drugs }) {
       : `medicamentos_page.risco_${sev}`;
 
   const severityLabelKey = (sev) => `interacoes_page.severidade_${sev}`;
+
+  // Secção de grupo colapsável: cabeçalho clicável com seta e contagem.
+  const renderGroup = ({ key, label, list, className }) => {
+    const isOpen = openGroups.has(key);
+    return (
+      <section
+        key={key}
+        className={`drug-list-group${className ? ` ${className}` : ""}`}
+      >
+        <button
+          type="button"
+          className="drug-list-group-toggle"
+          aria-expanded={isOpen}
+          aria-controls={`grupo-${key}`}
+          onClick={() => toggleGroup(key)}
+        >
+          <span className="drug-list-group-label">{label}</span>
+          <span className="drug-list-group-count">{list.length}</span>
+          {isOpen ? (
+            <ChevronUp size={18} aria-hidden="true" />
+          ) : (
+            <ChevronDown size={18} aria-hidden="true" />
+          )}
+        </button>
+        {isOpen && (
+          <div id={`grupo-${key}`} className="drug-list-group-body">
+            <div className="drug-list-grid">{list.map(renderCard)}</div>
+          </div>
+        )}
+      </section>
+    );
+  };
 
   const renderCard = (d) => {
     const RiskIcon = RISK_ICONS[d.maxSeverity];
@@ -195,29 +304,28 @@ export default function MedicamentosPageClient({ lang, drugs }) {
             </div>
             <p>{t("medicamentos_page.sem_resultados")}</p>
           </div>
-        ) : mode === "alpha" ? (
-          <div className="drug-list-grid">{sorted.map(renderCard)}</div>
-        ) : mode === "group" ? (
-          <div className="drug-list-groups">
-            {groupedByAtc.map(([letter, list]) => (
-              <section key={letter} className="drug-list-group">
-                <h2 className="drug-list-group-title">
-                  {t(atcLabelKey(letter))}
-                </h2>
-                <div className="drug-list-grid">{list.map(renderCard)}</div>
-              </section>
-            ))}
-          </div>
         ) : (
           <div className="drug-list-groups">
-            {groupedByRisk.map(([sev, list]) => (
-              <section key={sev} className={`drug-list-group is-${sev}`}>
-                <h2 className="drug-list-group-title">
-                  {t(riskLabelKey(sev))}
-                </h2>
-                <div className="drug-list-grid">{list.map(renderCard)}</div>
-              </section>
-            ))}
+            {mode === "alpha"
+              ? groupedByAlpha.map(([letter, list]) =>
+                  renderGroup({ key: `alpha:${letter}`, label: letter, list })
+                )
+              : mode === "group"
+                ? groupedByAtc.map(([letter, list]) =>
+                    renderGroup({
+                      key: `group:${letter}`,
+                      label: t(atcLabelKey(letter)),
+                      list,
+                    })
+                  )
+                : groupedByRisk.map(([sev, list]) =>
+                    renderGroup({
+                      key: `risk:${sev}`,
+                      label: t(riskLabelKey(sev)),
+                      list,
+                      className: `is-${sev}`,
+                    })
+                  )}
           </div>
         )}
       </div>
