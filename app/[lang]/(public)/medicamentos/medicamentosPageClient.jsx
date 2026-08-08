@@ -11,6 +11,7 @@ import {
   ShieldAlert,
   Tag,
   TriangleAlert,
+  X,
 } from "lucide-react";
 import { LangContext } from "@/lib/contexts";
 
@@ -130,7 +131,9 @@ export default function MedicamentosPageClient({ lang, drugs }) {
       if (!map[letter]) map[letter] = [];
       map[letter].push(d);
     });
-    return Object.entries(map).sort(([a], [b]) => a.localeCompare(b));
+    return Object.entries(map)
+      .filter(([, list]) => list.length > 0)
+      .sort(([a], [b]) => a.localeCompare(b));
   }, [sorted]);
 
   // Modo "grupo": classificação ATC nível 1 (letra A–V); dentro, alfabético.
@@ -142,7 +145,9 @@ export default function MedicamentosPageClient({ lang, drugs }) {
       if (!map[key]) map[key] = [];
       map[key].push(d);
     });
-    return Object.entries(map).sort(([a], [b]) => a.localeCompare(b));
+    return Object.entries(map)
+      .filter(([, list]) => list.length > 0)
+      .sort(([a], [b]) => a.localeCompare(b));
   }, [sorted]);
 
   const atcLabelKey = (letter) =>
@@ -307,7 +312,23 @@ export default function MedicamentosPageClient({ lang, drugs }) {
             <div className="search-empty-icon">
               <Search size={28} aria-hidden="true" />
             </div>
-            <p>{t("medicamentos_page.sem_resultados")}</p>
+            <p>
+              {query.trim()
+                ? t("medicamentos_page.sem_resultados_query", {
+                    query: query.trim(),
+                  })
+                : t("medicamentos_page.sem_resultados")}
+            </p>
+            {query.trim() && (
+              <button
+                type="button"
+                className="medicamentos-clear-search"
+                onClick={() => setQuery("")}
+              >
+                <X size={14} aria-hidden="true" />
+                {t("medicamentos_page.limpar_pesquisa")}
+              </button>
+            )}
           </div>
         ) : (
           <div className="drug-list-groups">

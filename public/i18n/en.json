@@ -567,6 +567,8 @@
     "atc_V": "V — Various",
     "resultados": "{count} drugs",
     "sem_resultados": "No drug matches your search.",
+  "sem_resultados_query": "No drug matches \"{query}\".",
+  "limpar_pesquisa": "Clear search",
     "risco_critical": "Critical interactions",
     "risco_moderate": "Moderate interactions",
     "risco_minor": "Minor interactions",

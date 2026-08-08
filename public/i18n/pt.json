@@ -567,6 +567,8 @@
     "atc_V": "V — Vários",
     "resultados": "{count} fármacos",
     "sem_resultados": "Nenhum fármaco corresponde à pesquisa.",
+    "sem_resultados_query": "Nenhum fármaco corresponde a \"{query}\".",
+    "limpar_pesquisa": "Limpar pesquisa",
     "risco_critical": "Interações graves",
     "risco_moderate": "Interações moderadas",
     "risco_minor": "Interações menores",

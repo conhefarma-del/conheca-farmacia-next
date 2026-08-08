@@ -5341,6 +5341,28 @@ html { scroll-behavior: smooth; }
   font-size: 14px;
 }
 
+.medicamentos-clear-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 18px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--color-brand-divider);
+  background: var(--color-brand-bg-alt);
+  color: var(--color-brand-deep);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.medicamentos-clear-search:hover {
+  border-color: var(--color-brand-accent);
+  color: var(--color-brand-accent);
+}
+
 .results-header {
   display: flex;
   justify-content: space-between;
