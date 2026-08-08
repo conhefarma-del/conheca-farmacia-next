@@ -4,6 +4,23 @@ import { useState } from "react";
 import { Save, X } from "lucide-react";
 import { saveDrugProfile } from "@/lib/actions/medicamentos";
 
+function formatDate(value) {
+  if (!value) return "—";
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "—";
+  return d.toLocaleString("pt-PT", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function shortId(value) {
+  return value ? value.slice(0, 8) + "…" : "—";
+}
+
 /**
  * Slide-in panel largo para criar/editar o perfil editorial de um fármaco
  * (tabela drug_profiles, 1:1 com drugs). Segue o padrão do
@@ -232,6 +249,53 @@ export default function DrugProfileForm({
               }}
             >
               {error}
+            </div>
+          )}
+
+          {profile && (
+            <div
+              style={{
+                background: "#f8fafc",
+                border: "1px solid #e2e8f0",
+                borderRadius: 8,
+                padding: "12px 16px",
+                marginBottom: 22,
+                fontSize: 13,
+              }}
+            >
+              <div style={labelStyle}>Estado &amp; Histórico</div>
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: "8px 24px",
+                  color: "#374151",
+                }}
+              >
+                <span>
+                  Criado em: <strong>{formatDate(profile.created_at)}</strong>
+                </span>
+                <span>
+                  Atualizado em:{" "}
+                  <strong>{formatDate(profile.updated_at)}</strong>
+                </span>
+                <span>
+                  Última edição por:{" "}
+                  <strong>{shortId(profile.updated_by)}</strong>
+                </span>
+                {profile.is_archived && (
+                  <span style={{ color: "#b91c1c" }}>
+                    <strong>Arquivado</strong>
+                    {profile.archived_at
+                      ? ` em ${formatDate(profile.archived_at)}`
+                      : ""}
+                  </span>
+                )}
+              </div>
+              <p style={hint}>
+                Guardar um perfil arquivado volta a torná-lo visível
+                (is_archived = false) e regista quem editou pela última vez.
+              </p>
             </div>
           )}
 

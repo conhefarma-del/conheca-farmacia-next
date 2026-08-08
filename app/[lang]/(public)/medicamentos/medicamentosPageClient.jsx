@@ -58,16 +58,20 @@ export default function MedicamentosPageClient({ lang, drugs }) {
     return [...filtered].sort((a, b) => a.name.localeCompare(b.name));
   }, [filtered]);
 
-  // Modo "grupo": cabeçalhos por classe farmacológica; dentro, alfabético.
-  const groupedByClass = useMemo(() => {
+  // Modo "grupo": classificação ATC nível 1 (letra A–V); dentro, alfabético.
+  const groupedByAtc = useMemo(() => {
     const map = {};
     sorted.forEach((d) => {
-      const key = d.className || "—";
+      const letter = (d.atcCode || "").slice(0, 1);
+      const key = letter || "—";
       if (!map[key]) map[key] = [];
       map[key].push(d);
     });
     return Object.entries(map).sort(([a], [b]) => a.localeCompare(b));
   }, [sorted]);
+
+  const atcLabelKey = (letter) =>
+    letter === "—" ? "medicamentos_page.atc_sem_grupo" : `medicamentos_page.atc_${letter}`;
 
   // Modo "risco": baldes por severidade máxima; dentro, alfabético.
   const groupedByRisk = useMemo(() => {
@@ -103,6 +107,7 @@ export default function MedicamentosPageClient({ lang, drugs }) {
           {d.className && (
             <span className="drug-list-card-class">{d.className}</span>
           )}
+          {d.atcCode && <span className="drug-list-card-atc">{d.atcCode}</span>}
         </div>
         <div className="drug-list-card-meta">
           {d.maxSeverity && (
@@ -194,9 +199,11 @@ export default function MedicamentosPageClient({ lang, drugs }) {
           <div className="drug-list-grid">{sorted.map(renderCard)}</div>
         ) : mode === "group" ? (
           <div className="drug-list-groups">
-            {groupedByClass.map(([className, list]) => (
-              <section key={className} className="drug-list-group">
-                <h2 className="drug-list-group-title">{className}</h2>
+            {groupedByAtc.map(([letter, list]) => (
+              <section key={letter} className="drug-list-group">
+                <h2 className="drug-list-group-title">
+                  {t(atcLabelKey(letter))}
+                </h2>
                 <div className="drug-list-grid">{list.map(renderCard)}</div>
               </section>
             ))}

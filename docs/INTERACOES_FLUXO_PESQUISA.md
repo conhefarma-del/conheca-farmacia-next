@@ -3,7 +3,7 @@
 Documento que descreve o método usado para **pesquisar, verificar e adicionar**
 interações à calculadora de interações (`/interacoes`).
 
-> **Dois fluxos independentes.** O trabalho divide-se em **dois pedidos
+> **Três fluxos independentes.** O trabalho divide-se em **três pedidos
 > separados**, cada um com o seu fluxo próprio. Podem ser pedidos em qualquer
 > ordem e são **aditivos** (nenhum toca no que já existe):
 
@@ -15,6 +15,11 @@ interações à calculadora de interações (`/interacoes`).
   adiciona as interações **não-medicamento-medicamento** para fármacos **que
   já existem** em `public.drugs`. Usa **EMC-UK como fonte canónica** (com
   Health Canada e DailyMed de apoio e corroboração). → Ver **secção 12**.
+- **Fluxo 3 — Perfis de fármaco** (`drug_profiles`): a ficha editorial de cada
+  fármaco (overview público/profissionais, indicações, efeitos secundários,
+  precauções — PT/EN), que alimenta a página `/medicamento/[slug]`. Usa
+  **DailyMed como fonte principal** + corroboração do Prontuário. → Ver
+  **secção 13**.
 
 > **Fonte canónica do Fluxo 2:** prioriza-se o **EMC-UK (MHRA, medicines.org.uk)**
 > como fonte primária de verdade para as três dimensões novas quando há
@@ -286,13 +291,30 @@ mapa da família: cada capítulo lista os fármacos da classe e o **Anexo 7 —
 - `UNIQUE (drug_a_id, drug_b_id)`
 - `CHECK (drug_a_id < drug_b_id)` — pares **canónicos**
 - `severity CHECK IN ('critical','moderate','minor','none')`
-- Colunas de conteúdo: `summary_pt/en`, `mechanism_pt/en`, `management_pt/en`,
-  `monitoring_pt/en`, `red_flags_pt/en`
+- Colunas de conteúdo: `summary_pt/en` (**resumo do público leigo**),
+  `summary_pro_pt/en` (resumo **profissional**), `explanation_pt/en`
+  (explicação longa por par), `mechanism_pt/en`, `management_pt/en`,
+  `monitoring_pt/en`, `red_flags_pt/en` — as colunas `summary_pro_*` e
+  `explanation_*` foram adicionadas na migração 079
 - Colunas de citação: `source_pt/en`, `source_url`
 - RLS: `admin_all` (authenticated admin) + `anon_read` (só `published` e não arquivado)
 
 > Nota: `source_url` é uma coluna única de link; as citações principais vivem em
 > `source_pt`/`source_en` (texto com URLs embutidos).
+
+### `public.drug_profiles` — perfil editorial do fármaco (1:1 com drugs)
+
+- `drug_id UUID UNIQUE REFERENCES drugs(id) ON DELETE CASCADE` — um perfil por
+  fármaco (upsert por `drug_id`)
+- Overview (toggle Público | Profissionais na ficha):
+  `overview_public_pt/en` (tom leigo) e `overview_pro_pt/en` (tom técnico)
+- Secções da ficha (bullets separados por `\n`, renderizados como lista):
+  `indications_pt/en`, `side_effects_pt/en`, `precautions_pt/en`
+- Citação: `source_pt/en`
+- Estado: `status ('draft'|'published')`, `is_archived`, `archived_at/by`,
+  `updated_by` (quem guardou pela última vez), `created_at`, `updated_at`
+- RLS: `admin_all` + `anon_read` (só `published` e não arquivado)
+- Tabela criada na migração 079; colunas de conteúdo na 080; `updated_by` na 082
 
 ---
 
@@ -401,6 +423,28 @@ Regras do modelo:
   minúsculo: `?setid=`.
 - SetIDs **só** de fonte validada na API (nunca à mão — ver lição 2, secção 9).
 
+### 7.6 INSERT por junção com VALUES (perfis / dimensões — padrão obrigatório)
+
+Quando o INSERT seleciona de um `JOIN (VALUES ...)`, a condição de junção
+**`ON d.slug = v.slug` é obrigatória**. Sem ela, o parser consome o
+`ON CONFLICT` como condição do JOIN (erro `42601 syntax error at or near "DO"`)
+e, mesmo que passasse, seria um CROSS JOIN (cada linha do VALUES cruzaria com
+todos os fármacos). Padrão usado nos perfis (079/081) e nas 3 dimensões
+(061–069):
+
+```sql
+INSERT INTO public.drug_profiles
+  (drug_id, overview_public_pt, overview_public_en, status)
+SELECT d.id, v.overview_public_pt, v.overview_public_en, 'published'
+FROM public.drugs d
+JOIN (VALUES
+  ('warfarina', '...', '...'),
+  ('ibuprofeno', '...', '...')
+) AS v(slug, overview_public_pt, overview_public_en)
+ON d.slug = v.slug            -- OBRIGATÓRIO: junção explícita
+ON CONFLICT (drug_id) DO NOTHING;
+```
+
 ---
 
 ## 8. Verificação
@@ -461,6 +505,11 @@ ORDER BY 1, 2;
    (ex.: β-lactâmicos) geram poucos pares documentados. Combinações
    intencionais (ex.: sinergia penicilina+aminoglicosídeo) não são interações
    adversas — a omissão é explicada no cabeçalho da migração.
+9. **`JOIN (VALUES ...)` sem condição de junção quebra o `ON CONFLICT`.** Um
+   `INSERT ... SELECT ... JOIN (VALUES ...) AS v(...)` **sem** `ON d.slug = v.slug`
+   faz o parser interpretar o `ON CONFLICT` como a condição do JOIN → erro
+   `42601 syntax error at or near "DO"`; e, se passasse, seria um CROSS JOIN.
+   A condição é obrigatória (padrão 7.6). Aconteceu na migração 079.
 
 ---
 
@@ -601,7 +650,77 @@ create table public.drug_pregnancy_info (
 
 ---
 
-## 13. Exemplo de piloto validado (2026-08)
+## 13. Fluxo 3 — Perfis de fármaco (drug_profiles)
+
+> Fluxo separado e aditivo. Cria/atualiza a ficha editorial de cada fármaco
+> (`drug_profiles`, 1:1 com `drugs`): overview (público/profissionais),
+> **indicações**, **efeitos secundários comuns** e **precauções**, PT/EN,
+> exibidos na página `/medicamento/[slug]` com o toggle Público | Profissionais.
+> Não toca em `drug_interactions` nem nas tabelas do Fluxo 2.
+
+### 13.1 Fontes e método
+
+- **DailyMed/FDA (NIH/NLM)** = fonte principal: secções **INDICATIONS AND
+  USAGE**, **ADVERSE REACTIONS**, **CONTRAINDICATIONS** e **WARNINGS AND
+  PRECAUTIONS** do rótulo aprovado (mesma validação de setIDs do Fluxo 1,
+  secção 3.5 — INN em inglês, rótulo mono-ingrediente).
+- **Rótulos OTC** (ex.: omeprazol) têm secções próprias (Purpose/Use/Warnings);
+  usar como estão e completar as indicações de prescrição com o Prontuário
+  quando aplicável (citar ambos).
+- **Prontuário Terapêutico (11.ª ed., 2012)** = corroboração dos factos
+  clínicos e citação adicional (mesmo papel do Fluxo 1, secção 2.3).
+- **Conteúdo autoral**: resumir/adaptar, nunca copiar o texto do rótulo.
+
+### 13.2 Passo a passo
+
+1. Confirmar o slug em `public.drugs` (o perfil é 1:1 — se o fármaco não
+   existir, INSERT em `drugs` primeiro).
+2. Obter e validar o setID na API DailyMed.
+3. Descarregar o rótulo e extrair as secções (INDICATIONS, ADVERSE REACTIONS,
+   CONTRAINDICATIONS/WARNINGS).
+4. Corroborar cada facto no Prontuário (tudo deve ser verificável).
+5. Redigir PT/EN:
+   - `overview_public` (2–3 frases, tom leigo) e `overview_pro` (classe,
+     indicações formais, farmacologia — tom técnico);
+   - `indications`, `side_effects`, `precautions` — **bullets separados por
+     `\n`** (renderizados como lista na página); incluir no fim dos efeitos
+     uma linha «Procure ajuda imediata se…».
+6. Citar (formato na secção 13.3) e gerar a migração (padrão 7.6).
+7. Validar (greps estruturais) e entregar — o utilizador aplica manualmente
+   no Supabase.
+
+### 13.3 Formato de citação
+
+Base PT:
+`DailyMed/FDA (NIH/NLM) — rótulo aprovado {Nome PT}: <url drugInfo.cfm?setid=…>`
+Espelho EN:
+`DailyMed/FDA (NIH/NLM) — approved {Name EN} label: <url>`
+Onde o Prontuário corrobora, acrescentar no fim (igual ao Fluxo 1, secção 3.6):
+` — com referência adicional: Prontuário Terapêutico do INFARMED (11.ª ed., 2012)`
+/ EN `— with additional reference: Prontuário Terapêutico do INFARMED, INFARMED (11th ed., 2012)`.
+
+### 13.4 Estado e histórico
+
+- `status ('draft'|'published')` decide a visibilidade pública; `is_archived`
+  é soft-delete. No admin, **guardar um perfil arquivado volta a torná-lo
+  visível** (`is_archived = false`) e regista `updated_by` (quem editou pela
+  última vez).
+
+### 13.5 Migrações e cobertura atual
+
+- **079**: cria a tabela + colunas `summary_pro_*/explanation_*` em
+  `drug_interactions` + 6 perfis piloto (warfarina, ibuprofeno, ramipril,
+  espironolactona, sotalol, furosemida) + par novo warfarina × ibuprofeno.
+- **080**: colunas `indications_*/side_effects_*/precautions_*` + 5 perfis
+  completos.
+- **081**: lote 2 — 13 fármacos (digoxina, amiodarona, ciprofloxacina,
+  metronidazol, carbamazepina, fenitoina, valproato, metformina, levotiroxina,
+  atorvastatina, amlodipina, omeprazol + furosemida completada).
+- **082**: `updated_by` (rastreio de quem guardou).
+
+---
+
+## 14. Exemplo de piloto validado (2026-08)
 
 > Resultado do teste multi-fonte que fundamenta a escolha EMC-UK. Fármacos
 > testados: varfarina (DailyMed), atorvastatina, carbamazepina, levotiroxina,
