@@ -1,6 +1,7 @@
 'use client'
 
 import { useContext, useMemo, useState } from 'react'
+import Link from 'next/link'
 import {
   AlertTriangle,
   Apple,
@@ -332,6 +333,7 @@ export default function InteracoesPageClient({
   const hasSelection = selectedIds.length > 0
   const isSingleDrug = selectedIds.length === 1
   const firstName = drugsById[selectedIds[0]]?.name || ''
+  const detailPath = (slug) => `/${lang}/${lang === 'pt' ? 'medicamento' : 'medicine'}/${slug}`
 
   return (
     <div className="interacoes-page">
@@ -542,6 +544,15 @@ export default function InteracoesPageClient({
                         </div>
                       </div>
 
+                      {isSingleDrug && drugsById[selectedIds[0]]?.slug && (
+                        <div className="interacoes-ficha-link">
+                          <Link href={detailPath(drugsById[selectedIds[0]].slug)} className="toolbar-btn">
+                            <ArrowUpRight size={13} aria-hidden="true" />
+                            {t('interacoes_page.ver_ficha_completa', { name: firstName })}
+                          </Link>
+                        </div>
+                      )}
+
                       {(counts.critical > 0 || counts.moderate > 0 || counts.minor > 0) && (
                         <div className="interaction-summary-bar">
                           {counts.critical > 0 && (
@@ -583,6 +594,7 @@ export default function InteracoesPageClient({
                         const severity = inter ? inter.severity : 'unknown'
                         const Icon = SEVERITY_META[severity].icon
                         const hasDetails = inter && (
+                          inter.explanation || inter.summaryPro ||
                           inter.mechanism || inter.monitoring || inter.redFlags ||
                           inter.management || inter.source
                         )
@@ -591,9 +603,17 @@ export default function InteracoesPageClient({
                           <div key={`${pair.a}-${pair.b}`} className={`interaction-card is-${severity}`}>
                             <div className="card-header">
                               <div className="card-drugs">
-                                <span className="card-drug">{drugA?.name || '—'}</span>
+                                <span className="card-drug">
+                                  {drugA?.slug ? (
+                                    <Link href={detailPath(drugA.slug)} className="card-drug-link">{drugA.name}</Link>
+                                  ) : (drugA?.name || '—')}
+                                </span>
                                 <span className="card-vs">+</span>
-                                <span className="card-drug">{drugB?.name || '—'}</span>
+                                <span className="card-drug">
+                                  {drugB?.slug ? (
+                                    <Link href={detailPath(drugB.slug)} className="card-drug-link">{drugB.name}</Link>
+                                  ) : (drugB?.name || '—')}
+                                </span>
                               </div>
                               <span className={`severity-badge is-${severity}`}>
                                 <Icon size={12} aria-hidden="true" />
@@ -612,6 +632,18 @@ export default function InteracoesPageClient({
                                   <ChevronDown size={14} aria-hidden="true" />
                                 </summary>
                                 <div className="interaction-detail">
+                                  {inter.explanation && (
+                                    <div className="detail-block detail-explanation">
+                                      <h4 className="detail-title">{t('interacoes_page.explicacao')}</h4>
+                                      <p>{inter.explanation}</p>
+                                    </div>
+                                  )}
+                                  {inter.summaryPro && (
+                                    <div className="detail-block">
+                                      <h4 className="detail-title">{t('interacoes_page.resumo_profissionais')}</h4>
+                                      <p>{inter.summaryPro}</p>
+                                    </div>
+                                  )}
                                   {inter.mechanism && (
                                     <div className="detail-block">
                                       <h4 className="detail-title">{t('interacoes_page.mecanismo')}</h4>

@@ -27,6 +27,10 @@ export default function DrugInteractionForm({ interaction, drugs, panelOpen, onC
   const [severity, setSeverity] = useState(interaction?.severity || 'moderate')
   const [summaryPt, setSummaryPt] = useState(interaction?.summary_pt || '')
   const [summaryEn, setSummaryEn] = useState(interaction?.summary_en || '')
+  const [summaryProPt, setSummaryProPt] = useState(interaction?.summary_pro_pt || '')
+  const [summaryProEn, setSummaryProEn] = useState(interaction?.summary_pro_en || '')
+  const [explanationPt, setExplanationPt] = useState(interaction?.explanation_pt || '')
+  const [explanationEn, setExplanationEn] = useState(interaction?.explanation_en || '')
   const [mechanismPt, setMechanismPt] = useState(interaction?.mechanism_pt || '')
   const [mechanismEn, setMechanismEn] = useState(interaction?.mechanism_en || '')
   const [managementPt, setManagementPt] = useState(interaction?.management_pt || '')
@@ -59,6 +63,10 @@ export default function DrugInteractionForm({ interaction, drugs, panelOpen, onC
         severity,
         summary_pt: summaryPt,
         summary_en: summaryEn,
+        summary_pro_pt: summaryProPt,
+        summary_pro_en: summaryProEn,
+        explanation_pt: explanationPt,
+        explanation_en: explanationEn,
         mechanism_pt: mechanismPt,
         mechanism_en: mechanismEn,
         management_pt: managementPt,
@@ -208,12 +216,30 @@ export default function DrugInteractionForm({ interaction, drugs, panelOpen, onC
           </div>
 
           <div style={fieldGap}>
-            <label style={labelStyle}>Resumo PT * — frase do cartão</label>
+            <label style={labelStyle}>Resumo público PT * — frase do cartão</label>
             <textarea value={summaryPt} onChange={(e) => setSummaryPt(e.target.value)} style={{ ...inputStyle, resize: 'vertical', minHeight: 60, lineHeight: 1.5 }} rows={3} />
           </div>
           <div style={fieldGap}>
-            <label style={labelStyle}>Summary EN</label>
+            <label style={labelStyle}>Public summary EN</label>
             <textarea value={summaryEn} onChange={(e) => setSummaryEn(e.target.value)} style={{ ...inputStyle, resize: 'vertical', minHeight: 60, lineHeight: 1.5 }} rows={3} />
+          </div>
+
+          <div style={fieldGap}>
+            <label style={labelStyle}>Resumo profissional PT</label>
+            <textarea value={summaryProPt} onChange={(e) => setSummaryProPt(e.target.value)} style={{ ...inputStyle, resize: 'vertical', minHeight: 60, lineHeight: 1.5 }} rows={3} />
+          </div>
+          <div style={fieldGap}>
+            <label style={labelStyle}>Professional summary EN</label>
+            <textarea value={summaryProEn} onChange={(e) => setSummaryProEn(e.target.value)} style={{ ...inputStyle, resize: 'vertical', minHeight: 60, lineHeight: 1.5 }} rows={3} />
+          </div>
+
+          <div style={fieldGap}>
+            <label style={labelStyle}>Explicação PT (longa)</label>
+            <textarea value={explanationPt} onChange={(e) => setExplanationPt(e.target.value)} style={{ ...inputStyle, resize: 'vertical', minHeight: 90, lineHeight: 1.5 }} rows={5} />
+          </div>
+          <div style={fieldGap}>
+            <label style={labelStyle}>Explanation EN (long)</label>
+            <textarea value={explanationEn} onChange={(e) => setExplanationEn(e.target.value)} style={{ ...inputStyle, resize: 'vertical', minHeight: 90, lineHeight: 1.5 }} rows={5} />
           </div>
 
           <div style={fieldGap}>
