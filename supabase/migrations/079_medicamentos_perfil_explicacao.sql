@@ -119,6 +119,7 @@ JOIN (VALUES
    'DailyMed/FDA (NIH/NLM) — approved Furosemide label: https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=6d9caaab-d874-4cf1-b9fe-408452a18998')
 ) AS v(slug, overview_public_pt, overview_public_en, overview_pro_pt, overview_pro_en,
        source_pt, source_en)
+ON d.slug = v.slug
 ON CONFLICT (drug_id) DO NOTHING;
 
 -- ---------------------------------------------------------------------

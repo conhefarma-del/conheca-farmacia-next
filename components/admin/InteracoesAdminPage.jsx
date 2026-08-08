@@ -9,6 +9,8 @@ import {
 } from '@/lib/actions/interacoes'
 import DrugForm from './DrugForm'
 import DrugInteractionForm from './DrugInteractionForm'
+import DrugProfileForm from './DrugProfileForm'
+import { getDrugProfile } from '@/lib/actions/medicamentos'
 
 function statusBadge(status) {
   if (status === 'published') return <span className="admin-badge admin-badge-success">Publicado</span>
@@ -39,6 +41,12 @@ export default function InteracoesAdminPage({ lang, initialDrugs, initialInterac
   const [interPanelOpen, setInterPanelOpen] = useState(false)
   const [interPanelRendered, setInterPanelRendered] = useState(false)
   const [editingInteraction, setEditingInteraction] = useState(null)
+
+  // Painel: Perfil de fármaco
+  const [profilePanelOpen, setProfilePanelOpen] = useState(false)
+  const [profilePanelRendered, setProfilePanelRendered] = useState(false)
+  const [editingProfile, setEditingProfile] = useState(null)
+  const [editingProfileDrug, setEditingProfileDrug] = useState(null)
 
   const openPanel = (renderedSetter, openSetter) => {
     renderedSetter(true)
@@ -81,6 +89,12 @@ export default function InteracoesAdminPage({ lang, initialDrugs, initialInterac
     }
     openPanel(setInterPanelRendered, setInterPanelOpen)
   }
+  const openProfileForm = async (drug) => {
+    const profile = await getDrugProfile(drug.id)
+    setEditingProfileDrug(drug)
+    setEditingProfile(profile)
+    openPanel(setProfilePanelRendered, setProfilePanelOpen)
+  }
 
   const isSuper = currentUserRole === 'superadmin'
 
@@ -105,7 +119,7 @@ export default function InteracoesAdminPage({ lang, initialDrugs, initialInterac
           ) : (
             <table className="admin-table">
               <thead>
-                <tr><th>Nome</th><th>Classe</th><th>Slug</th><th>Estado</th><th>Interações</th><th>Ordem</th><th>Ações</th></tr>
+                <tr><th>Nome</th><th>Classe</th><th>Slug</th><th>Estado</th><th>Interações</th><th>Perfil</th><th>Ordem</th><th>Ações</th></tr>
               </thead>
               <tbody>
                 {drugs.map((d) => (
@@ -115,9 +129,11 @@ export default function InteracoesAdminPage({ lang, initialDrugs, initialInterac
                     <td>{d.slug}</td>
                     <td>{statusBadge(d.is_archived ? 'archived' : d.status)}</td>
                     <td>{d.interactionCount}</td>
+                    <td>{d.profileStatus ? statusBadge(d.profileStatus) : <span className="admin-badge">—</span>}</td>
                     <td>{d.sort_order}</td>
                     <td>
                       <div className="admin-table-actions">
+                        <button className="admin-btn admin-btn-sm" onClick={() => openProfileForm(d)}>Perfil</button>
                         <button className="admin-btn admin-btn-sm" onClick={() => openDrugForm(d)}>Editar</button>
                         {!d.is_archived ? (
                           <button className="admin-btn admin-btn-sm" onClick={() => run(() => archiveDrug(d.id), 'Fármaco arquivado.')}>Arquivar</button>
@@ -206,6 +222,16 @@ export default function InteracoesAdminPage({ lang, initialDrugs, initialInterac
           panelOpen={interPanelOpen}
           onClose={() => closePanel(setInterPanelOpen, setInterPanelRendered)}
           onSaved={(ok, text) => { showMessage(ok, text); if (ok) reload(); closePanel(setInterPanelOpen, setInterPanelRendered) }}
+        />
+      )}
+
+      {profilePanelRendered && (
+        <DrugProfileForm
+          drug={editingProfileDrug}
+          profile={editingProfile}
+          panelOpen={profilePanelOpen}
+          onClose={() => closePanel(setProfilePanelOpen, setProfilePanelRendered)}
+          onSaved={(ok, text) => { showMessage(ok, text); if (ok) reload(); closePanel(setProfilePanelOpen, setProfilePanelRendered) }}
         />
       )}
     </div>
