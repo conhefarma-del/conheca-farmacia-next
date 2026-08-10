@@ -603,6 +603,13 @@ def main():
                     drug = s(r, 'slug')
                     if not drug:
                         continue
+                    # Só cria o perfil se o fármaco existir no replay (como o
+                    # INSERT real faria com o JOIN ON d.slug = v.slug — se não
+                    # houver correspondência, 0 linhas). Evita slugs fantasma
+                    # (ex.: 'benzilpenicilina_benzatina' na 096 quando o slug
+                    # real é 'benzilpenicilina-benzatina' da 056/132).
+                    if drug not in drug_rows:
+                        continue
                     prof = profiles.setdefault(drug, {
                         'slug': drug, 'farmaco_slug': drug,
                         'perfil_publico_pt': '', 'perfil_publico_en': '',

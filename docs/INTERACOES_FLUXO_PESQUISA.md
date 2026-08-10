@@ -879,3 +879,96 @@ WHERE LEAST(drug_a_id, drug_b_id) = LEAST((SELECT id FROM public.drugs WHERE slu
 > O `WHERE` é o canónico independente da ordem (secção 7.1/lição 3). O texto
 > não usa `\n` — os `explanation_*` são parágrafos corridos (ao contrário dos
 > bullets das `indications_*/side_effects_*` dos perfis).
+
+---
+
+## 16. Fluxo 5 — Pack CSV para o Airtable (espelho das migrações)
+
+> Fluxo de **exportação**, não de pesquisa: gera os CSVs que alimentam a base
+> Airtable de pesquisa a partir das migrações SQL — **sem tocar em conteúdo**.
+> O manual completo de operação (importar, ligar, verificar, gotchas) vive em
+> **`docs/FLUXO_PACK_AIRTABLE_ATUALIZACAO.md`** e no README do pack
+> (`_temp/airtable-pack/README.md`). Esta secção é o resumo que amarra o pack
+> aos padrões SQL dos fluxos 1–4.
+
+### 16.1 Regra de ouro: migrações = fonte única de verdade
+
+- O pack CSV é uma **projeção** das migrações para o Airtable. Editam-se os
+  dados na pesquisa (ou na migração) e **regenera-se o pack** — nunca se edita
+  o CSV à mão e se reimporta.
+- O gerador faz um **replay de todas as migrações em ordem de ficheiro**
+  (descoberta automática, sem lista fixa de números) com a semântica do
+  Postgres: `INSERT` cria, `UPDATE` altera apenas os campos indicados.
+
+### 16.2 Gerar o pack
+
+```bash
+python scripts/generate_airtable_pack.py
+```
+
+Escreve **8 ficheiros** em `_temp/airtable-pack/` (contagens atuais entre
+parênteses):
+
+| Ficheiro | Tabela no Airtable | Conteúdo | Registos |
+|---|---|---|---|
+| `01-farmacos.csv` | Fármacos | `drugs` + `atc_code` (084) | 191 |
+| `02-fontes.csv` | Fontes | URLs únicas extraídas das citações | 410 |
+| `03-interacoes-farmaco-farmaco.csv` | Interações Fármaco-Fármaco | `drug_interactions` (incl. `summary_pro_*`/`explanation_*`) | 436 |
+| `04-interacoes-alimento-bebida.csv` | Interações Alimento/Bebida | Fluxo 2 | 319 |
+| `05-doencas.csv` | Doenças | nomes de condições | 137 |
+| `06-interacoes-doenca.csv` | Interações Doença | Fluxo 2 | 396 |
+| `07-gravidez-lactacao.csv` | Gravidez/Lactação | Fluxo 2 | 191 |
+| `08-perfil-farmacologia.csv` | Perfil e Farmacologia | `drug_profiles` + `drug_pharmacology` 1:1 por fármaco (Fluxo 3) | 184 |
+
+### 16.3 Padrões SQL que o gerador reconhece
+
+Para o gerador apanhar dados novos, as migrações têm de seguir os padrões dos
+fluxos 1–4 (secções 7, 12.5, 13, 15):
+
+- **Fármacos**: `INSERT INTO public.drugs ... VALUES` (7.3).
+- **Pares fármaco-fármaco** (3 estilos): `INSERT ... VALUES` com
+  `LEAST/GREATEST` (7.4); `INSERT ... SELECT ... FROM (VALUES ...) AS
+  v(slug_a, slug_b, ...) JOIN drugs` (062–069); `INSERT ... SELECT ... FROM
+  public.drugs a, public.drugs b WHERE a.slug='x' AND b.slug='y'` com literais
+  (083/085/094). Os campos novos `explanation_*`/`summary_pro_*` são lidos nos
+  três estilos e nos UPDATEs do Fluxo 4.
+- **Dimensões (Fluxo 2)**: `INSERT ... SELECT d.id, v.* FROM drugs d JOIN
+  (VALUES ...) AS v(slug, ...) ON d.slug = v.slug` (padrão 7.6).
+- **Perfil + farmacologia (Fluxo 3)**: o mesmo padrão 7.6 para
+  `public.drug_profiles` e `public.drug_pharmacology` — o gerador junta as
+  duas numa linha por fármaco (8.ª tabela).
+- **ATC**: `UPDATE public.drugs SET atc_code = v.atc_code FROM (VALUES ...) AS
+  v(slug, atc_code) WHERE d.slug = v.slug` (084).
+- **Correções**: `UPDATE` do campo (severidade, fonte, resumo, explicação) —
+  o padrão 7.1 com `LEAST/GREATEST` independente da ordem.
+
+### 16.4 Replay vs BD (divergência esperada)
+
+O pack é um **replay das migrações em disco**, não um espelho da BD atual:
+
+- Se uma migração existir no ficheiro mas **não tiver sido aplicada** à BD
+  (ex.: 069/134 nesta BD, antes de serem aplicadas), os registos aparecem no
+  pack mas não na BD.
+- Se a BD tiver sido alterada à mão (ou por migração editada depois), o
+  inverso também acontece.
+- **Consequência prática**: ao auditar o pack, comparar com a BD (query de
+  diagnóstico) e não assumir que as contagens batem certo — a fonte única de
+  verdade é o conjunto de migrações, e qualquer divergência sinaliza ou uma
+  migração não aplicada ou um desvio manual.
+
+### 16.5 Importar e ligar (resumo)
+
+O ciclo completo (importação por CSV, campos de ligação `farmaco_a`/`farmaco_b`
+→ Fármacos, `doenca` → Doenças, ligador REST, verificação, gotchas do BOM e do
+formato `["recXXXX"]`) está documentado passo-a-passo em
+**`docs/FLUXO_PACK_AIRTABLE_ATUALIZACAO.md`** (secções 4–6) e no README do pack.
+
+---
+
+## Referências
+
+- Metodologia clínica + padrões SQL: este documento (secções 1–16).
+- Fluxo do pack Airtable (importar/ligar/verificar): `docs/FLUXO_PACK_AIRTABLE_ATUALIZACAO.md`.
+- Gerador: `scripts/generate_airtable_pack.py` · Manual operacional do pack:
+  `_temp/airtable-pack/README.md` · Ligador: `_temp/airtable-pack/link_records_api.py`
+  · Verificação: `_temp/airtable-pack/verify_links.py`
