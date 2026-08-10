@@ -23,6 +23,7 @@ import {
   BookOpen,
   ClipboardList,
   Pill,
+  MessageSquareText,
 } from 'lucide-react'
 
 export default function AdminSidebar({ lang, user, onLogout }) {
@@ -40,6 +41,7 @@ export default function AdminSidebar({ lang, user, onLogout }) {
     { href: `/${lang}/admin/interacoes`, label: 'Interações', icon: Pill },
     { href: `/${lang}/admin/traducoes`, label: 'Traduções EN', icon: Languages },
     { href: `/${lang}/admin/newsletter`, label: 'Newsletter', icon: Mail },
+    { href: `/${lang}/admin/feedback`, label: 'Feedback', icon: MessageSquareText },
     { href: `/${lang}/admin/inscritos`, label: 'Inscritos', icon: Users },
     { href: `/${lang}/admin/conteudo-legal/faq`, label: 'FAQ', icon: HelpCircle },
     { href: `/${lang}/admin/conteudo-legal/politica-privacidade`, label: 'Política de Privacidade', icon: Shield },

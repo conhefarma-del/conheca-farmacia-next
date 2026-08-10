@@ -11,7 +11,7 @@ perfil da ficha `/medicamento/[slug]` (`drug_profiles`) e farmacologia
 
 | Dimensão | Preenchido | Em falta |
 |---|---|---|
-| Pares fármaco–fármaco | 158 fármacos com ≥1 par | 24 fármacos sem qualquer par |
+| Pares fármaco–fármaco | 159 fármacos com ≥1 par (134: benzilpenicilina-benzatina) | 23 fármacos sem qualquer par |
 | **Explicação nos pares** (explanation + summary_pro) | 69 pares | **333 pares** |
 | Perfil `drug_profiles` | **182 fármacos (todos completos e publicados)** | 0 ✅ |
 | Farmacologia `drug_pharmacology` | **182 fármacos (086 + 088 + 091 + 092 + 093 + 094 + 095 + 096 + 132)** | 0 ✅ |
@@ -163,6 +163,11 @@ benzilpenicilina-benzatina e piperacilina-tazobactam existem na BD com slug de h
 mas a 096 usou underscore ('benzilpenicilina_benzatina') — o JOIN `ON d.slug = v.slug`
 falhou silenciosamente (lição 7.6). A 132 repete o mesmo conteúdo com os slugs
 corretos. Com a 132, **182/182 fármacos com perfil + farmacologia — cobertura total** ✅.
+
+**134 (interações da benzilpenicilina-benzatina — 2 pares):** warfarina (rótulo da
+varfarina 7.4 Antibiotics and Antifungals) e metotrexato (rótulo do metotrexato 7.1 —
+penicilinas aumentam a exposição). A probenecida está documentada no rótulo da
+Bicillin L-A mas **não existe na BD** (182 fármacos) — par não criado.
 
 ## 4. Perfis — 182 fármacos
 

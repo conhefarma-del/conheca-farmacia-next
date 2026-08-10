@@ -604,6 +604,25 @@
     "precautions": "Precauções",
     "disclaimer": "Ferramenta de apoio clínico e educativo. A informação não substitui a prescrição médica nem o parecer de um profissional de saúde qualificado."
   },
+  "feedback": {
+    "cta": "Encontraste algum erro ou tens uma sugestão?",
+    "titulo": "Enviar feedback",
+    "reportar_interacao": "Reportar",
+    "fechar": "Fechar",
+    "tipo_label": "Tipo de feedback",
+    "tipo_erro": "Erro",
+    "tipo_sugestao": "Sugestão",
+    "tipo_outro": "Outro",
+    "mensagem_label": "Mensagem",
+    "mensagem_placeholder": "Descreve o erro encontrado ou a tua sugestão…",
+    "email_label": "Email (opcional)",
+    "email_placeholder": "Se quiseres ser contactado sobre o teu feedback",
+    "opcional": "opcional",
+    "enviar": "Enviar feedback",
+    "enviando": "A enviar…",
+    "sucesso": "Obrigado! O teu feedback foi enviado à equipa.",
+    "erro": "Não foi possível enviar o feedback. Tenta novamente."
+  },
   "interacoes_faq": {
     "title": "Perguntas frequentes sobre a calculadora",
     "subtitle": "Respostas às dúvidas mais comuns sobre como funciona a verificação de interações.",

@@ -11,6 +11,7 @@ import {
   BookOpen,
   CheckCircle2,
   ChevronDown,
+  Flag,
   FlaskConical,
   HeartPulse,
   Info,
@@ -20,6 +21,7 @@ import {
   Stethoscope,
 } from "lucide-react";
 import { LangContext } from "@/lib/contexts";
+import FeedbackBox from "@/components/feedback/FeedbackBox";
 
 const SEVERITY_META = {
   critical: { icon: ShieldAlert },
@@ -49,7 +51,7 @@ function pregnancySeverity(category) {
   return "unknown";
 }
 
-function InteractionCard({ titleA, titleB, severity, description, children }) {
+function InteractionCard({ titleA, titleB, severity, description, children, onReport }) {
   const { t } = useContext(LangContext);
   const Icon = SEVERITY_META[severity]?.icon || Info;
   const hasContent = Array.isArray(children)
@@ -67,6 +69,18 @@ function InteractionCard({ titleA, titleB, severity, description, children }) {
           <Icon size={12} aria-hidden="true" />
           {t(severityLabelKey(severity))}
         </span>
+        {onReport && (
+          <button
+            type="button"
+            className="card-report-btn"
+            onClick={onReport}
+            title={t("feedback.reportar_interacao")}
+            aria-label={`${t("feedback.reportar_interacao")}: ${titleA} + ${titleB}`}
+          >
+            <Flag size={12} aria-hidden="true" />
+            {t("feedback.reportar_interacao")}
+          </button>
+        )}
       </div>
       {description && <p className="card-description">{description}</p>}
       {hasContent && (
@@ -135,6 +149,12 @@ export default function MedicamentoDetailClient({
   const { t } = useContext(LangContext);
   const [audience, setAudience] = useState("public");
   const [severityFilter, setSeverityFilter] = useState("all");
+  // Interação reportada pelo botão "reportar" de cada cartão.
+  const [report, setReport] = useState(null); // { type, id, label }
+
+  const setReportFrom = (interactionType, interactionId, label) => {
+    setReport({ interactionType, interactionId, label });
+  };
 
   const listPath = `/${lang}/${lang === "pt" ? "medicamentos" : "medicines"}`;
   const checkerPath = `/${lang}/${lang === "pt" ? "interacoes" : "interactions"}?farmaco=${drug.slug}`;
@@ -428,6 +448,13 @@ export default function MedicamentoDetailClient({
                       ? pair.summary
                       : pair.summaryPro || pair.summary
                   }
+                  onReport={() =>
+                    setReportFrom(
+                      "drug_drug",
+                      pair.id,
+                      `${drug.name} + ${partnerName(pair)}`
+                    )
+                  }
                 >
                   <DetailBlock
                     titleKey="interacoes_page.explicacao"
@@ -493,6 +520,13 @@ export default function MedicamentoDetailClient({
                   titleB={item.entity}
                   severity={item.severity}
                   description={item.mechanism}
+                  onReport={() =>
+                    setReportFrom(
+                      "food",
+                      item.id,
+                      `${drug.name} + ${item.entity}`
+                    )
+                  }
                 >
                   <DetailBlock
                     titleKey="interacoes_page.recomendacao"
@@ -537,6 +571,13 @@ export default function MedicamentoDetailClient({
                     titleB={item.condition}
                     severity={item.severity}
                     description={item.reason}
+                    onReport={() =>
+                      setReportFrom(
+                        "disease",
+                        item.id,
+                        `${drug.name} + ${item.condition}`
+                      )
+                    }
                   >
                     <DetailBlock
                       titleKey="interacoes_page.recomendacao"
@@ -587,6 +628,17 @@ export default function MedicamentoDetailClient({
                     }
                     severity={sev}
                     description={item.risk}
+                    onReport={() =>
+                      setReportFrom(
+                        "pregnancy",
+                        item.id,
+                        `${drug.name} + ${
+                          isCI
+                            ? t("interacoes_page.tipo_contraindicacao")
+                            : t("interacoes_page.categoria_gravidez")
+                        }`
+                      )
+                    }
                   >
                     <DetailBlock titleKey="interacoes_page.trimestre">
                       {item.trimester}
@@ -612,6 +664,16 @@ export default function MedicamentoDetailClient({
             </div>
           )}
         </section>
+
+        {/* ---- Feedback dos leitores ---- */}
+        <FeedbackBox
+          drugId={drug.id}
+          contexto={detailPath(drug.slug)}
+          interactionType={report?.interactionType || null}
+          interactionId={report?.interactionId || null}
+          interactionLabel={report?.label || null}
+          autoOpen={Boolean(report)}
+        />
 
         <p className="medicamento-disclaimer">
           {t("medicamento_detalhe.disclaimer")}

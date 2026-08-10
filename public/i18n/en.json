@@ -604,6 +604,25 @@
     "precautions": "Precautions",
     "disclaimer": "Clinical and educational support tool. The information does not replace a medical prescription or the opinion of a qualified healthcare professional."
   },
+  "feedback": {
+    "cta": "Found a mistake or have a suggestion?",
+    "titulo": "Send feedback",
+    "reportar_interacao": "Report",
+    "fechar": "Close",
+    "tipo_label": "Feedback type",
+    "tipo_erro": "Error",
+    "tipo_sugestao": "Suggestion",
+    "tipo_outro": "Other",
+    "mensagem_label": "Message",
+    "mensagem_placeholder": "Describe the error you found or your suggestion…",
+    "email_label": "Email (optional)",
+    "email_placeholder": "If you would like to be contacted about your feedback",
+    "opcional": "optional",
+    "enviar": "Send feedback",
+    "enviando": "Sending…",
+    "sucesso": "Thank you! Your feedback has been sent to the team.",
+    "erro": "Unable to send feedback. Please try again."
+  },
   "interacoes_faq": {
     "title": "Frequently asked questions about the checker",
     "subtitle": "Answers to common questions about how interaction checking works.",
