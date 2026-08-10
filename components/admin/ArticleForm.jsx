@@ -15,7 +15,6 @@ const marked = new Marked()
 
 const CATEGORIES = [
   { value: 'profissionais', label: 'Para Profissionais' },
-  { value: 'voce-sabia', label: 'Você Sabia?' },
   { value: 'conheca-medicamento', label: 'Conheça o Medicamento' },
   { value: 'curiosidades', label: 'Curiosidades' },
   { value: 'saude', label: 'Saúde e Informação' },
