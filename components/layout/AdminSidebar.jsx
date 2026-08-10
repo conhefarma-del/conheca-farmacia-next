@@ -33,8 +33,16 @@ export default function AdminSidebar({ lang, user, onLogout }) {
   const [isOpen, setIsOpen] = useState(false)
   // Submenu de Interações (Dimensões): abre por hover (desktop) ou clique na
   // seta, fecha ao sair do grupo ou ao navegar.
+  // NOTA: em touch devices (hover: coarse) o mouseenter/mouseleave causa uma
+  // race condition com o click da seta — só usar hover se o dispositivo tiver
+  // ponteiro fino (rato).
   const [interacoesOpen, setInteracoesOpen] = useState(false)
+  const [canHover, setCanHover] = useState(false)
   const { isDark, toggleTheme } = useTheme()
+
+  useEffect(() => {
+    setCanHover(window.matchMedia('(hover: hover) and (pointer: fine)').matches)
+  }, [])
 
   const links = [
     { href: `/${lang}/admin/dashboard`, label: 'Dashboard', icon: Home },
@@ -136,8 +144,8 @@ export default function AdminSidebar({ lang, user, onLogout }) {
             return (
               <div
                 className={`admin-nav-group${interacoesOpen ? ' is-open' : ''}${interacoesActive || dimensoesActive ? ' has-active' : ''}`}
-                onMouseEnter={() => setInteracoesOpen(true)}
-                onMouseLeave={() => setInteracoesOpen(false)}
+                onMouseEnter={canHover ? () => setInteracoesOpen(true) : undefined}
+                onMouseLeave={canHover ? () => setInteracoesOpen(false) : undefined}
               >
                 <div className="admin-nav-row">
                   <Link
