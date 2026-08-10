@@ -25,11 +25,15 @@ import {
   Pill,
   MessageSquareText,
   Layers,
+  ChevronDown,
 } from 'lucide-react'
 
 export default function AdminSidebar({ lang, user, onLogout }) {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
+  // Submenu de Interações (Dimensões): abre por hover (desktop) ou clique na
+  // seta, fecha ao sair do grupo ou ao navegar.
+  const [interacoesOpen, setInteracoesOpen] = useState(false)
   const { isDark, toggleTheme } = useTheme()
 
   const links = [
@@ -39,8 +43,6 @@ export default function AdminSidebar({ lang, user, onLogout }) {
     { href: `/${lang}/admin/lives`, label: 'Lives', icon: Video },
     { href: `/${lang}/admin/guias`, label: 'Guias de Estudo', icon: BookOpen },
     { href: `/${lang}/admin/protocolos`, label: 'Protocolos Clínicos', icon: ClipboardList },
-    { href: `/${lang}/admin/interacoes`, label: 'Interações', icon: Pill },
-    { href: `/${lang}/admin/interacoes/dimensoes`, label: 'Dimensões', icon: Layers },
     { href: `/${lang}/admin/traducoes`, label: 'Traduções EN', icon: Languages },
     { href: `/${lang}/admin/newsletter`, label: 'Newsletter', icon: Mail },
     { href: `/${lang}/admin/feedback`, label: 'Feedback', icon: MessageSquareText },
@@ -110,7 +112,68 @@ export default function AdminSidebar({ lang, user, onLogout }) {
         </div>
 
         <nav className="admin-nav-vertical">
-          {links.map((link) => {
+          {links.slice(0, 6).map((link) => {
+            const Icon = link.icon
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={isActive(link.href) ? 'active' : ''}
+              >
+                <Icon size={20} />
+                {link.label}
+              </Link>
+            )
+          })}
+
+          {/* Interações com submenu (Dimensões). A seta à direita abre/fecha;
+              clicar no resto da opção navega para /admin/interacoes. */}
+          {(() => {
+            const interacoesHref = `/${lang}/admin/interacoes`
+            const dimensoesHref = `/${lang}/admin/interacoes/dimensoes`
+            const interacoesActive = isActive(interacoesHref)
+            const dimensoesActive = isActive(dimensoesHref)
+            return (
+              <div
+                className={`admin-nav-group${interacoesOpen ? ' is-open' : ''}${interacoesActive || dimensoesActive ? ' has-active' : ''}`}
+                onMouseEnter={() => setInteracoesOpen(true)}
+                onMouseLeave={() => setInteracoesOpen(false)}
+              >
+                <div className="admin-nav-row">
+                  <Link
+                    href={interacoesHref}
+                    className={interacoesActive ? 'active' : ''}
+                  >
+                    <Pill size={20} />
+                    Interações
+                  </Link>
+                  <button
+                    type="button"
+                    className="admin-nav-arrow"
+                    onClick={(e) => { e.stopPropagation(); setInteracoesOpen((o) => !o) }}
+                    aria-expanded={interacoesOpen}
+                    aria-label="Abrir ou fechar submenu de Interações"
+                    title={interacoesOpen ? 'Fechar submenu' : 'Abrir submenu'}
+                  >
+                    <ChevronDown size={16} className={interacoesOpen ? 'is-open' : ''} />
+                  </button>
+                </div>
+                {interacoesOpen && (
+                  <div className="admin-nav-submenu">
+                    <Link
+                      href={dimensoesHref}
+                      className={dimensoesActive ? 'active' : ''}
+                    >
+                      <Layers size={16} />
+                      Dimensões
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )
+          })()}
+
+          {links.slice(6).map((link) => {
             const Icon = link.icon
             return (
               <Link

@@ -196,6 +196,7 @@ export default function GuidesAdminPage({ lang, initialCourses, currentUserRole 
           </button>
         </div>
         <div className="admin-card-body">
+          <div className="admin-table-wrapper">
           <table className="admin-table">
             <thead>
               <tr>
@@ -252,6 +253,7 @@ export default function GuidesAdminPage({ lang, initialCourses, currentUserRole 
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       </div>
 
@@ -267,13 +269,14 @@ export default function GuidesAdminPage({ lang, initialCourses, currentUserRole 
         </div>
         <div className="admin-card-body">
           {!selectedCourse ? (
-            <p className="admin-table-empty">Selecione um curso (botão "Gerir") para gerir as suas disciplinas.</p>
+            <p className="admin-table-empty">Selecione um curso (botão &quot;Gerir&quot;) para gerir as suas disciplinas.</p>
           ) : loadingDetail ? (
             <p className="admin-table-empty">A carregar disciplinas...</p>
           ) : selectedCourse.disciplines.length === 0 ? (
             <p className="admin-table-empty">Nenhuma disciplina neste curso.</p>
           ) : (
-            <table className="admin-table">
+            <div className="admin-table-wrapper">
+          <table className="admin-table">
               <thead>
                 <tr>
                   <th>Nome</th>
@@ -308,6 +311,7 @@ export default function GuidesAdminPage({ lang, initialCourses, currentUserRole 
                 ))}
               </tbody>
             </table>
+          </div>
           )}
         </div>
       </div>
@@ -324,13 +328,14 @@ export default function GuidesAdminPage({ lang, initialCourses, currentUserRole 
         </div>
         <div className="admin-card-body">
           {!selectedCourse ? (
-            <p className="admin-table-empty">Selecione um curso (botão "Gerir") para gerir as universidades que o lecionam.</p>
+            <p className="admin-table-empty">Selecione um curso (botão &quot;Gerir&quot;) para gerir as universidades que o lecionam.</p>
           ) : loadingDetail ? (
             <p className="admin-table-empty">A carregar universidades...</p>
           ) : (selectedCourse.universities || []).length === 0 ? (
             <p className="admin-table-empty">Nenhuma universidade associada a este curso. Adicione as que o lecionam em Angola.</p>
           ) : (
-            <table className="admin-table">
+            <div className="admin-table-wrapper">
+          <table className="admin-table">
               <thead>
                 <tr>
                   <th>Nome</th>
@@ -369,6 +374,7 @@ export default function GuidesAdminPage({ lang, initialCourses, currentUserRole 
                 ))}
               </tbody>
             </table>
+          </div>
           )}
         </div>
       </div>

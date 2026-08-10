@@ -12,11 +12,23 @@ function statusBadge(status) {
   return <span className="admin-badge">Arquivado</span>
 }
 
-const ATC_LETTERS = ['A', 'B', 'C', 'D', 'G', 'H', 'J', 'L', 'M', 'N', 'P', 'R', 'S', 'V']
+// Filtro alfabético: letras A–Z pela inicial do nome (PT ou EN), sem diacríticos
+// ("Ácido" agrupa em A). Letras sem fármacos aparecem desativadas.
+const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+
+function initialOf(name) {
+  const ch = (name || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .charAt(0)
+    .toUpperCase()
+  return /[A-Z]/.test(ch) ? ch : ''
+}
 
 /**
- * Tabela de fármacos com filtros (busca, ordem, grupo/classe, letra ATC,
- * estado) e paginação.
+ * Tabela de fármacos com filtros (busca, ordem, grupo/classe, letra inicial
+ * alfabética, estado) e paginação.
  *  - `limit` (ex.: 10): modo "visão geral" — mostra só as primeiras N com
  *    botão "Ver todos" (sem paginação).
  *  - sem `limit`: modo completo — páginaSize por página com paginação.
@@ -41,7 +53,7 @@ export default function DrugAdminTable({
   const [search, setSearch] = useState('')
   const [sortBy, setSortBy] = useState('default') // default | alpha | atc
   const [groupFilter, setGroupFilter] = useState('')
-  const [atcLetter, setAtcLetter] = useState('')
+  const [alphaLetter, setAlphaLetter] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [page, setPage] = useState(1)
   const [expandedDrugId, setExpandedDrugId] = useState(null)
@@ -55,6 +67,19 @@ export default function DrugAdminTable({
     return [...set].sort((a, b) => a.localeCompare(b, 'pt'))
   }, [drugs])
 
+  // Quantos fármacos começam por cada letra (PT ou EN) — para desativar as
+  // letras sem resultados e mostrar a contagem no título.
+  const letterCounts = useMemo(() => {
+    const counts = {}
+    drugs.forEach((d) => {
+      const a = initialOf(d.name_pt)
+      const b = initialOf(d.name_en)
+      if (a) counts[a] = (counts[a] || 0) + 1
+      if (b && b !== a) counts[b] = (counts[b] || 0) + 1
+    })
+    return counts
+  }, [drugs])
+
   const filtered = useMemo(() => {
     const termo = search.trim().toLowerCase()
     let list = drugs.filter((d) => {
@@ -65,7 +90,10 @@ export default function DrugAdminTable({
         (d.slug && d.slug.toLowerCase().includes(termo)) ||
         (d.aliases || []).some((a) => a.toLowerCase().includes(termo))
       const okGrupo = !groupFilter || d.class_pt === groupFilter
-      const okAtc = !atcLetter || (d.atc_code || '').startsWith(atcLetter)
+      const okLetra =
+        !alphaLetter ||
+        initialOf(d.name_pt) === alphaLetter ||
+        initialOf(d.name_en) === alphaLetter
       const okStatus =
         statusFilter === 'all' ||
         (statusFilter === 'archived' ? d.is_archived : !d.is_archived && d.status === statusFilter)
@@ -74,7 +102,7 @@ export default function DrugAdminTable({
     if (sortBy === 'alpha') list = [...list].sort((a, b) => (a.name_pt || '').localeCompare(b.name_pt || '', 'pt'))
     else if (sortBy === 'atc') list = [...list].sort((a, b) => (a.atc_code || '').localeCompare(b.atc_code || ''))
     return list
-  }, [drugs, search, sortBy, groupFilter, atcLetter, statusFilter])
+  }, [drugs, search, sortBy, groupFilter, alphaLetter, statusFilter])
 
   const totalShown = filtered.length
   const totalPages = limit ? 1 : Math.max(1, Math.ceil(totalShown / pageSize))
@@ -140,24 +168,29 @@ export default function DrugAdminTable({
           <option value="draft">Rascunhos</option>
           <option value="archived">Arquivados</option>
         </select>
-        <div className="admin-atc-letters" role="group" aria-label="Filtrar por letra ATC">
+        <div className="admin-atc-letters" role="group" aria-label="Filtrar por letra inicial (ordem alfabética)">
           <button
             type="button"
-            className={`admin-atc-letter${atcLetter === '' ? ' is-active' : ''}`}
-            onClick={() => { setAtcLetter(''); setPage(1) }}
+            className={`admin-atc-letter${alphaLetter === '' ? ' is-active' : ''}`}
+            onClick={() => { setAlphaLetter(''); setPage(1) }}
           >
             Todos
           </button>
-          {ATC_LETTERS.map((l) => (
-            <button
-              key={l}
-              type="button"
-              className={`admin-atc-letter${atcLetter === l ? ' is-active' : ''}`}
-              onClick={() => { setAtcLetter(atcLetter === l ? '' : l); setPage(1) }}
-            >
-              {l}
-            </button>
-          ))}
+          {ALPHABET.map((l) => {
+            const count = letterCounts[l] || 0
+            return (
+              <button
+                key={l}
+                type="button"
+                className={`admin-atc-letter${alphaLetter === l ? ' is-active' : ''}`}
+                disabled={count === 0}
+                title={count === 0 ? `Sem fármacos a começar por ${l}` : `${count} fármaco(s) a começar por ${l}`}
+                onClick={() => { setAlphaLetter(alphaLetter === l ? '' : l); setPage(1) }}
+              >
+                {l}
+              </button>
+            )
+          })}
         </div>
       </div>
 
@@ -170,6 +203,7 @@ export default function DrugAdminTable({
         {visible.length === 0 ? (
           <p className="admin-table-empty">Sem fármacos com os filtros atuais.</p>
         ) : (
+          <div className="admin-table-wrapper">
           <table className="admin-table">
             <thead>
               <tr><th>Nome</th><th>Classe</th><th>ATC</th><th>Estado</th><th>Interações</th><th>Perfil</th><th>Farmacologia</th><th>Ordem</th><th>Ações</th></tr>
@@ -230,6 +264,7 @@ export default function DrugAdminTable({
               ))}
             </tbody>
           </table>
+          </div>
         )}
         {!limit && (
           <AdminPagination page={safePage} totalPages={totalPages} onPageChange={setPage} />

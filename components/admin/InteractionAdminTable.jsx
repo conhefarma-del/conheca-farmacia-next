@@ -112,6 +112,7 @@ export default function InteractionAdminTable({
         {visible.length === 0 ? (
           <p className="admin-table-empty">Sem interações com os filtros atuais.</p>
         ) : (
+          <div className="admin-table-wrapper">
           <table className="admin-table">
             <thead>
               <tr><th>Fármaco A</th><th>Fármaco B</th><th>Severidade</th><th>Estado</th><th>Ações</th></tr>
@@ -146,6 +147,7 @@ export default function InteractionAdminTable({
               ))}
             </tbody>
           </table>
+          </div>
         )}
         {!limit && (
           <AdminPagination page={safePage} totalPages={totalPages} onPageChange={setPage} />

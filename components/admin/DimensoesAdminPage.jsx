@@ -74,6 +74,7 @@ function DimTable({ rows, tabKey, currentUserRole, onRefresh, onEdit, onNew }) {
         {visible.length === 0 ? (
           <p className="admin-table-empty">Sem registos com os filtros atuais.</p>
         ) : tabKey === 'pregnancy' ? (
+          <div className="admin-table-wrapper">
           <table className="admin-table">
             <thead>
               <tr><th>Fármaco</th><th>Categoria</th><th>Risco</th><th>Estado</th><th>Ações</th></tr>
@@ -104,7 +105,9 @@ function DimTable({ rows, tabKey, currentUserRole, onRefresh, onEdit, onNew }) {
               ))}
             </tbody>
           </table>
+          </div>
         ) : (
+          <div className="admin-table-wrapper">
           <table className="admin-table">
             <thead>
               <tr><th>Fármaco</th><th>{tabKey === 'food' ? 'Alimento' : 'Condição'}</th><th>Severidade</th><th>Estado</th><th>Ações</th></tr>
@@ -139,6 +142,7 @@ function DimTable({ rows, tabKey, currentUserRole, onRefresh, onEdit, onNew }) {
               ))}
             </tbody>
           </table>
+          </div>
         )}
         <AdminPagination page={safePage} totalPages={totalPages} onPageChange={setPage} />
       </div>

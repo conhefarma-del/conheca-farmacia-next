@@ -106,7 +106,8 @@ export default function ProtocolsAdminPage({ lang, initialCategories, initialPro
           {categories.length === 0 ? (
             <p className="admin-table-empty">Sem categorias.</p>
           ) : (
-            <table className="admin-table">
+            <div className="admin-table-wrapper">
+          <table className="admin-table">
               <thead>
                 <tr><th>Nome</th><th>Slug</th><th>Cor</th><th>Estado</th><th>Protocolos</th><th>Ações</th></tr>
               </thead>
@@ -139,6 +140,7 @@ export default function ProtocolsAdminPage({ lang, initialCategories, initialPro
                 ))}
               </tbody>
             </table>
+          </div>
           )}
         </div>
       </div>
@@ -152,7 +154,8 @@ export default function ProtocolsAdminPage({ lang, initialCategories, initialPro
           {protocols.length === 0 ? (
             <p className="admin-table-empty">Sem protocolos.</p>
           ) : (
-            <table className="admin-table">
+            <div className="admin-table-wrapper">
+          <table className="admin-table">
               <thead>
                 <tr><th>Título</th><th>Categoria</th><th>Estado</th><th>Passos</th><th>Ordem</th><th>Ações</th></tr>
               </thead>
@@ -186,6 +189,7 @@ export default function ProtocolsAdminPage({ lang, initialCategories, initialPro
                 ))}
               </tbody>
             </table>
+          </div>
           )}
         </div>
       </div>

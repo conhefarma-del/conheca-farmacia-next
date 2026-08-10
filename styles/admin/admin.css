@@ -1132,6 +1132,65 @@ body {
   flex-shrink: 0;
 }
 
+/* Grupo Interações com submenu (Dimensões) */
+.admin-nav-group {
+  position: relative;
+}
+
+.admin-nav-row {
+  display: flex;
+  align-items: center;
+}
+
+.admin-nav-row > a {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-nav-arrow {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin: 0 12px 0 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.admin-nav-arrow:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.admin-nav-arrow svg {
+  transition: transform 0.2s;
+}
+
+.admin-nav-arrow svg.is-open {
+  transform: rotate(180deg);
+}
+
+.admin-nav-submenu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0 8px 4px;
+  padding-left: 18px;
+  border-left: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+.admin-nav-submenu a {
+  font-size: 13px;
+  padding: 8px 12px;
+  margin: 0;
+}
+
 .admin-sidebar-footer {
   margin-top: auto;
   padding: 16px 20px;
@@ -3109,6 +3168,16 @@ html.dark .settings-error {
   border-color: var(--admin-primary);
   background: var(--admin-primary);
   color: #fff;
+}
+
+.admin-atc-letter:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  border-color: var(--admin-border);
+}
+
+.admin-atc-letter:disabled:hover {
+  border-color: var(--admin-border);
 }
 
 .admin-table-row-archived td:first-child {
