@@ -36,10 +36,10 @@
 INSERT INTO public.drug_profiles
   (drug_id, overview_public_pt, overview_public_en, overview_pro_pt, overview_pro_en,
    indications_pt, indications_en, side_effects_pt, side_effects_en,
-   precautions_pt, precautions_en, source_pt, source_en)
+   precautions_pt, precautions_en, source_pt, source_en, status)
 SELECT d.id, v.overview_public_pt, v.overview_public_en, v.overview_pro_pt, v.overview_pro_en,
        v.indications_pt, v.indications_en, v.side_effects_pt, v.side_effects_en,
-       v.precautions_pt, v.precautions_en, v.source_pt, v.source_en
+       v.precautions_pt, v.precautions_en, v.source_pt, v.source_en, 'published'
 FROM public.drugs d
 JOIN (VALUES
   ('acido_ascorbico',
@@ -181,10 +181,10 @@ ON CONFLICT (drug_id) DO NOTHING;
 INSERT INTO public.drug_pharmacology
   (drug_id, pharmacodynamics_pt, pharmacodynamics_en, mechanism_pt, mechanism_en,
    metabolism_pt, metabolism_en, absorption_pt, absorption_en,
-   half_life_pt, half_life_en, source_pt, source_en)
+   half_life_pt, half_life_en, source_pt, source_en, status)
 SELECT d.id, v.pharmacodynamics_pt, v.pharmacodynamics_en, v.mechanism_pt, v.mechanism_en,
        v.metabolism_pt, v.metabolism_en, v.absorption_pt, v.absorption_en,
-       v.half_life_pt, v.half_life_en, v.source_pt, v.source_en
+       v.half_life_pt, v.half_life_en, v.source_pt, v.source_en, 'published'
 FROM public.drugs d
 JOIN (VALUES
   ('acido_ascorbico',
