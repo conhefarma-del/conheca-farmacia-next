@@ -38,6 +38,7 @@ export default async function DashboardPage() {
     users: 0,
     categories: 0,
     total: 0,
+    newFeedback: 0,
   }
 
   return (

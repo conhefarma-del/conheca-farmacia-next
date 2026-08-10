@@ -1,12 +1,13 @@
-import { FileText, Calendar, Video, Users, FolderOpen, Layers } from 'lucide-react'
+import { FileText, Calendar, Video, Users, FolderOpen, Layers, MessageSquareText } from 'lucide-react'
+import Link from 'next/link'
 
 /**
  * StatsGrid — Server Component
  *
- * Grelha de 6 stat cards (3x2) para o dashboard admin.
+ * Grelha de stat cards para o dashboard admin.
  * Usa classes CSS do admin.css existente.
  *
- * Props: { articles, events, lives, users, categories, total }
+ * Props: { articles, events, lives, users, categories, total, newFeedback }
  */
 
 const stats = [
@@ -22,7 +23,7 @@ function formatNumber(num) {
   return new Intl.NumberFormat('pt-PT').format(num)
 }
 
-export default function StatsGrid({ articles = 0, events = 0, lives = 0, users = 0, categories = 0, total = 0 }) {
+export default function StatsGrid({ articles = 0, events = 0, lives = 0, users = 0, categories = 0, total = 0, newFeedback = 0 }) {
   const values = { articles, events, lives, users, categories, total }
 
   return (
@@ -40,6 +41,18 @@ export default function StatsGrid({ articles = 0, events = 0, lives = 0, users =
           </div>
         </div>
       ))}
+      {/* Card de feedback — link para /admin/feedback */}
+      <Link href="/admin/feedback" className="admin-stat-card stat-pink">
+        <div className="admin-stat-card-icon">
+          <MessageSquareText size={24} />
+        </div>
+        <div>
+          <div className="admin-stat-card-value">
+            {formatNumber(newFeedback)}
+          </div>
+          <div className="admin-stat-card-label">Feedback</div>
+        </div>
+      </Link>
     </div>
   )
 }

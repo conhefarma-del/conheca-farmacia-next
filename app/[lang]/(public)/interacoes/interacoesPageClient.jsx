@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   ChevronDown,
   Copy,
+  Flag,
   HeartPulse,
   Info,
   Library,
@@ -26,6 +27,7 @@ import {
 } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
 import { INTERACOES_FAQ_ITEMS } from '@/lib/interacoes-faq'
+import FeedbackBox from '@/components/feedback/FeedbackBox'
 
 // Ordem de apresentação: documentadas primeiro, depois desconhecidas.
 // `unknown` = par SEM registo na base (não confundir com `none` da BD,
@@ -129,6 +131,15 @@ export default function InteracoesPageClient({
   const [focused, setFocused] = useState(false)
   const [copied, setCopied] = useState(false)
   const [copiedSummary, setCopiedSummary] = useState(false)
+
+  // Interação reportada pelo botão "reportar" em cada cartão.
+  const [report, setReport] = useState(null) // { interactionType, interactionId, label }
+
+  const setReportFrom = (interactionType, interactionId, label) => {
+    setReport({ interactionType, interactionId, label })
+  }
+
+  const contexto = `/${lang}/${lang === 'pt' ? 'interacoes' : 'interactions'}`
 
   const drugsById = useMemo(() => {
     const map = {}
@@ -619,6 +630,16 @@ export default function InteracoesPageClient({
                                 <Icon size={12} aria-hidden="true" />
                                 {t(severityLabelKey(severity))}
                               </span>
+                              <button
+                                type="button"
+                                className="card-report-btn"
+                                onClick={() => setReportFrom('drug_drug', inter?.id || null, `${drugA?.name} + ${drugB?.name}`)}
+                                title={t('feedback.reportar_interacao')}
+                                aria-label={`${t('feedback.reportar_interacao')}: ${drugA?.name} + ${drugB?.name}`}
+                              >
+                                <Flag size={12} aria-hidden="true" />
+                                {t('feedback.reportar_interacao')}
+                              </button>
                             </div>
 
                             <p className="card-description">
@@ -749,6 +770,16 @@ export default function InteracoesPageClient({
                                 <Icon size={12} aria-hidden="true" />
                                 {t(severityLabelKey(item.severity))}
                               </span>
+                              <button
+                                type="button"
+                                className="card-report-btn"
+                                onClick={() => setReportFrom('food', item.id || null, `${drugName} × ${item.entity}`)}
+                                title={t('feedback.reportar_interacao')}
+                                aria-label={`${t('feedback.reportar_interacao')}: ${drugName} × ${item.entity}`}
+                              >
+                                <Flag size={12} aria-hidden="true" />
+                                {t('feedback.reportar_interacao')}
+                              </button>
                             </div>
                             {item.mechanism && (
                               <p className="card-description">{item.mechanism}</p>
@@ -833,6 +864,16 @@ export default function InteracoesPageClient({
                                   ? t('interacoes_page.tipo_contraindicacao')
                                   : t('interacoes_page.tipo_precaucao')}
                               </span>
+                              <button
+                                type="button"
+                                className="card-report-btn"
+                                onClick={() => setReportFrom('disease', item.id || null, `${drugName} × ${item.condition}`)}
+                                title={t('feedback.reportar_interacao')}
+                                aria-label={`${t('feedback.reportar_interacao')}: ${drugName} × ${item.condition}`}
+                              >
+                                <Flag size={12} aria-hidden="true" />
+                                {t('feedback.reportar_interacao')}
+                              </button>
                             </div>
                             {item.reason && (
                               <p className="card-description">{item.reason}</p>
@@ -915,6 +956,16 @@ export default function InteracoesPageClient({
                                   ? t('interacoes_page.tipo_contraindicacao')
                                   : t('interacoes_page.categoria_gravidez')}
                               </span>
+                              <button
+                                type="button"
+                                className="card-report-btn"
+                                onClick={() => setReportFrom('pregnancy', item.id || null, drugName)}
+                                title={t('feedback.reportar_interacao')}
+                                aria-label={`${t('feedback.reportar_interacao')}: ${drugName}`}
+                              >
+                                <Flag size={12} aria-hidden="true" />
+                                {t('feedback.reportar_interacao')}
+                              </button>
                             </div>
                             {item.risk && (
                               <p className="card-description">{item.risk}</p>
@@ -961,6 +1012,16 @@ export default function InteracoesPageClient({
             )}
           </main>
         </div>
+
+        {/* ---- Feedback dos leitores ---- */}
+        <FeedbackBox
+          drugId={null}
+          contexto={contexto}
+          interactionType={report?.interactionType || null}
+          interactionId={report?.interactionId || null}
+          interactionLabel={report?.label || null}
+          autoOpen={Boolean(report)}
+        />
 
         {/* ---- Secção Fontes ---- */}
         <div className="sources-section">

@@ -37,6 +37,9 @@ export default function FarmacosAdminPage({ lang, initialDrugs, initialInteracti
         onDelete={(d) => {
           if (window.confirm('Eliminar fármaco? (bloqueado se tiver interações)')) p.run(() => deleteDrug(d.id), 'Fármaco eliminado.')
         }}
+        inlineForms
+        onMessage={p.showMessage}
+        onReload={p.reload}
       />
 
       <AdminPanels p={p} />

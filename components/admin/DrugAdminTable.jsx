@@ -3,6 +3,8 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import AdminPagination from './AdminPagination'
+import InlineProfileForm from './InlineProfileForm'
+import InlinePharmacologyForm from './InlinePharmacologyForm'
 
 function statusBadge(status) {
   if (status === 'published') return <span className="admin-badge admin-badge-success">Publicado</span>
@@ -32,6 +34,9 @@ export default function DrugAdminTable({
   onArchive,
   onRestore,
   onDelete,
+  inlineForms = false,
+  onMessage,
+  onReload,
 }) {
   const [search, setSearch] = useState('')
   const [sortBy, setSortBy] = useState('default') // default | alpha | atc
@@ -39,6 +44,8 @@ export default function DrugAdminTable({
   const [atcLetter, setAtcLetter] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [page, setPage] = useState(1)
+  const [expandedDrugId, setExpandedDrugId] = useState(null)
+  const [expandedPanel, setExpandedPanel] = useState(null) // 'profile' | 'pharmacology' | null
 
   const isSuper = currentUserRole === 'superadmin'
 
@@ -81,6 +88,23 @@ export default function DrugAdminTable({
 
   const rangeStart = limit ? 1 : (safePage - 1) * pageSize + 1
   const rangeEnd = limit ? Math.min(limit, totalShown) : Math.min(safePage * pageSize, totalShown)
+
+  const toggleExpand = (drugId, panel) => {
+    if (expandedDrugId === drugId && expandedPanel === panel) {
+      setExpandedDrugId(null)
+      setExpandedPanel(null)
+    } else {
+      setExpandedDrugId(drugId)
+      setExpandedPanel(panel)
+    }
+  }
+
+  const handleInlineSaved = (ok, text) => {
+    if (onMessage) onMessage(ok, text)
+    if (ok && onReload) onReload()
+    setExpandedDrugId(null)
+    setExpandedPanel(null)
+  }
 
   return (
     <div className="admin-card">
@@ -152,33 +176,57 @@ export default function DrugAdminTable({
             </thead>
             <tbody>
               {visible.map((d) => (
-                <tr key={d.id} className={d.is_archived ? 'admin-table-row-archived' : ''}>
-                  <td>{d.name_pt} / {d.name_en}</td>
-                  <td>{d.class_pt || '—'}</td>
-                  <td>{d.atc_code || '—'}</td>
-                  <td>{statusBadge(d.is_archived ? 'archived' : d.status)}</td>
-                  <td>{d.interactionCount}</td>
-                  <td>{d.profileStatus ? statusBadge(d.profileStatus) : <span className="admin-badge">—</span>}</td>
-                  <td>{d.pharmacologyStatus ? statusBadge(d.pharmacologyStatus) : <span className="admin-badge">—</span>}</td>
-                  <td>{d.sort_order}</td>
-                  <td>
-                    <div className="admin-table-actions">
-                      <button className="admin-btn admin-btn-sm" onClick={() => onProfile(d)}>Perfil</button>
-                      <button className="admin-btn admin-btn-sm" onClick={() => onPharmacology(d)}>Farmacologia</button>
-                      <button className="admin-btn admin-btn-sm" onClick={() => onEdit(d)}>Editar</button>
-                      {!d.is_archived ? (
-                        <button className="admin-btn admin-btn-sm" onClick={() => onArchive(d)}>Arquivar</button>
-                      ) : (
-                        isSuper && (
-                          <button className="admin-btn admin-btn-sm" onClick={() => onRestore(d)}>Restaurar</button>
-                        )
-                      )}
-                      {isSuper && (
-                        <button className="admin-btn admin-btn-sm admin-btn-danger" onClick={() => onDelete(d)}>Eliminar</button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
+                <>
+                  <tr key={d.id} className={d.is_archived ? 'admin-table-row-archived' : ''}>
+                    <td>{d.name_pt} / {d.name_en}</td>
+                    <td>{d.class_pt || '—'}</td>
+                    <td>{d.atc_code || '—'}</td>
+                    <td>{statusBadge(d.is_archived ? 'archived' : d.status)}</td>
+                    <td>{d.interactionCount}</td>
+                    <td>{d.profileStatus ? statusBadge(d.profileStatus) : <span className="admin-badge">—</span>}</td>
+                    <td>{d.pharmacologyStatus ? statusBadge(d.pharmacologyStatus) : <span className="admin-badge">—</span>}</td>
+                    <td>{d.sort_order}</td>
+                    <td>
+                      <div className="admin-table-actions">
+                        <button className="admin-btn admin-btn-sm" onClick={() => inlineForms ? toggleExpand(d.id, 'profile') : onProfile(d)}>Perfil</button>
+                        <button className="admin-btn admin-btn-sm" onClick={() => inlineForms ? toggleExpand(d.id, 'pharmacology') : onPharmacology(d)}>Farmacologia</button>
+                        <button className="admin-btn admin-btn-sm" onClick={() => onEdit(d)}>Editar</button>
+                        {!d.is_archived ? (
+                          <button className="admin-btn admin-btn-sm" onClick={() => onArchive(d)}>Arquivar</button>
+                        ) : (
+                          isSuper && (
+                            <button className="admin-btn admin-btn-sm" onClick={() => onRestore(d)}>Restaurar</button>
+                          )
+                        )}
+                        {isSuper && (
+                          <button className="admin-btn admin-btn-sm admin-btn-danger" onClick={() => onDelete(d)}>Eliminar</button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                  {expandedDrugId === d.id && expandedPanel === 'profile' && (
+                    <tr key={`${d.id}-profile`} className="admin-table-expanded-row">
+                      <td colSpan={9}>
+                        <InlineProfileForm
+                          drug={d}
+                          onClose={() => { setExpandedDrugId(null); setExpandedPanel(null) }}
+                          onSaved={handleInlineSaved}
+                        />
+                      </td>
+                    </tr>
+                  )}
+                  {expandedDrugId === d.id && expandedPanel === 'pharmacology' && (
+                    <tr key={`${d.id}-pharm`} className="admin-table-expanded-row">
+                      <td colSpan={9}>
+                        <InlinePharmacologyForm
+                          drug={d}
+                          onClose={() => { setExpandedDrugId(null); setExpandedPanel(null) }}
+                          onSaved={handleInlineSaved}
+                        />
+                      </td>
+                    </tr>
+                  )}
+                </>
               ))}
             </tbody>
           </table>
