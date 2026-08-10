@@ -2800,6 +2800,214 @@ html.dark .settings-error {
   opacity: 0.55;
 }
 
+/* Paginação das tabelas admin */
+.admin-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 16px;
+  border-top: 1px solid var(--admin-border);
+}
+
+.admin-pagination-btn {
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--admin-border);
+  background: var(--admin-card-bg);
+  color: var(--admin-text);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.admin-pagination-btn:hover:not(:disabled) {
+  border-color: var(--admin-primary);
+  color: var(--admin-primary);
+}
+
+.admin-pagination-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.admin-pagination-pages {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.admin-pagination-num {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 8px;
+  border: 1px solid var(--admin-border);
+  background: var(--admin-card-bg);
+  color: var(--admin-text);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.admin-pagination-num:hover {
+  border-color: var(--admin-primary);
+}
+
+.admin-pagination-num.is-active {
+  border-color: var(--admin-primary);
+  background: var(--admin-primary);
+  color: #fff;
+}
+
+.admin-pagination-ellipsis {
+  padding: 0 4px;
+  color: var(--admin-text-muted);
+}
+
+/* Tabs das páginas admin (dimensões) */
+.admin-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.admin-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--admin-border);
+  background: var(--admin-card-bg);
+  color: var(--admin-text);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.admin-tab:hover {
+  border-color: var(--admin-primary);
+}
+
+.admin-tab.is-active {
+  border-color: var(--admin-primary);
+  background: var(--admin-primary);
+  color: #fff;
+}
+
+.admin-tab-count {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.12);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.admin-tab.is-active .admin-tab-count {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Link de volta nas páginas dedicadas */
+.admin-back-link {
+  margin: 0 0 12px;
+}
+
+.admin-back-link a {
+  color: var(--admin-primary);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.admin-back-link a:hover {
+  text-decoration: underline;
+}
+
+/* Barra de filtros das tabelas admin (fármacos e interações) */
+.admin-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--admin-border);
+  background: var(--admin-bg);
+}
+
+.admin-filters-search {
+  flex: 1 1 220px;
+  min-width: 200px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--admin-border);
+  background: var(--admin-card-bg);
+  color: var(--admin-text);
+  font-size: 13px;
+  font-family: var(--font-sans);
+}
+
+.admin-filters-search:focus {
+  outline: none;
+  border-color: var(--admin-primary);
+}
+
+.admin-filters-select {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--admin-border);
+  background: var(--admin-card-bg);
+  color: var(--admin-text);
+  font-size: 13px;
+  font-family: var(--font-sans);
+  cursor: pointer;
+}
+
+.admin-filters-count {
+  margin: 0;
+  padding: 10px 16px 0;
+  font-size: 12px;
+  color: var(--admin-text-muted);
+}
+
+.admin-atc-letters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.admin-atc-letter {
+  min-width: 30px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--admin-border);
+  background: var(--admin-card-bg);
+  color: var(--admin-text);
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.admin-atc-letter:hover {
+  border-color: var(--admin-primary);
+}
+
+.admin-atc-letter.is-active {
+  border-color: var(--admin-primary);
+  background: var(--admin-primary);
+  color: #fff;
+}
+
 .admin-table-row-archived td:first-child {
   text-decoration: line-through;
 }

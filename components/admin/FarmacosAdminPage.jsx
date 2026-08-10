@@ -1,23 +1,25 @@
 'use client'
 
+import Link from 'next/link'
 import {
-  archiveDrug, archiveDrugInteraction, deleteDrug, deleteDrugInteraction,
-  restoreDrug, restoreDrugInteraction,
+  archiveDrug, deleteDrug, restoreDrug,
 } from '@/lib/actions/interacoes'
 import useAdminPanels from './useAdminPanels'
 import DrugAdminTable from './DrugAdminTable'
-import InteractionAdminTable from './InteractionAdminTable'
 import AdminPanels from './AdminPanels'
 
-export default function InteracoesAdminPage({ lang, initialDrugs, initialInteractions, currentUserRole }) {
+export default function FarmacosAdminPage({ lang, initialDrugs, initialInteractions, currentUserRole }) {
   const p = useAdminPanels(initialDrugs, initialInteractions)
 
   return (
     <div className="admin-interacoes">
+      <p className="admin-back-link">
+        <Link href={`/${lang}/admin/interacoes`}>← Interações</Link>
+      </p>
       <div className="admin-page-header">
-        <h1>Interações Medicamentosas</h1>
+        <h1>Fármacos</h1>
         <p className="admin-page-subtitle">
-          Visão geral: primeiras 10 de cada lista. Usa os filtros ou abre a página dedicada para ver tudo.
+          Todos os {p.drugs.length} fármacos — perfil, farmacologia, edição, arquivação e eliminação.
         </p>
       </div>
 
@@ -27,8 +29,6 @@ export default function InteracoesAdminPage({ lang, initialDrugs, initialInterac
       <DrugAdminTable
         drugs={p.drugs}
         currentUserRole={currentUserRole}
-        limit={10}
-        viewAllHref={`/${lang}/admin/interacoes/farmacos`}
         onProfile={p.openProfileForm}
         onPharmacology={p.openPharmacologyForm}
         onEdit={p.openDrugForm}
@@ -36,21 +36,6 @@ export default function InteracoesAdminPage({ lang, initialDrugs, initialInterac
         onRestore={(d) => p.run(() => restoreDrug(d.id), 'Fármaco restaurado.')}
         onDelete={(d) => {
           if (window.confirm('Eliminar fármaco? (bloqueado se tiver interações)')) p.run(() => deleteDrug(d.id), 'Fármaco eliminado.')
-        }}
-      />
-
-      <div style={{ marginBottom: 24 }} />
-
-      <InteractionAdminTable
-        interactions={p.interactions}
-        currentUserRole={currentUserRole}
-        limit={10}
-        viewAllHref={`/${lang}/admin/interacoes/pares`}
-        onEdit={p.openInteractionForm}
-        onArchive={(i) => p.run(() => archiveDrugInteraction(i.id), 'Interação arquivada.')}
-        onRestore={(i) => p.run(() => restoreDrugInteraction(i.id), 'Interação restaurada.')}
-        onDelete={(i) => {
-          if (window.confirm('Eliminar interação?')) p.run(() => deleteDrugInteraction(i.id), 'Interação eliminada.')
         }}
       />
 
