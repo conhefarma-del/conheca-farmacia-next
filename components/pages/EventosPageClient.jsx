@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo, useContext } from 'react'
+import { Search } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -220,7 +221,7 @@ export default function EventosPageClient({ events, lang }) {
           {/* No Results State */}
           {filteredEvents.length === 0 && (
             <div className="text-center py-20">
-              <div className="text-6xl mb-4">&#128269;</div>
+              <Search size={56} className="mx-auto mb-4 text-brand-deep/50" strokeWidth={1.5} aria-hidden="true" />
               <h3 className="text-xl font-bold text-brand-deep">
                 {t('eventos_page.no_results_title') || 'Nenhum evento encontrado'}
               </h3>

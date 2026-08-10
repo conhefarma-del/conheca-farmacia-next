@@ -1161,10 +1161,6 @@ html.dark .form-note {
   }
 
   .filter-btn[data-filter="conheca-medicamento"] {
-    @apply border-[#7c3aed] text-brand-deep hover:bg-[#7c3aed]/10 hover:text-[#7c3aed];
-  }
-
-  .filter-btn[data-filter="voce-sabia"] {
     @apply border-[#0a844f] text-brand-deep hover:bg-[#0a844f]/10 hover:text-[#0a844f];
   }
 
@@ -1193,10 +1189,6 @@ html.dark .form-note {
   }
 
   .filter-btn.active[data-filter="conheca-medicamento"] {
-    @apply bg-[#7c3aed] border-[#7c3aed];
-  }
-
-  .filter-btn.active[data-filter="voce-sabia"] {
     @apply bg-[#0a844f] border-[#0a844f];
   }
 

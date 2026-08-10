@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo, useContext } from 'react'
+import { Search } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
 import { LIVE_CATEGORY_COLORS } from '@/lib/constants'
 import LiveCard from '@/components/ui/LiveCard'
@@ -126,7 +127,7 @@ export default function LivesPageClient({ lives, lang }) {
             </div>
           ) : (
             <div className="text-center py-20">
-              <div className="text-6xl mb-4">🔍</div>
+              <Search size={56} className="mx-auto mb-4 text-brand-deep/50" strokeWidth={1.5} aria-hidden="true" />
               <h3 className="text-xl font-bold text-brand-deep mb-2">
                 {t('lives_page.no_results_title')}
               </h3>
