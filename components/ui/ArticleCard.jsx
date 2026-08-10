@@ -5,6 +5,7 @@ import { LangContext } from '@/lib/contexts'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ARTICLE_CATEGORY_COLORS } from '@/lib/constants'
+import { BLUR_PLACEHOLDER } from '@/lib/images'
 
 export default function ArticleCard({ article, lang = 'pt' }) {
   const { t } = useContext(LangContext)
@@ -22,6 +23,8 @@ export default function ArticleCard({ article, lang = 'pt' }) {
             height={192}
             className="article-card-img"
             loading="lazy"
+            placeholder="blur"
+            blurDataURL={BLUR_PLACEHOLDER}
           />
         )}
       </Link>

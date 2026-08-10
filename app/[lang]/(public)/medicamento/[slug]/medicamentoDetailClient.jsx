@@ -1,6 +1,7 @@
 "use client";
 
 import { useContext, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import {
   AlertTriangle,
@@ -12,7 +13,6 @@ import {
   CheckCircle2,
   ChevronDown,
   Flag,
-  FlaskConical,
   HeartPulse,
   Info,
   Pill,
@@ -22,6 +22,25 @@ import {
 } from "lucide-react";
 import { LangContext } from "@/lib/contexts";
 import FeedbackBox from "@/components/feedback/FeedbackBox";
+
+// Secções abaixo da dobra da ficha do fármaco — lazy-loaded via next/dynamic:
+// farmacologia e fármacos relacionados/similares só carregam quando necessárias.
+const PharmacologySection = dynamic(
+  () => import("@/components/medicamento/PharmacologySection"),
+  { loading: () => <div className="medicamento-section-skeleton" /> }
+);
+const RelatedDrugsSection = dynamic(
+  () => import("@/components/medicamento/RelatedDrugsSection"),
+  { loading: () => <div className="medicamento-section-skeleton" /> }
+);
+
+// Ao abrir um <details>, garante que o conteúdo expandido fica visível no ecrã
+// (scroll mínimo até ao cartão, sem "saltos" bruscos).
+function scrollDetailsIntoView(e) {
+  if (e.currentTarget.open) {
+    e.currentTarget.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+}
 
 const SEVERITY_META = {
   critical: { icon: ShieldAlert },
@@ -84,7 +103,7 @@ function InteractionCard({ titleA, titleB, severity, description, children, onRe
       </div>
       {description && <p className="card-description">{description}</p>}
       {hasContent && (
-        <details className="card-details">
+        <details className="card-details" onToggle={scrollDetailsIntoView}>
           <summary className="card-toggle">
             {t("interacoes_page.expandir")}
             <ChevronDown size={14} aria-hidden="true" />
@@ -125,17 +144,6 @@ function DetailBlock({ titleKey, children, className }) {
     <div className={`detail-block ${className || ""}`}>
       <h4 className="detail-title">{t(titleKey)}</h4>
       <p>{children}</p>
-    </div>
-  );
-}
-
-function PharmacologyBlock({ titleKey, text }) {
-  const { t } = useContext(LangContext);
-  if (!text) return null;
-  return (
-    <div className="pharmacology-block">
-      <h4 className="pharmacology-title">{t(titleKey)}</h4>
-      <p>{text}</p>
     </div>
   );
 }
@@ -327,74 +335,11 @@ export default function MedicamentoDetailClient({
           </section>
         )}
 
-        {/* ---- Farmacologia ---- */}
-        {drug.pharmacology && (
-          <section className="medicamento-section">
-            <h2 className="medicamento-section-title">
-              <FlaskConical size={18} aria-hidden="true" />
-              {t("medicamento_detalhe.secao_farmacologia")}
-            </h2>
-            <div className="medicamento-cards">
-              <div className="pharmacology-grid">
-                <PharmacologyBlock
-                  titleKey="medicamento_detalhe.farmacodinamica"
-                  text={drug.pharmacology.pharmacodynamics}
-                />
-                <PharmacologyBlock
-                  titleKey="medicamento_detalhe.mecanismo_acao"
-                  text={drug.pharmacology.mechanism}
-                />
-                <PharmacologyBlock
-                  titleKey="medicamento_detalhe.absorcao"
-                  text={drug.pharmacology.absorption}
-                />
-                <PharmacologyBlock
-                  titleKey="medicamento_detalhe.metabolismo"
-                  text={drug.pharmacology.metabolism}
-                />
-                <PharmacologyBlock
-                  titleKey="medicamento_detalhe.meia_vida"
-                  text={drug.pharmacology.halfLife}
-                />
-              </div>
-              {drug.pharmacology.source && (
-                <p className="medicamento-source">
-                  <span className="detail-title">
-                    {t("interacoes_page.fonte")}
-                  </span>
-                  <span>{drug.pharmacology.source}</span>
-                </p>
-              )}
-            </div>
-          </section>
-        )}
+        {/* ---- Farmacologia (lazy-loaded) ---- */}
+        <PharmacologySection drug={drug} />
 
-        {/* ---- Fármacos relacionados/similares ---- */}
-        {relatedDrugs.length > 0 && (
-          <section className="medicamento-section">
-            <h2 className="medicamento-section-title">
-              <BookOpen size={18} aria-hidden="true" />
-              {t("medicamento_detalhe.secao_relacionados")}
-            </h2>
-            <p className="medicamento-section-subtitle">
-              {t("medicamento_detalhe.relacionados_subtitle")}
-            </p>
-            <div className="related-drugs">
-              {relatedDrugs.map((d) => (
-                <Link
-                  key={d.id}
-                  href={detailPath(d.slug)}
-                  className="related-drug-chip"
-                >
-                  <span className="related-drug-name">{d.name}</span>
-                  {d.className && (
-                    <span className="related-drug-class">{d.className}</span>
-                  )}
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
+        {/* ---- Fármacos relacionados/similares (lazy-loaded) ---- */}
+        <RelatedDrugsSection lang={lang} relatedDrugs={relatedDrugs} />
 
         {/* ---- Filtro de severidade das interações ---- */}
         {hasInteractions && (

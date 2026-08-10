@@ -1,6 +1,7 @@
 'use client'
 
 import { useContext, useMemo, useState } from 'react'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import {
   AlertTriangle,
@@ -26,8 +27,43 @@ import {
   X,
 } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
-import { INTERACOES_FAQ_ITEMS } from '@/lib/interacoes-faq'
 import FeedbackBox from '@/components/feedback/FeedbackBox'
+
+// Secção FAQ da calculadora — lazy-loaded (fica abaixo da dobra, conteúdo estático).
+const InteracoesFaq = dynamic(
+  () => import('@/components/interacoes/InteracoesFaq'),
+  {
+    loading: () => (
+      <div className="interacoes-faq section-padding" aria-hidden="true">
+        <div className="container-center max-w-3xl">
+          <div
+            style={{
+              height: 32,
+              width: 240,
+              margin: '0 auto 24px',
+              borderRadius: 8,
+              background: 'var(--color-brand-divider)',
+              animation: 'pulse 1.5s ease-in-out infinite',
+            }}
+          />
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              style={{
+                height: 56,
+                borderRadius: 12,
+                marginBottom: 12,
+                background: 'var(--color-brand-divider)',
+                animation: 'pulse 1.5s ease-in-out infinite',
+                opacity: 1 - i * 0.2,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    ),
+  }
+)
 
 // Ordem de apresentação: documentadas primeiro, depois desconhecidas.
 // `unknown` = par SEM registo na base (não confundir com `none` da BD,
@@ -59,9 +95,13 @@ function pregnancyBarClass(category) {
   return `is-${pregnancySeverity(category)}`
 }
 
-// Conteúdo estático do FAQ da calculadora (i18n) — partilhado com o server
-// para o schema FAQPage (ver lib/interacoes-faq.js).
-const FAQ_ITEMS = INTERACOES_FAQ_ITEMS
+// Ao abrir um <details>, garante que o conteúdo expandido fica visível no ecrã
+// (scroll mínimo até ao cartão, sem "saltos" bruscos).
+function scrollDetailsIntoView(e) {
+  if (e.currentTarget.open) {
+    e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }
+}
 
 // Maneiras de filtrar por severidade (chips). Reutiliza os rótulos de severidade.
 const SEVERITY_FILTERS = [
@@ -647,7 +687,7 @@ export default function InteracoesPageClient({
                             </p>
 
                             {hasDetails && (
-                              <details className="card-details">
+                              <details className="card-details" onToggle={scrollDetailsIntoView}>
                                 <summary className="card-toggle">
                                   {t('interacoes_page.expandir')}
                                   <ChevronDown size={14} aria-hidden="true" />
@@ -784,7 +824,7 @@ export default function InteracoesPageClient({
                             {item.mechanism && (
                               <p className="card-description">{item.mechanism}</p>
                             )}
-                            <details className="card-details">
+                            <details className="card-details" onToggle={scrollDetailsIntoView}>
                               <summary className="card-toggle">
                                 {t('interacoes_page.expandir')}
                                 <ChevronDown size={14} aria-hidden="true" />
@@ -878,7 +918,7 @@ export default function InteracoesPageClient({
                             {item.reason && (
                               <p className="card-description">{item.reason}</p>
                             )}
-                            <details className="card-details">
+                            <details className="card-details" onToggle={scrollDetailsIntoView}>
                               <summary className="card-toggle">
                                 {t('interacoes_page.expandir')}
                                 <ChevronDown size={14} aria-hidden="true" />
@@ -970,7 +1010,7 @@ export default function InteracoesPageClient({
                             {item.risk && (
                               <p className="card-description">{item.risk}</p>
                             )}
-                            <details className="card-details">
+                            <details className="card-details" onToggle={scrollDetailsIntoView}>
                               <summary className="card-toggle">
                                 {t('interacoes_page.expandir')}
                                 <ChevronDown size={14} aria-hidden="true" />
@@ -1042,30 +1082,8 @@ export default function InteracoesPageClient({
           </ul>
         </div>
 
-        {/* ---- Secção FAQ ---- */}
-        <div className="interacoes-faq section-padding">
-          <div className="container-center max-w-3xl">
-            <div className="section-heading text-center mb-8">
-              <h2 className="text-3xl md:text-4xl font-bold text-brand-deep">
-                {t('interacoes_faq.title')}
-              </h2>
-              <p className="hero-subtitle text-center">{t('interacoes_faq.subtitle')}</p>
-            </div>
-            <div className="faq-tabs">
-              {FAQ_ITEMS.map((item) => (
-                <details className="faq-item" key={item.q}>
-                  <summary className="faq-item-summary">
-                    <span>{t(item.q)}</span>
-                    <ChevronDown size={20} className="faq-item-chevron" />
-                  </summary>
-                  <div className="faq-item-answer prose prose-muted dark:prose-invert max-w-none">
-                    {t(item.a)}
-                  </div>
-                </details>
-              ))}
-            </div>
-          </div>
-        </div>
+        {/* ---- Secção FAQ (lazy-loaded) ---- */}
+        <InteracoesFaq />
       </div>
     </div>
   )

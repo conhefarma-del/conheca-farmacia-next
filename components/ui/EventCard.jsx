@@ -6,6 +6,7 @@ import { getSectionHref } from '@/lib/i18n-routes'
 import Link from 'next/link'
 import Image from 'next/image'
 import { EVENT_CATEGORY_COLORS } from '@/lib/constants'
+import { BLUR_PLACEHOLDER } from '@/lib/images'
 import { formatEventType } from '@/lib/utils/event-type'
 
 export default function EventCard({ event, lang = 'pt', variant = 'list' }) {
@@ -38,6 +39,8 @@ export default function EventCard({ event, lang = 'pt', variant = 'list' }) {
               height={192}
               className="event-card-image"
               loading="lazy"
+              placeholder="blur"
+              blurDataURL={BLUR_PLACEHOLDER}
             />
           )}
         </div>
@@ -69,6 +72,8 @@ export default function EventCard({ event, lang = 'pt', variant = 'list' }) {
             height={192}
             className="event-card-img"
             loading="lazy"
+            placeholder="blur"
+            blurDataURL={BLUR_PLACEHOLDER}
           />
         )}
         <div

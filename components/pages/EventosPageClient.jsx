@@ -5,6 +5,7 @@ import { LangContext } from '@/lib/contexts'
 import Link from 'next/link'
 import Image from 'next/image'
 import { EVENT_CATEGORY_COLORS } from '@/lib/constants'
+import { BLUR_PLACEHOLDER } from '@/lib/images'
 import { formatEventType } from '@/lib/utils/event-type'
 import NewsletterSection from '@/components/ui/NewsletterSection'
 
@@ -145,6 +146,8 @@ export default function EventosPageClient({ events, lang }) {
                         height={192}
                         className="event-card-image"
                         loading="lazy"
+                        placeholder="blur"
+                        blurDataURL={BLUR_PLACEHOLDER}
                       />
                     )}
                   </div>

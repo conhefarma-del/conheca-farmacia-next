@@ -6080,6 +6080,16 @@ html.dark .drug-list-card { background: var(--color-brand-bg-alt); }
 
 .medicamento-section { margin-bottom: 32px; }
 
+/* Skeleton das secções lazy-loaded (farmacologia, relacionados) */
+.medicamento-section-skeleton {
+  height: 220px;
+  border-radius: 16px;
+  border: 1px solid var(--color-brand-divider);
+  background: var(--color-brand-bg);
+  animation: pulse 1.5s ease-in-out infinite;
+  margin-bottom: 32px;
+}
+
 .medicamento-section-title {
   display: flex;
   align-items: center;

@@ -2,6 +2,7 @@ import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
 import { getArticleBySlug, getArticles } from '@/lib/api/articles'
 import { buildArticleSchema, buildBreadcrumbSchema } from '@/lib/seo'
 import { ARTICLE_CATEGORY_COLORS, SITE_URL } from '@/lib/constants'
+import { BLUR_PLACEHOLDER } from '@/lib/images'
 import { createClient } from '@/lib/supabase/server'
 import { findTranslationByEntityId } from '@/lib/api/translations'
 import Breadcrumb from '@/components/ui/Breadcrumb'
@@ -207,6 +208,8 @@ export default async function ArticleDetailPage({ params }) {
                 height={600}
                 className="article-featured-image"
                 unoptimized
+                placeholder="blur"
+                blurDataURL={BLUR_PLACEHOLDER}
                 priority
               />
             </div>

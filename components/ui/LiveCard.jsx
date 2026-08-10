@@ -5,6 +5,7 @@ import { LangContext } from '@/lib/contexts'
 import Link from 'next/link'
 import Image from 'next/image'
 import { LIVE_CATEGORY_COLORS } from '@/lib/constants'
+import { BLUR_PLACEHOLDER } from '@/lib/images'
 import { validateUrl } from '@/lib/security'
 
 export default function LiveCard({ live, lang = 'pt', variant = 'list' }) {
@@ -50,6 +51,8 @@ export default function LiveCard({ live, lang = 'pt', variant = 'list' }) {
               height={192}
               className="event-card-image"
               loading="lazy"
+              placeholder="blur"
+              blurDataURL={BLUR_PLACEHOLDER}
             />
           )}
         </div>
@@ -88,6 +91,8 @@ export default function LiveCard({ live, lang = 'pt', variant = 'list' }) {
             height={192}
             className="event-card-image"
             loading="lazy"
+            placeholder="blur"
+            blurDataURL={BLUR_PLACEHOLDER}
           />
         )}
       </div>

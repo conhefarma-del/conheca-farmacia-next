@@ -3,6 +3,7 @@ import { getSectionHref } from '@/lib/i18n-routes'
 import { getEventBySlug, getEvents, getEventInscriptionCount } from '@/lib/api/events'
 import { buildEventSchema, buildBreadcrumbSchema } from '@/lib/seo'
 import { EVENT_CATEGORY_COLORS, SITE_URL } from '@/lib/constants'
+import { BLUR_PLACEHOLDER } from '@/lib/images'
 import { createClient } from '@/lib/supabase/server'
 import { findTranslationByEntityId } from '@/lib/api/translations'
 import { formatEventType } from '@/lib/utils/event-type'
@@ -212,6 +213,8 @@ export default async function EventDetailPage({ params }) {
                     height={600}
                     className="event-featured-image"
                     unoptimized
+                    placeholder="blur"
+                    blurDataURL={BLUR_PLACEHOLDER}
                     priority
                   />
                 ) : (

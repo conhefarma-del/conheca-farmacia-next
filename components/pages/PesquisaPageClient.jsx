@@ -6,6 +6,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { BookOpen, CalendarDays, ClipboardList, FileText, Pill, Search, ShieldAlert, Video } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
+import { BLUR_PLACEHOLDER } from '@/lib/images'
 import { searchAllContent } from '@/lib/api/search'
 import { escapeHtml } from '@/lib/security'
 import { sanitizeHtml } from '@/lib/sanitize'
@@ -351,6 +352,8 @@ export default function PesquisaPageClient({ lang }) {
                           width={200}
                           height={140}
                           className="object-cover w-full h-full"
+                          placeholder="blur"
+                          blurDataURL={BLUR_PLACEHOLDER}
                         />
                       </div>
                     )}

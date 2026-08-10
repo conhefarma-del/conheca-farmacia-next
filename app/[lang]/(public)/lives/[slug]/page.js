@@ -2,6 +2,7 @@ import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
 import { getLiveBySlug, getLives } from '@/lib/api/lives'
 import { buildBreadcrumbSchema, buildLiveSchema } from '@/lib/seo'
 import { LIVE_CATEGORY_COLORS, SITE_URL } from '@/lib/constants'
+import { BLUR_PLACEHOLDER } from '@/lib/images'
 import { validateUrl } from '@/lib/security'
 import { createClient } from '@/lib/supabase/server'
 import { findTranslationByEntityId } from '@/lib/api/translations'
@@ -216,6 +217,8 @@ export default async function LiveDetailPage({ params }) {
                     width={1200}
                     height={675}
                     className="event-featured-image"
+                    placeholder="blur"
+                    blurDataURL={BLUR_PLACEHOLDER}
                     priority
                   />
                 </div>

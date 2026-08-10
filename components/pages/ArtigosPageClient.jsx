@@ -5,6 +5,7 @@ import { LangContext } from '@/lib/contexts'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ARTICLE_CATEGORY_COLORS, ARTICLE_CATEGORIES } from '@/lib/constants'
+import { BLUR_PLACEHOLDER } from '@/lib/images'
 import NewsletterSection from '@/components/ui/NewsletterSection'
 
 export default function ArtigosPageClient({ articles, lang }) {
@@ -109,6 +110,8 @@ export default function ArtigosPageClient({ articles, lang }) {
                         height={192}
                         className="article-card-img"
                         loading="lazy"
+                        placeholder="blur"
+                        blurDataURL={BLUR_PLACEHOLDER}
                       />
                     )}
                   </Link>
