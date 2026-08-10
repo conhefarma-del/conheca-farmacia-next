@@ -1,12 +1,12 @@
 'use client'
 
 import { useMemo, useState, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
 import {
   archiveDrugDimension, restoreDrugDimension, deleteDrugDimension,
   getAllFoodDimensions, getAllDiseaseDimensions, getAllPregnancyDimensions,
 } from '@/lib/actions/interacoes'
 import AdminPagination from './AdminPagination'
+import DimensionForm from './DimensionForm'
 
 function statusBadge(status) {
   if (status === 'published') return <span className="admin-badge admin-badge-success">Publicado</span>
@@ -26,10 +26,11 @@ const TABS = [
 
 const PAGE_SIZE = 25
 
-function DimTable({ rows, tabKey, currentUserRole, onRefresh }) {
+function DimTable({ rows, tabKey, currentUserRole, onRefresh, onEdit, onNew }) {
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const isSuper = currentUserRole === 'superadmin'
+  const table = tabKey === 'food' ? 'drug_food_interactions' : tabKey === 'disease' ? 'drug_disease_interactions' : 'drug_pregnancy_info'
 
   const filtered = useMemo(() => {
     const termo = search.trim().toLowerCase()
@@ -37,8 +38,7 @@ function DimTable({ rows, tabKey, currentUserRole, onRefresh }) {
       if (!termo) return true
       return (
         (r.drugName && r.drugName.toLowerCase().includes(termo)) ||
-        (r.entity || r.condition || '').toLowerCase().includes(termo) ||
-        (r.drugSlug || '').includes(termo)
+        (r.entity || r.condition || '').toLowerCase().includes(termo)
       )
     })
   }, [rows, search])
@@ -55,8 +55,6 @@ function DimTable({ rows, tabKey, currentUserRole, onRefresh }) {
     if (res.success) { onRefresh(); setPage(1) }
   }
 
-  const table = tabKey === 'food' ? 'drug_food_interactions' : tabKey === 'disease' ? 'drug_disease_interactions' : 'drug_pregnancy_info'
-
   return (
     <div>
       <div className="admin-filters">
@@ -67,6 +65,7 @@ function DimTable({ rows, tabKey, currentUserRole, onRefresh }) {
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1) }}
         />
+        <button className="admin-btn admin-btn-primary admin-btn-sm" onClick={onNew}>Nova</button>
       </div>
       <div className="admin-card-body">
         {totalShown > 0 && (
@@ -88,12 +87,11 @@ function DimTable({ rows, tabKey, currentUserRole, onRefresh }) {
                   <td>{statusBadge(r.isArchived ? null : r.status)}</td>
                   <td>
                     <div className="admin-table-actions">
+                      <button className="admin-btn admin-btn-sm" onClick={() => onEdit(r)}>Editar</button>
                       {!r.isArchived ? (
                         <button className="admin-btn admin-btn-sm" onClick={() => run(() => archiveDrugDimension(table, r.id), 'Arquivado.')}>Arquivar</button>
                       ) : (
-                        isSuper && (
-                          <button className="admin-btn admin-btn-sm" onClick={() => run(() => restoreDrugDimension(table, r.id), 'Restaurado.')}>Restaurar</button>
-                        )
+                        isSuper && <button className="admin-btn admin-btn-sm" onClick={() => run(() => restoreDrugDimension(table, r.id), 'Restaurado.')}>Restaurar</button>
                       )}
                       {isSuper && (
                         <button className="admin-btn admin-btn-sm admin-btn-danger" onClick={() => {
@@ -124,12 +122,11 @@ function DimTable({ rows, tabKey, currentUserRole, onRefresh }) {
                   <td>{statusBadge(r.isArchived ? null : r.status)}</td>
                   <td>
                     <div className="admin-table-actions">
+                      <button className="admin-btn admin-btn-sm" onClick={() => onEdit(r)}>Editar</button>
                       {!r.isArchived ? (
                         <button className="admin-btn admin-btn-sm" onClick={() => run(() => archiveDrugDimension(table, r.id), 'Arquivado.')}>Arquivar</button>
                       ) : (
-                        isSuper && (
-                          <button className="admin-btn admin-btn-sm" onClick={() => run(() => restoreDrugDimension(table, r.id), 'Restaurado.')}>Restaurar</button>
-                        )
+                        isSuper && <button className="admin-btn admin-btn-sm" onClick={() => run(() => restoreDrugDimension(table, r.id), 'Restaurado.')}>Restaurar</button>
                       )}
                       {isSuper && (
                         <button className="admin-btn admin-btn-sm admin-btn-danger" onClick={() => {
@@ -149,13 +146,29 @@ function DimTable({ rows, tabKey, currentUserRole, onRefresh }) {
   )
 }
 
-export default function DimensoesAdminPage({ lang, initialFood, initialDisease, initialPregnancy, currentUserRole }) {
+export default function DimensoesAdminPage({ lang, initialDrugs, initialFood, initialDisease, initialPregnancy, currentUserRole }) {
   const [food, setFood] = useState(initialFood || [])
   const [disease, setDisease] = useState(initialDisease || [])
   const [pregnancy, setPregnancy] = useState(initialPregnancy || [])
+  const drugs = initialDrugs || []
   const [activeTab, setActiveTab] = useState('food')
   const [message, setMessage] = useState(null)
   const [error, setError] = useState(null)
+
+  // Painel de edição
+  const [dimPanelOpen, setDimPanelOpen] = useState(false)
+  const [dimPanelRendered, setDimPanelRendered] = useState(false)
+  const [editingDim, setEditingDim] = useState(null) // { type, data }
+
+  const openDimPanel = (type, data) => {
+    setEditingDim({ type, data })
+    setDimPanelRendered(true)
+    requestAnimationFrame(() => setDimPanelOpen(true))
+  }
+  const closeDimPanel = () => {
+    setDimPanelOpen(false)
+    setTimeout(() => setDimPanelRendered(false), 250)
+  }
 
   const refreshAll = useCallback(async () => {
     const [f, d, p] = await Promise.all([getAllFoodDimensions(), getAllDiseaseDimensions(), getAllPregnancyDimensions()])
@@ -163,6 +176,10 @@ export default function DimensoesAdminPage({ lang, initialFood, initialDisease, 
     setDisease(d)
     setPregnancy(p)
   }, [])
+
+  const showMessage = (ok, text) => {
+    if (ok) { setMessage(text); setError(null) } else { setError(text); setMessage(null) }
+  }
 
   const rows = activeTab === 'food' ? food : activeTab === 'disease' ? disease : pregnancy
 
@@ -186,9 +203,7 @@ export default function DimensoesAdminPage({ lang, initialFood, initialDisease, 
             onClick={() => setActiveTab(t.key)}
           >
             {t.label}
-            <span className="admin-tab-count">
-              {activeTab === t.key ? rows.length : (t.key === 'food' ? food.length : t.key === 'disease' ? disease.length : pregnancy.length)}
-            </span>
+            <span className="admin-tab-count">{rows.length}</span>
           </button>
         ))}
       </div>
@@ -200,8 +215,21 @@ export default function DimensoesAdminPage({ lang, initialFood, initialDisease, 
           tabKey={activeTab}
           currentUserRole={currentUserRole}
           onRefresh={refreshAll}
+          onEdit={(r) => openDimPanel(activeTab, { ...r, drugId: r.drugId })}
+          onNew={() => openDimPanel(activeTab, null)}
         />
       </div>
+
+      {dimPanelRendered && (
+        <DimensionForm
+          type={editingDim.type}
+          initialData={editingDim.data}
+          drugs={drugs}
+          panelOpen={dimPanelOpen}
+          onClose={closeDimPanel}
+          onSaved={(ok, text) => { showMessage(ok, text); if (ok) { refreshAll(); closeDimPanel() } }}
+        />
+      )}
     </div>
   )
 }
