@@ -97,7 +97,7 @@ export default function DrugAdminTable({
       const okStatus =
         statusFilter === 'all' ||
         (statusFilter === 'archived' ? d.is_archived : !d.is_archived && d.status === statusFilter)
-      return okBusca && okGrupo && okAtc && okStatus
+      return okBusca && okGrupo && okLetra && okStatus
     })
     if (sortBy === 'alpha') list = [...list].sort((a, b) => (a.name_pt || '').localeCompare(b.name_pt || '', 'pt'))
     else if (sortBy === 'atc') list = [...list].sort((a, b) => (a.atc_code || '').localeCompare(b.atc_code || ''))
