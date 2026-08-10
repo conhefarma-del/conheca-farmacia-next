@@ -3,7 +3,7 @@
 Documento que descreve o método usado para **pesquisar, verificar e adicionar**
 interações à calculadora de interações (`/interacoes`).
 
-> **Três fluxos independentes.** O trabalho divide-se em **três pedidos
+> **Quatro fluxos independentes.** O trabalho divide-se em **quatro pedidos
 > separados**, cada um com o seu fluxo próprio. Podem ser pedidos em qualquer
 > ordem e são **aditivos** (nenhum toca no que já existe):
 
@@ -15,11 +15,19 @@ interações à calculadora de interações (`/interacoes`).
   adiciona as interações **não-medicamento-medicamento** para fármacos **que
   já existem** em `public.drugs`. Usa **EMC-UK como fonte canónica** (com
   Health Canada e DailyMed de apoio e corroboração). → Ver **secção 12**.
-- **Fluxo 3 — Perfis de fármaco** (`drug_profiles`): a ficha editorial de cada
-  fármaco (overview público/profissionais, indicações, efeitos secundários,
-  precauções — PT/EN), que alimenta a página `/medicamento/[slug]`. Usa
-  **DailyMed como fonte principal** + corroboração do Prontuário. → Ver
-  **secção 13**.
+- **Fluxo 3 — Perfis de fármaco + farmacologia** (`drug_profiles` +
+  `drug_pharmacology`): a ficha editorial de cada fármaco (overview
+  público/profissionais, indicações, efeitos secundários, precauções — PT/EN)
+  e a secção **Farmacologia** (farmacodinâmica, mecanismo de ação, metabolismo,
+  absorção, meia-vida), que alimentam a página `/medicamento/[slug]`. Usa
+  **DailyMed como fonte principal** (secção 12 CLINICAL PHARMACOLOGY para a
+  farmacologia) + corroboração do Prontuário e PubMed. → Ver **secção 13**.
+- **Fluxo 4 — Explicações longas fármaco-fármaco** (camada editorial de
+  profundidade): preenche `summary_pro_*` (resumo profissional) e
+  `explanation_*` (explicação longa, 3–5 frases com mecanismo e orientação)
+  dos pares moderados/critical sem explicação, por ordem de fármacos com mais
+  pares. Usa **DailyMed como fonte principal** + Prontuário. → Ver
+  **secção 15**.
 
 > **Fonte canónica do Fluxo 2:** prioriza-se o **EMC-UK (MHRA, medicines.org.uk)**
 > como fonte primária de verdade para as três dimensões novas quando há
@@ -142,6 +150,16 @@ interações à calculadora de interações (`/interacoes`).
 - **Uso nas migrações 052–056:** inventário de fármacos da família,
   identificação de subclasses, e citação adicional nos pares que o anexo
   documenta (ex.: ceftazidima × estreptomicina — secção 1.1.7).
+
+### 2.4 PubMed — apoio à farmacologia (Fluxo 3)
+
+- **Papel:** quando o rótulo DailyMed não tem a secção 12 CLINICAL
+  PHARMACOLOGY (caso dos **OTC**, ex.: ibuprofeno, omeprazol, antiácidos) ou
+  quando a farmacocinética precisa de detalhe clínico, a farmacologia é
+  autorada a partir de **revisões clássicas de farmacocinética** indexadas no
+  PubMed (ex.: Davies NM, Clin Pharmacokinet 1998 — PMID 9515184, para o
+  ibuprofeno) e resumos PharmGKB (PMC). A citação fica no campo
+  `source_*` da `drug_pharmacology` com o PMID/PMC explícito.
 
 ---
 
@@ -301,6 +319,19 @@ mapa da família: cada capítulo lista os fármacos da classe e o **Anexo 7 —
 
 > Nota: `source_url` é uma coluna única de link; as citações principais vivem em
 > `source_pt`/`source_en` (texto com URLs embutidos).
+
+### `public.drug_pharmacology` — secção Farmacologia (1:1 com drugs)
+
+- `drug_id UUID UNIQUE REFERENCES drugs(id) ON DELETE CASCADE` — uma linha por
+  fármaco (upsert por `drug_id`)
+- Cinco subsecções PT/EN (texto corrido, parágrafos):
+  `pharmacodynamics_pt/en`, `mechanism_pt/en`, `metabolism_pt/en`,
+  `absorption_pt/en`, `half_life_pt/en`
+- Citação: `source_pt/en` (DailyMed secção 12; PubMed/PharmGKB quando OTC)
+- Estado: `status ('draft'|'published')`, `is_archived`, `archived_at/by`,
+  `updated_by`, `created_at`, `updated_at`
+- RLS: `admin_all` + `anon_read` (só `published` e não arquivado)
+- Tabela criada na migração 086; conteúdo alargado nas 088–096
 
 ### `public.drug_profiles` — perfil editorial do fármaco (1:1 com drugs)
 
@@ -650,13 +681,15 @@ create table public.drug_pregnancy_info (
 
 ---
 
-## 13. Fluxo 3 — Perfis de fármaco (drug_profiles)
+## 13. Fluxo 3 — Perfis de fármaco + farmacologia (drug_profiles + drug_pharmacology)
 
 > Fluxo separado e aditivo. Cria/atualiza a ficha editorial de cada fármaco
 > (`drug_profiles`, 1:1 com `drugs`): overview (público/profissionais),
 > **indicações**, **efeitos secundários comuns** e **precauções**, PT/EN,
-> exibidos na página `/medicamento/[slug]` com o toggle Público | Profissionais.
-> Não toca em `drug_interactions` nem nas tabelas do Fluxo 2.
+> exibidos na página `/medicamento/[slug]` com o toggle Público | Profissionais;
+> e a secção **Farmacologia** (`drug_pharmacology`, 1:1 com `drugs`):
+> farmacodinâmica, mecanismo de ação, metabolismo, absorção e meia-vida
+> (ver 13.6). Não toca em `drug_interactions` nem nas tabelas do Fluxo 2.
 
 ### 13.1 Fontes e método
 
@@ -717,6 +750,41 @@ Onde o Prontuário corrobora, acrescentar no fim (igual ao Fluxo 1, secção 3.6
   metronidazol, carbamazepina, fenitoina, valproato, metformina, levotiroxina,
   atorvastatina, amlodipina, omeprazol + furosemida completada).
 - **082**: `updated_by` (rastreio de quem guardou).
+- **084**: coluna `atc_code` em `drugs` (padrão `FROM (VALUES) AS v(slug,
+  atc_code)`).
+- **086**: tabela `drug_pharmacology` + 6 primeiros (farmacologia dos piloto
+  da 079).
+- **088–096**: lotes de **perfil completo + farmacologia** — 30+26+30+30+30
+  (incl. os de 0 pares), até **todos os fármacos com perfil e farmacologia**
+  (182/182 na BD; ver auditoria em `docs/AUDITORIA_LACUNAS.md`).
+- **132**: perfis dos 2 fármacos adicionados depois (benzilpenicilina-benzatina,
+  piperacilina-tazobactam).
+- **133**: publica todos os perfis/farmacologias em `draft` (a RLS anónima só
+  expõe `published`).
+
+### 13.6 Farmacologia (drug_pharmacology) — método
+
+A secção **Farmacologia** da ficha (`/medicamento/[slug]`) tem cinco campos
+PT/EN (texto corrido): **farmacodinâmica**, **mecanismo de ação**,
+**metabolismo**, **absorção** e **meia-vida**.
+
+1. Obter e validar o setID na API DailyMed (mesma regra do Fluxo 1 — INN
+   inglês, rótulo mono-ingrediente).
+2. Extrair da secção **12 CLINICAL PHARMACOLOGY** do rótulo: subsecções
+   *Pharmacodynamics*, *Mechanism of Action*, *Metabolism*,
+   *Absorption*, *Elimination/Half-life*.
+3. **Rótulos OTC sem secção 12** (ex.: ibuprofeno, omeprazol, antiácidos):
+   autorar a partir de revisões clássicas de farmacocinética no **PubMed**
+   (PMID) e resumos PharmGKB (PMC) — ver secção 2.4. Nunca inventar valores.
+4. Redigir PT/EN como **parágrafos corridos** (não bullets) — cada campo
+   2–5 frases com os valores concretos do rótulo (picos, meias-vidas,
+   percentagens de ligação, vias metabólicas e CYP envolvidos).
+5. Citar: `DailyMed/FDA (NIH/NLM) — rótulo aprovado {Nome PT}, secção 12
+   Clinical Pharmacology: <url>` / EN `— approved {Name EN} label, section 12
+   Clinical Pharmacology: <url>`; para OTC usar `PubMed — … (PMID …);
+   PharmGKB summary: <url>` (mesmo padrão PT/EN).
+6. Gerar a migração com o padrão 7.6 (`JOIN (VALUES ...) ON d.slug = v.slug`,
+   `ON CONFLICT (drug_id) DO NOTHING`) e `status = 'published'`.
 
 ---
 
@@ -728,3 +796,86 @@ Onde o Prontuário corrobora, acrescentar no fim (igual ao Fluxo 1, secção 3.6
 > dimensões em fontes abertas citáveis, com divergências ocasionais entre
 > fontes (metformina/levotiroxina na gravidez) que o EMC-UK resolve como
 > canónica.
+
+---
+
+## 15. Fluxo 4 — Explicações longas fármaco-fármaco (camada editorial)
+
+> Fluxo separado e aditivo. Não cria pares nem toca nas dimensões: preenche a
+> **camada de profundidade** dos pares `drug_interactions` que já existem e
+> estão publicados — `summary_pro_pt/en` (resumo profissional, 1–2 frases) e
+> `explanation_pt/en` (explicação longa, 3–5 frases com mecanismo e orientação
+> prática). Alimenta a secção «Explicação» da calculadora `/interacoes` e da
+> ficha `/medicamento/[slug]`.
+
+### 15.1 Âmbito e priorização
+
+- Preenche os pares **sem** `explanation_*` (a coluna veio vazia nas migrações
+  de seed 044–069).
+- Ordem por **prioridade clínica**: primeiro os `critical`, depois os
+  `moderate`, por **fármaco com mais pares em falta** (o mesmo fármaco cobre
+  vários pares numa migração), depois `minor`/`none` quando sobrar.
+- Uma migração = um fármaco (ou um pequeno grupo) com os seus N pares, cada
+  um um `UPDATE` independente.
+
+### 15.2 Fontes e método
+
+- **DailyMed/FDA (NIH/NLM)** = fonte principal: secções **DRUG INTERACTIONS**,
+  **WARNINGS AND PRECAUTIONS** e **CLINICAL PHARMACOLOGY** dos rótulos
+  aprovados dos dois fármacos do par (setIDs já citados no `source_pt` do par —
+  reutilizar, não revalidar do zero).
+- **Prontuário Terapêutico (11.ª ed., 2012)** = corroboração dos factos
+  clínicos e citação adicional (mesmo papel do Fluxo 1).
+- **Conteúdo autoral**: a explicação é redigida com base no conhecimento
+  farmacológico estabelecido e **ancorada** nos rótulos citados — nunca copiar
+  o texto da fonte.
+
+### 15.3 Passo a passo
+
+1. Consultar a BD: pares do fármaco com `explanation_pt = ''`, agrupados por
+   severidade e parceiro.
+2. Para cada par, verificar no rótulo dos dois fármacos a secção de interações
+   e ancorar o mecanismo (ex.: inibição do CYP3A4, quelação, QT aditivo,
+   sinergia antiplaquetária).
+3. Redigir PT/EN:
+   - `summary_pro_*`: 1–2 frases, tom profissional, com a ação prática
+     (ex.: «Vigiar o INR»);
+   - `explanation_*`: 3–5 frases — contexto do mecanismo, consequência
+     clínica, grupos de risco e orientação prática (dose, monitorização,
+     alternativa). Não usar `\n` (texto corrido).
+4. Gerar a migração com o **padrão 7.1** (UPDATE com `LEAST/GREATEST`
+   canónico, `updated_at = now()`), `SET summary_pro_pt/en,
+   explanation_pt/en` — um UPDATE por par (ver 15.5).
+5. Validar (greps estruturais, secção 8) e entregar — o utilizador aplica
+   manualmente no Supabase.
+
+### 15.4 Migrações e cobertura atual
+
+- **089/100**: padrão estabelecido (UPDATE com LEAST/GREATEST).
+- **097–098**: 47 + 44 pares moderados dos fármacos com mais pares.
+- **100–131**: lotes por fármaco (digoxina, amiodarona, claritromicina,
+  rifampicina, ibuprofeno, antiácidos, ciprofloxacina, omeprazol, aspirina,
+  atorvastatina, cetoconazol, furosemida, prednisolona, sertralina, tramadol,
+  cotrimoxazol, cloroquina, fluconazol, hidroclorotiazida, isoniazida,
+  itraconazol, quinina, ritonavir/voriconazol/clopidogrel, β2/teofilina/sotalol,
+  antiepiléticos, vancomicina/aminoglicosídeos, eritromicina+anti-histamínicos,
+  IECA/ARA, levotiroxina, azatioprina) + minor/none (111).
+- **134**: explicações dos pares novos da benzilpenicilina-benzatina.
+
+### 15.5 Exemplo (padrão 7.1 com explicação)
+
+```sql
+UPDATE public.drug_interactions
+SET
+  summary_pro_pt = 'Diclofenac + prednisolona: risco aditivo de úlcera e hemorragia gastrointestinal. Considerar gastroproteção nos doentes de risco.',
+  summary_pro_en = 'Diclofenac + prednisolone: additive risk of peptic ulcer and gastrointestinal bleeding. Consider gastroprotection in at-risk patients.',
+  explanation_pt = 'Os AINEs, como o diclofenac, aumentam o risco de eventos gastrointestinais graves (hemorragia, ulceração e perfuração), e o rótulo do diclofenac identifica o uso concomitante de corticosteroides orais como fator que aumenta o risco de hemorragia GI. A prednisolona, por seu lado, tem a precaução de uso com cautela em doentes com úlcera péptica ativa ou latente. Em conjunto, o risco de úlcera, hemorragia e perfuração digestiva aumenta de forma aditiva, sobretudo em idosos, com história de úlcera/hemorragia ou em tratamentos prolongados. Considerar gastroproteção (inibidor da bomba de protões) nos doentes de risco, usar a menor dose eficaz de cada fármaco e vigiar sintomas digestivos.',
+  explanation_en = 'NSAIDs such as diclofenac increase the risk of serious gastrointestinal events (bleeding, ulceration and perforation), and the diclofenac label identifies concomitant use of oral corticosteroids as a factor that increases the risk of GI bleeding. Prednisolone, in turn, carries a precaution to use with caution in patients with active or latent peptic ulcer. Together, the risk of ulcer, bleeding and digestive perforation increases additively, especially in the elderly, with a history of ulcer/bleeding or in prolonged treatment. Consider gastroprotection (proton pump inhibitor) in at-risk patients, use the lowest effective dose of each drug and monitor digestive symptoms.',
+  updated_at = now()
+WHERE LEAST(drug_a_id, drug_b_id) = LEAST((SELECT id FROM public.drugs WHERE slug = 'diclofenac'), (SELECT id FROM public.drugs WHERE slug = 'prednisolona'))
+  AND GREATEST(drug_a_id, drug_b_id) = GREATEST((SELECT id FROM public.drugs WHERE slug = 'diclofenac'), (SELECT id FROM public.drugs WHERE slug = 'prednisolona'));
+```
+
+> O `WHERE` é o canónico independente da ordem (secção 7.1/lição 3). O texto
+> não usa `\n` — os `explanation_*` são parágrafos corridos (ao contrário dos
+> bullets das `indications_*/side_effects_*` dos perfis).

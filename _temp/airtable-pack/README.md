@@ -6,24 +6,29 @@ verdade** — nunca edites os dados aqui e depois os migres para o site; edita
 na base de pesquisa e, quando verificado, gera a migração a partir dela (ou
 vice-versa, como no arranque atual).
 
-## Conteúdo (7 tabelas)
+## Conteúdo (8 tabelas)
 
 | Ficheiro | Tabela no Airtable | Registos |
 |---|---|---|
-| `01-farmacos.csv` | **Fármacos** | 176 |
-| `02-fontes.csv` | **Fontes** | 279 |
-| `03-interacoes-farmaco-farmaco.csv` | **Interações Fármaco-Fármaco** | 384 |
-| `04-interacoes-alimento-bebida.csv` | **Interações Alimento/Bebida** | 116 |
-| `05-doencas.csv` | **Doenças** | 97 |
-| `06-interacoes-doenca.csv` | **Interações Doença** | 198 |
-| `07-gravidez-lactacao.csv` | **Gravidez/Lactação** | 102 |
+| `01-farmacos.csv` | **Fármacos** | 191 |
+| `02-fontes.csv` | **Fontes** | 410 |
+| `03-interacoes-farmaco-farmaco.csv` | **Interações Fármaco-Fármaco** | 436 |
+| `04-interacoes-alimento-bebida.csv` | **Interações Alimento/Bebida** | 319 |
+| `05-doencas.csv` | **Doenças** | 137 |
+| `06-interacoes-doenca.csv` | **Interações Doença** | 396 |
+| `07-gravidez-lactacao.csv` | **Gravidez/Lactação** | 191 |
+| `08-perfil-farmacologia.csv` | **Perfil e Farmacologia** | 184 |
 
 Dados atuais: fármacos de uso comum em Angola + antimaláricos + antituberculares
 + antifúngicos + antibacterianos + antirretrovirais (044–058), SNC/analgésicos
 (062), cardiovasculares (063), hematologia (064), respiratórios (065),
 digestivos (066), músculo-esqueléticas (067), antialérgicos (068) e nutrição
 (069), com as 3 dimensões novas (alimento/doença/gravidez) para os fármacos de
-todas as secções (061–069).
+todas as secções (061–069), e a camada editorial nova: explicações longas
+fármaco-fármaco (`explicacao_pt/en` + `resumo_pro_pt/en` — 097–131), perfis
+público/profissional + indicações/efeitos/precauções (`drug_profiles` —
+079–096) e farmacologia completa (`drug_pharmacology` — 086–096), espelhadas
+na 8.ª tabela.
 
 ## Como importar
 
@@ -45,6 +50,7 @@ O CSV não importa campos de ligação. Depois de importar tudo:
    - Em **Interações Alimento/Bebida**: `farmaco` → Fármacos
    - Em **Interações Doença**: `farmaco` → Fármacos, `doenca` → Doenças
    - Em **Gravidez/Lactação**: `farmaco` → Fármacos
+   - Em **Perfil e Farmacologia**: `farmaco` → Fármacos
 
 2. Liga em massa de uma das duas formas:
 
@@ -94,7 +100,13 @@ O CSV não importa campos de ligação. Depois de importar tudo:
 - **`fonte_pt`/`fonte_en`**: citação completa com URL. A tabela **Fontes** foi
   derivada destas strings (uma por URL único) — preenche `acessado_em` quando
   verificares uma fonte.
-- **`atc`** está vazio: não existe na BD do site; é um campo de pesquisa futuro.
+- **`atc`**: preenchido para os fármacos com código conhecido (146/191 — a
+  migração 084 só cobriu os fármacos que existiam na altura; os restantes ficam
+  vazios até serem mapeados).
+- **`explicacao_pt/en` + `resumo_pro_pt/en`** (Interações Fármaco-Fármaco): as
+  explicações longas e o resumo profissional da camada editorial 097–131.
+  403/436 pares têm explicação; os 33 sem são os pares das migrações 069/134
+  (nutrição + benzilpenicilina) que nunca receberam UPDATE de explicação.
 
 ## Regenerar o pack
 
@@ -113,15 +125,24 @@ saltos) são apanhadas automaticamente. A semântica é a do Postgres:
 Para o gerador apanhar novos dados, mantém esses padrões nas futuras migrações:
 
 - Fármacos: `INSERT ... VALUES`.
-- Pares fármaco-fármaco (2 estilos suportados):
+- Pares fármaco-fármaco (3 estilos suportados):
   `INSERT ... VALUES` com `LEAST/GREATEST` + `(SELECT id FROM public.drugs
   WHERE slug = '…')`, **ou** `INSERT ... SELECT ... FROM (VALUES …) AS
   v(slug_a, slug_b, …) JOIN public.drugs a ON a.slug = v.slug_a …` (migrações
-  062–069). A severidade pode vir como coluna `v.severity` ou como literal na
-  lista SELECT — ambos são lidos.
+  062–069), **ou** `INSERT ... SELECT ... FROM public.drugs a, public.drugs b
+  WHERE a.slug = 'x' AND b.slug = 'y'` com literais na lista SELECT (migrações
+  083/085/094). A severidade pode vir como coluna `v.severity` ou como literal
+  na lista SELECT — ambos são lidos.
 - Novas dimensões: `INSERT INTO <tabela> (...) SELECT d.id, v.* FROM drugs d
   JOIN (VALUES …) AS v(slug, …) ON d.slug = v.slug ON CONFLICT … DO NOTHING`.
-- Correções de conteúdo: `UPDATE` do campo (severidade, fonte, resumo, …).
+- Perfil editorial + farmacologia: `INSERT INTO public.drug_profiles /
+  public.drug_pharmacology (...) SELECT d.id, v.* FROM drugs d JOIN (VALUES …)
+  AS v(slug, …) ON d.slug = v.slug …` — o gerador junta as duas tabelas numa
+  única linha por fármaco na 8.ª tabela.
+- Códigos ATC: `UPDATE public.drugs SET atc_code = v.atc_code FROM (VALUES …)
+  AS v(slug, atc_code) WHERE d.slug = v.slug` (migração 084).
+- Correções de conteúdo: `UPDATE` do campo (severidade, fonte, resumo,
+  explicação, …).
 
 Depois de atualizar a base do Airtable faz-se o mesmo de sempre: exporta os CSVs
 de novo e substitui os dados (ou usa a API quando quiseres automatizar).

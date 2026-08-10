@@ -38,6 +38,8 @@ NEW_DIM_TABLES = ['drug_food_interactions', 'drug_disease_interactions',
 COL_TO_PACK = {
     'severity': 'severidade',
     'summary_pt': 'resumo_pt', 'summary_en': 'resumo_en',
+    'summary_pro_pt': 'resumo_pro_pt', 'summary_pro_en': 'resumo_pro_en',
+    'explanation_pt': 'explicacao_pt', 'explanation_en': 'explicacao_en',
     'mechanism_pt': 'mecanismo_pt', 'mechanism_en': 'mecanismo_en',
     'management_pt': 'conselho_pt', 'management_en': 'conselho_en',
     'monitoring_pt': 'monitorizacao_pt', 'monitoring_en': 'monitorizacao_en',
@@ -133,8 +135,14 @@ def split_top(text):
 
 
 def unquote(s):
-    """Remove aspas simples SQL, resolvendo '' -> '."""
+    """Remove aspas simples SQL, resolvendo '' -> '.
+    Suporta também strings E'...' do Postgres (\n -> quebra de linha real)."""
     s = s.strip()
+    if len(s) >= 3 and s[0] == 'E' and s[1] == "'" and s[-1] == "'":
+        body = s[2:-1].replace("''", "'")
+        body = body.replace('\\\\', '\\')
+        body = body.replace('\\n', '\n')
+        return body
     if len(s) >= 2 and s[0] == "'" and s[-1] == "'":
         return s[1:-1].replace("''", "'")
     return None
@@ -272,6 +280,39 @@ def parse_join_values(text):
     return blocks
 
 
+PAIR_AB_SLUG_RE = re.compile(r"\b([ab])\.slug\s*=\s*'([^']+)'")
+
+
+def parse_insert_select_pairs(text):
+    """Padrão 083/085/094: INSERT INTO drug_interactions (cols)
+    SELECT LEAST(a.id, b.id), GREATEST(a.id, b.id), 'severity', 'summary_pt', …
+    FROM public.drugs a, public.drugs b WHERE a.slug='x' AND b.slug='y' …;
+    Devolve lista de dicts {'columns', 'values', 'a', 'b'} (valores raw)."""
+    out = []
+    pattern = r'INSERT\s+INTO\s+public\.drug_interactions\s*\('
+    for m in re.finditer(pattern, text, re.IGNORECASE):
+        cols_inner, i = read_balanced(text, m.end() - 1)
+        columns = [c.strip() for c in split_top(cols_inner)]
+        i = skip_ws(text, i)
+        if not text.startswith('SELECT', i):
+            continue  # VALUES (já tratado) ou outros
+        fm = re.search(r'\bFROM\s+public\.drugs\s+[ab]\s*,\s*public\.drugs\s+[ab]\b',
+                       text[i:])
+        if not fm:
+            continue
+        tokens = split_top(text[i + len('SELECT'):i + fm.start()])
+        stmt_end = statement_end(text, m.start())
+        slugs = dict(PAIR_AB_SLUG_RE.findall(text[m.start():stmt_end]))
+        if len(slugs) != 2 or 'a' not in slugs or 'b' not in slugs:
+            continue
+        values = {}
+        for col, tok in zip(columns[2:], tokens[2:]):
+            values[col] = tok
+        out.append({'columns': columns, 'values': values,
+                    'a': slugs['a'], 'b': slugs['b']})
+    return out
+
+
 def parse_new_dim_blocks(text, table):
     """Blocos JOIN (VALUES ...) dentro do statement INSERT INTO <table> ...;"""
     blocks = []
@@ -288,10 +329,27 @@ FARMACOS_HEADERS = ['slug', 'nome_generico_pt', 'nome_generico_en', 'marcas',
 FONTES_HEADERS = ['slug', 'publicacao', 'titulo', 'url', 'acessado_em',
                   'dominio_publico', 'notas']
 FF_HEADERS = ['slug', 'farmaco_a_slug', 'farmaco_b_slug', 'severidade',
-              'resumo_pt', 'resumo_en', 'mecanismo_pt', 'mecanismo_en',
+              'resumo_pt', 'resumo_en', 'resumo_pro_pt', 'resumo_pro_en',
+              'explicacao_pt', 'explicacao_en', 'mecanismo_pt', 'mecanismo_en',
               'conselho_pt', 'conselho_en', 'monitorizacao_pt', 'monitorizacao_en',
               'red_flags_pt', 'red_flags_en', 'fonte_pt', 'fonte_en', 'estado',
               'data_revisao']
+
+# 8.ª tabela: perfil editorial + farmacologia, 1:1 com Fármacos (farmaco_slug).
+PERFIL_HEADERS = ['slug', 'farmaco_slug',
+                  'perfil_publico_pt', 'perfil_publico_en',
+                  'perfil_pro_pt', 'perfil_pro_en',
+                  'indicacoes_pt', 'indicacoes_en',
+                  'efeitos_secundarios_pt', 'efeitos_secundarios_en',
+                  'precaucoes_pt', 'precaucoes_en',
+                  'farmacodinamica_pt', 'farmacodinamica_en',
+                  'mecanismo_acao_pt', 'mecanismo_acao_en',
+                  'metabolismo_pt', 'metabolismo_en',
+                  'absorcao_pt', 'absorcao_en',
+                  'meia_vida_pt', 'meia_vida_en',
+                  'fonte_perfil_pt', 'fonte_perfil_en',
+                  'fonte_farmacologia_pt', 'fonte_farmacologia_en',
+                  'estado']
 ALIMENTO_HEADERS = ['slug', 'farmaco_slug', 'entidade_slug', 'entidade_pt',
                     'entidade_en', 'severidade', 'mecanismo_pt', 'mecanismo_en',
                     'conselho_pt', 'conselho_en', 'fonte_pt', 'fonte_en', 'estado']
@@ -333,6 +391,9 @@ def main():
     pairs = {}
     food, disease, preg = {}, {}, {}
     cond_names = {}
+    # 8.ª tabela: perfil editorial + farmacologia (1:1 com drugs) e códigos ATC.
+    profiles = {}
+    atc_map = {}
 
     files = sorted(f for f in os.listdir(MIGRATIONS_DIR) if f.endswith('.sql'))
     for fname in files:
@@ -367,6 +428,10 @@ def main():
                     'a': key[0], 'b': key[1],
                     'severidade': s(row, 'severity'),
                     'resumo_pt': s(row, 'summary_pt'), 'resumo_en': s(row, 'summary_en'),
+                    'resumo_pro_pt': s(row, 'summary_pro_pt'),
+                    'resumo_pro_en': s(row, 'summary_pro_en'),
+                    'explicacao_pt': s(row, 'explanation_pt'),
+                    'explicacao_en': s(row, 'explanation_en'),
                     'mecanismo_pt': s(row, 'mechanism_pt'), 'mecanismo_en': s(row, 'mechanism_en'),
                     'conselho_pt': s(row, 'management_pt'), 'conselho_en': s(row, 'management_en'),
                     'monitorizacao_pt': s(row, 'monitoring_pt'),
@@ -409,6 +474,10 @@ def main():
                     'a': key[0], 'b': key[1],
                     'severidade': sev,
                     'resumo_pt': s(r, 'summary_pt'), 'resumo_en': s(r, 'summary_en'),
+                    'resumo_pro_pt': s(r, 'summary_pro_pt'),
+                    'resumo_pro_en': s(r, 'summary_pro_en'),
+                    'explicacao_pt': s(r, 'explanation_pt'),
+                    'explicacao_en': s(r, 'explanation_en'),
                     'mecanismo_pt': s(r, 'mechanism_pt'), 'mecanismo_en': s(r, 'mechanism_en'),
                     'conselho_pt': s(r, 'management_pt'), 'conselho_en': s(r, 'management_en'),
                     'monitorizacao_pt': s(r, 'monitoring_pt'),
@@ -499,6 +568,103 @@ def main():
                             'estado': 'publicado',
                         }
 
+        # --- Pares estilo 083/085/094: INSERT ... SELECT com literais,
+        #     FROM public.drugs a, public.drugs b WHERE a.slug='x' AND b.slug='y' ---
+        for blk in parse_insert_select_pairs(text):
+            key = tuple(sorted([blk['a'], blk['b']]))
+            if key in pairs:
+                continue
+            r = blk['values']
+            pairs[key] = {
+                'a': key[0], 'b': key[1],
+                'severidade': s(r, 'severity'),
+                'resumo_pt': s(r, 'summary_pt'), 'resumo_en': s(r, 'summary_en'),
+                'resumo_pro_pt': s(r, 'summary_pro_pt'),
+                'resumo_pro_en': s(r, 'summary_pro_en'),
+                'explicacao_pt': s(r, 'explanation_pt'),
+                'explicacao_en': s(r, 'explanation_en'),
+                'mecanismo_pt': s(r, 'mechanism_pt'), 'mecanismo_en': s(r, 'mechanism_en'),
+                'conselho_pt': s(r, 'management_pt'), 'conselho_en': s(r, 'management_en'),
+                'monitorizacao_pt': s(r, 'monitoring_pt'),
+                'monitorizacao_en': s(r, 'monitoring_en'),
+                'red_flags_pt': s(r, 'red_flags_pt'), 'red_flags_en': s(r, 'red_flags_en'),
+                'fonte_pt': s(r, 'source_pt'), 'fonte_en': s(r, 'source_en'),
+                'estado': estado(s(r, 'status')),
+                'data_revisao': s(r, 'updated_at')[:10],
+            }
+
+        # --- Perfil editorial + farmacologia (tabelas 1:1 com drugs) ---
+        for table in ['drug_profiles', 'drug_pharmacology']:
+            for v_cols, tuples in parse_new_dim_blocks(text, table):
+                for t in tuples:
+                    if len(t) != len(v_cols):
+                        continue
+                    r = dict(zip(v_cols, t))
+                    drug = s(r, 'slug')
+                    if not drug:
+                        continue
+                    prof = profiles.setdefault(drug, {
+                        'slug': drug, 'farmaco_slug': drug,
+                        'perfil_publico_pt': '', 'perfil_publico_en': '',
+                        'perfil_pro_pt': '', 'perfil_pro_en': '',
+                        'indicacoes_pt': '', 'indicacoes_en': '',
+                        'efeitos_secundarios_pt': '', 'efeitos_secundarios_en': '',
+                        'precaucoes_pt': '', 'precaucoes_en': '',
+                        'farmacodinamica_pt': '', 'farmacodinamica_en': '',
+                        'mecanismo_acao_pt': '', 'mecanismo_acao_en': '',
+                        'metabolismo_pt': '', 'metabolismo_en': '',
+                        'absorcao_pt': '', 'absorcao_en': '',
+                        'meia_vida_pt': '', 'meia_vida_en': '',
+                        'fonte_perfil_pt': '', 'fonte_perfil_en': '',
+                        'fonte_farmacologia_pt': '', 'fonte_farmacologia_en': '',
+                        'estado': 'publicado',
+                    })
+                    if table == 'drug_profiles':
+                        prof['perfil_publico_pt'] = s(r, 'overview_public_pt')
+                        prof['perfil_publico_en'] = s(r, 'overview_public_en')
+                        prof['perfil_pro_pt'] = s(r, 'overview_pro_pt')
+                        prof['perfil_pro_en'] = s(r, 'overview_pro_en')
+                        prof['indicacoes_pt'] = s(r, 'indications_pt')
+                        prof['indicacoes_en'] = s(r, 'indications_en')
+                        prof['efeitos_secundarios_pt'] = s(r, 'side_effects_pt')
+                        prof['efeitos_secundarios_en'] = s(r, 'side_effects_en')
+                        prof['precaucoes_pt'] = s(r, 'precautions_pt')
+                        prof['precaucoes_en'] = s(r, 'precautions_en')
+                        prof['fonte_perfil_pt'] = s(r, 'source_pt')
+                        prof['fonte_perfil_en'] = s(r, 'source_en')
+                    else:
+                        prof['farmacodinamica_pt'] = s(r, 'pharmacodynamics_pt')
+                        prof['farmacodinamica_en'] = s(r, 'pharmacodynamics_en')
+                        prof['mecanismo_acao_pt'] = s(r, 'mechanism_pt')
+                        prof['mecanismo_acao_en'] = s(r, 'mechanism_en')
+                        prof['metabolismo_pt'] = s(r, 'metabolism_pt')
+                        prof['metabolismo_en'] = s(r, 'metabolism_en')
+                        prof['absorcao_pt'] = s(r, 'absorption_pt')
+                        prof['absorcao_en'] = s(r, 'absorption_en')
+                        prof['meia_vida_pt'] = s(r, 'half_life_pt')
+                        prof['meia_vida_en'] = s(r, 'half_life_en')
+                        prof['fonte_farmacologia_pt'] = s(r, 'source_pt')
+                        prof['fonte_farmacologia_en'] = s(r, 'source_en')
+
+        # --- Códigos ATC (migração 084: UPDATE ... FROM (VALUES) AS v(slug, atc_code)) ---
+        for v_cols, tuples in parse_join_values(text):
+            if 'slug' not in v_cols or 'atc_code' not in v_cols:
+                continue
+            i_slug = v_cols.index('slug')
+            i_atc = v_cols.index('atc_code')
+            for t in tuples:
+                if len(t) != len(v_cols):
+                    continue
+                slug = unquote(t[i_slug])
+                atc = unquote(t[i_atc])
+                if slug and atc:
+                    atc_map[slug] = atc
+
+    # Aplicar ATC aos fármacos (a 084 só atualiza os que já existiam).
+    for sg in drug_rows:
+        if sg in atc_map:
+            drug_rows[sg]['atc'] = atc_map[sg]
+
     # -------------------------------------------------------------- tabelas CSV
     ff_rows = []
     for key in sorted(pairs):
@@ -508,6 +674,10 @@ def main():
             'farmaco_a_slug': p['a'], 'farmaco_b_slug': p['b'],
             'severidade': p['severidade'],
             'resumo_pt': p['resumo_pt'], 'resumo_en': p['resumo_en'],
+            'resumo_pro_pt': p.get('resumo_pro_pt', ''),
+            'resumo_pro_en': p.get('resumo_pro_en', ''),
+            'explicacao_pt': p.get('explicacao_pt', ''),
+            'explicacao_en': p.get('explicacao_en', ''),
             'mecanismo_pt': p['mecanismo_pt'], 'mecanismo_en': p['mecanismo_en'],
             'conselho_pt': p['conselho_pt'], 'conselho_en': p['conselho_en'],
             'monitorizacao_pt': p['monitorizacao_pt'],
@@ -523,6 +693,9 @@ def main():
     doencas = cond_names  # nomes capturados durante o replay (condition_pt/en)
 
     gravidez_rows = [preg[k] for k in preg]
+
+    # 8.ª tabela: perfil editorial + farmacologia, 1:1 com Fármacos
+    perfil_rows = [profiles[k] for k in sorted(profiles)]
 
     # -------------------------------------------------------------- 4. Fontes
     def pub_of(url):
@@ -571,7 +744,9 @@ def main():
     all_source_pt = ([p['fonte_pt'] for p in pairs.values()] +
                      [r['fonte_pt'] for r in alimento_rows] +
                      [r['fonte_pt'] for r in doenca_rows] +
-                     [r['fonte_pt'] for r in gravidez_rows])
+                     [r['fonte_pt'] for r in gravidez_rows] +
+                     [r['fonte_perfil_pt'] for r in perfil_rows] +
+                     [r['fonte_farmacologia_pt'] for r in perfil_rows])
     for text in all_source_pt:
         for url in re.findall(r'https?://[^\s;]+', text):
             url = url.rstrip('.,;:')
@@ -604,12 +779,14 @@ def main():
                                               DOENCA_HEADERS, doenca_rows)
     n['07-gravidez-lactacao.csv'] = write_csv('07-gravidez-lactacao.csv',
                                               GRAVIDEZ_HEADERS, gravidez_rows)
+    n['08-perfil-farmacologia.csv'] = write_csv('08-perfil-farmacologia.csv',
+                                                PERFIL_HEADERS, perfil_rows)
 
     print('Pack gerado em %s (%d migrações analisadas)' % (OUT_DIR, len(files)))
     for fname, count in sorted(n.items()):
         print('  %-38s %4d registos' % (fname, count))
-    print('Total fármacos: %d | pares FF: %d | fontes únicas: %d'
-          % (len(drug_rows), len(pairs), len(fontes)))
+    print('Total fármacos: %d | pares FF: %d | fontes únicas: %d | perfis+farmacologia: %d'
+          % (len(drug_rows), len(pairs), len(fontes), len(perfil_rows)))
 
 
 if __name__ == '__main__':

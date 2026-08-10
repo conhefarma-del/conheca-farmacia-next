@@ -29,7 +29,7 @@ Dois documentos irmãos:
         ▼
  [3. Gerar pack]  python scripts/generate_airtable_pack.py
         ▼
- [4. Importar no Airtable]  7 tabelas (176/279/384/116/97/198/102) — §4
+ [4. Importar no Airtable]  8 tabelas (191/410/436/319/137/396/191/184) — §4
         ▼
  [5. Ligar registos]  python _temp/airtable-pack/link_records_api.py [--run]  — §5
         ▼
@@ -90,7 +90,9 @@ Padrões que o gerador (`generate_airtable_pack.py`) reconhece (semântica do Po
   O gerador também aceita o estilo das migrações 062–069 para pares —
   `INSERT ... SELECT ... FROM (VALUES …) AS v(slug_a, slug_b, …) JOIN public.drugs a
   ON a.slug = v.slug_a …` (a severidade pode vir como `v.severity` ou como literal na
-  lista SELECT).
+  lista SELECT), e o estilo 083/085/094 — `INSERT ... SELECT ... FROM public.drugs a,
+  public.drugs b WHERE a.slug = 'x' AND b.slug = 'y'` com literais na lista SELECT.
+  Os campos novos `explanation_pt/en` e `summary_pro_pt/en` são lidos nos três estilos.
 - **INSERT das 3 dimensões novas** (fármaco que já existe em `drugs`; `drug_id` resolve-se
   pelo `slug`, com ou sem subscritura `JOIN (VALUES ...)`):
   ```sql
@@ -105,9 +107,25 @@ Padrões que o gerador (`generate_airtable_pack.py`) reconhece (semântica do Po
   ```
   (Idem para `public.drug_disease_interactions` com `condition_slug`/`condition_pt`/`en`,
   `interaction_type`, `reason`, `advice`; e `public.drug_pregnancy_info` 1:1 por `drug_id`.)
+- **INSERT de perfil editorial / farmacologia** (tabelas 1:1 com `drugs`;
+  `drug_id` resolve-se pelo `slug`):
+  ```sql
+  INSERT INTO public.drug_profiles (drug_id, overview_public_pt, …)
+  SELECT d.id, v.overview_public_pt, … FROM public.drugs d
+  JOIN (VALUES ('varfarina', '…', …)) AS v(slug, overview_public_pt, …)
+    ON d.slug = v.slug
+  ON CONFLICT (drug_id) DO NOTHING;
+  ```
+  (Idem para `public.drug_pharmacology` com `pharmacodynamics_*`, `mechanism_*`,
+  `metabolism_*`, `absorption_*`, `half_life_*`. O gerador junta as duas numa linha
+  por fármaco — a 8.ª tabela do pack.)
+- **Códigos ATC**: `UPDATE public.drugs SET atc_code = v.atc_code FROM (VALUES …)
+  AS v(slug, atc_code) WHERE d.slug = v.slug` (padrão da 084).
 - **Correcções de conteúdo**: `UPDATE public.drug_interactions SET severity = …, …
   WHERE LEAST(drug_a_id, drug_b_id) = LEAST((SELECT id … WHERE slug='a'), (SELECT id … WHERE
   slug='b')) AND GREATEST(...) = GREATEST(...)` — o `WHERE` é **independente da ordem dos ids**.
+  (As explicações longas 097–131 usam `UPDATE … SET explanation_pt/en, summary_pro_pt/en`
+  com este mesmo `WHERE`.)
 
 > Convenções de valor (mesmos CHECKs do Postgres → enum no Airtable):
 > `estado` = rascunho | em_verificacao | verificado | publicado ·
@@ -124,9 +142,15 @@ python scripts/generate_airtable_pack.py
 ```
 
 Faz replay de **todas** as migrações em ordem de ficheiro (descoberta automática) e escreve
-7 ficheiros em `_temp/airtable-pack/`. Confere a contagem esperada no README do pack. Se os
-números não baterem, uma migração nova não seguiu os padrões do §2 — corrige antes de
+**8 ficheiros** em `_temp/airtable-pack/` (o 8.º, `08-perfil-farmacologia.csv`, junta perfil
+editorial + farmacologia 1:1 por fármaco). Confere a contagem esperada no README do pack. Se
+os números não baterem, uma migração nova não seguiu os padrões do §2 — corrige antes de
 avançar.
+
+> O pack é um **replay das migrações em disco**, não um espelho da BD atual: se uma migração
+> existir no ficheiro mas não tiver sido aplicada à BD (p. ex., 069/134 nesta BD), os registos
+> aparecem no pack mas não na BD — e vice-versa. A fonte única de verdade é o conjunto de
+> migrações.
 
 ---
 
@@ -141,10 +165,14 @@ avançar.
    - `04-interacoes-alimento-bebida.csv` → **Interações Alimento/Bebida**
    - `05-doencas.csv` → **Doenças** · `06-interacoes-doenca.csv` → **Interações Doença**
    - `07-gravidez-lactacao.csv` → **Gravidez/Lactação**
+   - `08-perfil-farmacologia.csv` → **Perfil e Farmacologia**
 3. **Campo primário** = `slug` (chave única de cada registo). Verifica o **BOM**: os CSVs
    usam `utf-8-sig`, logo a 1.ª coluna pode vir com um carácter invisível (U+FEFF) no nome.
    Se acontecer, renomeia o campo primário para `slug` limpo (seleciona tudo e apaga antes de
    escrever). O ligador lê pela posição, logo é imune — mas a importação manual não é.
+
+   Na **Perfil e Farmacologia** o campo primário é `slug` (igual a `farmaco_slug`); o campo
+   `farmaco_slug` mantém-se como texto (chave de junção).
 4. **NÃO converte** os campos `*_slug` (`farmaco_a_slug`, `farmaco_b_slug`, `farmaco_slug`,
    `doenca_slug` **lem-se como texto**) em campos de ligação — a conversão apaga os slugs e
    quebra a chave de junção portável. Mantê-los como texto.
@@ -158,6 +186,7 @@ Cria os campos de ligação (*Link to another record*), se ainda não existirem:
 - **Interações Alimento/Bebida**: `farmaco` → Fármacos
 - **Interações Doença**: `farmaco` → Fármacos · `doenca` → Doenças
 - **Gravidez/Lactação**: `farmaco` → Fármacos
+- **Perfil e Farmacologia**: `farmaco` → Fármacos
 
 Liga em massa com o ligador REST (prefere-se à extensão Scripting, que na base pendurava em
 `selectRecordsAsync`):
@@ -185,7 +214,7 @@ AIRTABLE_BASE_ID=appXXXX AIRTABLE_PAT=patXXXX python _temp/airtable-pack/link_re
 AIRTABLE_BASE_ID=appXXXX AIRTABLE_PAT=patXXXX python _temp/airtable-pack/verify_links.py
 ```
 
-Conta registos de ligação não-vazia por campo e confirma o baseline esperado (384/384/116/198/198/102).
+Conta registos de ligação não-vazia por campo e confirma o baseline esperado (384/384/116/198/198/102) — agora com um campo extra: `farmaco` → Fármacos na **Perfil e Farmacologia** (184/184).
 
 ---
 
