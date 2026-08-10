@@ -26,6 +26,7 @@ import {
   MessageSquareText,
   Layers,
   ChevronDown,
+  Scale,
 } from 'lucide-react'
 
 export default function AdminSidebar({ lang, user, onLogout }) {
@@ -37,6 +38,9 @@ export default function AdminSidebar({ lang, user, onLogout }) {
   // race condition com o click da seta — só usar hover se o dispositivo tiver
   // ponteiro fino (rato).
   const [interacoesOpen, setInteracoesOpen] = useState(false)
+  const [artigosOpen, setArtigosOpen] = useState(false)
+  const [eventosOpen, setEventosOpen] = useState(false)
+  const [conteudoLegalOpen, setConteudoLegalOpen] = useState(false)
   const [canHover, setCanHover] = useState(false)
   const { isDark, toggleTheme } = useTheme()
 
@@ -46,17 +50,12 @@ export default function AdminSidebar({ lang, user, onLogout }) {
 
   const links = [
     { href: `/${lang}/admin/dashboard`, label: 'Dashboard', icon: Home },
-    { href: `/${lang}/admin/artigos`, label: 'Artigos', icon: FileText },
-    { href: `/${lang}/admin/eventos`, label: 'Eventos', icon: Calendar },
+    { href: `/${lang}/admin/dashboard`, label: 'Dashboard', icon: Home },
     { href: `/${lang}/admin/lives`, label: 'Lives', icon: Video },
     { href: `/${lang}/admin/guias`, label: 'Guias de Estudo', icon: BookOpen },
     { href: `/${lang}/admin/protocolos`, label: 'Protocolos Clínicos', icon: ClipboardList },
-    { href: `/${lang}/admin/traducoes`, label: 'Traduções EN', icon: Languages },
     { href: `/${lang}/admin/newsletter`, label: 'Newsletter', icon: Mail },
     { href: `/${lang}/admin/feedback`, label: 'Feedback', icon: MessageSquareText },
-    { href: `/${lang}/admin/inscritos`, label: 'Inscritos', icon: Users },
-    { href: `/${lang}/admin/conteudo-legal/faq`, label: 'FAQ', icon: HelpCircle },
-    { href: `/${lang}/admin/conteudo-legal/politica-privacidade`, label: 'Política de Privacidade', icon: Shield },
     { href: `/${lang}/admin/definicoes`, label: 'Definições', icon: Settings },
   ]
 
@@ -120,22 +119,103 @@ export default function AdminSidebar({ lang, user, onLogout }) {
         </div>
 
         <nav className="admin-nav-vertical">
-          {links.slice(0, 6).map((link) => {
+          {/* Dashboard */}
+          {(() => {
+            const href = `/${lang}/admin/dashboard`
+            return (
+              <Link href={href} className={isActive(href) ? 'active' : ''}>
+                <Home size={20} /> Dashboard
+              </Link>
+            )
+          })()}
+
+          {/* Artigos → submenu: Traduções EN */}
+          {(() => {
+            const artigosHref = `/${lang}/admin/artigos`
+            const traducoesHref = `/${lang}/admin/traducoes`
+            const artigosActive = isActive(artigosHref)
+            const traducoesActive = isActive(traducoesHref)
+            return (
+              <div
+                className={`admin-nav-group${artigosOpen ? ' is-open' : ''}${artigosActive || traducoesActive ? ' has-active' : ''}`}
+                onMouseEnter={canHover ? () => setArtigosOpen(true) : undefined}
+                onMouseLeave={canHover ? () => setArtigosOpen(false) : undefined}
+              >
+                <div className="admin-nav-row">
+                  <Link href={artigosHref} className={artigosActive ? 'active' : ''}>
+                    <FileText size={20} /> Artigos
+                  </Link>
+                  <button
+                    type="button"
+                    className="admin-nav-arrow"
+                    onClick={(e) => { e.stopPropagation(); setArtigosOpen((o) => !o) }}
+                    aria-expanded={artigosOpen}
+                    aria-label="Abrir ou fechar submenu de Artigos"
+                    title={artigosOpen ? 'Fechar submenu' : 'Abrir submenu'}
+                  >
+                    <ChevronDown size={16} className={artigosOpen ? 'is-open' : ''} />
+                  </button>
+                </div>
+                {artigosOpen && (
+                  <div className="admin-nav-submenu">
+                    <Link href={traducoesHref} className={traducoesActive ? 'active' : ''}>
+                      <Languages size={16} /> Traduções EN
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )
+          })()}
+
+          {/* Eventos → submenu: Inscritos */}
+          {(() => {
+            const eventosHref = `/${lang}/admin/eventos`
+            const inscritosHref = `/${lang}/admin/inscritos`
+            const eventosActive = isActive(eventosHref)
+            const inscritosActive = isActive(inscritosHref)
+            return (
+              <div
+                className={`admin-nav-group${eventosOpen ? ' is-open' : ''}${eventosActive || inscritosActive ? ' has-active' : ''}`}
+                onMouseEnter={canHover ? () => setEventosOpen(true) : undefined}
+                onMouseLeave={canHover ? () => setEventosOpen(false) : undefined}
+              >
+                <div className="admin-nav-row">
+                  <Link href={eventosHref} className={eventosActive ? 'active' : ''}>
+                    <Calendar size={20} /> Eventos
+                  </Link>
+                  <button
+                    type="button"
+                    className="admin-nav-arrow"
+                    onClick={(e) => { e.stopPropagation(); setEventosOpen((o) => !o) }}
+                    aria-expanded={eventosOpen}
+                    aria-label="Abrir ou fechar submenu de Eventos"
+                    title={eventosOpen ? 'Fechar submenu' : 'Abrir submenu'}
+                  >
+                    <ChevronDown size={16} className={eventosOpen ? 'is-open' : ''} />
+                  </button>
+                </div>
+                {eventosOpen && (
+                  <div className="admin-nav-submenu">
+                    <Link href={inscritosHref} className={inscritosActive ? 'active' : ''}>
+                      <Users size={16} /> Inscritos
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )
+          })()}
+
+          {/* Lives, Guias, Protocolos */}
+          {links.slice(1, 4).map((link) => {
             const Icon = link.icon
             return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={isActive(link.href) ? 'active' : ''}
-              >
-                <Icon size={20} />
-                {link.label}
+              <Link key={link.href} href={link.href} className={isActive(link.href) ? 'active' : ''}>
+                <Icon size={20} /> {link.label}
               </Link>
             )
           })}
 
-          {/* Interações com submenu (Dimensões). A seta à direita abre/fecha;
-              clicar no resto da opção navega para /admin/interacoes. */}
+          {/* Interações → submenu: Dimensões */}
           {(() => {
             const interacoesHref = `/${lang}/admin/interacoes`
             const dimensoesHref = `/${lang}/admin/interacoes/dimensoes`
@@ -148,12 +228,8 @@ export default function AdminSidebar({ lang, user, onLogout }) {
                 onMouseLeave={canHover ? () => setInteracoesOpen(false) : undefined}
               >
                 <div className="admin-nav-row">
-                  <Link
-                    href={interacoesHref}
-                    className={interacoesActive ? 'active' : ''}
-                  >
-                    <Pill size={20} />
-                    Interações
+                  <Link href={interacoesHref} className={interacoesActive ? 'active' : ''}>
+                    <Pill size={20} /> Interações
                   </Link>
                   <button
                     type="button"
@@ -168,12 +244,8 @@ export default function AdminSidebar({ lang, user, onLogout }) {
                 </div>
                 {interacoesOpen && (
                   <div className="admin-nav-submenu">
-                    <Link
-                      href={dimensoesHref}
-                      className={dimensoesActive ? 'active' : ''}
-                    >
-                      <Layers size={16} />
-                      Dimensões
+                    <Link href={dimensoesHref} className={dimensoesActive ? 'active' : ''}>
+                      <Layers size={16} /> Dimensões
                     </Link>
                   </div>
                 )}
@@ -181,19 +253,66 @@ export default function AdminSidebar({ lang, user, onLogout }) {
             )
           })()}
 
-          {links.slice(6).map((link) => {
+          {/* Newsletter, Feedback */}
+          {links.slice(4, 6).map((link) => {
             const Icon = link.icon
             return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={isActive(link.href) ? 'active' : ''}
-              >
-                <Icon size={20} />
-                {link.label}
+              <Link key={link.href} href={link.href} className={isActive(link.href) ? 'active' : ''}>
+                <Icon size={20} /> {link.label}
               </Link>
             )
           })}
+
+          {/* Conteúdo Legal → submenu: FAQ, Política de Privacidade */}
+          {(() => {
+            const faqHref = `/${lang}/admin/conteudo-legal/faq`
+            const politicaHref = `/${lang}/admin/conteudo-legal/politica-privacidade`
+            const faqActive = isActive(faqHref)
+            const politicaActive = isActive(politicaHref)
+            return (
+              <div
+                className={`admin-nav-group${conteudoLegalOpen ? ' is-open' : ''}${faqActive || politicaActive ? ' has-active' : ''}`}
+                onMouseEnter={canHover ? () => setConteudoLegalOpen(true) : undefined}
+                onMouseLeave={canHover ? () => setConteudoLegalOpen(false) : undefined}
+              >
+                <div className="admin-nav-row">
+                  <Link href={faqHref} className={faqActive || politicaActive ? 'active' : ''}>
+                    <Scale size={20} /> Conteúdo Legal
+                  </Link>
+                  <button
+                    type="button"
+                    className="admin-nav-arrow"
+                    onClick={(e) => { e.stopPropagation(); setConteudoLegalOpen((o) => !o) }}
+                    aria-expanded={conteudoLegalOpen}
+                    aria-label="Abrir ou fechar submenu de Conteúdo Legal"
+                    title={conteudoLegalOpen ? 'Fechar submenu' : 'Abrir submenu'}
+                  >
+                    <ChevronDown size={16} className={conteudoLegalOpen ? 'is-open' : ''} />
+                  </button>
+                </div>
+                {conteudoLegalOpen && (
+                  <div className="admin-nav-submenu">
+                    <Link href={faqHref} className={faqActive ? 'active' : ''}>
+                      <HelpCircle size={16} /> FAQ
+                    </Link>
+                    <Link href={politicaHref} className={politicaActive ? 'active' : ''}>
+                      <Shield size={16} /> Política de Privacidade
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )
+          })()}
+
+          {/* Definições */}
+          {(() => {
+            const href = `/${lang}/admin/definicoes`
+            return (
+              <Link href={href} className={isActive(href) ? 'active' : ''}>
+                <Settings size={20} /> Definições
+              </Link>
+            )
+          })()}
         </nav>
 
         <div className="admin-sidebar-footer">
