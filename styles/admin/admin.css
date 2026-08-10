@@ -3123,6 +3123,8 @@ html.dark .settings-error {
 }
 
 .admin-filters-select {
+  min-width: 0;      /* permite encolher abaixo do conteúdo (flex min-width:auto) */
+  max-width: 100%;
   padding: 8px 10px;
   border-radius: 8px;
   border: 1px solid var(--admin-border);
@@ -3131,6 +3133,15 @@ html.dark .settings-error {
   font-size: 13px;
   font-family: var(--font-sans);
   cursor: pointer;
+}
+
+/* Select de grupos: opções longas (classes ATC) esticavam o filtro para fora
+   do contentor — limitar a largura e cortar o texto com reticências. */
+.admin-filters-select-groups {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .admin-filters-count {

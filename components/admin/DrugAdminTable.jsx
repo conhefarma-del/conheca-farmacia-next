@@ -158,7 +158,7 @@ export default function DrugAdminTable({
           <option value="alpha">Ordem alfabética</option>
           <option value="atc">Classificação ATC</option>
         </select>
-        <select className="admin-filters-select" value={groupFilter} onChange={(e) => { setGroupFilter(e.target.value); setPage(1) }} aria-label="Filtrar por grupo">
+        <select className="admin-filters-select admin-filters-select-groups" value={groupFilter} onChange={(e) => { setGroupFilter(e.target.value); setPage(1) }} aria-label="Filtrar por grupo">
           <option value="">Todos os grupos</option>
           {groups.map((g) => <option key={g} value={g}>{g}</option>)}
         </select>
