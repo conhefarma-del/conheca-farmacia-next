@@ -4015,6 +4015,58 @@ html.dark .privacy-toc-link--active {
   color: var(--color-brand-accent);
   transition: background 0.15s, color 0.15s, transform 0.15s;
 }
+
+/* Variante destaque (bento) — card grande com badge e rodapé ancorado */
+.guide-course-card--featured {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  border-color: rgba(10, 132, 79, 0.35);
+  background: linear-gradient(180deg, rgba(10, 132, 79, 0.05), transparent 60%), var(--color-brand-bg);
+}
+.guide-course-card--featured .guide-course-icon { margin-bottom: 1.25rem; }
+.guide-course-card--featured .guide-course-name { font-size: 1.7rem; }
+.guide-course-card--featured .guide-course-desc { font-size: 1rem; margin-bottom: 1rem; }
+.guide-course-card--featured .guide-course-footer {
+  margin-top: auto;
+  padding-top: 1rem;
+}
+.guide-course-featured-badge {
+  display: inline-flex;
+  align-self: flex-start;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--color-brand-accent);
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 0.9rem;
+}
+
+/* Variante compacta (bento) — linha horizontal */
+.guide-course-card--compact {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.15rem 1.25rem;
+  flex: 1;
+}
+.guide-course-card--compact .guide-course-icon {
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+.guide-course-card--compact .guide-course-name {
+  font-size: 1.05rem;
+  margin-bottom: 0;
+  flex: 1;
+  line-height: 1.3;
+}
+.guide-course-card--compact .guide-course-footer {
+  margin-top: 0;
+  flex-shrink: 0;
+}
 .guide-course-card:hover .guide-course-arrow {
   background: var(--color-brand-accent);
   color: #fff;
@@ -4670,9 +4722,9 @@ html.dark .guide-university-type.is-private { background: rgba(251, 113, 133, 0.
   align-items: center;
   gap: 12px;
   position: sticky;
-  /* Chrome fixo = utility (60px) + header (80px) → barra sempre visível
-     por baixo do header, no scroll (desktop e mobile) */
-  top: 140px;
+  /* Segue o fundo real do chrome fixo (utility + header, que animam no
+     scroll): a variável é atualizada por JS em protocoloDetailClient */
+  top: var(--chrome-bottom, 140px);
   z-index: 40;
   background: var(--color-brand-bg);
 }
@@ -5084,7 +5136,7 @@ html { scroll-behavior: smooth; }
   .protocol-detail-layout { grid-template-columns: 1fr; gap: 24px; padding-bottom: 140px; }
   .protocol-sidebar { position: static; }
   .protocol-mobile-bar { display: flex; }
-  .protocol-progress { top: 140px; }
+  .protocol-progress { top: var(--chrome-bottom, 140px); }
   /* 'Neste protocolo' (TOC) fica oculto no mobile */
   .sidebar-hide-mobile { display: none; }
 }
@@ -7636,6 +7688,65 @@ html.dark .tools-showcase {
 }
 .tools-card-featured .tools-card-title {
   color: var(--color-brand-accent);
+}
+
+/* Calculadora de Interações — destaque próprio (bento 2/3) */
+.tools-card-calculator {
+  padding: 20px 22px;
+  background: linear-gradient(135deg, rgba(10, 132, 79, 0.10), rgba(10, 132, 79, 0.03) 55%), var(--color-brand-card, #ffffff);
+  border-color: rgba(10, 132, 79, 0.5);
+}
+.tools-calc-badge {
+  align-self: flex-start;
+  display: inline-flex;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--color-brand-accent);
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+.tools-calc-main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 4px;
+}
+.tools-calc-icon {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  gap: 1px;
+  background: rgba(10, 132, 79, 0.12);
+}
+.tools-calc-icon svg { width: auto; height: auto; }
+.tools-calc-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.tools-calc-text .tools-card-title {
+  font-size: 17px;
+}
+.tools-calc-text .tools-card-desc {
+  font-size: 13px;
+}
+.tools-calc-cta {
+  margin-top: 12px;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-brand-accent);
+  transition: transform 0.2s, gap 0.2s;
+}
+.tools-card-calculator:hover .tools-calc-cta {
+  gap: 10px;
 }
 
 /* ---- Ordenação (mais recentes / mais lidos) + contador de leituras ---- */

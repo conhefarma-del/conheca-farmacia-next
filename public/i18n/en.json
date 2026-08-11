@@ -110,7 +110,9 @@
     "stats_newsletter_label": "Newsletter",
     "stats_newsletter_desc": "Updates directly for professionals",
     "tools_title": "Featured tools",
-    "tools_subtitle": "Explore, search and learn — Conheça Farmácia’s tools at your fingertips."
+    "tools_subtitle": "Explore, search and learn — Conheça Farmácia’s tools at your fingertips.",
+    "calculator_badge": "Featured",
+    "calculator_cta": "Open the calculator"
   },
   "sobre": {
     "hero_title": "About Us",
@@ -395,7 +397,8 @@
     "hero_subtitle": "Essential disciplines, books and resources for health courses — Medicine, Pharmacy, Nursing and Clinical Laboratory Science.",
     "no_courses": "Coming soon — study guides in preparation.",
     "disciplina": "discipline",
-    "disciplinas": "disciplines"
+    "disciplinas": "disciplines",
+    "featured": "Featured"
   },
   "guias_curso": {
     "breadcrumb_guias": "Study Guides",

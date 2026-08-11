@@ -110,7 +110,9 @@
     "stats_newsletter_label": "Newsletter",
     "stats_newsletter_desc": "Atualizações directas para profissionais",
     "tools_title": "Ferramentas em destaque",
-    "tools_subtitle": "Explora, pesquisa e aprende — as ferramentas da Conheça Farmácia ao teu alcance."
+    "tools_subtitle": "Explora, pesquisa e aprende — as ferramentas da Conheça Farmácia ao teu alcance.",
+    "calculator_badge": "Em destaque",
+    "calculator_cta": "Abrir calculadora"
   },
   "sobre": {
     "hero_title": "Sobre Nós",
@@ -395,7 +397,8 @@
     "hero_subtitle": "Disciplinas, livros e recursos essenciais para cursos de saúde — Medicina, Farmácia, Enfermagem e Análises Clínicas.",
     "no_courses": "Em breve — guias de estudo em preparação.",
     "disciplina": "disciplina",
-    "disciplinas": "disciplinas"
+    "disciplinas": "disciplinas",
+    "featured": "Em destaque"
   },
   "guias_curso": {
     "breadcrumb_guias": "Guias de Estudo",

@@ -1,6 +1,7 @@
 'use client'
 
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { motion, useAnimationFrame, useMotionValue } from 'framer-motion'
 import {
   ArrowUpRight, CalendarDays, CheckCircle2, Clock, Copy, Download, ListChecks, Share2,
   ShieldAlert, Signal, TriangleAlert, Zap,
@@ -46,9 +47,27 @@ export default function ProtocoloDetailClient({ lang, protocol, related = [] }) 
   const total = protocol.steps.length
   const readingMin = useMemo(() => estimateReadingTime(protocol), [protocol])
 
+  // Barra 'Passo X de Y' sticky — segue o fundo real do chrome fixo (utility
+  // 60px + header 80px), que desliza no scroll. Usa o MESMO motor de frames do
+  // framer-motion (useAnimationFrame) que anima o header/utility, ligando o
+  // bottom do chrome a uma motionValue aplicada no `top` da barra: acompanha a
+  // mola do chrome sem janelas nem re-renders.
+  const chromeBottom = useMotionValue(140)
+  const headerElRef = useRef(null)
+
   useEffect(() => {
-    try { localStorage.setItem(storageKey, JSON.stringify(done)) } catch { /* privado/erro */ }
-  }, [done, storageKey])
+    headerElRef.current = document.querySelector('.header-wrapper')
+    if (headerElRef.current) {
+      chromeBottom.set(headerElRef.current.getBoundingClientRect().bottom)
+    }
+  }, [chromeBottom])
+
+  useAnimationFrame(() => {
+    const el = headerElRef.current
+    if (!el) return
+    const bottom = el.getBoundingClientRect().bottom
+    if (Math.abs(bottom - chromeBottom.get()) > 0.5) chromeBottom.set(bottom)
+  })
 
   const toggleStep = (id) =>
     setDone((d) => (d.includes(id) ? d.filter((x) => x !== id) : [...d, id]))
@@ -95,14 +114,14 @@ export default function ProtocoloDetailClient({ lang, protocol, related = [] }) 
       ]} />
 
       {total > 0 && (
-        <div className="protocol-progress">
+        <motion.div className="protocol-progress" style={{ top: chromeBottom }}>
           <div className="protocol-progress-track">
             <div className="protocol-progress-fill" style={{ width: `${Math.round((done.length / total) * 100)}%` }} />
           </div>
           <span className="protocol-progress-label">
             {t('protocolos_detalhe.passo')} {done.length} {t('protocolos_detalhe.de')} {total}
           </span>
-        </div>
+        </motion.div>
       )}
 
       <div className="protocol-detail-layout">

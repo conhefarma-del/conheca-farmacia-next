@@ -30,11 +30,23 @@ export default function GuiasPageClient({ lang, courses }) {
             <p className="text-center text-brand-deep/70">
               {t('guias_page.no_courses')}
             </p>
+          ) : courses.length === 1 ? (
+            /* Só um curso → card em destaque a largura toda */
+            <div className="max-w-4xl mx-auto">
+              <GuideCourseCard course={courses[0]} lang={lang} t={t} variant="featured" />
+            </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-              {courses.map((course) => (
-                <GuideCourseCard key={course.id} course={course} lang={lang} t={t} />
-              ))}
+            /* Bento: 1 curso em destaque (esquerda) + os restantes em linha
+               compacta (direita) — preenche o espaço com poucos cursos */
+            <div className="max-w-5xl mx-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+                <GuideCourseCard course={courses[0]} lang={lang} t={t} variant="featured" />
+                <div className="flex flex-col gap-6">
+                  {courses.slice(1).map((course) => (
+                    <GuideCourseCard key={course.id} course={course} lang={lang} t={t} variant="compact" />
+                  ))}
+                </div>
+              </div>
             </div>
           )}
         </div>
