@@ -22,11 +22,13 @@ const nextConfig = {
   serverExternalPackages: ['@resvg/resvg-js'],
 
   // SEC-UMN-04 (auditoria "O Sentinela" #7): security headers em todas as
-  // rotas. A CSP usa 'unsafe-inline'/'unsafe-eval' porque a app depende de
-  // estilos inline e gsap; mesmo assim bloqueia fontes remotas de script,
-  // object, clickjacking (frame-ancestors) e base-uri. Se o console dev
-  // mostrar violações de CSP, afinar as diretivas — os headers de frame/type/
-  // referrer/permissions já são seguros como estão.
+  // rotas. A Content-Security-Policy NÃO é definida aqui — fonte única é o
+  // proxy.js (middleware), que gera um nonce por pedido (script-src
+  // 'nonce-...', sem 'unsafe-inline'/'unsafe-eval'). Headers de middleware
+  // são sobrescritos pelos de next.config para o mesmo header, por isso um
+  // CSP aqui anularia o nonce do proxy. Os restantes headers (frame/type/
+  // referrer/permissions/HSTS/COOP) são redundantes com o vercel.json mas
+  // inofensivos.
   async headers() {
     return [
       {
@@ -38,21 +40,6 @@ const nextConfig = {
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=()' },
           { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
           { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
-          {
-            key: 'Content-Security-Policy',
-            value: [
-              "default-src 'self'",
-              "img-src 'self' data: blob: https://*.supabase.co",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-              "style-src 'self' 'unsafe-inline'",
-              "font-src 'self' data:",
-              "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
-              "frame-ancestors 'none'",
-              "base-uri 'self'",
-              "form-action 'self'",
-              "object-src 'none'",
-            ].join('; '),
-          },
         ],
       },
     ]

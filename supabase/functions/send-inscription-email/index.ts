@@ -6,6 +6,30 @@ const SITE_URL = "https://conhecafarmacia.com";
 type Lang = 'pt' | 'en';
 function isLang(x: unknown): x is Lang { return x === 'pt' || x === 'en' }
 
+// SEC (vistoria o-sentinela 2026-08-11): segredo partilhado com o servidor
+// Next.js (Server Actions em lib/actions/inscription.js enviam este header).
+// Sem ele, qualquer pessoa com a anon key (pública) podia enviar emails de
+// confirmação ilimitados em nome da marca.
+const INTERNAL_KEY = Deno.env.get("EDGE_INTERNAL_KEY");
+
+// Defesa em profundidade — mesmo que o segredo vaze, limita o dano:
+// máx. 3 emails/hora por destinatário (in-memory, por worker).
+const RECIPIENT_RATE_MAX = 3;
+const RECIPIENT_RATE_WINDOW_MS = 3600_000;
+const recipientRate = new Map<string, { count: number; resetAt: number }>();
+
+function checkRecipientRate(email: string): boolean {
+  const now = Date.now();
+  const entry = recipientRate.get(email);
+  if (!entry || entry.resetAt < now) {
+    recipientRate.set(email, { count: 1, resetAt: now + RECIPIENT_RATE_WINDOW_MS });
+    return true;
+  }
+  if (entry.count >= RECIPIENT_RATE_MAX) return false;
+  entry.count += 1;
+  return true;
+}
+
 function getInscriptionEmailTemplate(
   nomeParticipante: string,
   nomeEvento: string,
@@ -239,6 +263,14 @@ serve(async (req: Request) => {
     });
   }
 
+  // SEC (vistoria o-sentinela 2026-08-11): exige o segredo partilhado.
+  if (!INTERNAL_KEY || req.headers.get("x-internal-key") !== INTERNAL_KEY) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
+  }
+
   try {
     const { email, nome, evento_slug, lang: rawLang } = await req.json();
     const lang: Lang = isLang(rawLang) ? rawLang : 'pt';
@@ -262,6 +294,11 @@ serve(async (req: Request) => {
     }
     if (typeof evento_slug !== "string" || !SLUG_REGEX.test(evento_slug)) {
       return new Response(JSON.stringify({ error: "Slug inválido" }), { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } });
+    }
+
+    // Defesa em profundidade: limite por destinatário (3/hora)
+    if (!checkRecipientRate(email.toLowerCase().trim())) {
+      return new Response(JSON.stringify({ error: "Rate limit exceeded" }), { status: 429, headers: { "Content-Type": "application/json", ...corsHeaders } });
     }
 
     // Look up event name from BD

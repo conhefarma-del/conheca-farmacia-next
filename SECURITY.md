@@ -69,11 +69,15 @@ As of 2026-06-15, **2FA is enforced on first admin login**.
 
 ## Content Security Policy
 
-The active CSP is set in `vercel.json` and looks like:
+The CSP is set per-request by `proxy.js` (middleware) — it is the **single
+source** (removed from `next.config.mjs` in the 2026-08-11 Sentinela audit
+remediation; headers from `next.config` override middleware headers for the
+same key, so a second CSP there would nullify the nonce). It uses a per-request
+nonce instead of `'unsafe-inline'`:
 
 ```
 default-src 'self';
-script-src 'self' 'unsafe-inline' https://vercel.live;
+script-src 'self' 'nonce-<por-pedido>' https://vercel.live;
 style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
 img-src 'self' data: blob: https://*.supabase.co https://vercel.live;
 font-src 'self' https://fonts.gstatic.com;
@@ -84,10 +88,12 @@ base-uri 'self';
 form-action 'self'
 ```
 
-- `'unsafe-inline'` in `script-src` is required for the anti-FOUC
-  script in `app/layout.js`. We deliberately do **not** allow
-  `'unsafe-eval'`.
+- The anti-FOUC script in `app/layout.js` carries the `nonce` (from the
+  `x-csp-nonce` header set by `proxy.js`), so it runs without
+  `'unsafe-inline'`. We deliberately do **not** allow `'unsafe-eval'`.
 - `https://vercel.live` is the Vercel Toolbar/Analytics origin.
+- `next.config.mjs` still sets the other security headers (frame/type/
+  referrer/permissions/HSTS/COOP) — redundant with `vercel.json` but harmless.
 
 ## Security Headers (active)
 
@@ -138,9 +144,13 @@ form-action 'self'
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY`   | 🟢     | Vercel, `.env.local`  |
 | `SUPABASE_SERVICE_ROLE_KEY`       | 🔴     | Vercel **only**       |
 | `OPENROUTER_API_KEY`              | 🔴     | Vercel **only**       |
-| `RESEND_API_KEY` (legacy)         | 🔴     | Vercel **only**       |
-| `SMTP_*` (AWS SES)                | 🔴     | Vercel **only**       |
+| `EDGE_INTERNAL_KEY`               | 🔴     | Vercel **only** + Supabase secrets (Edge Functions) |
+| `BREVO_API_KEY`                   | 🔴     | Supabase secrets (Edge Functions) |
 | `NEXT_PUBLIC_SITE_URL`            | 🟢     | Vercel, `.env.local`  |
+
+`RESEND_API_KEY` (legacy) e `SMTP_*` (AWS SES) foram removidos na
+migração SES→Brevo (2026-06-18); só `BREVO_API_KEY` é usado hoje nas
+Edge Functions de email.
 
 🟢 — public, safe to ship in the client bundle.
 🔴 — server-only, must never appear in the browser bundle or in

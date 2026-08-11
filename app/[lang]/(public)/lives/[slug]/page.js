@@ -162,6 +162,20 @@ export default async function LiveDetailPage({ params }) {
 
   const accessUrl = validateUrl(live.access_link || live.link_acesso || '#')
 
+  // SEC (vistoria o-sentinela 2026-08-11, finding #5): as credenciais de
+  // reunião (meeting_id/password) só são mostradas a quem tem sessão
+  // autenticada. A página pública não deve expor ID+password no HTML
+  // (scraping em massa / zoom-bombing). O link de acesso mantém-se público
+  // — os links de Zoom/Google Meet embutem a password no próprio URL.
+  let canSeeCredentials = false
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    canSeeCredentials = !!user
+  } catch {
+    canSeeCredentials = false
+  }
+
   return (
     <>
       <script
@@ -277,7 +291,7 @@ export default async function LiveDetailPage({ params }) {
                   rpcName="increment_live_access_count"
                 />
 
-                {(meetingId || senha) && (
+                {canSeeCredentials && (meetingId || senha) && (
                   <div className="live-credentials mt-6 p-4 bg-brand-bg-alt rounded-lg">
                     <h3 className="text-lg font-bold text-brand-deep mb-3">
                       {tFn('live_detail.access_info')}

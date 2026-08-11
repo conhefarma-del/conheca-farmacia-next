@@ -2,8 +2,7 @@
 
 import { useState, useContext, useEffect, useRef } from 'react'
 import { LangContext } from '@/lib/contexts'
-import { createClient } from '../../lib/supabase/client'
-import { sendWelcomeEmail } from '@/lib/actions/newsletter'
+import { sendWelcomeEmail, subscribeNewsletterAction } from '@/lib/actions/newsletter'
 
 export default function NewsletterSection({ keys = 'artigos_page' }) {
   const { t } = useContext(LangContext)
@@ -31,23 +30,19 @@ export default function NewsletterSection({ keys = 'artigos_page' }) {
     }
     setStatus('loading')
     try {
-      const supabase = createClient()
-      const { data, error } = await supabase.rpc('subscribe_newsletter', {
-        p_email: email.toLowerCase().trim(),
-      })
-      if (error) {
-        if (error.message?.includes('already')) {
-          setStatus('exists')
-        } else {
-          throw error
-        }
-      } else {
+      // SEC (vistoria 2026-08-11): a subscrição passou a usar a Server
+      // Action com rate limit DB-backed em vez do RPC direto do cliente
+      // (a RPC era invocável com a anon key sem limite). A action devolve
+      // o unsubscribe_token (migration 050) para o email de boas-vindas.
+      const res = await subscribeNewsletterAction(email.toLowerCase().trim())
+      if (res.success) {
         setStatus('success')
         setEmail('')
-        // Enviar email de boas-vindas (fire-and-forget). A RPC devolve o
-        // unsubscribe_token (migration 050), evitando a leitura anon a
-        // newsletter que o RLS bloqueia — corrige o bug do #9.
-        sendWelcomeEmail(email.toLowerCase().trim(), data?.unsubscribe_token).catch(() => {})
+        sendWelcomeEmail(email.toLowerCase().trim(), res.unsubscribeToken).catch(() => {})
+      } else if (res.exists) {
+        setStatus('exists')
+      } else {
+        setStatus('error')
       }
     } catch {
       setStatus('error')

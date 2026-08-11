@@ -18,7 +18,28 @@ function getCorsHeaders(requestOrigin: string | null): Record<string, string> {
   };
 }
 
-// rate-limiter removed to restore original behavior (can be reintroduced later)
+// SEC (vistoria o-sentinela 2026-08-11): segredo partilhado com o servidor
+// Next.js. As Server Actions (lib/actions/newsletter.js) enviam este header;
+// quem não o tiver (ex.: atacante com a anon key do bundle) recebe 401.
+const INTERNAL_KEY = Deno.env.get("EDGE_INTERNAL_KEY");
+
+// Defesa em profundidade — mesmo que o segredo vaze, limita o dano:
+// máx. 3 emails/hora por destinatário (in-memory, por worker).
+const RECIPIENT_RATE_MAX = 3;
+const RECIPIENT_RATE_WINDOW_MS = 3600_000;
+const recipientRate = new Map<string, { count: number; resetAt: number }>();
+
+function checkRecipientRate(email: string): boolean {
+  const now = Date.now();
+  const entry = recipientRate.get(email);
+  if (!entry || entry.resetAt < now) {
+    recipientRate.set(email, { count: 1, resetAt: now + RECIPIENT_RATE_WINDOW_MS });
+    return true;
+  }
+  if (entry.count >= RECIPIENT_RATE_MAX) return false;
+  entry.count += 1;
+  return true;
+}
 
 interface EmailRequest {
   type: "welcome" | "article" | "event" | "live";
@@ -322,6 +343,19 @@ serve(async (req) => {
     return new Response("ok", { headers: getCorsHeaders(req.headers.get("origin")) });
   }
 
+  // SEC (vistoria o-sentinela 2026-08-11): exige o segredo partilhado.
+  // Sem ele, qualquer pessoa com a anon key (pública) podia enviar emails
+  // ilimitados em nome da marca.
+  if (!INTERNAL_KEY || req.headers.get("x-internal-key") !== INTERNAL_KEY) {
+    return new Response(
+      JSON.stringify({ error: "Unauthorized" }),
+      {
+        status: 401,
+        headers: { ...getCorsHeaders(req.headers.get("origin")), "Content-Type": "application/json" },
+      }
+    );
+  }
+
   try {
     const {
       type,
@@ -366,6 +400,17 @@ serve(async (req) => {
         JSON.stringify({ error: "Invalid email type" }),
         {
           status: 400,
+          headers: { ...getCorsHeaders(req.headers.get("origin")), "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Defesa em profundidade: limite por destinatário (3/hora)
+    if (!checkRecipientRate(email.toLowerCase().trim())) {
+      return new Response(
+        JSON.stringify({ error: "Rate limit exceeded" }),
+        {
+          status: 429,
           headers: { ...getCorsHeaders(req.headers.get("origin")), "Content-Type": "application/json" },
         }
       );
