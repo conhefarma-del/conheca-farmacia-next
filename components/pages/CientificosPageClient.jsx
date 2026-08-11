@@ -4,7 +4,6 @@ import { useState, useMemo, useContext } from 'react'
 import Link from 'next/link'
 import { LangContext } from '@/lib/contexts'
 import FilterButtons from '@/components/ui/FilterButtons'
-import HeroSection from '@/components/ui/HeroSection'
 import { ArrowLeft, Search } from 'lucide-react'
 
 function formatDate(dateStr, lang) {
@@ -15,8 +14,8 @@ function formatDate(dateStr, lang) {
 
 /**
  * CientificosPageClient — listagem pública dos Artigos Científicos.
- * Hero próprio, filtros por categoria (da BD), toggle PT/EN (link que
- * filtra a listagem pela língua), pesquisa e grid de cards académicos.
+ * Hero do mesmo tamanho que /eventos, com pesquisa + filtros por
+ * categoria (da BD) e toggle PT/EN dentro do hero (como /artigos).
  */
 export default function CientificosPageClient({ articles = [], categories = [], lang = 'pt' }) {
   const { t } = useContext(LangContext)
@@ -59,118 +58,138 @@ export default function CientificosPageClient({ articles = [], categories = [], 
         </Link>
       </div>
 
-      {/* Hero */}
-      <HeroSection
-        title={t('cientificos_page.hero_title')}
-        subtitle={t('cientificos_page.hero_subtitle')}
-      />
+      {/* Hero — mesmo tamanho que /eventos, com pesquisa + filtros dentro (como /artigos) */}
+      <section className="events-hero">
+        <div className="container-center">
+          <div className="text-center py-12 md:py-16">
+            <h1 className="text-5xl md:text-7xl font-bold text-brand-deep mb-6">
+              {t('cientificos_page.hero_title')}
+            </h1>
+            <p className="hero-subtitle text-center">
+              {t('cientificos_page.hero_subtitle')}
+            </p>
 
-      {/* Filtros + toggle PT/EN + pesquisa */}
-      <section className="max-w-[1400px] mx-auto px-6 md:px-12 pb-10">
-        <div className="flex flex-col md:flex-row md:items-center gap-4">
-          <FilterButtons
-            categories={categoriesObj}
-            activeFilter={currentFilter}
-            onFilterChange={setCurrentFilter}
-            dataAttr="sci-filter"
-          />
-          <div className="flex items-center gap-3 md:ml-auto">
-            {/* Toggle PT/EN (filtra a listagem) */}
-            <div className="inline-flex rounded-full border border-[var(--color-brand-divider)] overflow-hidden" role="group" aria-label="Idioma">
-              {(['pt', 'en']).map((l) => (
-                <Link
-                  key={l}
-                  href={`/${l}/cientificos`}
-                  className={`px-3 py-1.5 text-xs font-semibold transition-colors ${
-                    lang === l
-                      ? 'bg-[var(--color-brand-accent)] text-white'
-                      : 'bg-white text-[var(--color-brand-deep)] opacity-60 hover:opacity-100'
-                  }`}
-                  aria-current={lang === l ? 'page' : undefined}
-                >
-                  {l === 'pt' ? t('cientificos_page.lang_pt') : t('cientificos_page.lang_en')}
-                </Link>
-              ))}
-            </div>
-            <div className="relative">
-              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            {/* Pesquisa */}
+            <div className="max-w-3xl mx-auto mt-10 relative">
+              <Search
+                size={18}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-deep/40"
+                aria-hidden="true"
+              />
               <input
                 type="search"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder={t('cientificos_page.search_placeholder')}
-                className="w-52 md:w-64 pl-9 pr-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-accent)]"
+                className="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-brand-divider bg-brand-bg text-brand-deep shadow-soft focus:ring-2 focus:ring-brand-accent focus:outline-none transition-all placeholder:text-brand-deep/40"
               />
+            </div>
+
+            {/* Filtros por categoria + toggle PT/EN */}
+            <div className="sci-filters flex flex-wrap items-center justify-center gap-3 mt-6">
+              <FilterButtons
+                categories={categoriesObj}
+                activeFilter={currentFilter}
+                onFilterChange={setCurrentFilter}
+                dataAttr="sci-filter"
+              />
+              <div
+                className="inline-flex rounded-full border border-brand-divider overflow-hidden"
+                role="group"
+                aria-label="Idioma"
+              >
+                {(['pt', 'en']).map((l) => (
+                  <Link
+                    key={l}
+                    href={`/${l}/cientificos`}
+                    className={`px-3 py-1.5 text-xs font-semibold transition-colors ${
+                      lang === l
+                        ? 'bg-brand-accent text-white'
+                        : 'bg-brand-bg text-brand-deep opacity-60 hover:opacity-100'
+                    }`}
+                    aria-current={lang === l ? 'page' : undefined}
+                  >
+                    {l === 'pt' ? t('cientificos_page.lang_pt') : t('cientificos_page.lang_en')}
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Grid de cards académicos */}
-        {filteredArticles.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
-            {filteredArticles.map((article) => {
-              const cat = article.category?.slug ? catBySlug.get(article.category.slug) : null
-              const color = cat?.color || '#0a844f'
-              const authors = article.authors || []
-              return (
-                <Link
-                  key={article.slug}
-                  href={`/${lang}/cientificos/${article.slug}`}
-                  className="sci-card"
-                >
-                  <div className="sci-card-top">
-                    {cat ? (
-                      <span className="sci-category-badge" style={{ background: `${color}1a`, color }}>
-                        {cat.name}
-                      </span>
-                    ) : (
-                      <span className="sci-category-badge" style={{ background: '#f3f4f1', color: '#6b7280' }}>
-                        {t('cientificos_page.filter_all')}
-                      </span>
-                    )}
-                    <span className="lang-badge">{(article.lang || lang).toUpperCase()}</span>
-                  </div>
-                  <h2 className="sci-title">{article.title}</h2>
-                  {article.abstract && <p className="sci-abstract">{article.abstract}</p>}
-                  {article.keywords && article.keywords.length > 0 && (
-                    <div className="sci-keywords">
-                      {article.keywords.slice(0, 4).map((kw, i) => (
-                        <span key={i} className="sci-keyword">{kw}</span>
-                      ))}
+      {/* Grid de cards académicos */}
+      <section className="bg-brand-bg-alt">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-12">
+          {filteredArticles.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredArticles.map((article) => {
+                const cat = article.category?.slug ? catBySlug.get(article.category.slug) : null
+                const color = cat?.color || '#0a844f'
+                const authors = article.authors || []
+                return (
+                  <Link
+                    key={article.slug}
+                    href={`/${lang}/cientificos/${article.slug}`}
+                    className="sci-card"
+                  >
+                    <div className="sci-card-top">
+                      {cat ? (
+                        <span className="sci-category-badge" style={{ background: `${color}1a`, color }}>
+                          {cat.name}
+                        </span>
+                      ) : (
+                        <span
+                          className="sci-category-badge"
+                          style={{ background: 'var(--color-brand-bg-alt)', color: 'var(--color-brand-deep)' }}
+                        >
+                          {t('cientificos_page.filter_all')}
+                        </span>
+                      )}
+                      <span className="lang-badge">{(article.lang || lang).toUpperCase()}</span>
                     </div>
-                  )}
-                  <div className="sci-meta">
-                    <time>{formatDate(article.date, lang)}</time>
-                    {article.readTime && (
-                      <>
-                        <span>·</span>
-                        <span>{article.readTime} {t('cientificos_page.min_read')}</span>
-                      </>
-                    )}
-                    {authors.length > 0 && (
-                      <div className="sci-authors-preview">
-                        {authors.slice(0, 3).map((a, i) => (
-                          <div
-                            key={i}
-                            className="avatar"
-                            style={{ background: a.avatarBg || color }}
-                            title={a.name}
-                          >
-                            {(a.avatar || (a.name || '?')[0]).toUpperCase()}
-                          </div>
+                    <h2 className="sci-title">{article.title}</h2>
+                    {article.abstract && <p className="sci-abstract">{article.abstract}</p>}
+                    {article.keywords && article.keywords.length > 0 && (
+                      <div className="sci-keywords">
+                        {article.keywords.slice(0, 4).map((kw, i) => (
+                          <span key={i} className="sci-keyword">{kw}</span>
                         ))}
                       </div>
                     )}
-                  </div>
-                </Link>
-              )
-            })}
-          </div>
-        ) : (
-          <div className="text-center py-16 text-gray-500">
-            <p>{t('cientificos_page.no_results')}</p>
-          </div>
-        )}
+                    <div className="sci-meta">
+                      <time>{formatDate(article.date, lang)}</time>
+                      {article.readTime && (
+                        <>
+                          <span>·</span>
+                          <span>{article.readTime} {t('cientificos_page.min_read')}</span>
+                        </>
+                      )}
+                      {authors.length > 0 && (
+                        <div className="sci-authors-preview">
+                          {authors.slice(0, 3).map((a, i) => (
+                            <div
+                              key={i}
+                              className="avatar"
+                              style={{ background: a.avatarBg || color }}
+                              title={a.name}
+                            >
+                              {(a.avatar || (a.name || '?')[0]).toUpperCase()}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-16 text-gray-500">
+              <p>{t('cientificos_page.no_results')}</p>
+            </div>
+          )}
+        </div>
       </section>
     </>
   )

@@ -670,6 +670,23 @@
     "copied": "Copiado!",
     "doi": "DOI",
     "back_to_cientificos": "Artigos Científicos",
-    "min_read": "min de leitura"
+    "min_read": "min de leitura",
+    "author_articles": "Artigos do autor",
+    "author_profile": "Ver perfil"
+  },
+  "cientifico_author": {
+    "back_to_cientificos": "← Voltar para Artigos Científicos",
+    "articles_of": "Artigos de {name}",
+    "profile_of": "Perfil de {name}",
+    "articles_count_one": "1 artigo publicado",
+    "articles_count_other": "{count} artigos publicados",
+    "view_articles": "Artigos",
+    "view_profile": "Perfil",
+    "published_articles": "Artigos publicados",
+    "role": "Função",
+    "institution": "Instituição",
+    "department": "Departamento",
+    "corresponding": "Autor correspondente",
+    "no_articles": "Este autor não tem artigos publicados."
   }
 }

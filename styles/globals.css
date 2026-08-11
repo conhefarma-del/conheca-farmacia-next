@@ -7,6 +7,7 @@
   --color-brand-deep: #002a32;
   --color-brand-bg: #ffffff;
   --color-brand-bg-alt: #f9f9f9;
+  --color-brand-card: #ffffff;
   --color-brand-divider: #dddddd;
 
   /* Typography */
@@ -21,6 +22,7 @@
 html.dark {
   --color-brand-bg: #0a0f0d;
   --color-brand-bg-alt: #111816;
+  --color-brand-card: #151c19;
   --color-brand-divider: #1f2927;
   --color-brand-deep: #e5e7eb;
   --color-brand-primary: #005c4a;
@@ -7217,6 +7219,209 @@ html.dark .admin-feedback-action.is-archive { color: #f87171; }
 }
 .sci-banner:hover .sci-banner-arrow { transform: translateX(3px); }
 .sci-banner-arrow svg { width: 16px; height: 16px; }
+
+/* ---- Filtros de categoria do /cientificos (dentro do hero) ----
+   As categorias vêm da BD (slugs dinâmicos) — as regras base do
+   .filter-btn só cobrem os slugs fixos dos artigos; aqui damos a
+   cada categoria um estado neutro (borda + texto via variáveis, que
+   adaptam ao dark mode) e ativo verde, como o filtro "Todos". */
+.sci-filters .filter-btn:not([data-filter="all"]) {
+  border-color: var(--color-brand-divider);
+  color: var(--color-brand-deep);
+  background: transparent;
+}
+.sci-filters .filter-btn:not([data-filter="all"]):hover {
+  border-color: var(--color-brand-accent);
+  color: var(--color-brand-accent);
+  background: rgba(10, 132, 79, 0.08);
+}
+.sci-filters .filter-btn:not([data-filter="all"]).active {
+  background: var(--color-brand-primary);
+  border-color: var(--color-brand-primary);
+  color: #ffffff;
+}
+
+/* ---- Menu de autor (nome clicável no detalhe) ---- */
+.sci-author-menu {
+  position: relative;
+  display: inline-block;
+  min-width: 0;
+}
+.sci-author-menu-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-brand-accent);
+  cursor: pointer;
+  text-align: left;
+}
+.sci-author-menu-btn:hover { text-decoration: underline; }
+.sci-author-menu-btn svg {
+  flex-shrink: 0;
+  opacity: 0.6;
+  transition: transform 0.15s;
+}
+.sci-author-menu-btn[aria-expanded="true"] svg { transform: rotate(180deg); }
+.sci-author-menu-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sci-author-menu-pop {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 60;
+  min-width: 210px;
+  background: var(--color-brand-card, #ffffff);
+  border: 1px solid var(--color-brand-divider);
+  border-radius: 10px;
+  box-shadow: var(--shadow-md-soft);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.sci-author-menu-pop a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-brand-deep);
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.sci-author-menu-pop a:hover { background: var(--color-brand-bg-alt); }
+.sci-author-menu-pop a svg { color: var(--color-brand-accent); flex-shrink: 0; }
+
+/* ---- Página de autor (/cientificos/autores/[slug]) ---- */
+.sci-author-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px 24px 80px;
+}
+.sci-author-header {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  background: var(--color-brand-card, #ffffff);
+  border: 1px solid var(--color-brand-divider);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow-soft);
+  margin-bottom: 22px;
+}
+.sci-author-avatar-lg {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+.sci-author-header-info { min-width: 0; }
+.sci-author-name-lg {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--color-brand-deep);
+  margin-bottom: 6px;
+}
+.sci-author-affil {
+  font-size: 13px;
+  color: var(--color-brand-deep);
+  opacity: 0.6;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+.sci-author-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(10, 132, 79, 0.1);
+  color: var(--color-brand-accent);
+}
+.sci-author-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 26px;
+}
+.sci-author-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--color-brand-divider);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-brand-deep);
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.sci-author-tab.active {
+  background: var(--color-brand-primary);
+  border-color: var(--color-brand-primary);
+  color: #fff;
+}
+.sci-author-tab:hover:not(.active) {
+  border-color: var(--color-brand-accent);
+  color: var(--color-brand-accent);
+}
+.sci-profile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+  margin-bottom: 32px;
+}
+.sci-profile-item {
+  background: var(--color-brand-card, #ffffff);
+  border: 1px solid var(--color-brand-divider);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.sci-profile-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-brand-deep);
+  opacity: 0.45;
+  margin-bottom: 4px;
+}
+.sci-profile-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-brand-deep);
+  word-break: break-word;
+}
+.sci-profile-articles {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--color-brand-card, #ffffff);
+  border: 1px solid var(--color-brand-divider);
+  border-radius: 14px;
+  padding: 10px;
+}
 
 @media (max-width: 520px) {
   .sci-banner-link { flex-wrap: wrap; }

@@ -41,6 +41,9 @@ export default async function sitemap() {
     pesquisa:      { pt: '/pesquisa',   en: '/search' },
     interacoes:    { pt: '/interacoes', en: '/interactions' },
     medicamentos:  { pt: '/medicamentos', en: '/medicines' },
+    faq:           { pt: '/faq',        en: '/faq' },
+    'politica-privacidade': { pt: '/politica-privacidade', en: '/privacy-policy' },
+    inscricao:     { pt: '/inscricao',  en: '/register' },
   }
   const staticEntries = Object.entries(SECTION_PATHS).flatMap(([path, paths]) =>
     LOCALES.map((lang) => ({
@@ -214,6 +217,68 @@ export default async function sitemap() {
     })
   } catch {}
 
+  // Protocolos: slug PARTILHADO entre línguas — /pt/protocolos/{slug} ↔
+  // /en/protocols/{slug} (confirmado no generateMetadata). 1 entry por língua.
+  let protocolEntries = []
+  try {
+    const supabase = await createClient()
+    const { data: protocols } = await supabase
+      .from('clinical_protocols')
+      .select('slug, updated_at')
+      .eq('status', 'published')
+      .eq('is_archived', false)
+    protocolEntries = (protocols ?? []).flatMap((protocol) => {
+      const lastmod = protocol.updated_at || undefined
+      const urls = {
+        pt: `${SITE_URL}/pt/protocolos/${protocol.slug}`,
+        en: `${SITE_URL}/en/protocols/${protocol.slug}`,
+      }
+      return LOCALES.map((lang) => ({
+        url: urls[lang],
+        lastModified: lastmod,
+        changeFrequency: 'monthly',
+        priority: 0.6,
+        alternates: {
+          languages: {
+            ...urls,
+            'x-default': urls.pt,
+          },
+        },
+      }))
+    })
+  } catch {}
+
+  // Guias de estudo: slug PARTILHADO entre línguas — /pt/guias/{slug} ↔
+  // /en/guides/{slug} (confirmado no generateMetadata). 1 entry por língua.
+  let guideEntries = []
+  try {
+    const supabase = await createClient()
+    const { data: courses } = await supabase
+      .from('guide_courses')
+      .select('slug, updated_at')
+      .eq('status', 'published')
+      .eq('is_archived', false)
+    guideEntries = (courses ?? []).flatMap((course) => {
+      const lastmod = course.updated_at || undefined
+      const urls = {
+        pt: `${SITE_URL}/pt/guias/${course.slug}`,
+        en: `${SITE_URL}/en/guides/${course.slug}`,
+      }
+      return LOCALES.map((lang) => ({
+        url: urls[lang],
+        lastModified: lastmod,
+        changeFrequency: 'monthly',
+        priority: 0.6,
+        alternates: {
+          languages: {
+            ...urls,
+            'x-default': urls.pt,
+          },
+        },
+      }))
+    })
+  } catch {}
+
   // Artigos científicos: 1 entry PT + 1 entry EN (se houver tradução),
   // rota própria /cientificos (partilhada entre línguas, slug EN diferente).
   let scientificEntries = []
@@ -262,5 +327,14 @@ export default async function sitemap() {
     })
   } catch {}
 
-  return [...staticEntries, ...articleEntries, ...eventEntries, ...liveEntries, ...scientificEntries, ...drugEntries]
+  return [
+    ...staticEntries,
+    ...articleEntries,
+    ...eventEntries,
+    ...liveEntries,
+    ...scientificEntries,
+    ...drugEntries,
+    ...protocolEntries,
+    ...guideEntries,
+  ]
 }

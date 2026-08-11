@@ -6,6 +6,7 @@ import Breadcrumb from '@/components/ui/Breadcrumb'
 import ScientificArticleContent from '@/components/content/ScientificArticleContent'
 import CitationWidget from '@/components/content/CitationWidget'
 import ArticleLangToggle from '@/components/content/ArticleLangToggle'
+import AuthorMenu from '@/components/content/AuthorMenu'
 import ShareSection from '@/components/content/ShareSection'
 import { notFound } from 'next/navigation'
 
@@ -167,22 +168,6 @@ export default async function CientificoDetailPage({ params }) {
             </div>
             <h1 className="sci-hero-title">{article.title}</h1>
 
-            {(article.authors || []).length > 0 && (
-              <div className="sci-authors-row">
-                {article.authors.map((a, i) => (
-                  <div key={i} className="sci-author-chip">
-                    <span
-                      className="sci-avatar"
-                      style={{ background: a.avatarBg || color }}
-                    >
-                      {(a.avatar || (a.name || '?')[0]).toUpperCase()}
-                    </span>
-                    <span>{a.name}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-
             <div className="sci-hero-meta">
               {article.date && <time dateTime={article.publishedAt}>{formatDate(article.date, safeLang)}</time>}
               {article.readTime && (
@@ -200,6 +185,33 @@ export default async function CientificoDetailPage({ params }) {
             </div>
           </header>
 
+          {/* Autores — acima do resumo, com nomes clicáveis (menu: artigos do autor / perfil) */}
+          {(article.authors || []).length > 0 && (
+            <section className="sci-authors-section">
+              <div className="sci-section-title">{tFn('cientifico_detail.authors')}</div>
+              <div className="sci-authors-grid">
+                {article.authors.map((a, i) => (
+                  <div key={i} className="sci-author-card">
+                    <span className="sci-avatar" style={{ background: a.avatarBg || color }}>
+                      {(a.avatar || (a.name || '?')[0]).toUpperCase()}
+                    </span>
+                    <div className="sci-author-info">
+                      <AuthorMenu author={a} lang={safeLang} />
+                      {(a.institution || a.department) && (
+                        <div className="sci-author-inst">
+                          {[a.institution, a.department].filter(Boolean).join(' · ')}
+                        </div>
+                      )}
+                    </div>
+                    {a.corresponding && (
+                      <span className="sci-corresponding-dot" title="Autor correspondente" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
           {/* Abstract */}
           {article.abstract && (
             <div className="sci-abstract-box">
@@ -215,33 +227,6 @@ export default async function CientificoDetailPage({ params }) {
                 <span key={i} className="sci-keyword-tag">{kw}</span>
               ))}
             </div>
-          )}
-
-          {/* Autores */}
-          {(article.authors || []).length > 0 && (
-            <section className="sci-authors-section">
-              <div className="sci-section-title">{tFn('cientifico_detail.authors')}</div>
-              <div className="sci-authors-grid">
-                {article.authors.map((a, i) => (
-                  <div key={i} className="sci-author-card">
-                    <span className="sci-avatar" style={{ background: a.avatarBg || color }}>
-                      {(a.avatar || (a.name || '?')[0]).toUpperCase()}
-                    </span>
-                    <div className="sci-author-info">
-                      <div className="sci-author-name">{a.name}</div>
-                      {(a.institution || a.department) && (
-                        <div className="sci-author-inst">
-                          {[a.institution, a.department].filter(Boolean).join(' · ')}
-                        </div>
-                      )}
-                    </div>
-                    {a.corresponding && (
-                      <span className="sci-corresponding-dot" title="Autor correspondente" />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </section>
           )}
 
           {/* Corpo do artigo */}

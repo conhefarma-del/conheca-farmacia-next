@@ -36,7 +36,7 @@ export default function ArticleLangToggle({ lang, langSlugs }) {
           className={`px-3 py-1.5 text-xs font-semibold transition-colors ${
             lang === l.code
               ? 'bg-[var(--color-brand-accent)] text-white'
-              : 'bg-white text-[var(--color-brand-deep)] opacity-60 hover:opacity-100'
+              : 'bg-[var(--color-brand-bg)] text-[var(--color-brand-deep)] opacity-60 hover:opacity-100'
           }`}
           aria-current={lang === l.code ? 'page' : undefined}
         >
