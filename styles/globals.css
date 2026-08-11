@@ -4574,6 +4574,8 @@ html.dark .guide-university-type.is-private { background: rgba(251, 113, 133, 0.
     padding: 24px 20px 80px;
   }
   .guide-sidebar { position: static; }
+  /* 'Neste curso' (TOC) fica oculto no mobile */
+  .sidebar-hide-mobile { display: none; }
 }
 
 /* ==========================================================
@@ -4668,7 +4670,9 @@ html.dark .guide-university-type.is-private { background: rgba(251, 113, 133, 0.
   align-items: center;
   gap: 12px;
   position: sticky;
-  top: 0;
+  /* Chrome fixo = utility (60px) + header (80px) → barra sempre visível
+     por baixo do header, no scroll (desktop e mobile) */
+  top: 140px;
   z-index: 40;
   background: var(--color-brand-bg);
 }
@@ -5080,7 +5084,9 @@ html { scroll-behavior: smooth; }
   .protocol-detail-layout { grid-template-columns: 1fr; gap: 24px; padding-bottom: 140px; }
   .protocol-sidebar { position: static; }
   .protocol-mobile-bar { display: flex; }
-  .protocol-progress { top: 0; }
+  .protocol-progress { top: 140px; }
+  /* 'Neste protocolo' (TOC) fica oculto no mobile */
+  .sidebar-hide-mobile { display: none; }
 }
 @media (max-width: 640px) {
   .protocolos-grid { grid-template-columns: 1fr; }

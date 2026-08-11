@@ -75,7 +75,7 @@ export default function GuideSidebar({ course, t, onSelectDiscipline }) {
 
   return (
     <aside className="guide-sidebar">
-      <div className="sidebar-card">
+      <div className="sidebar-card sidebar-hide-mobile">
         <div className="sidebar-card-title">{t('guias_curso.neste_curso')}</div>
         <nav className="sidebar-toc">
           {disciplines.length === 0 && (

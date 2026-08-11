@@ -35,7 +35,7 @@ export default function ProtocolSidebar({ protocol, mentionedDrugs, t }) {
 
   return (
     <aside className="protocol-sidebar">
-      <div className="sidebar-card">
+      <div className="sidebar-card sidebar-hide-mobile">
         <div className="sidebar-card-title">{t('protocolos_detalhe.neste_protocolo')}</div>
         <nav className="sidebar-toc">
           {steps.map((step, i) => (
