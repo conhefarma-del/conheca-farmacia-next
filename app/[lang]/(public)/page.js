@@ -4,6 +4,7 @@ import { getFeaturedEvents } from '@/lib/api/events'
 import { getFeaturedLives } from '@/lib/api/lives'
 import { buildOrganizationSchema, buildWebSiteSchema } from '@/lib/seo'
 import HeroAnimated from '@/components/home/HeroAnimated'
+import ToolsShowcase from '@/components/home/ToolsShowcase'
 import FeaturedArticles from '@/components/home/FeaturedArticles'
 import FeaturedEvents from '@/components/home/FeaturedEvents'
 import FeaturedLives from '@/components/home/FeaturedLives'
@@ -83,6 +84,9 @@ export default async function HomePage({ params }) {
           <HeroAnimated />
         </div>
       </section>
+
+      {/* Ferramentas + Artigos Científicos em destaque */}
+      <ToolsShowcase lang={safeLang} tFn={tFn} />
 
       {/* Artigos em Destaque */}
       <FeaturedArticles

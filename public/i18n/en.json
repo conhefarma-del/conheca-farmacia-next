@@ -106,7 +106,9 @@
     "stats_lives_label": "Lives",
     "stats_lives_desc": "Interviews with health specialists",
     "stats_newsletter_label": "Newsletter",
-    "stats_newsletter_desc": "Updates directly for professionals"
+    "stats_newsletter_desc": "Updates directly for professionals",
+    "tools_title": "Featured tools",
+    "tools_subtitle": "Explore, search and learn — Conheça Farmácia’s tools at your fingertips."
   },
   "sobre": {
     "hero_title": "About Us",

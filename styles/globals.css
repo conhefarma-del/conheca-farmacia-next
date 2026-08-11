@@ -6882,7 +6882,7 @@ html.dark .admin-feedback-action.is-archive { color: #f87171; }
   border-radius: 14px;
   padding: 22px 26px;
   margin-bottom: 28px;
-  border-left: 4px solid var(--color-brand-accent);
+  border-top: 4px solid var(--color-brand-accent);
 }
 .sci-abstract-label {
   font-size: 11px;
@@ -7470,6 +7470,68 @@ html.dark .admin-feedback-action.is-archive { color: #f87171; }
   border: 1px solid var(--color-brand-divider);
   border-radius: 14px;
   padding: 10px;
+}
+
+/* ---- Homepage: ferramentas + científicos em destaque (cards pequenos) ---- */
+.tools-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--color-brand-divider);
+  background: var(--color-brand-card, #ffffff);
+  box-shadow: var(--shadow-soft);
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+.tools-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--color-brand-accent);
+}
+.tools-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 132, 79, 0.1);
+  color: var(--color-brand-accent);
+}
+.tools-card-icon svg { width: 20px; height: 20px; }
+.tools-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-brand-deep);
+}
+.tools-card-desc {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-brand-deep);
+  opacity: 0.6;
+  flex: 1;
+}
+.tools-card-arrow {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-brand-accent);
+  opacity: 0.7;
+  transition: transform 0.2s, opacity 0.2s;
+}
+.tools-card:hover .tools-card-arrow {
+  opacity: 1;
+  transform: translateX(3px);
+}
+.tools-card-featured {
+  border-color: rgba(10, 132, 79, 0.45);
+  background: rgba(10, 132, 79, 0.06);
+}
+.tools-card-featured .tools-card-title {
+  color: var(--color-brand-accent);
 }
 
 /* ---- Ordenação (mais recentes / mais lidos) + contador de leituras ---- */
