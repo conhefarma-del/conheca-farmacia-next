@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { ARTICLE_CATEGORY_COLORS, ARTICLE_CATEGORIES } from '@/lib/constants'
 import { BLUR_PLACEHOLDER } from '@/lib/images'
 import NewsletterSection from '@/components/ui/NewsletterSection'
+import ScientificBanner from '@/components/ui/ScientificBanner'
 
 export default function ArtigosPageClient({ articles, lang }) {
   const { t } = useContext(LangContext)
@@ -90,6 +91,13 @@ export default function ArtigosPageClient({ articles, lang }) {
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Banner Artigos Científicos (variante A light) */}
+      <section className="section-padding pb-0">
+        <div className="container-center">
+          <ScientificBanner />
         </div>
       </section>
 

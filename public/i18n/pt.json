@@ -15,7 +15,8 @@
     "medicamentos_desc": "Explore fármacos por classificação ATC, risco ou nome",
     "sobre": "Sobre Nós",
     "faq": "FAQ",
-    "privacidade": "Privacidade"
+    "privacidade": "Privacidade",
+    "cientificos": "Científicos"
   },
   "hero": {
     "title": "Excelência no Cuidado Farmacêutico",
@@ -639,5 +640,36 @@
     "fontes_a": "As interações fármaco–fármaco são ancoradas aos rótulos aprovados pela FDA (DailyMed/NIH) e a fontes clínicas NIH (PubMed). As dimensões de alimento, doença e gestação seguem como fonte canónica o EMC-UK (MHRA), corroborado pela Health Canada. Os RCMs europeus podem ser consultados na EMA e, em Portugal, no portal do INFARMED (Infomed).",
     "mais_de_dois_q": "Posso verificar mais de dois medicamentos em simultâneo?",
     "mais_de_dois_a": "Sim. Adicione quantos fármacos quiser; serão calculados os pares entre todos os selecionados."
+  },
+  "cientificos_page": {
+    "hero_eyebrow": "Publicações académicas",
+    "hero_title": "Artigos Científicos",
+    "hero_subtitle": "Leitura crítica, revisão por pares e citações normalizadas — o melhor da investigação em saúde.",
+    "back_to_articles": "Voltar para Artigos",
+    "filter_all": "Todas",
+    "lang_pt": "PT",
+    "lang_en": "EN",
+    "search_placeholder": "Pesquisar artigos...",
+    "no_results": "Nenhum artigo científico encontrado.",
+    "min_read": "min de leitura",
+    "banner_desc": "Publicações académicas com revisão, referências e citações exportáveis"
+  },
+  "cientifico_detail": {
+    "abstract": "Resumo",
+    "keywords": "Palavras-chave",
+    "authors": "Autores",
+    "topics": "Tópicos",
+    "share": "Partilhar",
+    "related": "Relacionados",
+    "references": "Referências bibliográficas",
+    "citation": "Citar este artigo",
+    "abnt": "ABNT",
+    "apa": "APA",
+    "vancouver": "Vancouver",
+    "copy_citation": "Copiar citação",
+    "copied": "Copiado!",
+    "doi": "DOI",
+    "back_to_cientificos": "Artigos Científicos",
+    "min_read": "min de leitura"
   }
 }

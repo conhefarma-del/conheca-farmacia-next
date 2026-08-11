@@ -27,6 +27,7 @@ import {
   Layers,
   ChevronDown,
   Scale,
+  Microscope,
 } from 'lucide-react'
 
 export default function AdminSidebar({ lang, user, onLogout }) {
@@ -129,15 +130,17 @@ export default function AdminSidebar({ lang, user, onLogout }) {
             )
           })()}
 
-          {/* Artigos → submenu: Traduções EN */}
+          {/* Artigos → submenu: Traduções EN, Científicos */}
           {(() => {
             const artigosHref = `/${lang}/admin/artigos`
             const traducoesHref = `/${lang}/admin/traducoes`
+            const cientificosHref = `/${lang}/admin/cientificos`
             const artigosActive = isActive(artigosHref)
             const traducoesActive = isActive(traducoesHref)
+            const cientificosActive = isActive(cientificosHref)
             return (
               <div
-                className={`admin-nav-group${artigosOpen ? ' is-open' : ''}${artigosActive || traducoesActive ? ' has-active' : ''}`}
+                className={`admin-nav-group${artigosOpen ? ' is-open' : ''}${artigosActive || traducoesActive || cientificosActive ? ' has-active' : ''}`}
                 onMouseEnter={canHover ? () => setArtigosOpen(true) : undefined}
                 onMouseLeave={canHover ? () => setArtigosOpen(false) : undefined}
               >
@@ -160,6 +163,9 @@ export default function AdminSidebar({ lang, user, onLogout }) {
                   <div className="admin-nav-submenu">
                     <Link href={traducoesHref} className={traducoesActive ? 'active' : ''}>
                       <Languages size={16} /> Traduções EN
+                    </Link>
+                    <Link href={cientificosHref} className={cientificosActive ? 'active' : ''}>
+                      <Microscope size={16} /> Científicos
                     </Link>
                   </div>
                 )}
