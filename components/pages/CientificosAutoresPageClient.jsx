@@ -1,41 +1,90 @@
 'use client'
 
-import { useState, useMemo, useContext } from 'react'
+import { useState, useMemo, useEffect, useContext } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { LangContext } from '@/lib/contexts'
-import { ArrowLeft, Search, BookOpen, UserRound, FileText } from 'lucide-react'
+import { ArrowLeft, Search, BookOpen, UserRound, FileText, ChevronLeft, ChevronRight } from 'lucide-react'
+
+const PER_PAGE = 30
+
+/**
+ * Lista de páginas para a navegação, com reticências quando há muitas.
+ */
+function pageList(current, total) {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
+  const pages = new Set([1, total, current - 1, current, current + 1])
+  const sorted = [...pages].filter((p) => p >= 1 && p <= total).sort((a, b) => a - b)
+  const out = []
+  let prev = 0
+  for (const p of sorted) {
+    if (p - prev > 1) out.push('ellipsis')
+    out.push(p)
+    prev = p
+  }
+  return out
+}
+
+/**
+ * URL da listagem de autores a partir do estado de filtros (server-side).
+ */
+function buildUrl(lang, { q = '', correspondente = false, ordenar = 'az', page = 1 } = {}) {
+  const params = new URLSearchParams()
+  if (q.trim()) params.set('q', q.trim())
+  if (correspondente) params.set('correspondente', '1')
+  if (ordenar && ordenar !== 'az') params.set('ordenar', ordenar)
+  if (page > 1) params.set('page', String(page))
+  const qs = params.toString()
+  return `/${lang}/cientificos/autores${qs ? `?${qs}` : ''}`
+}
 
 /**
  * CientificosAutoresPageClient — índice de autores dos Artigos Científicos.
- * Pesquisa por nome/afiliação, filtro "autor correspondente", ordenação
- * A–Z ou por nº de artigos publicados.
+ * Server-side: filtros/ordenação/paginação (30 por página) vivem na URL;
+ * este componente navega (router) e renderiza os links indexáveis.
  */
-export default function CientificosAutoresPageClient({ authors = [], lang = 'pt' }) {
+export default function CientificosAutoresPageClient({
+  authors = [],
+  lang = 'pt',
+  total = 0,
+  page = 1,
+  totalPages = 1,
+  q = '',
+  correspondente = false,
+  ordenar = 'az',
+}) {
   const { t } = useContext(LangContext)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [sortMode, setSortMode] = useState('az') // 'az' | 'articles'
-  const [filterMode, setFilterMode] = useState('all') // 'all' | 'corresponding'
+  const router = useRouter()
+  const [searchInput, setSearchInput] = useState(q)
 
-  const filteredAuthors = useMemo(() => {
-    const term = searchTerm.trim().toLowerCase()
-    const filtered = authors.filter((a) => {
-      if (filterMode === 'corresponding' && !a.isCorresponding) return false
-      if (!term) return true
-      return (
-        a.name?.toLowerCase().includes(term) ||
-        a.institution?.toLowerCase().includes(term) ||
-        a.department?.toLowerCase().includes(term) ||
-        a.role?.toLowerCase().includes(term)
-      )
-    })
-    return filtered.sort((a, b) => {
-      if (sortMode === 'articles') return (b.articleCount || 0) - (a.articleCount || 0)
-      return a.name?.localeCompare(b.name, lang === 'en' ? 'en' : 'pt')
-    })
-  }, [authors, searchTerm, sortMode, filterMode, lang])
+  useEffect(() => {
+    setSearchInput(q)
+  }, [q])
+
+  // Pesquisa com debounce → router.push (scroll: false; volta à página 1)
+  useEffect(() => {
+    if (searchInput.trim() === q) return
+    const timer = setTimeout(() => {
+      router.push(buildUrl(lang, { q: searchInput, correspondente, ordenar }), { scroll: false })
+    }, 350)
+    return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchInput])
+
+  const setFilter = (corresponding) => {
+    router.push(buildUrl(lang, { correspondente: corresponding }), { scroll: false })
+  }
+
+  const setSort = (mode) => {
+    if (mode === ordenar) return
+    router.push(buildUrl(lang, { q, correspondente, ordenar: mode }), { scroll: false })
+  }
 
   const countLabel = (n) =>
     n === 1 ? t('cientifico_autores.articles_count_one') : t('cientifico_autores.articles_count_other', { count: n })
+
+  const pageFrom = total ? (page - 1) * PER_PAGE + 1 : 0
+  const pageTo = total ? Math.min(page * PER_PAGE, total) : 0
 
   return (
     <>
@@ -69,8 +118,8 @@ export default function CientificosAutoresPageClient({ authors = [], lang = 'pt'
               />
               <input
                 type="search"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 placeholder={t('cientifico_autores.search_placeholder')}
                 className="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-brand-divider bg-brand-bg text-brand-deep shadow-soft focus:ring-2 focus:ring-brand-accent focus:outline-none transition-all placeholder:text-brand-deep/40"
               />
@@ -87,15 +136,15 @@ export default function CientificosAutoresPageClient({ authors = [], lang = 'pt'
             <div className="inline-flex rounded-full border border-brand-divider overflow-hidden" role="group" aria-label="Filtrar autores">
               <button
                 type="button"
-                className={`sci-sort-btn ${filterMode === 'all' ? 'active' : ''}`}
-                onClick={() => setFilterMode('all')}
+                className={`sci-sort-btn ${!correspondente ? 'active' : ''}`}
+                onClick={() => setFilter(false)}
               >
                 {t('cientifico_autores.filter_all')}
               </button>
               <button
                 type="button"
-                className={`sci-sort-btn ${filterMode === 'corresponding' ? 'active' : ''}`}
-                onClick={() => setFilterMode('corresponding')}
+                className={`sci-sort-btn ${correspondente ? 'active' : ''}`}
+                onClick={() => setFilter(true)}
               >
                 {t('cientifico_autores.filter_corresponding')}
               </button>
@@ -103,24 +152,24 @@ export default function CientificosAutoresPageClient({ authors = [], lang = 'pt'
             <div className="inline-flex rounded-full border border-brand-divider overflow-hidden" role="group" aria-label="Ordenar autores">
               <button
                 type="button"
-                className={`sci-sort-btn ${sortMode === 'az' ? 'active' : ''}`}
-                onClick={() => setSortMode('az')}
+                className={`sci-sort-btn ${ordenar === 'az' ? 'active' : ''}`}
+                onClick={() => setSort('az')}
               >
                 {t('cientifico_autores.sort_az')}
               </button>
               <button
                 type="button"
-                className={`sci-sort-btn ${sortMode === 'articles' ? 'active' : ''}`}
-                onClick={() => setSortMode('articles')}
+                className={`sci-sort-btn ${ordenar === 'articles' ? 'active' : ''}`}
+                onClick={() => setSort('articles')}
               >
                 <FileText size={13} /> {t('cientifico_autores.sort_most_articles')}
               </button>
             </div>
           </div>
 
-          {filteredAuthors.length > 0 ? (
+          {authors.length > 0 ? (
             <div className="sci-authors-index-grid">
-              {filteredAuthors.map((author) => (
+              {authors.map((author) => (
                 <div key={author.id} className="sci-author-index-card">
                   <Link
                     href={`/${lang}/cientificos/autores/${author.slug}`}
@@ -155,6 +204,49 @@ export default function CientificosAutoresPageClient({ authors = [], lang = 'pt'
           ) : (
             <div className="text-center py-16 text-gray-500">
               <p>{t('cientifico_autores.no_results')}</p>
+            </div>
+          )}
+
+          {/* Paginação — 30 autores por página, links indexáveis */}
+          {totalPages > 1 && (
+            <div className="mt-10">
+              <p className="text-center text-xs text-brand-deep/50 mb-4">
+                {t('cientificos_page.showing_range', { from: pageFrom, to: pageTo, total })}
+              </p>
+              <nav className="sci-pagination" aria-label={t('cientificos_page.pagination_label')}>
+                {page > 1 && (
+                  <Link
+                    href={buildUrl(lang, { q, correspondente, ordenar, page: page - 1 })}
+                    className="sci-page-btn"
+                    aria-label={t('cientificos_page.pagination_prev')}
+                  >
+                    <ChevronLeft size={16} />
+                  </Link>
+                )}
+                {pageList(page, totalPages).map((p, i) =>
+                  p === 'ellipsis' ? (
+                    <span key={`e${i}`} className="sci-page-ellipsis" aria-hidden="true">…</span>
+                  ) : (
+                    <Link
+                      key={p}
+                      href={buildUrl(lang, { q, correspondente, ordenar, page: p })}
+                      className={`sci-page-btn${p === page ? ' active' : ''}`}
+                      aria-current={p === page ? 'page' : undefined}
+                    >
+                      {p}
+                    </Link>
+                  )
+                )}
+                {page < totalPages && (
+                  <Link
+                    href={buildUrl(lang, { q, correspondente, ordenar, page: page + 1 })}
+                    className="sci-page-btn"
+                    aria-label={t('cientificos_page.pagination_next')}
+                  >
+                    <ChevronRight size={16} />
+                  </Link>
+                )}
+              </nav>
             </div>
           )}
         </div>

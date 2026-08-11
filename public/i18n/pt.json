@@ -38,7 +38,7 @@
     "lives": "Lives & Webinars",
     "guias": "Guias de Estudo",
     "protocolos": "Protocolos",
-    "farmacos": "Fármacos",
+    "farmacos": "Medicamentos",
     "mais_recente": "Mais Recente",
     "mais_antigo": "Mais Antigo",
     "nenhum_resultado": "Nenhum resultado encontrado para",
@@ -53,7 +53,9 @@
     "hero_subtitle": "Pesquise por artigos, eventos, lives, guias de estudo, protocolos clínicos e fármacos na nossa plataforma.",
     "empty_hint": "Escreva o que pretende pesquisar.",
     "interacoes": "Interações",
-    "fechar_pesquisa": "Fechar pesquisa"
+    "fechar_pesquisa": "Fechar pesquisa",
+    "cientificos": "Científicos",
+    "autores": "Autores"
   },
   "content": {
     "artigo": "Artigo",
@@ -126,7 +128,7 @@
     "publico_estudantes": "Estudantes das Áreas da Saúde",
     "publico_instituicoes": "Instituições de Ensino",
     "publico_clinicas": "Clínicas, Hospitais e Organizações",
-    "pull_quote": "\"Conhecimento que conecta. Formação que transforma. Saúde que evolui.\""
+    "pull_quote": "Conhecimento que conecta. Formação que transforma. Saúde que evolui."
   },
   "artigos_page": {
     "hero_title": "Biblioteca de Conhecimento",
@@ -148,7 +150,9 @@
     "newsletter_privacy": "Respeitamos sua privacidade!",
     "newsletter_success": "Subscrição realizada com sucesso!",
     "newsletter_exists": "Este email já está subscrito.",
-    "newsletter_error": "Ocorreu um erro. Tente novamente."
+    "newsletter_error": "Ocorreu um erro. Tente novamente.",
+    "filtering_author": "Artigos de {name}",
+    "clear_filter": "Limpar filtro"
   },
   "eventos_page": {
     "hero_title": "Próximos Eventos",
@@ -657,7 +661,12 @@
     "banner_desc": "Publicações académicas com revisão, referências e citações exportáveis",
     "view_all_authors": "Ver todos os autores",
     "sort_recent": "Mais recentes",
-    "sort_views": "Mais lidos"
+    "sort_views": "Mais lidos",
+    "pagination_label": "Paginação dos artigos científicos",
+    "pagination_prev": "Página anterior",
+    "pagination_next": "Página seguinte",
+    "showing_range": "A mostrar {from}–{to} de {total} artigos",
+    "page_number": "Página {n}"
   },
   "cientifico_detail": {
     "abstract": "Resumo",

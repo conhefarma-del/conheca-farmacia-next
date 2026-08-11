@@ -6,16 +6,24 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { ARTICLE_CATEGORY_COLORS, ARTICLE_CATEGORIES } from '@/lib/constants'
 import { BLUR_PLACEHOLDER } from '@/lib/images'
+import { slugify } from '@/lib/utils/slugify'
 import NewsletterSection from '@/components/ui/NewsletterSection'
 import ScientificBanner from '@/components/ui/ScientificBanner'
+import { X } from 'lucide-react'
 
-export default function ArtigosPageClient({ articles, lang }) {
+export default function ArtigosPageClient({ articles, lang, autorFilter = '' }) {
   const { t } = useContext(LangContext)
   const [activeFilter, setActiveFilter] = useState('all')
   const [searchTerm, setSearchTerm] = useState('')
 
   const filteredArticles = useMemo(() => {
     let result = articles
+
+    if (autorFilter) {
+      result = result.filter(a =>
+        slugify(a.author?.name || a.author_name || '') === autorFilter
+      )
+    }
 
     if (activeFilter !== 'all') {
       result = result.filter(a => a.category === activeFilter)
@@ -30,7 +38,16 @@ export default function ArtigosPageClient({ articles, lang }) {
     }
 
     return result
-  }, [articles, activeFilter, searchTerm])
+  }, [articles, autorFilter, activeFilter, searchTerm])
+
+  // Nome legível do autor filtrado (para o banner), derivado dos artigos
+  const autorName = useMemo(() => {
+    if (!autorFilter) return ''
+    const match = (articles || []).find(a =>
+      slugify(a.author?.name || a.author_name || '') === autorFilter
+    )
+    return match ? (match.author?.name || match.author_name || '') : ''
+  }, [articles, autorFilter])
 
   const lerMais = t('content.ler_mais')
 
@@ -97,6 +114,21 @@ export default function ArtigosPageClient({ articles, lang }) {
       {/* Articles Grid — com o banner dos Científicos acima dos cards (fora do hero) */}
       <section className="section-padding bg-brand-bg-alt">
         <div className="container-center">
+          {/* Banner de filtro por autor */}
+          {autorFilter && autorName && (
+            <div className="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-brand-accent/30 bg-brand-bg-alt px-5 py-3.5">
+              <p className="text-sm font-semibold text-brand-deep">
+                {t('artigos_page.filtering_author', { name: autorName })}
+              </p>
+              <Link
+                href={`/${lang}/artigos`}
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-brand-accent hover:underline"
+              >
+                <X size={14} /> {t('artigos_page.clear_filter')}
+              </Link>
+            </div>
+          )}
+
           {/* Banner Artigos Científicos (variante A light) */}
           <div className="mb-8">
             <ScientificBanner />

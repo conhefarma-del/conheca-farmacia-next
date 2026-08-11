@@ -17,9 +17,13 @@ export async function generateMetadata({ params }) {
   }
 }
 
-export default async function ArtigosPage({ params }) {
+export default async function ArtigosPage({ params, searchParams }) {
   const { lang } = await params
   const safeLang = SUPPORTED_LANGS.includes(lang) ? lang : DEFAULT_LANG
+
+  // Filtro opcional por autor: /artigos?autor={slug}
+  const autorParam =
+    searchParams && typeof searchParams.autor === 'string' ? searchParams.autor.trim() : ''
 
   let articles = []
   try {
@@ -32,6 +36,7 @@ export default async function ArtigosPage({ params }) {
     <ArtigosPageClient
       articles={articles}
       lang={safeLang}
+      autorFilter={autorParam}
     />
   )
 }

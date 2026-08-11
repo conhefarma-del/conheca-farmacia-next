@@ -11,6 +11,7 @@ import ShareSection from '@/components/content/ShareSection'
 import RelatedArticles from '@/components/content/RelatedArticles'
 import ReadingTimeTracker from '@/components/content/ReadingTimeTracker'
 import ViewCountTracker from '@/components/content/ViewCountTracker'
+import { slugify } from '@/lib/utils/slugify'
 import TranslationFallbackBanner from '@/components/i18n/TranslationFallbackBanner'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -138,6 +139,8 @@ export default async function ArticleDetailPage({ params }) {
   )
 
   const authorName = article.author?.name || article.author_name || 'CF'
+  const authorSlug = slugify(authorName)
+  const authorHref = `/${safeLang}/artigos?autor=${authorSlug}`
   const authorInitials = authorName
     .split(' ')
     .map((w) => w[0])
@@ -225,7 +228,9 @@ export default async function ArticleDetailPage({ params }) {
                 {authorInitials}
               </div>
               <div>
-                <div className="font-semibold text-sm">{authorName}</div>
+                <Link href={authorHref} className="font-semibold text-sm hover:underline">
+                  {authorName}
+                </Link>
                 {article.author?.role && (
                   <div className="text-xs text-brand-deep/60">{article.author.role}</div>
                 )}
@@ -262,7 +267,9 @@ export default async function ArticleDetailPage({ params }) {
                 {article.author?.role && (
                   <div className="author-card-role">{article.author.role}</div>
                 )}
-                <h3 className="author-card-name-lg">{authorName}</h3>
+                <Link href={authorHref} className="author-card-name-lg block hover:underline">
+                  {authorName}
+                </Link>
                 {article.author?.bio && (
                   <p className="author-card-bio">{article.author.bio}</p>
                 )}

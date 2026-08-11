@@ -38,7 +38,7 @@
     "lives": "Lives & Webinars",
     "guias": "Study Guides",
     "protocolos": "Protocols",
-    "farmacos": "Drugs",
+    "farmacos": "Medicines",
     "mais_recente": "Newest",
     "mais_antigo": "Oldest",
     "nenhum_resultado": "No results found for",
@@ -53,7 +53,9 @@
     "hero_subtitle": "Search for articles, events, lives, study guides, clinical protocols and drugs on our platform.",
     "empty_hint": "Type what you want to search for.",
     "interacoes": "Interactions",
-    "fechar_pesquisa": "Close search"
+    "fechar_pesquisa": "Close search",
+    "cientificos": "Scientific",
+    "autores": "Authors"
   },
   "content": {
     "artigo": "Article",
@@ -126,7 +128,7 @@
     "publico_estudantes": "Health Sciences Students",
     "publico_instituicoes": "Educational Institutions",
     "publico_clinicas": "Clinics, Hospitals & Organizations",
-    "pull_quote": "\"Knowledge that connects. Training that transforms. Health that evolves.\""
+    "pull_quote": "Knowledge that connects. Training that transforms. Health that evolves."
   },
   "artigos_page": {
     "hero_title": "Knowledge Library",
@@ -148,7 +150,9 @@
     "newsletter_privacy": "We respect your privacy!",
     "newsletter_success": "Successfully subscribed!",
     "newsletter_exists": "This email is already subscribed.",
-    "newsletter_error": "An error occurred. Please try again."
+    "newsletter_error": "An error occurred. Please try again.",
+    "filtering_author": "Articles by {name}",
+    "clear_filter": "Clear filter"
   },
   "eventos_page": {
     "hero_title": "Upcoming Events",
@@ -657,7 +661,12 @@
     "banner_desc": "Peer-reviewed academic publications with references and exportable citations",
     "view_all_authors": "View all authors",
     "sort_recent": "Most recent",
-    "sort_views": "Most read"
+    "sort_views": "Most read",
+    "pagination_label": "Scientific articles pagination",
+    "pagination_prev": "Previous page",
+    "pagination_next": "Next page",
+    "showing_range": "Showing {from}–{to} of {total} articles",
+    "page_number": "Page {n}"
   },
   "cientifico_detail": {
     "abstract": "Abstract",

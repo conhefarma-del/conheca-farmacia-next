@@ -4,7 +4,7 @@ import { useState, useEffect, useContext, useCallback } from 'react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { BookOpen, CalendarDays, ClipboardList, FileText, Pill, Search, ShieldAlert, Video } from 'lucide-react'
+import { BookOpen, CalendarDays, ClipboardList, FileText, Microscope, Pill, Search, ShieldAlert, Users, Video } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
 import { BLUR_PLACEHOLDER } from '@/lib/images'
 import { searchAllContent } from '@/lib/api/search'
@@ -81,6 +81,8 @@ export default function PesquisaPageClient({ lang }) {
     allResults.lives.forEach(item => items.push({ ...item, type: 'lives' }))
     allResults.guides.forEach(item => items.push({ ...item, type: 'guias' }))
     allResults.protocolos.forEach(item => items.push({ ...item, type: 'protocolos' }))
+    allResults.cientificos.forEach(item => items.push({ ...item, type: 'cientificos' }))
+    allResults.autores.forEach(item => items.push({ ...item, type: 'autores' }))
     allResults.farmacos.forEach(item => items.push({ ...item, type: 'farmacos' }))
     allResults.interacoes.forEach(item => items.push({ ...item, type: 'interacoes' }))
 
@@ -117,7 +119,7 @@ export default function PesquisaPageClient({ lang }) {
       updateUrl(q, tVal || tipo, o || ordem, 1)
     } catch (err) {
       console.error('Search error:', err)
-      setAllResults({ articles: [], events: [], lives: [], guides: [], protocolos: [], farmacos: [], interacoes: [], total: 0 })
+      setAllResults({ articles: [], events: [], lives: [], guides: [], protocolos: [], cientificos: [], autores: [], farmacos: [], interacoes: [], total: 0 })
     } finally {
       setLoading(false)
     }
@@ -170,6 +172,8 @@ export default function PesquisaPageClient({ lang }) {
     if (item.type === 'lives') return `/${lang}/lives/${item.slug}`
     if (item.type === 'guias') return `/${lang}/guias/${item.slug}`
     if (item.type === 'protocolos') return `/${lang}/protocolos/${item.slug}`
+    if (item.type === 'cientificos') return `/${lang}/cientificos/${item.slug}`
+    if (item.type === 'autores') return `/${lang}/cientificos/autores/${item.slug}`
     if (item.type === 'farmacos') return `/${lang}/interacoes?farmaco=${item.slug}`
     if (item.type === 'interacoes') {
       const base = `/${lang}/interacoes?aba=${item.tab}`
@@ -206,6 +210,8 @@ export default function PesquisaPageClient({ lang }) {
     lives: Video,
     guias: BookOpen,
     protocolos: ClipboardList,
+    cientificos: Microscope,
+    autores: Users,
     farmacos: Pill,
     interacoes: ShieldAlert,
   }
@@ -215,6 +221,8 @@ export default function PesquisaPageClient({ lang }) {
     lives: 'search.lives',
     guias: 'search.guias',
     protocolos: 'search.protocolos',
+    cientificos: 'search.cientificos',
+    autores: 'search.autores',
     farmacos: 'search.farmacos',
     interacoes: 'search.interacoes',
   }
@@ -285,7 +293,7 @@ export default function PesquisaPageClient({ lang }) {
           {/* Filters & Sort */}
           <div className="search-filters">
             <div className="search-type-filters">
-              {['todos', 'artigos', 'eventos', 'lives', 'guias', 'protocolos', 'interacoes', 'farmacos'].map((key) => (
+              {['todos', 'artigos', 'eventos', 'lives', 'guias', 'protocolos', 'cientificos', 'autores', 'interacoes', 'farmacos'].map((key) => (
                 <button
                   key={key}
                   className={`filter-btn ${tipo === key ? 'active' : ''}`}
