@@ -7666,6 +7666,26 @@ html.dark .tools-showcase {
   white-space: nowrap;
 }
 
+.sci-card-cited {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-brand-muted);
+  white-space: nowrap;
+}
+
+.sci-cited-link {
+  color: var(--color-brand-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.sci-cited-link:hover {
+  opacity: 0.8;
+}
+
 /* ---- Índice de autores (/cientificos/autores) ---- */
 .sci-authors-index-grid {
   display: grid;

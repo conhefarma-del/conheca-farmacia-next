@@ -685,10 +685,11 @@
     "about_article": "Sobre este artigo",
     "original_source": "Fonte original",
     "license": "Licença",
-    "translation_note": "Traduzido e adaptado para português pela equipa editorial da Conheça Farmácia, para fins educativos. Consulte sempre o artigo original como fonte autoritativa."
+    "translation_note": "Traduzido e adaptado para português pela equipa editorial da Conheça Farmácia, para fins educativos. Consulte sempre o artigo original como fonte autoritativa.",
+    "cited_by": "Citado por"
   },
   "cientifico_author": {
-    "back_to_cientificos": "← Voltar para Artigos Científicos",
+    "back_to_cientificos": "Voltar para Artigos Científicos",
     "articles_of": "Artigos de {name}",
     "profile_of": "Perfil de {name}",
     "articles_count_one": "1 artigo publicado",

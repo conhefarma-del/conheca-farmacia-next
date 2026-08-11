@@ -1,5 +1,5 @@
 import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
-import { getScientificArticleBySlug, getScientificArticles } from '@/lib/api/scientific-articles'
+import { getScientificArticleBySlug, getScientificArticles, findRelatedScientificArticles } from '@/lib/api/scientific-articles'
 import { linkReferenceText } from '@/lib/utils/reference-links'
 import { buildCoins } from '@/lib/citation'
 import { buildBreadcrumbSchema, buildScholarlyArticleSchema } from '@/lib/seo'
@@ -7,6 +7,7 @@ import { SITE_URL } from '@/lib/constants'
 import Breadcrumb from '@/components/ui/Breadcrumb'
 import ScientificArticleContent from '@/components/content/ScientificArticleContent'
 import CitationWidget from '@/components/content/CitationWidget'
+import CitedByBadge from '@/components/content/CitedByBadge'
 import ArticleLangToggle from '@/components/content/ArticleLangToggle'
 import AuthorMenu from '@/components/content/AuthorMenu'
 import ArticleViewCounter from '@/components/content/ArticleViewCounter'
@@ -116,13 +117,12 @@ export default async function CientificoDetailPage({ params }) {
   // TOC gerado dos h2 do corpo
   const headings = extractHeadings(article.content)
 
-  // Relacionados (mesma categoria)
+  // Relacionados por similaridade de keywords (score = keywords em comum),
+  // com fallback/desempate por mesma categoria — ver findRelatedScientificArticles
   let related = []
   try {
     const all = await getScientificArticles(safeLang)
-    related = all
-      .filter((a) => a.category?.slug === article.category?.slug && a.slug !== article.slug)
-      .slice(0, 4)
+    related = findRelatedScientificArticles(article, all, { limit: 4 })
   } catch {}
 
   const breadcrumbLevels = [
@@ -275,6 +275,14 @@ export default async function CientificoDetailPage({ params }) {
                       ) : (
                         article.license
                       )}
+                    </dd>
+                  </div>
+                )}
+                {article.doi && (
+                  <div className="sci-about-row">
+                    <dt>{tFn('cientifico_detail.cited_by')}</dt>
+                    <dd>
+                      <CitedByBadge doi={article.doi} variant="count" />
                     </dd>
                   </div>
                 )}

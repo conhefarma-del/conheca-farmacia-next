@@ -685,10 +685,11 @@
     "about_article": "About this article",
     "original_source": "Original source",
     "license": "License",
-    "translation_note": "Translated and adapted from the original article by the Conheça Farmácia editorial team for educational purposes. Always consult the original article as the authoritative source."
+    "translation_note": "Translated and adapted from the original article by the Conheça Farmácia editorial team for educational purposes. Always consult the original article as the authoritative source.",
+    "cited_by": "Cited by"
   },
   "cientifico_author": {
-    "back_to_cientificos": "← Back to Scientific Articles",
+    "back_to_cientificos": "Back to Scientific Articles",
     "articles_of": "Articles by {name}",
     "profile_of": "Profile of {name}",
     "articles_count_one": "1 published article",

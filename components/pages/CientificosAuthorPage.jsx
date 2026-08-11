@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import CitedByBadge from '@/components/content/CitedByBadge'
 import { ArrowLeft, BookOpen, UserRound, FileText } from 'lucide-react'
 
 function formatDate(dateStr, lang) {
@@ -181,6 +182,7 @@ export default function CientificosAuthorPage({ author, articles = [], lang = 'p
                             <span>{article.readTime} {tFn('cientificos_page.min_read')}</span>
                           </>
                         )}
+                        <CitedByBadge doi={article.doi} />
                         {authors.length > 0 && (
                           <div className="sci-authors-preview">
                             {authors.slice(0, 3).map((a, i) => (

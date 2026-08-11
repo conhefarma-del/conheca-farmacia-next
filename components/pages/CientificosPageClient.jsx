@@ -4,6 +4,7 @@ import { useState, useMemo, useContext } from 'react'
 import Link from 'next/link'
 import { LangContext } from '@/lib/contexts'
 import FilterButtons from '@/components/ui/FilterButtons'
+import CitedByBadge from '@/components/content/CitedByBadge'
 import { ArrowLeft, Search, Eye, Users } from 'lucide-react'
 
 function formatDate(dateStr, lang) {
@@ -206,6 +207,7 @@ export default function CientificosPageClient({ articles = [], categories = [], 
                       <span className="sci-views" title={t('cientificos_page.sort_views')}>
                         <Eye size={12} /> {(article.viewCount || 0)}
                       </span>
+                      <CitedByBadge doi={article.doi} />
                       {authors.length > 0 && (
                         <div className="sci-authors-preview">
                           {authors.slice(0, 3).map((a, i) => (
