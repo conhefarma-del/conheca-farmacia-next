@@ -230,8 +230,12 @@ export default async function EventDetailPage({ params }) {
                     style={{ backgroundColor: `${color}20`, color }}
                   >
                     {(() => {
-                      const { icon, label } = formatEventType(event.type, tFn)
-                      return `${icon} ${label}`
+                      const { icon: TypeIcon, label } = formatEventType(event.type, tFn)
+                      return (
+                        <span className="inline-flex items-center gap-1">
+                          {TypeIcon && <TypeIcon size={12} aria-hidden="true" />} {label}
+                        </span>
+                      )
                     })()}
                   </span>
                   <span className="text-sm font-semibold text-brand-deep/70">
@@ -277,9 +281,13 @@ export default async function EventDetailPage({ params }) {
                       </h3>
                       <p className="text-base text-brand-deep font-medium">
                         {(() => {
-                          const { icon, label } = formatEventType(event.type, tFn)
-                          return `${icon} ${label}`
-                        })()}
+                      const { icon: TypeIcon, label } = formatEventType(event.type, tFn)
+                      return (
+                        <>
+                          {TypeIcon && <TypeIcon size={15} aria-hidden="true" />} {label}
+                        </>
+                      )
+                    })()}
                       </p>
                     </div>
 

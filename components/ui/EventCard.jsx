@@ -90,10 +90,10 @@ export default function EventCard({ event, lang = 'pt', variant = 'list' }) {
           {event.categoryLabel}
         </span>
         {event.type && (() => {
-          const { icon, label } = formatEventType(event.type, t)
+          const { icon: TypeIcon, label } = formatEventType(event.type, t)
           return (
             <span className="event-type-badge">
-              {icon} {label}
+              {TypeIcon && <TypeIcon size={12} aria-hidden="true" />} {label}
             </span>
           )
         })()}

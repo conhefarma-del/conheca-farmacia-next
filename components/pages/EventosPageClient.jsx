@@ -163,8 +163,12 @@ export default function EventosPageClient({ events, lang }) {
                       </span>
                       <span className="inline-block text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider bg-slate-100 text-slate-600 border border-slate-200">
                         {(() => {
-                          const { icon, label } = formatEventType(event.type, t)
-                          return `${icon} ${label}`
+                          const { icon: TypeIcon, label } = formatEventType(event.type, t)
+                          return (
+                            <span className="inline-flex items-center gap-1">
+                              {TypeIcon && <TypeIcon size={12} aria-hidden="true" />} {label}
+                            </span>
+                          )
                         })()}
                       </span>
                     </div>
