@@ -12,15 +12,16 @@ import { ChevronDown, BookOpen, UserRound } from 'lucide-react'
  *   1. Artigos do autor  → /{lang}/cientificos/autores/{slug}
  *   2. Ver perfil        → /{lang}/cientificos/autores/{slug}/perfil
  *
- * O slug do autor é slugify(nome) — o mesmo identificador usado por
- * `getScientificAuthor` na camada de dados.
+ * O slug vem do registo `scientific_authors` (desambiguado — dois autores
+ * com o mesmo nome têm slugs diferentes). Fallback: slugify(nome) enquanto
+ * as tabelas 144/145 não existirem.
  */
 export default function AuthorMenu({ author, lang }) {
   const { t } = useContext(LangContext)
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
 
-  const slug = slugify(author?.name)
+  const slug = author?.slug || slugify(author?.name)
 
   useEffect(() => {
     if (!open) return

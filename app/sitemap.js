@@ -35,6 +35,7 @@ export default async function sitemap() {
     '':            { pt: '',            en: '' },
     artigos:       { pt: '/artigos',    en: '/articles' },
     cientificos:   { pt: '/cientificos', en: '/cientificos' },
+    'cientificos/autores': { pt: '/cientificos/autores', en: '/cientificos/autores' },
     eventos:       { pt: '/eventos',    en: '/events' },
     lives:         { pt: '/lives',      en: '/lives' },
     sobre:         { pt: '/sobre',      en: '/about' },
@@ -327,12 +328,46 @@ export default async function sitemap() {
     })
   } catch {}
 
+  // Autores científicos (144/145): slug PARTILHADO entre línguas. Cada autor
+  // tem duas páginas — artigos (/cientificos/autores/{slug}) e perfil
+  // (/cientificos/autores/{slug}/perfil). A RLS anónima de scientific_authors
+  // só expõe autores ligados a artigos publicados e não arquivados, por isso
+  // rascunhos ficam automaticamente fora do sitemap.
+  let authorEntries = []
+  try {
+    const supabase = await createClient()
+    const { data: authors } = await supabase
+      .from('scientific_authors')
+      .select('slug, updated_at')
+    authorEntries = (authors ?? []).flatMap((author) => {
+      const lastmod = author.updated_at || undefined
+      const suffixes = ['', '/perfil']
+      return LOCALES.flatMap((lang) =>
+        suffixes.map((suffix) => ({
+          url: `${SITE_URL}/${lang}/cientificos/autores/${author.slug}${suffix}`,
+          lastModified: lastmod,
+          changeFrequency: 'monthly',
+          priority: 0.5,
+          alternates: {
+            languages: {
+              ...Object.fromEntries(
+                LOCALES.map((l) => [l, `${SITE_URL}/${l}/cientificos/autores/${author.slug}${suffix}`])
+              ),
+              'x-default': `${SITE_URL}/pt/cientificos/autores/${author.slug}${suffix}`,
+            },
+          },
+        }))
+      )
+    })
+  } catch {}
+
   return [
     ...staticEntries,
     ...articleEntries,
     ...eventEntries,
     ...liveEntries,
     ...scientificEntries,
+    ...authorEntries,
     ...drugEntries,
     ...protocolEntries,
     ...guideEntries,

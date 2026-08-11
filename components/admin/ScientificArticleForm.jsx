@@ -317,6 +317,12 @@ export default function ScientificArticleForm({
                       onChange={(e) => updateAuthor(index, 'avatarBg', e.target.value)}
                       className="admin-input" placeholder="#0a844f" />
                   </div>
+                  <div className="admin-form-group">
+                    <label>ORCID</label>
+                    <input type="text" value={author.orcid || ''}
+                      onChange={(e) => updateAuthor(index, 'orcid', e.target.value)}
+                      className="admin-input" placeholder="0000-0000-0000-0000" />
+                  </div>
                 </div>
                 <label className="admin-checkbox-label" style={{ marginTop: 8, fontWeight: 500 }}>
                   <input

@@ -94,16 +94,14 @@ export default function ArtigosPageClient({ articles, lang }) {
         </div>
       </section>
 
-      {/* Banner Artigos Científicos (variante A light) */}
-      <section className="section-padding pb-0">
-        <div className="container-center">
-          <ScientificBanner />
-        </div>
-      </section>
-
-      {/* Articles Grid */}
+      {/* Articles Grid — com o banner dos Científicos acima dos cards (fora do hero) */}
       <section className="section-padding bg-brand-bg-alt">
         <div className="container-center">
+          {/* Banner Artigos Científicos (variante A light) */}
+          <div className="mb-8">
+            <ScientificBanner />
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredArticles.map((article) => {
               const color = ARTICLE_CATEGORY_COLORS[article.category] || '#666'

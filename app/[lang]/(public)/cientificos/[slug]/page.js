@@ -7,6 +7,7 @@ import ScientificArticleContent from '@/components/content/ScientificArticleCont
 import CitationWidget from '@/components/content/CitationWidget'
 import ArticleLangToggle from '@/components/content/ArticleLangToggle'
 import AuthorMenu from '@/components/content/AuthorMenu'
+import ArticleViewCounter from '@/components/content/ArticleViewCounter'
 import ShareSection from '@/components/content/ShareSection'
 import { notFound } from 'next/navigation'
 
@@ -151,6 +152,9 @@ export default async function CientificoDetailPage({ params }) {
       </nav>
 
       <div className="sci-layout">
+        {/* Contador de leituras (mais lido) — renderiza nada, incrementa via RPC */}
+        <ArticleViewCounter articleId={article.id} />
+
         {/* ===== COLUNA PRINCIPAL 2/3 ===== */}
         <main className="sci-main">
           {/* Hero */}

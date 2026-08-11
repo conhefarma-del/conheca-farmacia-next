@@ -107,6 +107,19 @@ export default function CientificosAuthorPage({ author, articles = [], lang = 'p
                   <div className="sci-profile-value">✓</div>
                 </div>
               )}
+              {author.orcid && (
+                <div className="sci-profile-item">
+                  <div className="sci-profile-label">{tFn('cientifico_author.orcid')}</div>
+                  <a
+                    className="sci-profile-value sci-profile-orcid"
+                    href={`https://orcid.org/${author.orcid}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {author.orcid}
+                  </a>
+                </div>
+              )}
             </div>
 
             {/* Artigos publicados */}

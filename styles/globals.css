@@ -7413,6 +7413,12 @@ html.dark .admin-feedback-action.is-archive { color: #f87171; }
   color: var(--color-brand-deep);
   word-break: break-word;
 }
+.sci-profile-orcid {
+  color: var(--color-brand-accent);
+  text-decoration: none;
+  word-break: break-all;
+}
+.sci-profile-orcid:hover { text-decoration: underline; }
 .sci-profile-articles {
   display: flex;
   flex-direction: column;
@@ -7422,6 +7428,109 @@ html.dark .admin-feedback-action.is-archive { color: #f87171; }
   border-radius: 14px;
   padding: 10px;
 }
+
+/* ---- Ordenação (mais recentes / mais lidos) + contador de leituras ---- */
+.sci-sort-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-brand-deep);
+  opacity: 0.65;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.sci-sort-btn:hover {
+  opacity: 1;
+  background: var(--color-brand-bg-alt);
+}
+.sci-sort-btn.active {
+  background: var(--color-brand-primary);
+  color: #ffffff;
+  opacity: 1;
+}
+.sci-views {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+/* ---- Índice de autores (/cientificos/autores) ---- */
+.sci-authors-index-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+.sci-author-index-card {
+  background: var(--color-brand-card, #ffffff);
+  border: 1px solid var(--color-brand-divider);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: var(--shadow-soft);
+}
+.sci-author-index-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  min-width: 0;
+}
+.sci-author-index-main:hover .sci-author-index-name { text-decoration: underline; }
+.sci-author-index-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.sci-author-index-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-brand-deep);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sci-author-index-affil {
+  font-size: 12px;
+  color: var(--color-brand-deep);
+  opacity: 0.55;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sci-author-index-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-top: 1px solid var(--color-brand-divider);
+  padding-top: 12px;
+  flex-wrap: wrap;
+}
+.sci-author-index-links {
+  display: flex;
+  gap: 12px;
+}
+.sci-author-index-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-brand-accent);
+  text-decoration: none;
+}
+.sci-author-index-links a:hover { text-decoration: underline; }
 
 @media (max-width: 520px) {
   .sci-banner-link { flex-wrap: wrap; }

@@ -652,7 +652,10 @@
     "search_placeholder": "Search articles...",
     "no_results": "No scientific articles found.",
     "min_read": "min read",
-    "banner_desc": "Peer-reviewed academic publications with references and exportable citations"
+    "banner_desc": "Peer-reviewed academic publications with references and exportable citations",
+    "view_all_authors": "View all authors",
+    "sort_recent": "Most recent",
+    "sort_views": "Most read"
   },
   "cientifico_detail": {
     "abstract": "Abstract",
@@ -687,6 +690,19 @@
     "institution": "Institution",
     "department": "Department",
     "corresponding": "Corresponding author",
+    "orcid": "ORCID",
     "no_articles": "This author has no published articles."
+  },
+  "cientifico_autores": {
+    "title": "Authors",
+    "subtitle": "Search and explore the authors of the scientific articles.",
+    "search_placeholder": "Search authors...",
+    "filter_all": "All",
+    "filter_corresponding": "Corresponding",
+    "sort_az": "A–Z",
+    "sort_most_articles": "Most articles",
+    "no_results": "No authors found.",
+    "articles_count_one": "1 article",
+    "articles_count_other": "{count} articles"
   }
 }

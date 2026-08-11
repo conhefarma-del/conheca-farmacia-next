@@ -652,7 +652,10 @@
     "search_placeholder": "Pesquisar artigos...",
     "no_results": "Nenhum artigo científico encontrado.",
     "min_read": "min de leitura",
-    "banner_desc": "Publicações académicas com revisão, referências e citações exportáveis"
+    "banner_desc": "Publicações académicas com revisão, referências e citações exportáveis",
+    "view_all_authors": "Ver todos os autores",
+    "sort_recent": "Mais recentes",
+    "sort_views": "Mais lidos"
   },
   "cientifico_detail": {
     "abstract": "Resumo",
@@ -687,6 +690,19 @@
     "institution": "Instituição",
     "department": "Departamento",
     "corresponding": "Autor correspondente",
+    "orcid": "ORCID",
     "no_articles": "Este autor não tem artigos publicados."
+  },
+  "cientifico_autores": {
+    "title": "Autores",
+    "subtitle": "Pesquisa e explora os autores dos artigos científicos.",
+    "search_placeholder": "Pesquisar autores...",
+    "filter_all": "Todos",
+    "filter_corresponding": "Correspondentes",
+    "sort_az": "A–Z",
+    "sort_most_articles": "Mais artigos",
+    "no_results": "Nenhum autor encontrado.",
+    "articles_count_one": "1 artigo",
+    "articles_count_other": "{count} artigos"
   }
 }

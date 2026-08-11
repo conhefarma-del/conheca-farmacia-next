@@ -4,7 +4,7 @@ import { useState, useMemo, useContext } from 'react'
 import Link from 'next/link'
 import { LangContext } from '@/lib/contexts'
 import FilterButtons from '@/components/ui/FilterButtons'
-import { ArrowLeft, Search } from 'lucide-react'
+import { ArrowLeft, Search, Eye, Users } from 'lucide-react'
 
 function formatDate(dateStr, lang) {
   if (!dateStr) return ''
@@ -21,6 +21,7 @@ export default function CientificosPageClient({ articles = [], categories = [], 
   const { t } = useContext(LangContext)
   const [currentFilter, setCurrentFilter] = useState('all')
   const [searchTerm, setSearchTerm] = useState('')
+  const [sortMode, setSortMode] = useState('recent') // 'recent' | 'views'
 
   const categoriesObj = useMemo(() => {
     const o = {}
@@ -35,7 +36,7 @@ export default function CientificosPageClient({ articles = [], categories = [], 
   }, [categories])
 
   const filteredArticles = useMemo(() => {
-    return articles.filter((article) => {
+    const filtered = articles.filter((article) => {
       const matchesCategory = currentFilter === 'all' || article.category?.slug === currentFilter
       const matchesSearch =
         !searchTerm ||
@@ -44,7 +45,14 @@ export default function CientificosPageClient({ articles = [], categories = [], 
         (article.keywords || []).some((k) => k.toLowerCase().includes(searchTerm.toLowerCase()))
       return matchesCategory && matchesSearch
     })
-  }, [articles, currentFilter, searchTerm])
+    return filtered.sort((a, b) => {
+      if (sortMode === 'views') {
+        return (b.viewCount || 0) - (a.viewCount || 0)
+      }
+      // 'recent' — por data de publicação, mais recente primeiro
+      return new Date(b.date || 0) - new Date(a.date || 0)
+    })
+  }, [articles, currentFilter, searchTerm, sortMode])
 
   return (
     <>
@@ -121,6 +129,36 @@ export default function CientificosPageClient({ articles = [], categories = [], 
       {/* Grid de cards académicos */}
       <section className="bg-brand-bg-alt">
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-12">
+          {/* Barra acima dos cards: link para autores + ordenação (fora do hero) */}
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
+            <Link
+              href={`/${lang}/cientificos/autores`}
+              className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-brand-accent)] hover:underline"
+            >
+              <Users size={16} /> {t('cientificos_page.view_all_authors')}
+            </Link>
+            <div
+              className="inline-flex rounded-full border border-brand-divider overflow-hidden"
+              role="group"
+              aria-label="Ordenar artigos"
+            >
+              <button
+                type="button"
+                className={`sci-sort-btn ${sortMode === 'recent' ? 'active' : ''}`}
+                onClick={() => setSortMode('recent')}
+              >
+                {t('cientificos_page.sort_recent')}
+              </button>
+              <button
+                type="button"
+                className={`sci-sort-btn ${sortMode === 'views' ? 'active' : ''}`}
+                onClick={() => setSortMode('views')}
+              >
+                <Eye size={13} /> {t('cientificos_page.sort_views')}
+              </button>
+            </div>
+          </div>
+
           {filteredArticles.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredArticles.map((article) => {
@@ -165,6 +203,9 @@ export default function CientificosPageClient({ articles = [], categories = [], 
                           <span>{article.readTime} {t('cientificos_page.min_read')}</span>
                         </>
                       )}
+                      <span className="sci-views" title={t('cientificos_page.sort_views')}>
+                        <Eye size={12} /> {(article.viewCount || 0)}
+                      </span>
                       {authors.length > 0 && (
                         <div className="sci-authors-preview">
                           {authors.slice(0, 3).map((a, i) => (
