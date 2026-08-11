@@ -2,13 +2,14 @@
 
 import { useCallback, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Save, X, Plus, Trash2, Languages } from 'lucide-react'
+import { Save, X, Plus, Trash2, Languages, Sparkles } from 'lucide-react'
 import MarkdownEditor from '@/components/admin/MarkdownEditor'
 import ReferenceEditor from '@/components/admin/ReferenceEditor'
 import {
   createScientificArticle,
   updateScientificArticle,
   saveScientificTranslation,
+  autoTranslateScientificArticle,
 } from '@/lib/actions/scientific'
 
 function generateSlug(title) {
@@ -57,6 +58,7 @@ export default function ScientificArticleForm({
   const [enSaving, setEnSaving] = useState(false)
   const [enError, setEnError] = useState('')
   const [enSuccess, setEnSuccess] = useState('')
+  const [enAutoTranslating, setEnAutoTranslating] = useState(false)
 
   const [title, setTitle] = useState(initialData?.title || '')
   const [slug, setSlug] = useState(initialData?.slug || '')
@@ -169,6 +171,33 @@ export default function ScientificArticleForm({
       setEnSaving(false)
     }
   }, [initialData, enTitle, enSlug, enAbstract, enKeywords, enContent, enReferences])
+
+  const handleAutoTranslate = useCallback(async () => {
+    if (!initialData?.id || enAutoTranslating) return
+    setEnError('')
+    setEnSuccess('')
+    setEnAutoTranslating(true)
+    try {
+      const result = await autoTranslateScientificArticle(initialData.id)
+      if (result.success && result.translation) {
+        const t = result.translation
+        setEnTitle(t.title || '')
+        setEnSlug(t.slug || '')
+        setEnAbstract(t.abstract || '')
+        setEnKeywords(Array.isArray(t.keywords) ? t.keywords.join(', ') : '')
+        setEnContent(t.content || '')
+        setEnReferences(Array.isArray(t.references_arr) ? t.references_arr : [])
+        setEnSuccess('Tradução EN gerada com IA. Revê e guarda.')
+        router.refresh()
+      } else {
+        setEnError(result.error || 'Erro ao gerar tradução.')
+      }
+    } catch {
+      setEnError('Erro ao gerar tradução EN.')
+    } finally {
+      setEnAutoTranslating(false)
+    }
+  }, [initialData, enAutoTranslating, router])
 
   return (
     <>
@@ -347,13 +376,27 @@ export default function ScientificArticleForm({
         <section className="admin-section"
           style={{ marginTop: 48, padding: 24, background: 'var(--admin-card-bg, #f9fafb)', borderRadius: 8, border: '1px solid var(--admin-border, #e5e7eb)' }}>
           <details>
-            <summary style={{ cursor: 'pointer', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <summary style={{ cursor: 'pointer', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
               <Languages size={16} /> Tradução EN
               {translation ? (
                 <span className="admin-badge admin-badge-success" style={{ fontSize: 11 }}>✓ Traduzido</span>
               ) : (
                 <span className="admin-badge admin-badge-warning" style={{ fontSize: 11 }}>Por traduzir</span>
               )}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault()
+                  handleAutoTranslate()
+                }}
+                disabled={enAutoTranslating}
+                className="admin-btn admin-btn-secondary"
+                style={{ marginLeft: 'auto', padding: '6px 12px', fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                title="Gera a tradução EN com IA (OpenRouter) a partir do conteúdo PT"
+              >
+                <Sparkles size={14} />
+                {enAutoTranslating ? 'A traduzir...' : '✨ Auto-traduzir'}
+              </button>
             </summary>
             <form onSubmit={handleSaveEn} style={{ marginTop: 16 }}>
               <div className="admin-form-grid">
