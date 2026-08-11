@@ -71,6 +71,12 @@ export default function ScientificArticleForm({
     Array.isArray(initialData?.keywords) ? initialData.keywords.join(', ') : ''
   )
   const [doi, setDoi] = useState(initialData?.doi || '')
+  const [journal, setJournal] = useState(initialData?.journal || '')
+  const [volume, setVolume] = useState(initialData?.volume || '')
+  const [issue, setIssue] = useState(initialData?.issue || '')
+  const [pages, setPages] = useState(initialData?.pages || '')
+  const [license, setLicense] = useState(initialData?.license || '')
+  const [licenseUrl, setLicenseUrl] = useState(initialData?.licenseUrl || initialData?.license_url || '')
   const [authors, setAuthors] = useState(() => {
     const arr = Array.isArray(initialData?.authors) ? initialData.authors : []
     return arr.length ? arr.map((a) => ({ ...EMPTY_AUTHOR, ...a })) : [{ ...EMPTY_AUTHOR }]
@@ -120,6 +126,7 @@ export default function ScientificArticleForm({
     const formData = {
       title, slug, category_id: categoryId, status, featured,
       abstract, keywords, doi,
+      journal, volume, issue, pages, license, license_url: licenseUrl,
       authors: authors.filter((a) => a.name || a.institution),
       content, references,
       published_at: publishedAt ? new Date(publishedAt + 'T00:00:00').toISOString() : null,
@@ -144,7 +151,7 @@ export default function ScientificArticleForm({
     } finally {
       setSaving(false)
     }
-  }, [title, slug, categoryId, status, featured, abstract, keywords, doi, authors, content, references, publishedAt, readTime, mode, initialData, router, lang])
+  }, [title, slug, categoryId, status, featured, abstract, keywords, doi, journal, volume, issue, pages, license, licenseUrl, authors, content, references, publishedAt, readTime, mode, initialData, router, lang])
 
   const handleSaveEn = useCallback(async (e) => {
     e.preventDefault()
@@ -263,6 +270,48 @@ export default function ScientificArticleForm({
             <label htmlFor="sci-doi">DOI</label>
             <input id="sci-doi" type="text" value={doi} onChange={(e) => setDoi(e.target.value)}
               className="admin-input" placeholder="10.xxxx/xxxx" />
+          </div>
+        </div>
+
+        <div className="admin-form-section-label">Fonte original e licença (caixa “Sobre este artigo”)</div>
+        <div className="admin-form-grid">
+          <div className="admin-form-group">
+            <label htmlFor="sci-journal">Revista</label>
+            <input id="sci-journal" type="text" value={journal}
+              onChange={(e) => setJournal(e.target.value)}
+              className="admin-input" placeholder="Antibiotics" />
+          </div>
+          <div className="admin-form-group">
+            <label htmlFor="sci-volume">Volume</label>
+            <input id="sci-volume" type="text" value={volume}
+              onChange={(e) => setVolume(e.target.value)}
+              className="admin-input" placeholder="11" />
+          </div>
+          <div className="admin-form-group">
+            <label htmlFor="sci-issue">Número</label>
+            <input id="sci-issue" type="text" value={issue}
+              onChange={(e) => setIssue(e.target.value)}
+              className="admin-input" placeholder="10" />
+          </div>
+          <div className="admin-form-group">
+            <label htmlFor="sci-pages">Páginas</label>
+            <input id="sci-pages" type="text" value={pages}
+              onChange={(e) => setPages(e.target.value)}
+              className="admin-input" placeholder="1410" />
+          </div>
+        </div>
+        <div className="admin-form-grid">
+          <div className="admin-form-group">
+            <label htmlFor="sci-license">Licença</label>
+            <input id="sci-license" type="text" value={license}
+              onChange={(e) => setLicense(e.target.value)}
+              className="admin-input" placeholder="CC BY 4.0" />
+          </div>
+          <div className="admin-form-group">
+            <label htmlFor="sci-license-url">URL da licença</label>
+            <input id="sci-license-url" type="text" value={licenseUrl}
+              onChange={(e) => setLicenseUrl(e.target.value)}
+              className="admin-input" placeholder="https://creativecommons.org/licenses/by/4.0/" />
           </div>
         </div>
 

@@ -38,7 +38,7 @@ export default function ToolsShowcase({ lang = 'pt', tFn }) {
   ]
 
   return (
-    <section className="section-padding bg-brand-bg">
+    <section className="section-padding tools-showcase">
       <div className="container-center">
         <h2 className="section-title text-3xl font-bold text-center mb-4">
           {tFn('home.tools_title')}

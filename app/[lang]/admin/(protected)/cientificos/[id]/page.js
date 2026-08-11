@@ -6,7 +6,7 @@ import { normalizeScientificArticle, getScientificCategories } from '@/lib/api/s
 export const dynamic = 'force-dynamic'
 
 const FULL_COLUMNS =
-  'id, slug, title, abstract, keywords, category_id, doi, authors, content, references_arr, read_time, status, featured, published_at, is_archived, scientific_categories(slug, name_pt, name_en, color)'
+  'id, slug, title, abstract, keywords, category_id, doi, authors, content, references_arr, read_time, status, featured, published_at, is_archived, journal, volume, issue, pages, license, license_url, scientific_categories(slug, name_pt, name_en, color)'
 
 export default async function EditCientificoPage({ params }) {
   const { lang, id } = await params

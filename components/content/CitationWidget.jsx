@@ -3,9 +3,9 @@
 import { useState, useContext } from 'react'
 import { LangContext } from '@/lib/contexts'
 import { formatCitation } from '@/lib/citation'
-import { Copy, Check } from 'lucide-react'
+import { Copy, Check, Download } from 'lucide-react'
 
-const STYLES = ['abnt', 'apa', 'vancouver']
+const STYLES = ['abnt', 'apa', 'vancouver', 'ris', 'bibtex']
 
 /**
  * CitationWidget — citação do artigo em ABNT/APA/Vancouver + copiar.
@@ -17,6 +17,24 @@ export default function CitationWidget({ article, url }) {
   const [copied, setCopied] = useState(false)
 
   const citation = formatCitation(article, style, url)
+  const isFileStyle = style === 'ris' || style === 'bibtex'
+  const fileName = `${article.slug || 'artigo-cientifico'}.${style === 'ris' ? 'ris' : 'bib'}`
+
+  const handleDownload = () => {
+    try {
+      const blob = new Blob([citation], { type: 'text/plain;charset=utf-8' })
+      const href = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = href
+      a.download = fileName
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(href)
+    } catch {
+      // silencioso
+    }
+  }
 
   const handleCopy = async () => {
     try {
@@ -61,6 +79,11 @@ export default function CitationWidget({ article, url }) {
           {copied ? <Check size={14} /> : <Copy size={14} />}
           {copied ? t('cientifico_detail.copied') : t('cientifico_detail.copy_citation')}
         </button>
+        {isFileStyle && (
+          <button type="button" className="citation-copy-btn" onClick={handleDownload}>
+            <Download size={14} /> {t('cientifico_detail.download')}
+          </button>
+        )}
       </div>
     </div>
   )

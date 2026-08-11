@@ -677,7 +677,15 @@
     "back_to_cientificos": "Scientific Articles",
     "min_read": "min read",
     "author_articles": "Author's articles",
-    "author_profile": "View profile"
+    "author_profile": "View profile",
+    "back_to_text": "Back to text",
+    "ris": "RIS",
+    "bibtex": "BibTeX",
+    "download": "Download",
+    "about_article": "About this article",
+    "original_source": "Original source",
+    "license": "License",
+    "translation_note": "Translated and adapted from the original article by the Conheça Farmácia editorial team for educational purposes. Always consult the original article as the authoritative source."
   },
   "cientifico_author": {
     "back_to_cientificos": "← Back to Scientific Articles",

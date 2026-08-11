@@ -1,5 +1,7 @@
 import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
 import { getScientificArticleBySlug, getScientificArticles } from '@/lib/api/scientific-articles'
+import { linkReferenceText } from '@/lib/utils/reference-links'
+import { buildCoins } from '@/lib/citation'
 import { buildBreadcrumbSchema, buildScholarlyArticleSchema } from '@/lib/seo'
 import { SITE_URL } from '@/lib/constants'
 import Breadcrumb from '@/components/ui/Breadcrumb'
@@ -108,6 +110,8 @@ export default async function CientificoDetailPage({ params }) {
   const articleUrl = `${SITE_URL}/${safeLang}/cientificos/${article.slug}`
   // Citação usa o URL PT canónico (independente da língua renderizada)
   const citationUrl = `${SITE_URL}/pt/cientificos/${langSlugs.pt}`
+  // COinS (Zotero captura a citação automaticamente)
+  const coins = buildCoins(article, citationUrl)
 
   // TOC gerado dos h2 do corpo
   const headings = extractHeadings(article.content)
@@ -224,6 +228,61 @@ export default async function CientificoDetailPage({ params }) {
             </div>
           )}
 
+          {/* Sobre este artigo — fonte original, DOI, licença e nota de tradução */}
+          {(article.journal || article.doi || article.license) && (
+            <section className="sci-about-box">
+              <div className="sci-about-title">{tFn('cientifico_detail.about_article')}</div>
+              <dl className="sci-about-grid">
+                {article.journal && (
+                  <div className="sci-about-row">
+                    <dt>{tFn('cientifico_detail.original_source')}</dt>
+                    <dd>
+                      {article.journal}
+                      {article.volume ? ` · ${article.volume}${article.issue ? `(${article.issue})` : ''}` : ''}
+                      {article.pages ? ` · ${article.pages}` : ''}
+                      {article.date ? ` · ${article.date.slice(0, 4)}` : ''}
+                    </dd>
+                  </div>
+                )}
+                {article.doi && (
+                  <div className="sci-about-row">
+                    <dt>DOI</dt>
+                    <dd>
+                      <a
+                        href={`https://doi.org/${article.doi}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="sci-about-doi"
+                      >
+                        {article.doi}
+                      </a>
+                    </dd>
+                  </div>
+                )}
+                {article.license && (
+                  <div className="sci-about-row">
+                    <dt>{tFn('cientifico_detail.license')}</dt>
+                    <dd>
+                      {article.licenseUrl ? (
+                        <a
+                          href={article.licenseUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="sci-about-license"
+                        >
+                          {article.license}
+                        </a>
+                      ) : (
+                        article.license
+                      )}
+                    </dd>
+                  </div>
+                )}
+              </dl>
+              <p className="sci-about-note">{tFn('cientifico_detail.translation_note')}</p>
+            </section>
+          )}
+
           {/* Keywords */}
           {(article.keywords || []).length > 0 && (
             <div className="sci-keywords-row">
@@ -234,20 +293,33 @@ export default async function CientificoDetailPage({ params }) {
           )}
 
           {/* Corpo do artigo */}
-          <article className="sci-body">
+          <article className="sci-body" id="sci-body">
             <ScientificArticleContent content={article.content} />
           </article>
+
+          {/* COinS — invisível; o Zotero usa <span class="Z3988"> para capturar a citação */}
+          <span className="Z3988" title={coins} aria-hidden="true" />
 
           {/* Citação */}
           <CitationWidget article={article} url={citationUrl} />
 
-          {/* Referências */}
+          {/* Referências — com ids (#ref-n para as citações [n] do corpo) e DOI/PMID ligados */}
           {(article.references || []).length > 0 && (
             <section className="sci-references-section">
               <div className="sci-section-title">{tFn('cientifico_detail.references')}</div>
               <ul className="sci-references-list">
                 {article.references.map((ref, i) => (
-                  <li key={i}>{ref}</li>
+                  <li key={i} id={`ref-${i + 1}`} className="sci-reference-item">
+                    <span dangerouslySetInnerHTML={{ __html: linkReferenceText(ref) }} />
+                    <a
+                      href="#sci-body"
+                      className="sci-ref-back"
+                      title={tFn('cientifico_detail.back_to_text')}
+                      aria-label={tFn('cientifico_detail.back_to_text')}
+                    >
+                      ↑
+                    </a>
+                  </li>
                 ))}
               </ul>
             </section>

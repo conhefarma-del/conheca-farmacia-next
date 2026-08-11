@@ -677,7 +677,15 @@
     "back_to_cientificos": "Artigos Científicos",
     "min_read": "min de leitura",
     "author_articles": "Artigos do autor",
-    "author_profile": "Ver perfil"
+    "author_profile": "Ver perfil",
+    "back_to_text": "Voltar ao texto",
+    "ris": "RIS",
+    "bibtex": "BibTeX",
+    "download": "Baixar",
+    "about_article": "Sobre este artigo",
+    "original_source": "Fonte original",
+    "license": "Licença",
+    "translation_note": "Traduzido e adaptado para português pela equipa editorial da Conheça Farmácia, para fins educativos. Consulte sempre o artigo original como fonte autoritativa."
   },
   "cientifico_author": {
     "back_to_cientificos": "← Voltar para Artigos Científicos",

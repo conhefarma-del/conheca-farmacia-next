@@ -6884,6 +6884,61 @@ html.dark .admin-feedback-action.is-archive { color: #f87171; }
   margin-bottom: 28px;
   border-top: 4px solid var(--color-brand-accent);
 }
+.sci-about-box {
+  background: var(--color-brand-bg);
+  border: 1px solid var(--color-brand-divider);
+  border-radius: 14px;
+  padding: 20px 24px;
+  margin-bottom: 28px;
+}
+.sci-about-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-brand-accent);
+  margin-bottom: 12px;
+}
+.sci-about-grid {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sci-about-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+.sci-about-row dt {
+  min-width: 108px;
+  font-weight: 600;
+  color: var(--color-brand-deep);
+}
+.sci-about-row dd {
+  margin: 0;
+  color: var(--color-brand-text);
+}
+.sci-about-doi,
+.sci-about-license {
+  color: var(--color-brand-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.sci-about-doi:hover,
+.sci-about-license:hover {
+  opacity: 0.8;
+}
+.sci-about-note {
+  margin: 14px 0 0;
+  padding-top: 12px;
+  border-top: 1px dashed var(--color-brand-divider);
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--color-brand-muted);
+}
 .sci-abstract-label {
   font-size: 11px;
   font-weight: 700;
@@ -7082,6 +7137,38 @@ html.dark .admin-feedback-action.is-archive { color: #f87171; }
   position: relative;
   color: var(--color-brand-deep);
 }
+.sci-reference-item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.sci-reference-item > span { min-width: 0; }
+.sci-ref-link {
+  color: var(--color-brand-accent);
+  text-decoration: none;
+  word-break: break-all;
+}
+.sci-ref-link:hover { text-decoration: underline; }
+.sci-ref-back {
+  flex-shrink: 0;
+  color: var(--color-brand-accent);
+  text-decoration: none;
+  font-size: 12px;
+  opacity: 0.55;
+}
+.sci-ref-back:hover { opacity: 1; }
+
+/* Citações [n] no corpo → referência */
+.sci-cite {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-brand-accent);
+  text-decoration: none;
+  vertical-align: super;
+  line-height: 0;
+  margin: 0 1px;
+}
+.sci-cite:hover { text-decoration: underline; }
 .sci-references-list li::before {
   content: '—';
   position: absolute;
@@ -7472,7 +7559,18 @@ html.dark .admin-feedback-action.is-archive { color: #f87171; }
   padding: 10px;
 }
 
-/* ---- Homepage: ferramentas + científicos em destaque (cards pequenos) ---- */
+/* ---- Homepage: ferramentas + científicos em destaque (cards pequenos) ----
+   Fundo com tinta verde para não parecer continuação do hero (branco). */
+.tools-showcase {
+  background: #f2f8f4;
+  border-top: 1px solid rgba(10, 132, 79, 0.12);
+  border-bottom: 1px solid rgba(10, 132, 79, 0.12);
+}
+html.dark .tools-showcase {
+  background: #0e1613;
+  border-top: 1px solid rgba(13, 153, 95, 0.18);
+  border-bottom: 1px solid rgba(13, 153, 95, 0.18);
+}
 .tools-card {
   position: relative;
   display: flex;

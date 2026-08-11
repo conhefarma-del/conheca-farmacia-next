@@ -1930,6 +1930,17 @@ select.admin-input {
   }
 }
 
+.admin-form-section-label {
+  margin: 8px 0 14px;
+  padding-top: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--admin-text-muted);
+  border-top: 1px solid var(--admin-border, #e5e7eb);
+}
+
 .admin-form-group {
   margin-bottom: 20px;
 }

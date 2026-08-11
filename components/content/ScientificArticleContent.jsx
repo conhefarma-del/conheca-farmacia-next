@@ -24,6 +24,42 @@ const renderer = {
 }
 marked.use({ renderer })
 
+// Citações [n], [1,2] ou [1-3] no texto → links para #ref-n (referências vivas).
+// Apenas nós de texto fora de <a>/<h1..h6> (não toca links nem títulos).
+const CITE_RE = /\[(\d{1,2}(?:[,-]\s*\d{1,2})*)\]/g
+
+function linkCitations(container) {
+  const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT)
+  const targets = []
+  while (walker.nextNode()) {
+    const node = walker.currentNode
+    const parent = node.parentElement
+    if (!parent || parent.closest('a, h1, h2, h3, h4, h5, h6, script, style')) continue
+    CITE_RE.lastIndex = 0
+    if (CITE_RE.test(node.nodeValue || '')) targets.push(node)
+  }
+
+  for (const node of targets) {
+    const text = node.nodeValue || ''
+    CITE_RE.lastIndex = 0
+    const frag = document.createDocumentFragment()
+    let last = 0
+    let m
+    while ((m = CITE_RE.exec(text)) !== null) {
+      if (m.index > last) frag.appendChild(document.createTextNode(text.slice(last, m.index)))
+      const first = m[1].replace(/\s/g, '').split(/[,-]/)[0]
+      const a = document.createElement('a')
+      a.href = `#ref-${first}`
+      a.className = 'sci-cite'
+      a.textContent = m[0]
+      frag.appendChild(a)
+      last = m.index + m[0].length
+    }
+    if (last < text.length) frag.appendChild(document.createTextNode(text.slice(last)))
+    node.parentNode.replaceChild(frag, node)
+  }
+}
+
 // DOMPurify: bloquear javascript:/data: URLs e obrigar target=_blank em links
 DOMPurify.addHook('afterSanitizeAttributes', (node) => {
   if (node.tagName === 'IMG') {
@@ -62,6 +98,8 @@ export default function ScientificArticleContent({ content }) {
       ADD_ATTR: ['src', 'alt', 'loading', 'id'],
     })
     containerRef.current.innerHTML = clean
+    // Referências vivas: [n] no corpo → link para a referência correspondente
+    linkCitations(containerRef.current)
   }, [content])
 
   return <div ref={containerRef} className="sci-article-body max-w-none" />
