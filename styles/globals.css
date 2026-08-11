@@ -7089,6 +7089,47 @@ html.dark .admin-feedback-action.is-archive { color: #f87171; }
   color: var(--color-brand-accent);
 }
 
+/* Artigos relacionados (secção após as referências) */
+.sci-related-section {
+  border-top: 1px solid var(--color-brand-divider);
+  padding-top: 28px;
+  margin-top: 48px;
+}
+.sci-related-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+.sci-related-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--color-brand-card, #ffffff);
+  border: 1px solid var(--color-brand-divider);
+  border-radius: 12px;
+  padding: 14px 16px;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.sci-related-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+.sci-related-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--color-brand-deep);
+}
+.sci-related-card-meta {
+  display: flex;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--color-brand-deep);
+  opacity: 0.5;
+  flex-wrap: wrap;
+}
+
 /* Sidebar */
 .sci-sidebar { position: sticky; top: 90px; }
 .sci-sidebar-card {
@@ -7149,6 +7190,8 @@ html.dark .admin-feedback-action.is-archive { color: #f87171; }
 @media (max-width: 840px) {
   .sci-layout { grid-template-columns: 1fr; gap: 32px; }
   .sci-sidebar { position: static; }
+  /* DOI e Tópicos ficam ocultos no mobile (a sidebar colapsa abaixo do conteúdo) */
+  .sci-sidebar-hide-mobile { display: none; }
 }
 
 /* ---- Banner Artigos Científicos em /artigos (variante A light) ---- */

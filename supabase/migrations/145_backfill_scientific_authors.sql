@@ -85,10 +85,9 @@ BEGIN
         -- Regra 3: instituições conhecidas e diferentes → autor novo (slug único)
         v_base_slug := btrim(
           regexp_replace(
-            regexp_replace(v_name, E'[\u0300-\u036f]', '', 'g'),
+            regexp_replace(lower(v_name), E'[\u0300-\u036f]', '', 'g'),
             E'[^a-z0-9]+', '-', 'g'),
           '-');
-        v_base_slug := lower(v_base_slug);
         IF v_base_slug = '' THEN v_base_slug := 'autor'; END IF;
 
         v_slug   := v_base_slug;

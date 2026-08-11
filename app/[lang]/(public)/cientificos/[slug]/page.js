@@ -252,19 +252,51 @@ export default async function CientificoDetailPage({ params }) {
               </ul>
             </section>
           )}
+
+          {/* Artigos relacionados — após as referências (mesma categoria) */}
+          {related.length > 0 && (
+            <section className="sci-related-section">
+              <div className="sci-section-title">{tFn('cientifico_detail.related')}</div>
+              <div className="sci-related-cards">
+                {related.map((r) => {
+                  const rCat = r.category
+                  const rColor = rCat?.color || '#0a844f'
+                  return (
+                    <Link key={r.slug} href={`/${safeLang}/cientificos/${r.slug}`} className="sci-related-card">
+                      {rCat && (
+                        <span className="sci-category-badge" style={{ background: `${rColor}1a`, color: rColor }}>
+                          {rCat.name}
+                        </span>
+                      )}
+                      <h3 className="sci-related-card-title">{r.title}</h3>
+                      <div className="sci-related-card-meta">
+                        <time>{formatDate(r.date, safeLang)}</time>
+                        {r.readTime && (
+                          <>
+                            <span>·</span>
+                            <span>{r.readTime} {tFn('cientifico_detail.min_read')}</span>
+                          </>
+                        )}
+                      </div>
+                    </Link>
+                  )
+                })}
+              </div>
+            </section>
+          )}
         </main>
 
         {/* ===== SIDEBAR 1/3 ===== */}
         <aside className="sci-sidebar">
           {article.doi && (
-            <div className="sci-sidebar-card">
+            <div className="sci-sidebar-card sci-sidebar-hide-mobile">
               <div className="sci-sidebar-label">{tFn('cientifico_detail.doi')}</div>
               <div className="sci-doi-box">{article.doi}</div>
             </div>
           )}
 
           {headings.length > 0 && (
-            <div className="sci-sidebar-card">
+            <div className="sci-sidebar-card sci-sidebar-hide-mobile">
               <div className="sci-sidebar-label">{tFn('cientifico_detail.topics')}</div>
               <div className="sci-toc-list">
                 {headings.map((h) => (
@@ -283,19 +315,6 @@ export default async function CientificoDetailPage({ params }) {
               url={articleUrl}
             />
           </div>
-
-          {related.length > 0 && (
-            <div className="sci-sidebar-card">
-              <div className="sci-sidebar-label">{tFn('cientifico_detail.related')}</div>
-              <div className="sci-related-list">
-                {related.map((r) => (
-                  <a key={r.slug} href={`/${safeLang}/cientificos/${r.slug}`} className="sci-related-item">
-                    {r.title}
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
         </aside>
       </div>
     </>
