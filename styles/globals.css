@@ -7715,7 +7715,7 @@ html.dark .tools-showcase {
   margin-top: 4px;
 }
 .tools-calc-icon {
-  width: 52px;
+  width: 60px;
   height: 52px;
   flex-shrink: 0;
   gap: 1px;
@@ -7747,6 +7747,25 @@ html.dark .tools-showcase {
 }
 .tools-card-calculator:hover .tools-calc-cta {
   gap: 10px;
+}
+
+/* --- ToolsShowcase: ecrãs muito pequenos --- */
+@media (max-width: 420px) {
+  /* Fila dos cards pequenos: 1 coluna para não esmagar as descrições */
+  .tools-showcase .grid.grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 380px) {
+  /* Calculadora: ícone por cima, texto com a largura toda */
+  .tools-card-calculator {
+    padding: 18px 16px;
+  }
+  .tools-calc-main {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
 }
 
 /* ---- Ordenação (mais recentes / mais lidos) + contador de leituras ---- */
