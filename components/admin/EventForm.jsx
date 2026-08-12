@@ -227,6 +227,29 @@ export default function EventForm({ mode = 'create', initialData = null, lang = 
         <small className="admin-field-hint" style={{ display: 'block', marginTop: 4, color: 'var(--admin-text-muted)', fontSize: 12 }}>
           Opcional — mostra um mapa interativo na página do evento. No Google Maps: <b>Partilhar → Incorporar um mapa</b> e copie o <code>src</code> do iframe (começa por <code>https://www.google.com/maps/embed?pb=...</code>).
         </small>
+        {locationMapsEmbedUrl && (
+          (() => {
+            const isValidEmbed = /^https?:\/\/(www\.)?google\.(com|\w+)\/maps\/embed[^\s]*$/i.test(locationMapsEmbedUrl)
+            return isValidEmbed ? (
+              <div className="event-map-embed" style={{ marginTop: 12, maxWidth: 560 }}>
+                <iframe
+                  src={locationMapsEmbedUrl}
+                  title="Pré-visualização do mapa"
+                  width="100%"
+                  height="240"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  allowFullScreen
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+              </div>
+            ) : (
+              <p className="admin-field-hint" style={{ marginTop: 8, color: '#b45309', fontSize: 12 }}>
+                ⚠ O URL não parece um embed válido do Google Maps. Use <b>Partilhar → Incorporar um mapa</b> e copie o endereço que começa por <code>https://www.google.com/maps/embed?pb=...</code>
+              </p>
+            )
+          })()
+        )}
       </div>
 
       <div className="admin-form-grid">
