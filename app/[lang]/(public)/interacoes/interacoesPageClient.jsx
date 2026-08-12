@@ -27,6 +27,7 @@ import {
   X,
 } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
+import { getInteractionDetail } from '@/lib/actions/interacoes'
 import FeedbackBox from '@/components/feedback/FeedbackBox'
 
 // Secção FAQ da calculadora — lazy-loaded (fica abaixo da dobra, conteúdo estático).
@@ -171,6 +172,24 @@ export default function InteracoesPageClient({
   const [focused, setFocused] = useState(false)
   const [copied, setCopied] = useState(false)
   const [copiedSummary, setCopiedSummary] = useState(false)
+
+  // Detalhe das interações (P2): buscado sob demanda ao expandir um cartão.
+  // detailById[interactionId] = { explanation, mechanism, … } | null (falha).
+  const [detailById, setDetailById] = useState({})
+  const [loadingDetailIds, setLoadingDetailIds] = useState([])
+
+  const loadDetail = async (interactionId) => {
+    if (loadingDetailIds.includes(interactionId) || detailById[interactionId]) return
+    setLoadingDetailIds((prev) => [...prev, interactionId])
+    try {
+      const d = await getInteractionDetail(interactionId, lang)
+      setDetailById((prev) => ({ ...prev, [interactionId]: d }))
+    } catch {
+      setDetailById((prev) => ({ ...prev, [interactionId]: null }))
+    } finally {
+      setLoadingDetailIds((prev) => prev.filter((id) => id !== interactionId))
+    }
+  }
 
   // Interação reportada pelo botão "reportar" em cada cartão.
   const [report, setReport] = useState(null) // { interactionType, interactionId, label }
@@ -644,11 +663,8 @@ export default function InteracoesPageClient({
                         const inter = pair.interaction
                         const severity = inter ? inter.severity : 'unknown'
                         const Icon = SEVERITY_META[severity].icon
-                        const hasDetails = inter && (
-                          inter.explanation || inter.summaryPro ||
-                          inter.mechanism || inter.monitoring || inter.redFlags ||
-                          inter.management || inter.source
-                        )
+                        const hasDetails = !!inter && inter.hasDetails
+                        const detail = inter ? detailById[inter.id] : null
 
                         return (
                           <div key={`${pair.a}-${pair.b}`} className={`interaction-card is-${severity}`}>
@@ -686,60 +702,73 @@ export default function InteracoesPageClient({
                               {inter ? inter.summary : t('interacoes_page.sem_registo_desc')}
                             </p>
 
-                            {hasDetails && (
-                              <details className="card-details" onToggle={scrollDetailsIntoView}>
+                            {hasDetails && inter && (
+                              <details
+                                className="card-details"
+                                onToggle={(e) => {
+                                  scrollDetailsIntoView(e)
+                                  if (e.currentTarget.open && !detailById[inter.id]) {
+                                    loadDetail(inter.id)
+                                  }
+                                }}
+                              >
                                 <summary className="card-toggle">
                                   {t('interacoes_page.expandir')}
                                   <ChevronDown size={14} aria-hidden="true" />
                                 </summary>
                                 <div className="interaction-detail">
-                                  {inter.explanation && (
+                                  {loadingDetailIds.includes(inter.id) && !detail && (
+                                    <p className="detail-loading">
+                                      {t('interacoes_page.detalhe_a_carregar')}
+                                    </p>
+                                  )}
+                                  {detail && detail.explanation && (
                                     <div className="detail-block detail-explanation">
                                       <h4 className="detail-title">{t('interacoes_page.explicacao')}</h4>
-                                      <p>{inter.explanation}</p>
+                                      <p>{detail.explanation}</p>
                                     </div>
                                   )}
-                                  {inter.summaryPro && (
+                                  {detail && detail.summaryPro && (
                                     <div className="detail-block">
                                       <h4 className="detail-title">{t('interacoes_page.resumo_profissionais')}</h4>
-                                      <p>{inter.summaryPro}</p>
+                                      <p>{detail.summaryPro}</p>
                                     </div>
                                   )}
-                                  {inter.mechanism && (
+                                  {detail && detail.mechanism && (
                                     <div className="detail-block">
                                       <h4 className="detail-title">{t('interacoes_page.mecanismo')}</h4>
-                                      <p>{inter.mechanism}</p>
+                                      <p>{detail.mechanism}</p>
                                     </div>
                                   )}
-                                  {inter.monitoring && (
+                                  {detail && detail.monitoring && (
                                     <div className="detail-block">
                                       <h4 className="detail-title">{t('interacoes_page.monitorizacao')}</h4>
-                                      <p>{inter.monitoring}</p>
+                                      <p>{detail.monitoring}</p>
                                     </div>
                                   )}
-                                  {inter.redFlags && (
+                                  {detail && detail.redFlags && (
                                     <div className="detail-block detail-red-flags">
                                       <h4 className="detail-title">
                                         <ShieldAlert size={13} aria-hidden="true" />
                                         {t('interacoes_page.sinais_alerta')}
                                       </h4>
-                                      <p>{inter.redFlags}</p>
+                                      <p>{detail.redFlags}</p>
                                     </div>
                                   )}
-                                  {inter.management && (
+                                  {detail && detail.management && (
                                     <div className="detail-block detail-recommendation">
                                       <h4 className="detail-title">{t('interacoes_page.recomendacao')}</h4>
-                                      <p>{inter.management}</p>
+                                      <p>{detail.management}</p>
                                     </div>
                                   )}
-                                  {inter.source && (
+                                  {detail && detail.source && (
                                     <div className="detail-block detail-source">
                                       <h4 className="detail-title">{t('interacoes_page.fonte')}</h4>
                                       <p>
-                                        {inter.source}
-                                        {inter.sourceUrl && (
+                                        {detail.source}
+                                        {detail.sourceUrl && (
                                           <a
-                                            href={inter.sourceUrl}
+                                            href={detail.sourceUrl}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                           >

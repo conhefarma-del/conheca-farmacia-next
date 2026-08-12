@@ -549,7 +549,8 @@
     "lactacao": "Breastfeeding",
     "contracepcao": "Contraception",
     "fonte_emcuk": "EMC-UK — Summaries of Product Characteristics (MHRA, UK)",
-    "fonte_healthcanada": "Health Canada — Product Monographs (DPD)"
+    "fonte_healthcanada": "Health Canada — Product Monographs (DPD)",
+    "detalhe_a_carregar": "Loading details…"
   },
   "medicamentos_page": {
     "hero_title": "Medicines",

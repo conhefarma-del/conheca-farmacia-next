@@ -1,9 +1,9 @@
+import dynamic from 'next/dynamic'
 import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
 import { getFeaturedArticles } from '@/lib/api/articles'
 import { getFeaturedEvents } from '@/lib/api/events'
 import { getFeaturedLives } from '@/lib/api/lives'
 import { buildOrganizationSchema, buildWebSiteSchema } from '@/lib/seo'
-import HeroAnimated from '@/components/home/HeroAnimated'
 import ToolsShowcase from '@/components/home/ToolsShowcase'
 import FeaturedArticles from '@/components/home/FeaturedArticles'
 import FeaturedEvents from '@/components/home/FeaturedEvents'
@@ -12,6 +12,31 @@ import StatsSection from '@/components/home/StatsSection'
 
 
 export const revalidate = 3600
+
+// Hero animado — lazy-loaded (P3): o gsap fica num chunk separado e deixa de
+// fazer parte do bundle inicial. O fallback replica a estrutura exata do hero
+// (mesmas classes/dimensões) para não causar CLS enquanto o chunk carrega.
+const HeroAnimated = dynamic(
+  () => import('@/components/home/HeroAnimated'),
+  {
+    loading: () => (
+      <div className="hero-animated" aria-hidden="true">
+        <div className="hero-ticker-top">
+          <span className="hero-ticker-text hero-ticker-text--skeleton" />
+          <span className="hero-ticker-text hero-ticker-text--prominent hero-ticker-text--skeleton" />
+        </div>
+        <div className="hero-animated-card">
+          <div className="hero-animated-icon hero-animated-icon--skeleton" />
+          <span className="hero-animated-text hero-animated-text--skeleton" />
+        </div>
+        <div className="hero-ticker-bottom">
+          <span className="hero-ticker-text hero-ticker-text--prominent hero-ticker-text--skeleton" />
+          <span className="hero-ticker-text hero-ticker-text--skeleton" />
+        </div>
+      </div>
+    ),
+  }
+)
 
 export async function generateMetadata({ params }) {
   const { lang } = await params

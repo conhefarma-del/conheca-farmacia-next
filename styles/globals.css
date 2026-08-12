@@ -224,7 +224,36 @@ html.dark .form-note {
     transform: scale(1.28);
   }
 
+  /* Skeleton do HeroAnimated (P3) — replica a estrutura real para não causar CLS */
+  .hero-ticker-text--skeleton {
+    display: inline-block;
+    width: 128px;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--color-brand-divider);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  .hero-animated-icon--skeleton {
+    background: rgba(255, 255, 255, 0.25);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  .hero-animated-text--skeleton {
+    display: inline-block;
+    width: 220px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.25);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
   @media (max-width: 767px) {
+    .hero-animated-text--skeleton {
+      width: 140px;
+      height: 20px;
+    }
+  }
     .hero-animated-card {
       padding: 1.5rem 2rem;
       min-height: 100px;
@@ -969,6 +998,9 @@ html.dark .form-note {
 
   .share-bar {
     @apply flex items-center justify-center gap-3 flex-wrap;
+    /* Evita que os botões (flex-shrink:0) forcem o min-content do pai em
+       grid/flex — em contêineres estreitos a barra rola ou embrulha. */
+    max-width: 100%;
   }
 
   .share-btn {
@@ -5686,6 +5718,14 @@ html { scroll-behavior: smooth; }
   gap: 12px;
 }
 
+.detail-loading {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-brand-deep);
+  opacity: 0.55;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
 .detail-block p {
   font-size: 13px;
   line-height: 1.6;
@@ -7356,7 +7396,11 @@ html.dark .admin-feedback-action.is-archive { color: #f87171; }
 }
 
 /* Sidebar */
-.sci-sidebar { position: sticky; top: 90px; }
+/* min-width: 0 — o sidebar é grid item do .sci-layout; sem isto, a track 1fr
+   (= minmax(auto,1fr)) nunca encolhe abaixo do min-content do sidebar (a
+   .share-bar com botões flex-shrink:0 tem min-content ~480px) e a página
+   inteira alarga-se para ~590px no mobile (overflow horizontal). */
+.sci-sidebar { position: sticky; top: 90px; min-width: 0; }
 .sci-sidebar-card {
   background: var(--color-brand-card, #ffffff);
   border-radius: 14px;

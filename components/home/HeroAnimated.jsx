@@ -41,6 +41,7 @@ const REPEAT_DELAY = CYCLE_INTERVAL - EXIT_DURATION - SLIDE_IN_DURATION - HOLD_D
  */
 export default function HeroAnimated() {
   const { t } = useContext(LangContext)
+  const rootRef = useRef(null)
   const t2Ref = useRef(null)
   const t1Ref = useRef(null)
   const cardIconRef = useRef(null)
@@ -55,13 +56,14 @@ export default function HeroAnimated() {
       '(prefers-reduced-motion: reduce)'
     ).matches
 
+    const rootEl = rootRef.current
     const t2 = t2Ref.current
     const t1 = t1Ref.current
     const cardIcon = cardIconRef.current
     const cardText = cardTextRef.current
     const b1 = b1Ref.current
     const b2 = b2Ref.current
-    if (!t2 || !t1 || !cardIcon || !cardText || !b1 || !b2) return
+    if (!rootEl || !t2 || !t1 || !cardIcon || !cardText || !b1 || !b2) return
 
     const total = PHRASES.length
     let currentIndex = 0
@@ -209,7 +211,32 @@ export default function HeroAnimated() {
     }
 
     buildIteration()
-    tl.play(0)
+
+    // P3: a animação só corre quando o hero está visível. O IntersectionObserver
+    // arranca a timeline na primeira vez que o hero entra no ecrã e pausa sempre
+    // que sai — o loop infinito deixa de ocupar a main thread durante o scroll.
+    let hasStarted = false
+    let isInView = false
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          isInView = entry.isIntersecting
+          if (isInView) {
+            if (!hasStarted) {
+              hasStarted = true
+              tl.play(0)
+            } else if (!document.hidden) {
+              tl.resume()
+            }
+          } else {
+            tl.pause()
+          }
+        }
+      },
+      { threshold: 0 }
+    )
+    io.observe(rootEl)
 
     const onRepeat = () => {
       tl.clear()
@@ -220,19 +247,20 @@ export default function HeroAnimated() {
 
     const onVis = () => {
       if (document.hidden) tl.pause()
-      else tl.resume()
+      else if (isInView) tl.resume()
     }
     document.addEventListener('visibilitychange', onVis)
 
     return () => {
       tl.kill()
       tl.eventCallback('onRepeat', null)
+      io.disconnect()
       document.removeEventListener('visibilitychange', onVis)
     }
   }, [t])
 
   return (
-    <div className="hero-animated" aria-label="Serviços principais">
+    <div ref={rootRef} className="hero-animated" aria-label="Serviços principais">
       <div className="hero-ticker-top" aria-hidden="true">
         <span ref={t2Ref} className="hero-ticker-text"></span>
         <span ref={t1Ref} className="hero-ticker-text hero-ticker-text--prominent"></span>

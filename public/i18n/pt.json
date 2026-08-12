@@ -549,7 +549,8 @@
     "lactacao": "Amamentação",
     "contracepcao": "Contraceção",
     "fonte_emcuk": "EMC-UK — resumos das características do medicamento (MHRA, Reino Unido)",
-    "fonte_healthcanada": "Health Canada — monografias de produtos (DPD)"
+    "fonte_healthcanada": "Health Canada — monografias de produtos (DPD)",
+    "detalhe_a_carregar": "A carregar o detalhe…"
   },
   "medicamentos_page": {
     "hero_title": "Medicamentos",
