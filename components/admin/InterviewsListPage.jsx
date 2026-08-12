@@ -3,7 +3,7 @@
 import { useState, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Pencil, Trash2, Plus, Search, Archive, ArchiveRestore } from 'lucide-react'
+import { Pencil, Trash2, Plus, Search, Archive, ArchiveRestore, Eye } from 'lucide-react'
 import { escapeHtml } from '@/lib/security'
 import { deleteInterview, toggleInterviewStatus, archiveInterview, restoreInterview } from '@/lib/actions/content'
 import ConfirmModal from '@/components/admin/ConfirmModal'
@@ -48,6 +48,8 @@ export default function InterviewsListPage({ interviews = [], stats, lang = 'pt'
         case 'date-desc': return new Date(b.date || 0) - new Date(a.date || 0)
         case 'title-asc': return (a.title || '').localeCompare(b.title || '', 'pt')
         case 'title-desc': return (b.title || '').localeCompare(a.title || '', 'pt')
+        case 'views-desc': return (b.view_count || 0) - (a.view_count || 0)
+        case 'views-asc': return (a.view_count || 0) - (b.view_count || 0)
         default: return 0
       }
     })
@@ -128,6 +130,8 @@ export default function InterviewsListPage({ interviews = [], stats, lang = 'pt'
         <select className="admin-select" value={sortField} onChange={(e) => setSortField(e.target.value)}>
           <option value="date-desc">Mais recentes</option>
           <option value="date-asc">Mais antigos</option>
+          <option value="views-desc">Mais vistas</option>
+          <option value="views-asc">Menos vistas</option>
           <option value="title-asc">Título A-Z</option>
           <option value="title-desc">Título Z-A</option>
         </select>
@@ -160,6 +164,7 @@ export default function InterviewsListPage({ interviews = [], stats, lang = 'pt'
                   <th>Entrevistado</th>
                   <th>Categoria</th>
                   <th>Data</th>
+                  <th>Views</th>
                   <th>Status</th>
                   <th>Ações</th>
                 </tr>
@@ -171,6 +176,12 @@ export default function InterviewsListPage({ interviews = [], stats, lang = 'pt'
                     <td>{escapeHtml(i.interviewee?.name || '-')}</td>
                     <td>{escapeHtml(i.category_label || i.category || '-')}</td>
                     <td>{formatDate(i.date)}</td>
+                    <td>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
+                        <Eye size={13} style={{ color: 'var(--admin-text-muted)' }} />
+                        {i.view_count || 0}
+                      </span>
+                    </td>
                     <td>
                       <button
                         className={`admin-status-badge ${i.status === 'published' ? 'admin-status-published' : 'admin-status-draft'}`}
