@@ -112,7 +112,14 @@
     "tools_title": "Ferramentas em destaque",
     "tools_subtitle": "Explora, pesquisa e aprende — as ferramentas da Conheça Farmácia ao teu alcance.",
     "calculator_badge": "Em destaque",
-    "calculator_cta": "Abrir calculadora"
+    "calculator_cta": "Abrir calculadora",
+    "stats_eyebrow": "Conheça Farmácia",
+    "stats_title_pre": "Conhecimento",
+    "stats_title_accent": "que transforma",
+    "stats_title_post": "a prática farmacêutica",
+    "stats_subtitle": "Conteúdo rigoroso, formações especializadas e uma comunidade que cresce todos os dias.",
+    "stats_join_prefix": "Junte-se à comunidade →",
+    "stats_join_link": "Inscreva-se na newsletter"
   },
   "sobre": {
     "hero_title": "Sobre Nós",

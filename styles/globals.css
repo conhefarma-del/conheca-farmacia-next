@@ -797,38 +797,137 @@ html.dark .form-note {
     @apply flex items-center gap-2 text-sm text-brand-deep/70 mb-1;
   }
 
-  /* Stats Section */
+  /* Stats Section — motivo farmacêutico (variante C) */
   .stats-section {
-    @apply bg-brand-primary py-20 text-white;
+    @apply relative overflow-hidden bg-brand-bg-alt py-24;
   }
 
-  .stats-grid {
-    @apply grid grid-cols-2 md:grid-cols-4 gap-8 text-center;
+  .stats-motif {
+    @apply absolute inset-0 pointer-events-none;
+    opacity: 0.5;
   }
 
-  .stat-item .stat-number {
-    @apply text-4xl md:text-5xl font-bold text-white mb-2 block;
+  .stats-pill {
+    @apply absolute block;
+    animation: stats-float 9s ease-in-out infinite;
   }
 
-  .stat-item .stat-label {
-    @apply text-white/70 text-sm md:text-base font-medium;
+  .stats-pill--1 { --stats-pill-rot: -18deg; top: 12%; left: 6%; animation-duration: 9s; }
+  .stats-pill--2 { --stats-pill-rot: 24deg; top: 68%; right: 5%; animation-duration: 11s; animation-delay: -3s; }
+  .stats-pill--3 { --stats-pill-rot: -8deg; bottom: 8%; left: 22%; animation-duration: 10s; animation-delay: -6s; }
+
+  @keyframes stats-float {
+    0%, 100% { transform: rotate(var(--stats-pill-rot, 0deg)) translateY(0); }
+    50%      { transform: rotate(var(--stats-pill-rot, 0deg)) translateY(-12px); }
   }
 
-  /* Stats Section new */
-  .stat-item {
-    @apply flex flex-col items-center gap-2;
+  .stats-pill-body {
+    @apply flex overflow-hidden rounded-full;
+    width: 88px;
+    height: 34px;
+    box-shadow: 0 6px 18px rgba(0, 42, 50, 0.12);
   }
 
-  .stat-item .stat-icon {
-    @apply w-10 h-10 text-brand-accent mb-1;
+  .stats-pill-half { flex: 1; }
+  .stats-pill-half--a { background: var(--color-brand-accent); }
+  .stats-pill-half--b { background: #dbece4; }
+
+  .stats-cross {
+    @apply absolute;
+    top: 22%;
+    right: 14%;
+    width: 26px;
+    height: 26px;
+    opacity: 0.14;
+    animation: stats-cross-pulse 6s ease-in-out infinite;
   }
 
-  .stat-item .stat-label {
-    @apply text-white font-semibold text-base md:text-lg;
+  @keyframes stats-cross-pulse {
+    0%, 100% { transform: scale(1); opacity: 0.14; }
+    50%      { transform: scale(1.15); opacity: 0.2; }
   }
 
-  .stat-item .stat-desc {
-    @apply text-white/70 text-sm;
+  .stats-cross::before,
+  .stats-cross::after {
+    content: "";
+    @apply absolute bg-brand-accent rounded-sm;
+  }
+
+  .stats-cross::before { left: 11px; top: 0; width: 4px; height: 26px; }
+  .stats-cross::after { top: 11px; left: 0; width: 26px; height: 4px; }
+
+  .stats-head {
+    @apply text-center max-w-[640px] mx-auto mb-14 relative;
+    z-index: 2;
+  }
+
+  .stats-eyebrow {
+    @apply inline-block text-[11.5px] tracking-[0.22em] uppercase font-extrabold text-brand-accent;
+  }
+
+  .stats-title {
+    @apply mt-3.5 text-3xl md:text-4xl font-extrabold text-brand-deep tracking-tight leading-tight;
+  }
+
+  .stats-accent {
+    @apply text-brand-accent;
+  }
+
+  .stats-subtitle {
+    @apply mt-3.5 text-[15.5px] text-brand-deep/60;
+  }
+
+  .stats-tiles {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 relative;
+    z-index: 2;
+  }
+
+  .stats-tile {
+    @apply bg-brand-card rounded-[20px] p-7 text-center;
+    box-shadow: 0 2px 12px rgba(0, 42, 50, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .stats-tile:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 36px rgba(0, 42, 50, 0.1);
+  }
+
+  .stats-tile-icon {
+    @apply w-14 h-14 mx-auto mb-4 rounded-[18px] grid place-items-center;
+    background: linear-gradient(135deg, #e8f7ef, #d5efe1);
+    color: var(--color-brand-accent);
+  }
+
+  .stats-tile h3 {
+    @apply text-base font-extrabold text-brand-deep;
+  }
+
+  .stats-tile p {
+    @apply text-[13px] text-brand-deep/60 mt-2 leading-relaxed;
+  }
+
+  .stats-join {
+    @apply text-center mt-12 text-sm font-semibold text-brand-primary relative;
+    z-index: 2;
+  }
+
+  .stats-join a {
+    @apply text-brand-accent font-bold;
+    border-bottom: 1px solid rgba(10, 132, 79, 0.35);
+  }
+
+  .stats-join a:hover {
+    @apply text-brand-accent/80;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stats-pill {
+      animation: none !important;
+    }
+    .stats-cross {
+      animation: none !important;
+    }
   }
 
   /* Footer */
