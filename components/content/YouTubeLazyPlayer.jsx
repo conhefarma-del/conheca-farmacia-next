@@ -11,6 +11,10 @@ import { Play } from 'lucide-react'
 export default function YouTubeLazyPlayer({ videoId, thumbnailUrl, title = '' }) {
   const [playing, setPlaying] = useState(false)
 
+  // Guard defensivo: sem videoId o player não é renderizado (a página já
+  // condiciona, mas o componente não deve quebrar sozinho).
+  if (!videoId) return null
+
   const thumb = thumbnailUrl || `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
 
   if (playing) {
