@@ -1599,6 +1599,18 @@ html.dark .form-note {
     @apply flex flex-col;
   }
 
+  .event-map-embed {
+    @apply overflow-hidden rounded-xl;
+    box-shadow: 0 1px 4px rgba(0, 42, 50, 0.08);
+  }
+
+  .event-map-embed iframe {
+    display: block;
+    width: 100%;
+    height: 320px;
+    border: 0;
+  }
+
   .event-capacity-section {
     @apply bg-brand-bg-alt rounded-2xl p-8;
   }

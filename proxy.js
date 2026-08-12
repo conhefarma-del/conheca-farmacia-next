@@ -44,6 +44,7 @@ export async function proxy(request) {
     `img-src 'self' data: blob: https://*.supabase.co https://vercel.live`,
     `font-src 'self' https://fonts.gstatic.com`,
     `connect-src 'self' https://*.supabase.co https://vercel.live`,
+    `frame-src https://www.google.com https://maps.google.com`,
     `frame-ancestors 'none'`,
     `object-src 'none'`,
     `base-uri 'self'`,

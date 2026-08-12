@@ -230,7 +230,8 @@
     "not_found_title": "Evento não encontrado",
     "not_found_text": "Desculpe, não conseguimos encontrar o evento que procura.",
     "back_to_events": "Voltar aos Eventos",
-    "open_in_maps": "Abrir no Google Maps"
+    "open_in_maps": "Abrir no Google Maps",
+    "map_title": "Mapa do evento"
   },
   "live_detail": {
     "quick_access": "Acesso Rápido",

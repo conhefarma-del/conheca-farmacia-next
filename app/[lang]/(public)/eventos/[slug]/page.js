@@ -329,6 +329,22 @@ export default async function EventDetailPage({ params }) {
                       </p>
                     </div>
                   </div>
+
+                  {/* Embedded Google Maps (only when admin provides an embed URL) */}
+                  {event.locationMapsEmbedUrl && (
+                    <div className="event-map-embed mt-8">
+                      <iframe
+                        src={event.locationMapsEmbedUrl}
+                        title={tFn('evento_detail.map_title') || 'Mapa do evento'}
+                        width="100%"
+                        height="320"
+                        style={{ border: 0 }}
+                        loading="lazy"
+                        allowFullScreen
+                        referrerPolicy="no-referrer-when-downgrade"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {/* Capacity Information */}

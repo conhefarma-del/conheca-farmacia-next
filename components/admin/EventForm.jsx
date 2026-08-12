@@ -46,6 +46,7 @@ export default function EventForm({ mode = 'create', initialData = null, lang = 
   const [endTime, setEndTime] = useState(initialData?.end_time || '')
   const [location, setLocation] = useState(initialData?.location || '')
   const [locationMapsUrl, setLocationMapsUrl] = useState(initialData?.location_maps_url || '')
+  const [locationMapsEmbedUrl, setLocationMapsEmbedUrl] = useState(initialData?.location_maps_embed_url || '')
   const [type, setType] = useState(initialData?.type || '')
   const [capacity, setCapacity] = useState(initialData?.capacity || '')
   const [registrationLink, setRegistrationLink] = useState(initialData?.registration_link || '')
@@ -83,7 +84,8 @@ export default function EventForm({ mode = 'create', initialData = null, lang = 
 
     const formData = {
       title, slug, category, category_label: categoryLabel, status, featured_langs: featuredLangs,
-      excerpt, date, time, end_time: endTime, location, location_maps_url: locationMapsUrl, type, capacity,
+      excerpt, date, time, end_time: endTime, location, location_maps_url: locationMapsUrl,
+      location_maps_embed_url: locationMapsEmbedUrl, type, capacity,
       registration_link: registrationLink, image_url: imageUrl, hosts,
       // Campos de certificado
       certificado_cor: certificadoCor,
@@ -112,7 +114,7 @@ export default function EventForm({ mode = 'create', initialData = null, lang = 
       setSaving(false)
     }
   }, [title, slug, category, status, featuredLangs, excerpt, date, time, endTime,
-    location, locationMapsUrl, type, capacity, registrationLink, imageUrl, hosts,
+    location, locationMapsUrl, locationMapsEmbedUrl, type, capacity, registrationLink, imageUrl, hosts,
     certificadoCor, certificadoTexto, certificadoLogoUrl, certificadoCargaHoraria,
     assinante1Nome, assinante1Cargo, assinante2Nome, assinante2Cargo,
     mode, initialData, router, lang])
@@ -215,6 +217,15 @@ export default function EventForm({ mode = 'create', initialData = null, lang = 
           className="admin-input" placeholder="https://maps.app.goo.gl/... ou https://www.google.com/maps?q=..." />
         <small className="admin-field-hint" style={{ display: 'block', marginTop: 4, color: 'var(--admin-text-muted)', fontSize: 12 }}>
           Coloque aqui o link do Google Maps com a localização exata — os inscritos poderão abri-lo a partir da página do evento.
+        </small>
+      </div>
+
+      <div className="admin-form-group">
+        <label>Mapa embutido Google Maps (opcional)</label>
+        <input type="url" value={locationMapsEmbedUrl} onChange={(e) => setLocationMapsEmbedUrl(e.target.value)}
+          className="admin-input" placeholder="https://www.google.com/maps/embed?pb=..." />
+        <small className="admin-field-hint" style={{ display: 'block', marginTop: 4, color: 'var(--admin-text-muted)', fontSize: 12 }}>
+          Opcional — mostra um mapa interativo na página do evento. No Google Maps: <b>Partilhar → Incorporar um mapa</b> e copie o <code>src</code> do iframe (começa por <code>https://www.google.com/maps/embed?pb=...</code>).
         </small>
       </div>
 
