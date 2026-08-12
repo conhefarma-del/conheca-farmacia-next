@@ -156,6 +156,38 @@ export default async function InterviewDetailPage({ params }) {
 
           <InterviewViewCounter interviewId={interview.id} />
 
+          {/* Entrevistado + Entrevistador — abaixo do tema, padrão Autores (científicos) */}
+          {(interviewee.name || interviewer.name) && (
+            <section className="interview-people-section">
+              <div className="interview-people-grid">
+                {interviewee.name && (
+                  <div className="interview-person-card">
+                    <span className="avatar" style={{ background: interviewee.avatarBg || color, width: 44, height: 44, fontSize: 16 }}>
+                      {(interviewee.avatar || (interviewee.name || '?')[0]).toUpperCase()}
+                    </span>
+                    <div className="interview-people-info">
+                      <span className="interview-people-label">{tFn('entrevista_detail.interviewee')}</span>
+                      <div className="interview-people-name">{interviewee.name}</div>
+                      {interviewee.role && <div className="interview-people-role">{interviewee.role}</div>}
+                    </div>
+                  </div>
+                )}
+                {interviewer.name && (
+                  <div className="interview-person-card">
+                    <span className="avatar" style={{ background: interviewer.avatarBg || '#0a844f', width: 44, height: 44, fontSize: 16 }}>
+                      {(interviewer.avatar || (interviewer.name || '?')[0]).toUpperCase()}
+                    </span>
+                    <div className="interview-people-info">
+                      <span className="interview-people-label">{tFn('entrevista_detail.interviewer')}</span>
+                      <div className="interview-people-name">{interviewer.name}</div>
+                      {interviewer.role && <div className="interview-people-role">{interviewer.role}</div>}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
           {/* Vídeo (condicional) */}
           {interview.videoId && (
             <YouTubeLazyPlayer
@@ -204,17 +236,6 @@ export default async function InterviewDetailPage({ params }) {
             </section>
           )}
 
-          {/* Referências */}
-          {Array.isArray(interview.references) && interview.references.filter(Boolean).length > 0 && (
-            <section className="interview-references">
-              <h2>{tFn('entrevista_detail.references')}</h2>
-              <ul>
-                {interview.references.filter(Boolean).map((ref, i) => (
-                  <li key={i}>{ref}</li>
-                ))}
-              </ul>
-            </section>
-          )}
         </div>
 
         {/* SIDEBAR 1/3 */}

@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useContext } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Search, Clock, Video, Mic, Play, Eye } from 'lucide-react'
+import { Search, Clock, Video, Mic, Play, Eye } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
 
 const CATEGORIES = [
@@ -18,7 +18,7 @@ function formatDate(dateStr, lang) {
   return new Date(dateStr).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })
 }
 
-export default function EntrevistasPageClient({ interviews = [], lang = 'pt', backHref = '/pt/artigos', backLabel = '← Voltar para Artigos' }) {
+export default function EntrevistasPageClient({ interviews = [], lang = 'pt' }) {
   const { t } = useContext(LangContext)
   const [currentFilter, setCurrentFilter] = useState('all')
   const [searchTerm, setSearchTerm] = useState('')
@@ -37,16 +37,6 @@ export default function EntrevistasPageClient({ interviews = [], lang = 'pt', ba
 
   return (
     <>
-      {/* ← Voltar para Artigos */}
-      <div className="max-w-[1400px] mx-auto px-6 md:px-12 pt-6">
-        <Link
-          href={backHref}
-          className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-brand-accent)] hover:underline"
-        >
-          <ArrowLeft size={16} /> {backLabel}
-        </Link>
-      </div>
-
       {/* Hero — mesma altura que /eventos, com pesquisa + filtros dentro (como /artigos) */}
       <section className="events-hero">
         <div className="container-center">
@@ -79,6 +69,7 @@ export default function EntrevistasPageClient({ interviews = [], lang = 'pt', ba
               <button
                 type="button"
                 className={`filter-btn ${currentFilter === 'all' ? 'active' : ''}`}
+                style={currentFilter === 'all' ? { background: '#0a844f', borderColor: '#0a844f' } : undefined}
                 onClick={() => setCurrentFilter('all')}
               >
                 {t('entrevistas_page.filter_all')}

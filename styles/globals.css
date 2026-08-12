@@ -797,64 +797,19 @@ html.dark .form-note {
     @apply flex items-center gap-2 text-sm text-brand-deep/70 mb-1;
   }
 
-  /* Stats Section — motivo farmacêutico (variante C) */
+  /* Stats Section — fundo alinhado ao ToolsShowcase (#f2f8f4 + bordas verdes) */
   .stats-section {
-    @apply relative overflow-hidden bg-brand-bg-alt py-24;
+    @apply relative overflow-hidden py-24;
+    background: #f2f8f4;
+    border-top: 1px solid rgba(10, 132, 79, 0.12);
+    border-bottom: 1px solid rgba(10, 132, 79, 0.12);
   }
 
-  .stats-motif {
-    @apply absolute inset-0 pointer-events-none;
-    opacity: 0.5;
+  html.dark .stats-section {
+    background: #0e1613;
+    border-top: 1px solid rgba(13, 153, 95, 0.18);
+    border-bottom: 1px solid rgba(13, 153, 95, 0.18);
   }
-
-  .stats-pill {
-    @apply absolute block;
-    animation: stats-float 9s ease-in-out infinite;
-  }
-
-  .stats-pill--1 { --stats-pill-rot: -18deg; top: 12%; left: 6%; animation-duration: 9s; }
-  .stats-pill--2 { --stats-pill-rot: 24deg; top: 68%; right: 5%; animation-duration: 11s; animation-delay: -3s; }
-  .stats-pill--3 { --stats-pill-rot: -8deg; bottom: 8%; left: 22%; animation-duration: 10s; animation-delay: -6s; }
-
-  @keyframes stats-float {
-    0%, 100% { transform: rotate(var(--stats-pill-rot, 0deg)) translateY(0); }
-    50%      { transform: rotate(var(--stats-pill-rot, 0deg)) translateY(-12px); }
-  }
-
-  .stats-pill-body {
-    @apply flex overflow-hidden rounded-full;
-    width: 88px;
-    height: 34px;
-    box-shadow: 0 6px 18px rgba(0, 42, 50, 0.12);
-  }
-
-  .stats-pill-half { flex: 1; }
-  .stats-pill-half--a { background: var(--color-brand-accent); }
-  .stats-pill-half--b { background: #dbece4; }
-
-  .stats-cross {
-    @apply absolute;
-    top: 22%;
-    right: 14%;
-    width: 26px;
-    height: 26px;
-    opacity: 0.14;
-    animation: stats-cross-pulse 6s ease-in-out infinite;
-  }
-
-  @keyframes stats-cross-pulse {
-    0%, 100% { transform: scale(1); opacity: 0.14; }
-    50%      { transform: scale(1.15); opacity: 0.2; }
-  }
-
-  .stats-cross::before,
-  .stats-cross::after {
-    content: "";
-    @apply absolute bg-brand-accent rounded-sm;
-  }
-
-  .stats-cross::before { left: 11px; top: 0; width: 4px; height: 26px; }
-  .stats-cross::after { top: 11px; left: 0; width: 26px; height: 4px; }
 
   .stats-head {
     @apply text-center max-w-[640px] mx-auto mb-14 relative;
@@ -922,15 +877,6 @@ html.dark .form-note {
 
   .stats-newsletter-privacy {
     @apply mt-4 text-xs text-brand-deep/50;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .stats-pill {
-      animation: none !important;
-    }
-    .stats-cross {
-      animation: none !important;
-    }
   }
 
   /* Footer */
@@ -8404,7 +8350,7 @@ html.dark .tools-showcase {
   border-radius: 14px;
   padding: 22px 24px;
   margin-bottom: 32px;
-  border-left: 4px solid var(--color-brand-accent);
+  border-top: 4px solid var(--color-brand-accent);
 }
 .interview-summary-label {
   display: block;
@@ -8424,12 +8370,23 @@ html.dark .tools-showcase {
 }
 
 .interview-pull-quote {
+  position: relative;
   padding: 28px 32px;
   margin: 32px 0;
   border-radius: 14px;
   background: var(--color-brand-card, #ffffff);
   border: 1px solid var(--color-brand-divider);
-  border-left: 4px solid var(--color-brand-accent);
+}
+.interview-pull-quote::before {
+  content: '"';
+  position: absolute;
+  top: -8px;
+  left: 20px;
+  font-size: 72px;
+  line-height: 1;
+  color: var(--color-brand-accent);
+  opacity: 0.25;
+  font-family: Georgia, serif;
 }
 .interview-pull-quote p {
   font-size: 20px;
@@ -8453,6 +8410,55 @@ html.dark .tools-showcase {
   margin-bottom: 32px;
   min-width: 0;
   overflow-wrap: break-word;
+}
+
+/* Entrevistado + Entrevistador — abaixo do tema (padrão Autores dos científicos) */
+.interview-people-section {
+  margin-bottom: 40px;
+}
+.interview-people-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
+  gap: 10px;
+}
+.interview-person-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--color-brand-card, #ffffff);
+  border-radius: 12px;
+  border: 1px solid var(--color-brand-divider);
+  min-width: 0;
+}
+.interview-people-info {
+  min-width: 0;
+}
+.interview-people-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-brand-deep);
+  opacity: 0.4;
+  margin-bottom: 2px;
+}
+.interview-people-name {
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--color-brand-deep);
+}
+.interview-people-role {
+  font-size: 12px;
+  color: var(--color-brand-deep);
+  opacity: 0.55;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .interview-qa-section {
@@ -8501,42 +8507,6 @@ html.dark .tools-showcase {
   color: var(--color-brand-deep);
   opacity: 0.78;
   padding-left: 32px;
-}
-
-.interview-references {
-  border-top: 1px solid var(--color-brand-divider);
-  padding-top: 28px;
-  margin-top: 48px;
-  min-width: 0;
-  overflow-wrap: break-word;
-}
-.interview-references > h2 {
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-brand-deep);
-  opacity: 0.5;
-  margin-bottom: 14px;
-}
-.interview-references ul {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 0;
-  margin: 0;
-}
-.interview-references li {
-  font-size: 13px;
-  padding-left: 18px;
-  position: relative;
-}
-.interview-references li::before {
-  content: '—';
-  position: absolute;
-  left: 0;
-  color: var(--color-brand-accent);
 }
 
 /* Sidebar */

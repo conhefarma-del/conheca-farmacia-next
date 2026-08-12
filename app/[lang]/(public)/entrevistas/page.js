@@ -1,7 +1,6 @@
 import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
 import { getInterviews } from '@/lib/api/interviews'
 import EntrevistasPageClient from '@/components/pages/EntrevistasPageClient'
-import { getSectionHref } from '@/lib/i18n-routes'
 
 export const revalidate = 3600
 
@@ -35,8 +34,6 @@ export default async function EntrevistasPage({ params }) {
     <EntrevistasPageClient
       interviews={interviews}
       lang={safeLang}
-      backHref={getSectionHref(safeLang, 'artigos')}
-      backLabel={tFn('entrevistas_page.back_to_artigos')}
     />
   )
 }
