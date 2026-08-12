@@ -46,6 +46,21 @@ function extractYouTubeId(value) {
 }
 
 /**
+ * Converte um link do Spotify (track/album/playlist/episode/show) no URL de
+ * embed correspondente, para o preview do admin. Devolve null se não for.
+ */
+function parseSpotifyUrl(url) {
+  if (!url) return null
+  const m = String(url).match(/open\.spotify\.com\/(track|album|playlist|episode|show)\/([A-Za-z0-9]+)/)
+  if (!m) return null
+  return {
+    kind: m[1],
+    id: m[2],
+    embed: `https://open.spotify.com/embed/${m[1]}/${m[2]}`,
+  }
+}
+
+/**
  * Carrega a YouTube IFrame API uma única vez (script externo).
  * Devolve Promise<YT>; rejeita se o ambiente não tem window ou o script falha.
  */
@@ -440,6 +455,29 @@ export default function InterviewForm({ mode = 'create', initialData = null, lan
           />
         </div>
       )}
+
+      {/* Preview do áudio — ao vivo, para validar o URL/Spotify antes de guardar */}
+      {audioUrl && (() => {
+        const spotify = parseSpotifyUrl(audioUrl)
+        return spotify ? (
+          <div className="admin-video-preview" style={{ maxWidth: 480, marginTop: 12 }}>
+            <iframe
+              src={spotify.embed}
+              title="Pré-visualização do áudio no Spotify"
+              width="100%"
+              height={spotify.kind === 'track' ? 152 : 352}
+              style={{ border: 0, borderRadius: 12 }}
+              loading="lazy"
+              allow="encrypted-media; autoplay; clipboard-write"
+              allowFullScreen
+            />
+          </div>
+        ) : (
+          <div className="admin-video-preview" style={{ maxWidth: 480, marginTop: 12 }}>
+            <audio controls preload="none" src={audioUrl} style={{ width: '100%', display: 'block' }} />
+          </div>
+        )
+      })()}
 
       {/* Entrevistado */}
       <div style={{ marginTop: 24, marginBottom: 16, borderTop: '1px solid var(--admin-border)', paddingTop: 20 }}>
