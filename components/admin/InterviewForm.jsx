@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Save, X, Plus, Trash2 } from 'lucide-react'
 import { createInterview, updateInterview } from '@/lib/actions/content'
+import { parseAudioEmbed } from '@/lib/utils/audio-embed'
 
 const CATEGORIES = [
   { value: 'profissionais', label: 'Profissionais', color: '#ff6c23' },
@@ -43,21 +44,6 @@ function extractYouTubeId(value) {
   if (vParam) return vParam[1]
 
   return ''
-}
-
-/**
- * Converte um link do Spotify (track/album/playlist/episode/show) no URL de
- * embed correspondente, para o preview do admin. Devolve null se não for.
- */
-function parseSpotifyUrl(url) {
-  if (!url) return null
-  const m = String(url).match(/open\.spotify\.com\/(track|album|playlist|episode|show)\/([A-Za-z0-9]+)/)
-  if (!m) return null
-  return {
-    kind: m[1],
-    id: m[2],
-    embed: `https://open.spotify.com/embed/${m[1]}/${m[2]}`,
-  }
 }
 
 /**
@@ -435,7 +421,7 @@ export default function InterviewForm({ mode = 'create', initialData = null, lan
         <div className="admin-form-group">
           <label>Áudio URL (só quando não há vídeo)</label>
           <input type="url" value={audioUrl} onChange={(e) => setAudioUrl(e.target.value)}
-            className="admin-input" placeholder="MP3 no Supabase Storage, ou link do Spotify (track/album/playlist/episode/show)" />
+            className="admin-input" placeholder="MP3 no Supabase Storage, ou link do Spotify/SoundCloud/YouTube Music" />
         </div>
       </div>
 
@@ -458,14 +444,14 @@ export default function InterviewForm({ mode = 'create', initialData = null, lan
 
       {/* Preview do áudio — ao vivo, para validar o URL/Spotify antes de guardar */}
       {audioUrl && (() => {
-        const spotify = parseSpotifyUrl(audioUrl)
-        return spotify ? (
+        const embed = parseAudioEmbed(audioUrl)
+        return embed ? (
           <div className="admin-video-preview" style={{ maxWidth: 480, marginTop: 12 }}>
             <iframe
-              src={spotify.embed}
-              title="Pré-visualização do áudio no Spotify"
+              src={embed.embed}
+              title={`Pré-visualização do áudio (${embed.type})`}
               width="100%"
-              height={spotify.kind === 'track' ? 152 : 352}
+              height={embed.height}
               style={{ border: 0, borderRadius: 12 }}
               loading="lazy"
               allow="encrypted-media; autoplay; clipboard-write"
