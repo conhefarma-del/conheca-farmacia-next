@@ -1,9 +1,9 @@
 'use client'
 
 import { useContext } from 'react'
-import Link from 'next/link'
 import { LangContext } from '@/lib/contexts'
 import { BookOpen, Calendar, Video, Mail } from 'lucide-react'
+import NewsletterForm from '@/components/ui/NewsletterForm'
 
 const FEATURES = [
   {
@@ -29,7 +29,7 @@ const FEATURES = [
 ]
 
 export default function StatsSection() {
-  const { t, lang } = useContext(LangContext)
+  const { t } = useContext(LangContext)
 
   return (
     <section className="stats-section">
@@ -70,12 +70,12 @@ export default function StatsSection() {
           ))}
         </div>
 
-        <p className="stats-join">
-          {t('home.stats_join_prefix')}{' '}
-          <Link href={`/${lang}/artigos`}>
-            {t('home.stats_join_link')}
-          </Link>
-        </p>
+        <div className="stats-newsletter">
+          <h3 className="stats-newsletter-title">{t('home.stats_newsletter_title')}</h3>
+          <p className="stats-newsletter-sub">{t('home.stats_newsletter_sub')}</p>
+          <NewsletterForm keys="home" variant="light" />
+          <p className="stats-newsletter-privacy">{t('home.newsletter_privacy')}</p>
+        </div>
       </div>
     </section>
   )

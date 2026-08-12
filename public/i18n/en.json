@@ -118,8 +118,15 @@
     "stats_title_accent": "transforms",
     "stats_title_post": "pharmaceutical practice",
     "stats_subtitle": "Rigorous content, specialized training, and a community that grows every day.",
-    "stats_join_prefix": "Join the community →",
-    "stats_join_link": "Subscribe to the newsletter"
+    "stats_newsletter_title": "Stay up to date",
+    "stats_newsletter_sub": "Receive new articles, events and lives from Conheça Farmácia straight to your inbox.",
+    "newsletter_email_placeholder": "Your email",
+    "newsletter_submit": "Subscribe",
+    "newsletter_submitting": "Subscribing...",
+    "newsletter_privacy": "We respect your privacy. No spam.",
+    "newsletter_success": "Subscription successful!",
+    "newsletter_exists": "This email is already subscribed.",
+    "newsletter_error": "Something went wrong. Please try again."
   },
   "sobre": {
     "hero_title": "About Us",

@@ -907,18 +907,21 @@ html.dark .form-note {
     @apply text-[13px] text-brand-deep/60 mt-2 leading-relaxed;
   }
 
-  .stats-join {
-    @apply text-center mt-12 text-sm font-semibold text-brand-primary relative;
+  .stats-newsletter {
+    @apply relative mt-14 mx-auto max-w-2xl text-center;
     z-index: 2;
   }
 
-  .stats-join a {
-    @apply text-brand-accent font-bold;
-    border-bottom: 1px solid rgba(10, 132, 79, 0.35);
+  .stats-newsletter-title {
+    @apply text-2xl md:text-3xl font-extrabold text-brand-deep;
   }
 
-  .stats-join a:hover {
-    @apply text-brand-accent/80;
+  .stats-newsletter-sub {
+    @apply mt-2 mb-6 text-[14.5px] text-brand-deep/60;
+  }
+
+  .stats-newsletter-privacy {
+    @apply mt-4 text-xs text-brand-deep/50;
   }
 
   @media (prefers-reduced-motion: reduce) {

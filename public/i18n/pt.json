@@ -118,8 +118,15 @@
     "stats_title_accent": "que transforma",
     "stats_title_post": "a prática farmacêutica",
     "stats_subtitle": "Conteúdo rigoroso, formações especializadas e uma comunidade que cresce todos os dias.",
-    "stats_join_prefix": "Junte-se à comunidade →",
-    "stats_join_link": "Inscreva-se na newsletter"
+    "stats_newsletter_title": "Fique a par das novidades",
+    "stats_newsletter_sub": "Receba na sua caixa de entrada os novos artigos, eventos e lives da Conheça Farmácia.",
+    "newsletter_email_placeholder": "Seu email",
+    "newsletter_submit": "Subscrever",
+    "newsletter_submitting": "A subscrever...",
+    "newsletter_privacy": "Respeitamos a sua privacidade. Sem spam.",
+    "newsletter_success": "Subscrição realizada com sucesso!",
+    "newsletter_exists": "Este email já está subscrito.",
+    "newsletter_error": "Ocorreu um erro. Tente novamente."
   },
   "sobre": {
     "hero_title": "Sobre Nós",
