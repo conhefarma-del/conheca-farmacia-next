@@ -768,7 +768,11 @@
     "pagination_label": "Paginação das entrevistas",
     "pagination_prev": "Página anterior",
     "pagination_next": "Página seguinte",
-    "page_number": "Página {n}"
+    "page_number": "Página {n}",
+    "media_video": "Vídeo",
+    "media_audio": "Áudio",
+    "media_spotify": "Spotify",
+    "media_text": "Só texto"
   },
   "entrevista_detail": {
     "has_video": "Com vídeo",

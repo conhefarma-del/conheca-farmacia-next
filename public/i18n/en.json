@@ -768,7 +768,11 @@
     "pagination_label": "Interviews pagination",
     "pagination_prev": "Previous page",
     "pagination_next": "Next page",
-    "page_number": "Page {n}"
+    "page_number": "Page {n}",
+    "media_video": "Video",
+    "media_audio": "Audio",
+    "media_spotify": "Spotify",
+    "media_text": "Text only"
   },
   "entrevista_detail": {
     "has_video": "With video",

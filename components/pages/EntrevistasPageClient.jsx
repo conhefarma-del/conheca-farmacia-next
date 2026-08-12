@@ -3,8 +3,9 @@
 import { useState, useEffect, useContext } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Search, Clock, Video, Mic, Play, Eye, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Search, Clock, Video, Mic, Play, Eye, ChevronLeft, ChevronRight, Music2, FileText } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
+import { parseAudioEmbed } from '@/lib/utils/audio-embed'
 
 const CATEGORIES = [
   { value: 'profissionais', labelKey: 'entrevistas_page.category_profissionais', color: '#ff6c23' },
@@ -51,6 +52,23 @@ function formatDate(dateStr, lang) {
   if (!dateStr) return ''
   const locale = lang === 'en' ? 'en-US' : 'pt-PT'
   return new Date(dateStr).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })
+}
+
+/**
+ * Tipo de mídia da entrevista para o badge do card:
+ * video | spotify | audio | text. Usa parseAudioEmbed para distinguir o
+ * Spotify dos restantes URLs de áudio.
+ */
+function getMediaBadge(i) {
+  if (i.videoId) return { type: 'video', icon: Video, labelKey: 'entrevistas_page.media_video' }
+  if (i.audioUrl) {
+    const embed = parseAudioEmbed(i.audioUrl)
+    if (embed?.type === 'spotify') {
+      return { type: 'spotify', icon: Music2, labelKey: 'entrevistas_page.media_spotify' }
+    }
+    return { type: 'audio', icon: Mic, labelKey: 'entrevistas_page.media_audio' }
+  }
+  return { type: 'text', icon: FileText, labelKey: 'entrevistas_page.media_text' }
 }
 
 /**
@@ -220,6 +238,15 @@ export default function EntrevistasPageClient({
                       {i.videoDuration && (
                         <span className="interview-duration">{i.videoDuration}</span>
                       )}
+                      {(() => {
+                        const media = getMediaBadge(i)
+                        const Icon = media.icon
+                        return (
+                          <span className="interview-media-badge" title={t(media.labelKey)}>
+                            <Icon size={11} aria-hidden="true" /> {t(media.labelKey)}
+                          </span>
+                        )
+                      })()}
                     </div>
 
                     {/* Body */}

@@ -8733,3 +8733,21 @@ html.dark .tools-showcase {
   .interview-audio-btn { width: 100%; margin-top: 8px; }
   .interview-audio-head { flex-wrap: wrap; }
 }
+
+/* Badge do tipo de mídia (Vídeo/Áudio/Spotify/Só texto) no card */
+.interview-media-badge {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.72);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  backdrop-filter: blur(4px);
+}
