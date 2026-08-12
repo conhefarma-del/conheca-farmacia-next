@@ -1,10 +1,10 @@
 import { Suspense } from 'react'
+import { headers } from 'next/headers'
 import { Inter, Fraunces } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import ThemeProvider from '@/components/providers/ThemeProvider'
 import PageViewTracker from '@/components/content/PageViewTracker'
-import { ANTI_FOUC_SCRIPT } from '@/lib/csp'
 import '@/styles/globals.css'
 
 const inter = Inter({
@@ -50,21 +50,31 @@ export const metadata = {
   },
 }
 
-// Layout estático (sem headers()/cookies()) — permite ISR em todas as páginas
-// públicas. O <html lang> é corrigido pré-pintura pelo ANTI_FOUC_SCRIPT
-// (lib/csp.js) a partir do pathname (/pt vs /en); o CSP usa o SHA-256 desse
-// mesmo script (proxy.js) — ver lib/csp.js.
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const headersList = await headers()
+  const lang = headersList.get('x-lang') || 'pt'
+  // CSP nonce set by proxy.js on every request. Applied to the anti-
+  // FOUC inline script so vercel.json's strict script-src (no
+  // 'unsafe-inline') lets it through. Falls back to undefined on
+  // routes the proxy does not match (which is fine — those routes
+  // do not have CSP headers either).
+  const nonce = headersList.get('x-csp-nonce') || undefined
+
   return (
-    <html lang="pt" suppressHydrationWarning className={`${inter.variable} ${fraunces.variable}`}>
+    <html lang={lang} suppressHydrationWarning className={`${inter.variable} ${fraunces.variable}`}>
       <head>
-        {/* Anti-FOUC (dark mode) + fix de <html lang>. Permitido pela CSP
-            do proxy via 'sha256-…' — o hash é do conteúdo EXATO deste
-            script (lib/csp.js). suppressHydrationWarning evita mismatch
-            em dev (Turbopack) onde o proxy não corre. */}
+        {/* Anti-FOUC: set dark class before hydration. The CSP nonce
+            lets this inline script run under our strict Content-Security-
+            Policy (proxy.js uses 'nonce-${nonce}' instead of
+            'unsafe-inline' in script-src). Without the nonce, the CSP
+            would block this script. O suppressHydrationWarning evita
+            mismatch em dev (Turbopack) onde o proxy não corre. */}
         <script
+          nonce={nonce}
           suppressHydrationWarning
-          dangerouslySetInnerHTML={{ __html: ANTI_FOUC_SCRIPT }}
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');var d=t==='dark'||(!t&&matchMedia('(prefers-color-scheme:dark)').matches);if(d)document.documentElement.classList.add('dark')}catch(e){}})()`,
+          }}
         />
       </head>
       <body className={inter.className}>
