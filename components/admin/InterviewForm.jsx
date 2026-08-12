@@ -112,6 +112,7 @@ export default function InterviewForm({ mode = 'create', initialData = null, lan
   const [durationLoading, setDurationLoading] = useState(false)
   const [durationError, setDurationError] = useState(false)
   const fetchedIdRef = useRef(null)
+  const slugEditedRef = useRef(!!initialData?.slug)
   const [thumbnailUrl, setThumbnailUrl] = useState(initialData?.thumbnail_url || '')
   const [audioUrl, setAudioUrl] = useState(initialData?.audio_url || '')
   const [executiveSummary, setExecutiveSummary] = useState(initialData?.executive_summary || '')
@@ -194,6 +195,39 @@ export default function InterviewForm({ mode = 'create', initialData = null, lan
     }
   }, [])
 
+  // Mantém um ref espelhado de slugEdited (para o fallback oEmbed, que corre
+  // num callback estável sem depender do estado re-renderizado)
+  useEffect(() => {
+    slugEditedRef.current = slugEdited
+  }, [slugEdited])
+
+  /**
+   * Fallback oEmbed — preenche título e thumbnail a partir do YouTube oEmbed,
+   * sem depender da IFrame API (funciona mesmo com cookies de terceiros
+   * bloqueados, onde a API falha). Best-effort e silencioso.
+   */
+  const fetchVideoMeta = useCallback(async (id) => {
+    if (!id || !/^[A-Za-z0-9_-]{11}$/.test(id)) return
+    try {
+      const res = await fetch(
+        `https://www.youtube.com/oembed?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${id}`)}&format=json`
+      )
+      if (!res.ok) return
+      const data = await res.json()
+
+      // Título só se ainda estiver vazio; gera slug se não foi editado
+      setTitle((prev) => {
+        if (prev) return prev
+        if (!slugEditedRef.current) setSlug(generateSlug(data.title || ''))
+        return data.title || prev
+      })
+      // Thumbnail só se ainda estiver vazia
+      setThumbnailUrl((prev) => prev || data.thumbnail_url || '')
+    } catch {
+      // silencioso — nunca bloquear o form por falha de oEmbed
+    }
+  }, [])
+
   // Auto-preenche a duração quando um ID válido é colado e o campo está vazio
   useEffect(() => {
     if (videoId && videoInputValid && !videoDuration && !durationLoading) {
@@ -201,6 +235,13 @@ export default function InterviewForm({ mode = 'create', initialData = null, lan
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [videoId, videoInputValid])
+
+  // oEmbed: título + thumbnail automáticos quando um ID válido é colado
+  useEffect(() => {
+    if (videoId && videoInputValid) {
+      fetchVideoMeta(videoId)
+    }
+  }, [videoId, videoInputValid, fetchVideoMeta])
 
   const handleTitleChange = useCallback((value) => {
     setTitle(value)
@@ -379,7 +420,7 @@ export default function InterviewForm({ mode = 'create', initialData = null, lan
         <div className="admin-form-group">
           <label>Áudio URL (só quando não há vídeo)</label>
           <input type="url" value={audioUrl} onChange={(e) => setAudioUrl(e.target.value)}
-            className="admin-input" placeholder="https://... (alojado no Supabase Storage, ex.: supabase.co/storage/... .mp3)" />
+            className="admin-input" placeholder="MP3 no Supabase Storage, ou link do Spotify (track/album/playlist/episode/show)" />
         </div>
       </div>
 
