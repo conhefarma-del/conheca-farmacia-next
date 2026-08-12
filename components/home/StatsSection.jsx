@@ -33,20 +33,6 @@ export default function StatsSection() {
 
   return (
     <section className="stats-section">
-      {/* Motivo decorativo: pílulas + cruz */}
-      <div className="stats-motif" aria-hidden="true">
-        <span className="stats-pill stats-pill--1">
-          <span className="stats-pill-body"><span className="stats-pill-half stats-pill-half--a" /><span className="stats-pill-half stats-pill-half--b" /></span>
-        </span>
-        <span className="stats-pill stats-pill--2">
-          <span className="stats-pill-body"><span className="stats-pill-half stats-pill-half--a" /><span className="stats-pill-half stats-pill-half--b" /></span>
-        </span>
-        <span className="stats-pill stats-pill--3">
-          <span className="stats-pill-body"><span className="stats-pill-half stats-pill-half--a" /><span className="stats-pill-half stats-pill-half--b" /></span>
-        </span>
-        <span className="stats-cross" />
-      </div>
-
       <div className="container-center">
         <div className="stats-head">
           <span className="stats-eyebrow">{t('home.stats_eyebrow')}</span>
