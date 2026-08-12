@@ -8668,3 +8668,68 @@ html.dark .tools-showcase {
   border: 0;
   aspect-ratio: 16 / 9;
 }
+
+/* Player de áudio da entrevista (quando não há vídeo) */
+.interview-audio-box {
+  background: var(--color-brand-bg-alt);
+  border: 1px solid var(--color-brand-divider);
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-bottom: 32px;
+}
+.interview-audio-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.interview-audio-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 132, 79, 0.12);
+  color: var(--color-brand-accent);
+}
+.interview-audio-info {
+  min-width: 0;
+  flex: 1;
+}
+.interview-audio-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-brand-deep);
+}
+.interview-audio-sub {
+  display: block;
+  font-size: 12px;
+  color: var(--color-brand-deep);
+  opacity: 0.55;
+}
+.interview-audio-btn {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 999px;
+  background: var(--color-brand-accent);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+}
+.interview-audio-btn:hover {
+  background: var(--color-brand-accent-dark, #06703f);
+  transform: translateY(-1px);
+}
+.interview-audio-box audio {
+  border-radius: 8px;
+}
+@media (max-width: 480px) {
+  .interview-audio-btn { width: 100%; margin-top: 8px; }
+  .interview-audio-head { flex-wrap: wrap; }
+}

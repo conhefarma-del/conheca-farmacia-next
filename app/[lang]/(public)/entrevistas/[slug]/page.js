@@ -7,6 +7,7 @@ import ArticleContent from '@/components/content/ArticleContent'
 import YouTubeLazyPlayer from '@/components/content/YouTubeLazyPlayer'
 import ShareSection from '@/components/content/ShareSection'
 import InterviewViewCounter from '@/components/content/InterviewViewCounter'
+import InterviewAudioPlayer from '@/components/content/InterviewAudioPlayer'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
@@ -195,6 +196,11 @@ export default async function InterviewDetailPage({ params }) {
               thumbnailUrl={interview.thumbnailUrl}
               title={interview.title}
             />
+          )}
+
+          {/* Áudio (só quando não há vídeo) — ouvir enquanto lê */}
+          {!interview.videoId && interview.audioUrl && (
+            <InterviewAudioPlayer audioUrl={interview.audioUrl} title={interview.title} />
           )}
 
           {/* Sumário executivo */}

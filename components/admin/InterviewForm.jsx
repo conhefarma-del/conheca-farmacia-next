@@ -261,9 +261,9 @@ export default function InterviewForm({ mode = 'create', initialData = null, lan
             className="admin-input" placeholder="https://img.youtube.com/vi/.../hqdefault.jpg (opcional)" />
         </div>
         <div className="admin-form-group">
-          <label>Áudio URL</label>
+          <label>Áudio URL (só quando não há vídeo)</label>
           <input type="url" value={audioUrl} onChange={(e) => setAudioUrl(e.target.value)}
-            className="admin-input" placeholder="https://... (opcional)" />
+            className="admin-input" placeholder="https://... (alojado no Supabase Storage, ex.: supabase.co/storage/... .mp3)" />
         </div>
       </div>
 
