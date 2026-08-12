@@ -8655,3 +8655,16 @@ html.dark .tools-showcase {
   color: #ffffff;
   opacity: 1;
 }
+
+/* Preview do vídeo YouTube no admin (padrão event-map-embed) */
+.admin-video-preview {
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 42, 50, 0.08);
+}
+.admin-video-preview iframe {
+  display: block;
+  width: 100%;
+  border: 0;
+  aspect-ratio: 16 / 9;
+}

@@ -267,6 +267,23 @@ export default function InterviewForm({ mode = 'create', initialData = null, lan
         </div>
       </div>
 
+      {/* Preview do vídeo — ao vivo, para validar o ID antes de guardar */}
+      {videoId && videoInputValid && (
+        <div className="admin-video-preview" style={{ maxWidth: 480, marginTop: 12 }}>
+          <iframe
+            src={`https://www.youtube.com/embed/${videoId}`}
+            title="Pré-visualização do vídeo da entrevista"
+            width="100%"
+            height="270"
+            style={{ border: 0 }}
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            referrerPolicy="strict-origin-when-cross-origin"
+          />
+        </div>
+      )}
+
       {/* Entrevistado */}
       <div style={{ marginTop: 24, marginBottom: 16, borderTop: '1px solid var(--admin-border)', paddingTop: 20 }}>
         <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 12, color: 'var(--admin-text)' }}>Entrevistado</h3>
