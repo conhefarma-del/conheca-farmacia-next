@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useMemo, useContext } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import Link from 'next/link'
-import { Search, Clock, Video, Mic, Play, Eye } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Search, Clock, Video, Mic, Play, Eye, ChevronLeft, ChevronRight } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
 
 const CATEGORIES = [
@@ -12,37 +13,92 @@ const CATEGORIES = [
   { value: 'investigadores', labelKey: 'entrevistas_page.category_investigadores', color: '#006171' },
 ]
 
+const PER_PAGE = 15
+
+/**
+ * Lista de páginas para a navegação, com reticências quando há muitas:
+ * ex. total 12, atual 6 → [1, '…', 4, 5, 6, 7, 8, '…', 12]
+ */
+function pageList(current, total) {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
+  const pages = new Set([1, total, current - 1, current, current + 1])
+  const sorted = [...pages].filter((p) => p >= 1 && p <= total).sort((a, b) => a - b)
+  const out = []
+  let prev = 0
+  for (const p of sorted) {
+    if (p - prev > 1) out.push('ellipsis')
+    out.push(p)
+    prev = p
+  }
+  return out
+}
+
+/**
+ * Constrói a URL da listagem a partir do estado de filtros (server-side).
+ * Parâmetros omitidos = predefinição; página 1 não gera `?page=1`.
+ */
+function buildUrl(lang, { categoria = '', q = '', ordenar = 'recent', page = 1 } = {}) {
+  const params = new URLSearchParams()
+  if (categoria) params.set('categoria', categoria)
+  if (q.trim()) params.set('q', q.trim())
+  if (ordenar && ordenar !== 'recent') params.set('ordenar', ordenar)
+  if (page > 1) params.set('page', String(page))
+  const qs = params.toString()
+  return `/${lang}/entrevistas${qs ? `?${qs}` : ''}`
+}
+
 function formatDate(dateStr, lang) {
   if (!dateStr) return ''
   const locale = lang === 'en' ? 'en-US' : 'pt-PT'
   return new Date(dateStr).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })
 }
 
-export default function EntrevistasPageClient({ interviews = [], lang = 'pt' }) {
+/**
+ * EntrevistasPageClient — listagem pública das Entrevistas.
+ * Server-side: a página server filtra/ordena/pagina (15 por página) e passa
+ * a fatia atual + total + estado ativo; este componente só navega (router).
+ * A pesquisa tem debounce; filtros, ordenação e páginas são URLs indexáveis.
+ */
+export default function EntrevistasPageClient({
+  interviews = [],
+  lang = 'pt',
+  total = 0,
+  page = 1,
+  totalPages = 1,
+  categoria = '',
+  q = '',
+  ordenar = 'recent',
+}) {
   const { t } = useContext(LangContext)
-  const [currentFilter, setCurrentFilter] = useState('all')
-  const [searchTerm, setSearchTerm] = useState('')
-  const [sort, setSort] = useState('recent')
+  const router = useRouter()
+  const [searchInput, setSearchInput] = useState(q)
 
-  const filtered = useMemo(() => {
-    const list = interviews.filter((i) => {
-      const matchesCategory = currentFilter === 'all' || i.category === currentFilter
-      const matchesSearch =
-        !searchTerm ||
-        i.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        i.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (i.interviewee?.name || '').toLowerCase().includes(searchTerm.toLowerCase())
-      return matchesCategory && matchesSearch
-    })
+  // Sincroniza o input quando a URL muda (navegação/voltar)
+  useEffect(() => {
+    setSearchInput(q)
+  }, [q])
 
-    if (sort === 'views') {
-      list.sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0))
-    } else {
-      list.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
-    }
+  // Pesquisa com debounce → router.push (scroll: false; página volta a 1)
+  useEffect(() => {
+    if (searchInput.trim() === q) return
+    const timer = setTimeout(() => {
+      router.push(buildUrl(lang, { categoria, q: searchInput, ordenar }), { scroll: false })
+    }, 350)
+    return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchInput])
 
-    return list
-  }, [interviews, currentFilter, searchTerm, sort])
+  const handleFilterChange = (value) => {
+    router.push(buildUrl(lang, { categoria: value === 'all' ? '' : value }), { scroll: false })
+  }
+
+  const handleSortChange = (mode) => {
+    if (mode === ordenar) return
+    router.push(buildUrl(lang, { categoria, q, ordenar: mode }), { scroll: false })
+  }
+
+  const pageFrom = total ? (page - 1) * PER_PAGE + 1 : 0
+  const pageTo = total ? Math.min(page * PER_PAGE, total) : 0
 
   return (
     <>
@@ -66,20 +122,20 @@ export default function EntrevistasPageClient({ interviews = [], lang = 'pt' }) 
               />
               <input
                 type="search"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 placeholder={t('entrevistas_page.search_placeholder')}
                 className="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-brand-divider bg-brand-bg text-brand-deep shadow-soft focus:ring-2 focus:ring-brand-accent focus:outline-none transition-all placeholder:text-brand-deep/40"
               />
             </div>
 
-            {/* Filtros por categoria */}
+            {/* Filtros por categoria + ordenação */}
             <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
               <button
                 type="button"
-                className={`filter-btn ${currentFilter === 'all' ? 'active' : ''}`}
-                style={currentFilter === 'all' ? { background: '#0a844f', borderColor: '#0a844f' } : undefined}
-                onClick={() => setCurrentFilter('all')}
+                className={`filter-btn ${!categoria ? 'active' : ''}`}
+                style={!categoria ? { background: '#0a844f', borderColor: '#0a844f' } : undefined}
+                onClick={() => handleFilterChange('all')}
               >
                 {t('entrevistas_page.filter_all')}
               </button>
@@ -87,9 +143,9 @@ export default function EntrevistasPageClient({ interviews = [], lang = 'pt' }) 
                 <button
                   key={cat.value}
                   type="button"
-                  className={`filter-btn ${currentFilter === cat.value ? 'active' : ''}`}
-                  style={currentFilter === cat.value ? { background: cat.color, borderColor: cat.color } : undefined}
-                  onClick={() => setCurrentFilter(cat.value)}
+                  className={`filter-btn ${categoria === cat.value ? 'active' : ''}`}
+                  style={categoria === cat.value ? { background: cat.color, borderColor: cat.color } : undefined}
+                  onClick={() => handleFilterChange(cat.value)}
                 >
                   {t(cat.labelKey)}
                 </button>
@@ -103,15 +159,15 @@ export default function EntrevistasPageClient({ interviews = [], lang = 'pt' }) 
               >
                 <button
                   type="button"
-                  className={`interview-sort-btn ${sort === 'recent' ? 'active' : ''}`}
-                  onClick={() => setSort('recent')}
+                  className={`interview-sort-btn ${ordenar === 'recent' ? 'active' : ''}`}
+                  onClick={() => handleSortChange('recent')}
                 >
                   {t('entrevistas_page.sort_recent')}
                 </button>
                 <button
                   type="button"
-                  className={`interview-sort-btn ${sort === 'views' ? 'active' : ''}`}
-                  onClick={() => setSort('views')}
+                  className={`interview-sort-btn ${ordenar === 'views' ? 'active' : ''}`}
+                  onClick={() => handleSortChange('views')}
                 >
                   <Eye size={13} /> {t('entrevistas_page.sort_views')}
                 </button>
@@ -122,11 +178,11 @@ export default function EntrevistasPageClient({ interviews = [], lang = 'pt' }) 
       </section>
 
       {/* Grid de cards */}
-      <section className="bg-brand-bg-alt">
+      <section className="bg-brand-bg-alt sci-pagination-scroll">
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-12">
-          {filtered.length > 0 ? (
+          {interviews.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filtered.map((i) => {
+              {interviews.map((i) => {
                 const cat = CATEGORIES.find((c) => c.value === i.category)
                 const color = cat?.color || '#0a844f'
                 return (
@@ -208,6 +264,53 @@ export default function EntrevistasPageClient({ interviews = [], lang = 'pt' }) 
           ) : (
             <div className="text-center py-16 text-gray-500">
               <p>{t('entrevistas_page.no_results')}</p>
+            </div>
+          )}
+
+          {/* Paginação — 15 entrevistas por página, links indexáveis */}
+          {totalPages > 1 && (
+            <div className="mt-10">
+              <p className="text-center text-xs text-brand-deep/50 mb-4">
+                {t('entrevistas_page.showing_range', {
+                  from: pageFrom,
+                  to: pageTo,
+                  total,
+                })}
+              </p>
+              <nav className="sci-pagination" aria-label={t('entrevistas_page.pagination_label')}>
+                {page > 1 && (
+                  <Link
+                    href={buildUrl(lang, { categoria, q, ordenar, page: page - 1 })}
+                    className="sci-page-btn"
+                    aria-label={t('entrevistas_page.pagination_prev')}
+                  >
+                    <ChevronLeft size={16} />
+                  </Link>
+                )}
+                {pageList(page, totalPages).map((p, i) =>
+                  p === 'ellipsis' ? (
+                    <span key={`e${i}`} className="sci-page-ellipsis" aria-hidden="true">…</span>
+                  ) : (
+                    <Link
+                      key={p}
+                      href={buildUrl(lang, { categoria, q, ordenar, page: p })}
+                      className={`sci-page-btn${p === page ? ' active' : ''}`}
+                      aria-current={p === page ? 'page' : undefined}
+                    >
+                      {p}
+                    </Link>
+                  )
+                )}
+                {page < totalPages && (
+                  <Link
+                    href={buildUrl(lang, { categoria, q, ordenar, page: page + 1 })}
+                    className="sci-page-btn"
+                    aria-label={t('entrevistas_page.pagination_next')}
+                  >
+                    <ChevronRight size={16} />
+                  </Link>
+                )}
+              </nav>
             </div>
           )}
         </div>

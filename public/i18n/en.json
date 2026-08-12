@@ -763,7 +763,12 @@
     "views": "views",
     "sort_label": "Sort interviews",
     "sort_recent": "Most recent",
-    "sort_views": "Most viewed"
+    "sort_views": "Most viewed",
+    "showing_range": "Showing {from}–{to} of {total} interviews",
+    "pagination_label": "Interviews pagination",
+    "pagination_prev": "Previous page",
+    "pagination_next": "Next page",
+    "page_number": "Page {n}"
   },
   "entrevista_detail": {
     "has_video": "With video",
