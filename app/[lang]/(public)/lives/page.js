@@ -3,7 +3,7 @@ import { getLives } from '@/lib/api/lives'
 import { LIVE_CATEGORIES } from '@/lib/constants'
 import LivesPageClient from '@/components/pages/LivesPageClient'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 export async function generateMetadata({ params }) {
   const { lang } = await params

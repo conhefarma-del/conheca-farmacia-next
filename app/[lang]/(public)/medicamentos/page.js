@@ -4,7 +4,7 @@ import { SITE_URL } from "@/lib/constants";
 import { getPublicDrugsWithInfo } from "@/lib/actions/medicamentos";
 import MedicamentosPageClient from "./medicamentosPageClient";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export async function generateMetadata({ params }) {
   const { lang } = await params;

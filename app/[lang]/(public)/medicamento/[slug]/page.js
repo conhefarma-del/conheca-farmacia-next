@@ -9,7 +9,7 @@ import {
 } from "@/lib/actions/medicamentos";
 import MedicamentoDetailClient from "./medicamentoDetailClient";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export async function generateMetadata({ params }) {
   const { lang, slug } = await params;

@@ -6920,6 +6920,7 @@ html.dark .admin-feedback-action.is-archive { color: #f87171; }
   margin-bottom: 18px;
   font-family: Georgia, 'Source Serif 4', 'Times New Roman', serif;
   color: var(--color-brand-deep);
+  overflow-wrap: break-word;
 }
 .sci-authors-row {
   display: flex;
@@ -6955,6 +6956,10 @@ html.dark .admin-feedback-action.is-archive { color: #f87171; }
   opacity: 0.5;
   flex-wrap: wrap;
 }
+.sci-hero-meta > span {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
 .sci-hero-meta-readtime {
   display: inline-flex;
   align-items: center;
@@ -6969,6 +6974,7 @@ html.dark .admin-feedback-action.is-archive { color: #f87171; }
   padding: 22px 26px;
   margin-bottom: 28px;
   border-top: 4px solid var(--color-brand-accent);
+  overflow-wrap: break-word;
 }
 .sci-about-box {
   background: var(--color-brand-bg);
@@ -7002,6 +7008,10 @@ html.dark .admin-feedback-action.is-archive { color: #f87171; }
   min-width: 108px;
   font-weight: 600;
   color: var(--color-brand-deep);
+}
+.sci-about-row dd {
+  min-width: 0;
+  overflow-wrap: break-word;
 }
 .sci-about-row dd {
   margin: 0;
@@ -7152,14 +7162,15 @@ html.dark .admin-feedback-action.is-archive { color: #f87171; }
   font-weight: 800;
   letter-spacing: -0.01em;
   margin: 36px 0 14px;
-  scroll-margin-top: 24px;
+  /* Chrome fixo (utility 60 + header 80) — o h2 não pode ficar escondido */
+  scroll-margin-top: 150px;
 }
 .sci-article-body h3 {
   font-family: var(--font-sans), system-ui, sans-serif;
   font-size: 16px;
   font-weight: 700;
   margin: 28px 0 12px;
-  scroll-margin-top: 24px;
+  scroll-margin-top: 150px;
 }
 .sci-article-body p { margin-bottom: 18px; }
 .sci-article-body p:last-child { margin-bottom: 0; }
@@ -7333,6 +7344,7 @@ html.dark .admin-feedback-action.is-archive { color: #f87171; }
   font-weight: 700;
   line-height: 1.4;
   color: var(--color-brand-deep);
+  overflow-wrap: break-word;
 }
 .sci-related-card-meta {
   display: flex;
@@ -7380,6 +7392,7 @@ html.dark .admin-feedback-action.is-archive { color: #f87171; }
   font-size: 13px;
   color: var(--color-brand-accent);
   text-decoration: none;
+  overflow-wrap: break-word;
 }
 .sci-toc-list a:hover { text-decoration: underline; }
 .sci-related-list {

@@ -2,7 +2,7 @@ import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
 import { getEvents } from '@/lib/api/events'
 import EventosPageClient from '@/components/pages/EventosPageClient'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 export async function generateMetadata({ params }) {
   const { lang } = await params

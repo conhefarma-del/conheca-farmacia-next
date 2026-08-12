@@ -2,7 +2,7 @@ import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
 import { getPublicProtocolCategories, getPublicProtocols } from '@/lib/actions/protocolos'
 import ProtocolosPageClient from '../protocolos/protocolosPageClient'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 export async function generateMetadata({ params }) {
   const { lang } = await params

@@ -2,7 +2,7 @@ import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
 import { getPublicGuideCourses } from '@/lib/actions/guides'
 import GuiasPageClient from './guiasPageClient'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 export async function generateMetadata({ params }) {
   const { lang } = await params

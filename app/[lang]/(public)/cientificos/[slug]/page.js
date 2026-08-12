@@ -15,7 +15,7 @@ import ShareSection from '@/components/content/ShareSection'
 import { Clock } from 'lucide-react'
 import { notFound } from 'next/navigation'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 function slugifyHeading(text) {
   return String(text)

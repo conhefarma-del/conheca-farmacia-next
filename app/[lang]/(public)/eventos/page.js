@@ -3,7 +3,7 @@ import { getEvents } from '@/lib/api/events'
 import { EVENT_CATEGORY_COLORS, EVENT_CATEGORIES } from '@/lib/constants'
 import EventosPageClient from '@/components/pages/EventosPageClient'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 export async function generateMetadata({ params }) {
   const { lang } = await params

@@ -11,7 +11,7 @@ import FeaturedLives from '@/components/home/FeaturedLives'
 import StatsSection from '@/components/home/StatsSection'
 
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 export async function generateMetadata({ params }) {
   const { lang } = await params
