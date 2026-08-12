@@ -311,7 +311,7 @@ export default async function ArticleDetailPage({ params }) {
       <section className="py-16 bg-brand-bg-alt">
         <div className="container-center text-center">
           <Link href={articlesListHref} className="btn btn-primary">
-            ← {tFn('artigo_detail.back_to_articles')}
+            {tFn('artigo_detail.back_to_articles')}
           </Link>
         </div>
       </section>

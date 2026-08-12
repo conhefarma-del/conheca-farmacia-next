@@ -229,7 +229,8 @@
     "related_events": "Related Events",
     "not_found_title": "Event not found",
     "not_found_text": "Sorry, we couldn't find the event you're looking for.",
-    "back_to_events": "Back to Events"
+    "back_to_events": "Back to Events",
+    "open_in_maps": "Open in Google Maps"
   },
   "live_detail": {
     "quick_access": "Quick Access",
