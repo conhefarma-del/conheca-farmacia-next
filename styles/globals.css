@@ -8587,6 +8587,9 @@ html.dark .tools-showcase {
 @media (max-width: 900px) {
   .interview-layout { grid-template-columns: 1fr; gap: 32px; }
   .interview-sidebar { position: static; }
+  /* No mobile o Entrevistado/Entrevistador já aparecem na secção de pessoas
+     acima do vídeo — os cartões do sidebar seriam duplicados. */
+  .interview-sidebar-people { display: none; }
 }
 @media (max-width: 640px) {
   .interview-card-title { font-size: 16px; }

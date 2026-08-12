@@ -247,7 +247,7 @@ export default async function InterviewDetailPage({ params }) {
         {/* SIDEBAR 1/3 */}
         <aside className="interview-sidebar">
           {interviewee.name && (
-            <div className="interview-sidebar-card">
+            <div className="interview-sidebar-card interview-sidebar-people">
               <span className="interview-sidebar-label">{tFn('entrevista_detail.interviewee')}</span>
               <div className="interview-person-row">
                 <span className="avatar" style={{ background: interviewee.avatarBg || color, width: 44, height: 44, fontSize: 16 }}>
@@ -263,7 +263,7 @@ export default async function InterviewDetailPage({ params }) {
           )}
 
           {interviewer.name && (
-            <div className="interview-sidebar-card">
+            <div className="interview-sidebar-card interview-sidebar-people">
               <span className="interview-sidebar-label">{tFn('entrevista_detail.interviewer')}</span>
               <div className="interview-person-row">
                 <span className="avatar" style={{ background: interviewer.avatarBg || '#0a844f', width: 44, height: 44, fontSize: 16 }}>
