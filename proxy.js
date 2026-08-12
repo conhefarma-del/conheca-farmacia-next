@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
+import { getAntiFouCSha256 } from './lib/csp'
 
 const SUPPORTED_LANGS = ['pt', 'en']
 const DEFAULT_LANG = 'pt'
@@ -26,20 +27,14 @@ export async function proxy(request) {
     return NextResponse.next()
   }
 
-  // Generate a per-request CSP nonce. Forwarded to the app via header
-  // so app/layout.js can mark the anti-FOUC script with it. The same
-  // nonce is injected into the CSP header below so the browser trusts
-  // only the inline scripts that carry this exact nonce value. This
-  // replaces the previous 'unsafe-inline' allowance in script-src.
-  const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
-
-  // Content-Security-Policy built with the per-request nonce. We keep
-  // the same directives as the previous static vercel.json CSP so the
-  // site's resource-loading behaviour is unchanged, but we tighten
-  // script-src from 'unsafe-inline' to 'nonce-...'.
+  // CSP com hash SHA-256 do script anti-FOUC (estático) em vez de nonce
+  // por pedido. Um nonce exigiria render dinâmica (headers() no layout);
+  // um hash é estável e compatível com ISR — e, para um script inline
+  // estático, é tão ou mais forte (fixa o conteúdo exato).
+  const antiFouCHash = await getAntiFouCSha256()
   const csp = [
     `default-src 'self'`,
-    `script-src 'self' 'nonce-${nonce}' https://vercel.live`,
+    `script-src 'self' 'sha256-${antiFouCHash}' https://vercel.live`,
     `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
     `img-src 'self' data: blob: https://*.supabase.co https://vercel.live`,
     `font-src 'self' https://fonts.gstatic.com`,
@@ -53,11 +48,9 @@ export async function proxy(request) {
   // Create Supabase client for session management
   const requestHeaders = new Headers(request.headers)
   requestHeaders.set('x-lang', lang)
-  requestHeaders.set('x-csp-nonce', nonce)
   let supabaseResponse = NextResponse.next({
     request: { headers: requestHeaders },
     headers: {
-      'x-csp-nonce': nonce,
       'Content-Security-Policy': csp,
     },
   })
