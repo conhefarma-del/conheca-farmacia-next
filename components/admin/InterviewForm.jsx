@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Save, X, Plus, Trash2 } from 'lucide-react'
 import { createInterview, updateInterview } from '@/lib/actions/content'
@@ -45,6 +45,47 @@ function extractYouTubeId(value) {
   return ''
 }
 
+/**
+ * Carrega a YouTube IFrame API uma única vez (script externo).
+ * Devolve Promise<YT>; rejeita se o ambiente não tem window ou o script falha.
+ */
+let ytApiPromise = null
+function loadYouTubeIframeApi() {
+  if (typeof window === 'undefined') return Promise.reject(new Error('no window'))
+  if (window.YT && window.YT.Player) return Promise.resolve(window.YT)
+  if (ytApiPromise) return ytApiPromise
+
+  ytApiPromise = new Promise((resolve, reject) => {
+    const tag = document.createElement('script')
+    tag.src = 'https://www.youtube.com/iframe_api'
+    tag.async = true
+    tag.onload = () => {
+      if (window.YT && window.YT.Player) resolve(window.YT)
+      else window.onYouTubeIframeAPIReady = () => resolve(window.YT)
+    }
+    tag.onerror = () => {
+      ytApiPromise = null
+      reject(new Error('iframe_api falhou ao carregar'))
+    }
+    document.head.appendChild(tag)
+  })
+  return ytApiPromise
+}
+
+/**
+ * Formata segundos como MM:SS (ou H:MM:SS quando ≥ 1h) — formato do campo
+ * "Duração do vídeo" (ex.: 24:18).
+ */
+function formatDuration(seconds) {
+  const s = Math.max(0, Math.round(seconds))
+  const h = Math.floor(s / 3600)
+  const m = Math.floor((s % 3600) / 60)
+  const sec = s % 60
+  const mm = String(m).padStart(2, '0')
+  const ss = String(sec).padStart(2, '0')
+  return h > 0 ? `${h}:${mm}:${ss}` : `${m}:${ss}`
+}
+
 export default function InterviewForm({ mode = 'create', initialData = null, lang = 'pt' }) {
   const router = useRouter()
   const [saving, setSaving] = useState(false)
@@ -68,6 +109,9 @@ export default function InterviewForm({ mode = 'create', initialData = null, lan
       : ''
   )
   const [videoInputValid, setVideoInputValid] = useState(true)
+  const [durationLoading, setDurationLoading] = useState(false)
+  const [durationError, setDurationError] = useState(false)
+  const fetchedIdRef = useRef(null)
   const [thumbnailUrl, setThumbnailUrl] = useState(initialData?.thumbnail_url || '')
   const [audioUrl, setAudioUrl] = useState(initialData?.audio_url || '')
   const [executiveSummary, setExecutiveSummary] = useState(initialData?.executive_summary || '')
@@ -107,6 +151,56 @@ export default function InterviewForm({ mode = 'create', initialData = null, lan
       ? initialData.related
       : ['']
   )
+
+  const fetchVideoDuration = useCallback(async (id) => {
+    if (!id || !/^[A-Za-z0-9_-]{11}$/.test(id)) return
+    if (fetchedIdRef.current === id) return
+    fetchedIdRef.current = id
+    setDurationLoading(true)
+    setDurationError(false)
+
+    let holder = null
+    try {
+      const YT = await loadYouTubeIframeApi()
+      holder = document.createElement('div')
+      holder.style.display = 'none'
+      holder.style.position = 'absolute'
+      document.body.appendChild(holder)
+
+      // A API cria um player em background; onReady devolve a duração real.
+      // Lives/reproduções contínuas devolvem 0 → mantém o campo manual.
+      const player = new YT.Player(holder, {
+        videoId: id,
+        events: {
+          onReady: (e) => {
+            const dur = e.target.getDuration()
+            if (dur && dur > 0) setVideoDuration(formatDuration(dur))
+            try { e.target.destroy() } catch {}
+            holder?.remove()
+            setDurationLoading(false)
+          },
+          onError: () => {
+            setDurationError(true)
+            try { e.target?.destroy?.() } catch {}
+            holder?.remove()
+            setDurationLoading(false)
+          },
+        },
+      })
+    } catch {
+      setDurationError(true)
+      setDurationLoading(false)
+      holder?.remove()
+    }
+  }, [])
+
+  // Auto-preenche a duração quando um ID válido é colado e o campo está vazio
+  useEffect(() => {
+    if (videoId && videoInputValid && !videoDuration && !durationLoading) {
+      fetchVideoDuration(videoId)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [videoId, videoInputValid])
 
   const handleTitleChange = useCallback((value) => {
     setTitle(value)
@@ -217,8 +311,30 @@ export default function InterviewForm({ mode = 'create', initialData = null, lan
         </div>
         <div className="admin-form-group">
           <label>Duração do vídeo</label>
-          <input type="text" value={videoDuration} onChange={(e) => setVideoDuration(e.target.value)}
-            className="admin-input" placeholder="24:18" />
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <input type="text" value={videoDuration} onChange={(e) => { setVideoDuration(e.target.value); setDurationError(false) }}
+              className="admin-input" placeholder="24:18" />
+            <button
+              type="button"
+              className="admin-btn admin-btn-sm admin-btn-secondary"
+              onClick={() => fetchVideoDuration(videoId)}
+              disabled={!videoId || durationLoading}
+              title={videoId ? 'Obter duração do YouTube' : 'Cole primeiro o link do vídeo'}
+              style={{ whiteSpace: 'nowrap' }}
+            >
+              {durationLoading ? 'A obter...' : 'Obter duração'}
+            </button>
+          </div>
+          {durationError && (
+            <p style={{ color: '#b45309', fontSize: 12, marginTop: 6 }}>
+              Não foi possível obter a duração deste vídeo. Preenche manualmente (formato MM:SS).
+            </p>
+          )}
+          {videoDuration && !durationLoading && !durationError && (
+            <p style={{ color: 'var(--admin-text-muted)', fontSize: 12, marginTop: 6 }}>
+              Pode ajustar manualmente, se necessário.
+            </p>
+          )}
         </div>
         <div className="admin-form-group">
           <label>Meta description</label>

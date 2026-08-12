@@ -39,12 +39,12 @@ export async function proxy(request) {
   // script-src from 'unsafe-inline' to 'nonce-...'.
   const csp = [
     `default-src 'self'`,
-    `script-src 'self' 'nonce-${nonce}' https://vercel.live`,
+    `script-src 'self' 'nonce-${nonce}' https://vercel.live https://www.youtube.com https://s.ytimg.com`,
     `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
     `img-src 'self' data: blob: https://*.supabase.co https://vercel.live https://i.ytimg.com https://img.youtube.com`,
     `media-src 'self' blob: https://*.supabase.co`,
     `font-src 'self' https://fonts.gstatic.com`,
-    `connect-src 'self' https://*.supabase.co https://vercel.live`,
+    `connect-src 'self' https://*.supabase.co https://vercel.live https://www.youtube.com https://s.ytimg.com`,
     `frame-src https://www.google.com https://maps.google.com https://www.youtube.com https://www.youtube-nocookie.com`,
     `frame-ancestors 'none'`,
     `object-src 'none'`,
