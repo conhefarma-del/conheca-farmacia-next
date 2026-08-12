@@ -209,28 +209,26 @@ export default function EntrevistasPageClient({
                     href={`/${lang}/entrevistas/${i.slug}`}
                     className="interview-card"
                   >
-                    {/* Thumbnail */}
+                    {/* Thumbnail — imagem de capa (vídeo/áudio/texto) ou placeholder */}
                     <div className="interview-card-thumb" style={{ background: `${color}15` }}>
-                      {i.videoId ? (
-                        <>
-                          {i.thumbnailUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={i.thumbnailUrl} alt="" className="interview-card-thumb-img" loading="lazy" />
-                          ) : (
-                            <div className="interview-card-thumb-placeholder">
-                              <Video size={40} strokeWidth={1.5} style={{ color }} aria-hidden="true" />
-                            </div>
-                          )}
-                          <span className="interview-play-overlay">
-                            <span className="interview-play-btn" style={{ color }}>
-                              <Play size={20} fill="currentColor" aria-hidden="true" />
-                            </span>
-                          </span>
-                        </>
+                      {i.thumbnailUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={i.thumbnailUrl} alt="" className="interview-card-thumb-img" loading="lazy" />
                       ) : (
                         <div className="interview-card-thumb-placeholder">
-                          <Mic size={40} strokeWidth={1.5} style={{ color }} aria-hidden="true" />
+                          {i.videoId ? (
+                            <Video size={40} strokeWidth={1.5} style={{ color }} aria-hidden="true" />
+                          ) : (
+                            <Mic size={40} strokeWidth={1.5} style={{ color }} aria-hidden="true" />
+                          )}
                         </div>
+                      )}
+                      {i.videoId && (
+                        <span className="interview-play-overlay">
+                          <span className="interview-play-btn" style={{ color }}>
+                            <Play size={20} fill="currentColor" aria-hidden="true" />
+                          </span>
+                        </span>
                       )}
                       <span className="interview-badge" style={{ background: color }}>
                         {cat?.labelKey ? t(cat.labelKey) : i.categoryLabel}

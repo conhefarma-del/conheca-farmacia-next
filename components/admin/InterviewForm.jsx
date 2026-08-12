@@ -414,9 +414,9 @@ export default function InterviewForm({ mode = 'create', initialData = null, lan
           )}
         </div>
         <div className="admin-form-group">
-          <label>Thumbnail URL</label>
+          <label>Imagem de capa (thumbnail)</label>
           <input type="url" value={thumbnailUrl} onChange={(e) => setThumbnailUrl(e.target.value)}
-            className="admin-input" placeholder="https://img.youtube.com/vi/.../hqdefault.jpg (opcional)" />
+            className="admin-input" placeholder="https://... (imagem do card; ex.: img.youtube.com/vi/.../hqdefault.jpg ou Supabase Storage)" />
         </div>
         <div className="admin-form-group">
           <label>Áudio URL (só quando não há vídeo)</label>
