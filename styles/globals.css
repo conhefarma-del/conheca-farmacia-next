@@ -8629,3 +8629,29 @@ html.dark .tools-showcase {
   color: #0f1a14;
 }
 .video-wrapper:hover .video-play-circle { transform: scale(1.06); }
+
+/* Botões de ordenação (mais recentes / mais vistas) — padrão sci-sort-btn */
+.interview-sort-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-brand-deep);
+  opacity: 0.65;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, opacity 0.15s;
+}
+.interview-sort-btn:hover {
+  opacity: 1;
+  background: var(--color-brand-bg-alt);
+}
+.interview-sort-btn.active {
+  background: var(--color-brand-primary);
+  color: #ffffff;
+  opacity: 1;
+}

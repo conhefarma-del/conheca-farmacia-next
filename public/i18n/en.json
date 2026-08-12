@@ -760,7 +760,10 @@
     "watch_cta": "Watch interview",
     "read_cta": "Read interview",
     "no_results": "No interviews found.",
-    "views": "views"
+    "views": "views",
+    "sort_label": "Sort interviews",
+    "sort_recent": "Most recent",
+    "sort_views": "Most viewed"
   },
   "entrevista_detail": {
     "has_video": "With video",

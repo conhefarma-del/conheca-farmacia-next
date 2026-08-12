@@ -22,9 +22,10 @@ export default function EntrevistasPageClient({ interviews = [], lang = 'pt' }) 
   const { t } = useContext(LangContext)
   const [currentFilter, setCurrentFilter] = useState('all')
   const [searchTerm, setSearchTerm] = useState('')
+  const [sort, setSort] = useState('recent')
 
   const filtered = useMemo(() => {
-    return interviews.filter((i) => {
+    const list = interviews.filter((i) => {
       const matchesCategory = currentFilter === 'all' || i.category === currentFilter
       const matchesSearch =
         !searchTerm ||
@@ -33,7 +34,15 @@ export default function EntrevistasPageClient({ interviews = [], lang = 'pt' }) 
         (i.interviewee?.name || '').toLowerCase().includes(searchTerm.toLowerCase())
       return matchesCategory && matchesSearch
     })
-  }, [interviews, currentFilter, searchTerm])
+
+    if (sort === 'views') {
+      list.sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0))
+    } else {
+      list.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
+    }
+
+    return list
+  }, [interviews, currentFilter, searchTerm, sort])
 
   return (
     <>
@@ -85,6 +94,28 @@ export default function EntrevistasPageClient({ interviews = [], lang = 'pt' }) 
                   {t(cat.labelKey)}
                 </button>
               ))}
+
+              {/* Ordenação: Mais recentes / Mais vistas */}
+              <div
+                className="inline-flex rounded-full border border-brand-divider overflow-hidden"
+                role="group"
+                aria-label={t('entrevistas_page.sort_label')}
+              >
+                <button
+                  type="button"
+                  className={`interview-sort-btn ${sort === 'recent' ? 'active' : ''}`}
+                  onClick={() => setSort('recent')}
+                >
+                  {t('entrevistas_page.sort_recent')}
+                </button>
+                <button
+                  type="button"
+                  className={`interview-sort-btn ${sort === 'views' ? 'active' : ''}`}
+                  onClick={() => setSort('views')}
+                >
+                  <Eye size={13} /> {t('entrevistas_page.sort_views')}
+                </button>
+              </div>
             </div>
           </div>
         </div>
