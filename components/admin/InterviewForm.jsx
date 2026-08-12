@@ -119,12 +119,24 @@ export default function InterviewForm({ mode = 'create', initialData = null, lan
   const [executiveSummary, setExecutiveSummary] = useState(initialData?.executive_summary || '')
   const [content, setContent] = useState(initialData?.content || '')
 
-  const [interviewee, setInterviewee] = useState({
-    name: initialData?.interviewee?.name || '',
-    role: initialData?.interviewee?.role || '',
-    bio: initialData?.interviewee?.bio || '',
-    avatar: initialData?.interviewee?.avatar || '',
-    avatarBg: initialData?.interviewee?.avatarBg || '#00493a',
+  // Entrevistados — lista de até 5 pessoas. Aceita o formato antigo (objeto
+  // único, migração 152) ou o novo (array) guardado no JSONB.
+  const [interviewees, setInterviewees] = useState(() => {
+    const raw = Array.isArray(initialData?.interviewee)
+      ? initialData.interviewee
+      : initialData?.interviewee && Object.keys(initialData.interviewee).length > 0
+        ? [initialData.interviewee]
+        : []
+    const people = raw
+      .filter((p) => p && typeof p === 'object')
+      .map((p) => ({
+        name: p.name || '',
+        role: p.role || '',
+        bio: p.bio || '',
+        avatar: p.avatar || '',
+        avatarBg: p.avatarBg || '#00493a',
+      }))
+    return people.length > 0 ? people : [{ name: '', role: '', bio: '', avatar: '', avatarBg: '#00493a' }]
   })
   const [interviewer, setInterviewer] = useState({
     name: initialData?.interviewer?.name || '',
@@ -258,6 +270,22 @@ export default function InterviewForm({ mode = 'create', initialData = null, lan
     setter((prev) => prev.map((item, i) => (i === index ? value : item)))
   }, [])
 
+  const updateInterviewee = useCallback((index, field, value) => {
+    setInterviewees((prev) => prev.map((p, i) => (i === index ? { ...p, [field]: value } : p)))
+  }, [])
+
+  const addInterviewee = useCallback(() => {
+    setInterviewees((prev) =>
+      prev.length >= 5
+        ? prev
+        : [...prev, { name: '', role: '', bio: '', avatar: '', avatarBg: '#00493a' }]
+    )
+  }, [])
+
+  const removeInterviewee = useCallback((index) => {
+    setInterviewees((prev) => (prev.length <= 1 ? prev : prev.filter((_, i) => i !== index)))
+  }, [])
+
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault()
     setError('')
@@ -271,7 +299,7 @@ export default function InterviewForm({ mode = 'create', initialData = null, lan
       read_time: readTime, video_duration: videoDuration,
       video_id: videoId, thumbnail_url: thumbnailUrl, audio_url: audioUrl,
       executive_summary: executiveSummary, content,
-      interviewee, interviewer,
+      interviewees, interviewer,
       pull_quotes: pullQuotes.filter(q => q.trim()),
       qa: qa.filter(item => item.question.trim() || item.answer.trim()),
       references_arr: references.filter(r => r.trim()),
@@ -295,7 +323,7 @@ export default function InterviewForm({ mode = 'create', initialData = null, lan
     }
   }, [title, slug, category, status, featured, excerpt, metaDescription, date,
     readTime, videoDuration, videoId, thumbnailUrl, audioUrl, executiveSummary, content,
-    interviewee, interviewer, pullQuotes, qa, references, related,
+    interviewees, interviewer, pullQuotes, qa, references, related,
     mode, initialData, router, lang])
 
   return (
@@ -465,25 +493,53 @@ export default function InterviewForm({ mode = 'create', initialData = null, lan
         )
       })()}
 
-      {/* Entrevistado */}
+      {/* Entrevistados — até 5 pessoas */}
       <div style={{ marginTop: 24, marginBottom: 16, borderTop: '1px solid var(--admin-border)', paddingTop: 20 }}>
-        <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 12, color: 'var(--admin-text)' }}>Entrevistado</h3>
-        <div className="admin-form-grid">
-          <div className="admin-form-group"><label>Nome</label>
-            <input type="text" value={interviewee.name} onChange={(e) => setInterviewee({ ...interviewee, name: e.target.value })} className="admin-input" /></div>
-          <div className="admin-form-group"><label>Cargo</label>
-            <input type="text" value={interviewee.role} onChange={(e) => setInterviewee({ ...interviewee, role: e.target.value })} className="admin-input" placeholder="Farmacêutica Clínica · Hospital Nacional" /></div>
-          <div className="admin-form-group"><label>Avatar (iniciais)</label>
-            <input type="text" value={interviewee.avatar} onChange={(e) => setInterviewee({ ...interviewee, avatar: e.target.value })} className="admin-input" placeholder="AS" maxLength={2} /></div>
-          <div className="admin-form-group"><label>Cor do avatar (hex)</label>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <input type="color" value={interviewee.avatarBg} onChange={(e) => setInterviewee({ ...interviewee, avatarBg: e.target.value })} style={{ width: 40, height: 40, padding: 2, border: '1px solid var(--admin-border)', borderRadius: 6, cursor: 'pointer' }} />
-              <input type="text" value={interviewee.avatarBg} onChange={(e) => setInterviewee({ ...interviewee, avatarBg: e.target.value })} className="admin-input" style={{ maxWidth: 100, fontFamily: 'monospace' }} />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--admin-text)' }}>Entrevistados</h3>
+          <span style={{ fontSize: 12, color: 'var(--admin-text-muted)' }}>{interviewees.length}/5</span>
+        </div>
+        <p style={{ fontSize: 12, color: 'var(--admin-text-muted)', marginBottom: 12 }}>
+          Podes adicionar até 5 entrevistados. Preenche pelo menos o nome de cada um.
+        </p>
+        {interviewees.map((person, idx) => (
+          <div key={idx} style={{ border: '1px solid var(--admin-border)', borderRadius: 10, padding: 14, marginBottom: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+              <strong style={{ fontSize: 13, color: 'var(--admin-text)' }}>
+                Entrevistado {interviewees.length > 1 ? idx + 1 : ''}
+              </strong>
+              {interviewees.length > 1 && (
+                <button type="button" className="admin-btn admin-btn-sm admin-btn-danger"
+                  onClick={() => removeInterviewee(idx)} title="Remover entrevistado">
+                  <Trash2 size={14} /> Remover
+                </button>
+              )}
+            </div>
+            <div className="admin-form-grid">
+              <div className="admin-form-group"><label>Nome</label>
+                <input type="text" value={person.name} onChange={(e) => updateInterviewee(idx, 'name', e.target.value)} className="admin-input" placeholder="Dra. Ana Silva" /></div>
+              <div className="admin-form-group"><label>Cargo</label>
+                <input type="text" value={person.role} onChange={(e) => updateInterviewee(idx, 'role', e.target.value)} className="admin-input" placeholder="Farmacêutica Clínica · Hospital Nacional" /></div>
+              <div className="admin-form-group"><label>Avatar (iniciais)</label>
+                <input type="text" value={person.avatar} onChange={(e) => updateInterviewee(idx, 'avatar', e.target.value)} className="admin-input" placeholder="AS" maxLength={2} /></div>
+              <div className="admin-form-group"><label>Cor do avatar (hex)</label>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <input type="color" value={person.avatarBg} onChange={(e) => updateInterviewee(idx, 'avatarBg', e.target.value)} style={{ width: 40, height: 40, padding: 2, border: '1px solid var(--admin-border)', borderRadius: 6, cursor: 'pointer' }} />
+                  <input type="text" value={person.avatarBg} onChange={(e) => updateInterviewee(idx, 'avatarBg', e.target.value)} className="admin-input" style={{ maxWidth: 100, fontFamily: 'monospace' }} />
+                </div>
+              </div>
+              <div className="admin-form-group" style={{ gridColumn: '1 / -1' }}><label>Bio</label>
+                <input type="text" value={person.bio} onChange={(e) => updateInterviewee(idx, 'bio', e.target.value)} className="admin-input" /></div>
             </div>
           </div>
-          <div className="admin-form-group" style={{ gridColumn: '1 / -1' }}><label>Bio</label>
-            <input type="text" value={interviewee.bio} onChange={(e) => setInterviewee({ ...interviewee, bio: e.target.value })} className="admin-input" /></div>
-        </div>
+        ))}
+        {interviewees.length < 5 ? (
+          <button type="button" className="admin-btn admin-btn-sm" onClick={addInterviewee}>
+            <Plus size={14} /> Adicionar entrevistado
+          </button>
+        ) : (
+          <p style={{ fontSize: 12, color: 'var(--admin-text-muted)' }}>Limite de 5 entrevistados atingido.</p>
+        )}
       </div>
 
       {/* Entrevistador */}

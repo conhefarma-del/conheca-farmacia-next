@@ -35,7 +35,8 @@ export default function InterviewsListPage({ interviews = [], stats, lang = 'pt'
         const q = searchQuery.toLowerCase()
         const title = (i.title || '').toLowerCase()
         const cat = (i.category_label || i.category || '').toLowerCase()
-        const person = (i.interviewee?.name || '').toLowerCase()
+        const people = (Array.isArray(i.interviewees) ? i.interviewees : [i.interviewee]).filter(Boolean)
+        const person = people.map((p) => (p?.name || '')).join(' ').toLowerCase()
         if (!title.includes(q) && !cat.includes(q) && !person.includes(q)) return false
       }
 
@@ -173,7 +174,12 @@ export default function InterviewsListPage({ interviews = [], stats, lang = 'pt'
                 {filtered.map((i) => (
                   <tr key={i.id}>
                     <td>{escapeHtml(i.title)}</td>
-                    <td>{escapeHtml(i.interviewee?.name || '-')}</td>
+                    <td>
+                      {escapeHtml(i.interviewee?.name || '-')}
+                      {Array.isArray(i.interviewees) && i.interviewees.length > 1
+                        ? ` +${i.interviewees.length - 1}`
+                        : ''}
+                    </td>
                     <td>{escapeHtml(i.category_label || i.category || '-')}</td>
                     <td>{formatDate(i.date)}</td>
                     <td>

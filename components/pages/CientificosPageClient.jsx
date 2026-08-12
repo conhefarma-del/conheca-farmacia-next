@@ -141,7 +141,7 @@ export default function CientificosPageClient({
               />
             </div>
 
-            {/* Filtros por categoria + toggle PT/EN */}
+            {/* Filtros por categoria */}
             <div className="sci-filters flex flex-wrap items-center justify-center gap-3 mt-6">
               <FilterButtons
                 categories={categoriesObj}
@@ -149,26 +149,6 @@ export default function CientificosPageClient({
                 onFilterChange={handleFilterChange}
                 dataAttr="sci-filter"
               />
-              <div
-                className="inline-flex rounded-full border border-brand-divider overflow-hidden"
-                role="group"
-                aria-label="Idioma"
-              >
-                {(['pt', 'en']).map((l) => (
-                  <Link
-                    key={l}
-                    href={`/${l}/cientificos`}
-                    className={`px-3 py-1.5 text-xs font-semibold transition-colors ${
-                      lang === l
-                        ? 'bg-brand-accent text-white'
-                        : 'bg-brand-bg text-brand-deep opacity-60 hover:opacity-100'
-                    }`}
-                    aria-current={lang === l ? 'page' : undefined}
-                  >
-                    {l === 'pt' ? t('cientificos_page.lang_pt') : t('cientificos_page.lang_en')}
-                  </Link>
-                ))}
-              </div>
             </div>
           </div>
         </div>

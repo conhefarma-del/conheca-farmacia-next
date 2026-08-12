@@ -103,7 +103,14 @@ export default async function InterviewDetailPage({ params }) {
     breadcrumbLevels.map((l) => ({ ...l, href: l.href ? `${SITE_URL}${l.href}` : undefined }))
   )
 
-  const interviewee = interview.interviewee || {}
+  // Entrevistados — lista (até 5) com fallback para o formato antigo (objeto)
+  const interviewees =
+    Array.isArray(interview.interviewees) && interview.interviewees.length > 0
+      ? interview.interviewees
+      : interview.interviewee?.name
+        ? [interview.interviewee]
+        : []
+  const interviewee = interviewees[0] || {}
   const interviewer = interview.interviewer || {}
 
   return (
@@ -157,22 +164,26 @@ export default async function InterviewDetailPage({ params }) {
 
           <InterviewViewCounter interviewId={interview.id} />
 
-          {/* Entrevistado + Entrevistador — abaixo do tema, padrão Autores (científicos) */}
-          {(interviewee.name || interviewer.name) && (
+          {/* Entrevistados + Entrevistador — abaixo do tema, padrão Autores (científicos) */}
+          {(interviewees.length > 0 || interviewer.name) && (
             <section className="interview-people-section">
               <div className="interview-people-grid">
-                {interviewee.name && (
-                  <div className="interview-person-card">
-                    <span className="avatar" style={{ background: interviewee.avatarBg || color, width: 44, height: 44, fontSize: 16 }}>
-                      {(interviewee.avatar || (interviewee.name || '?')[0]).toUpperCase()}
+                {interviewees.map((p, idx) => (
+                  <div key={idx} className="interview-person-card">
+                    <span className="avatar" style={{ background: p.avatarBg || color, width: 44, height: 44, fontSize: 16 }}>
+                      {(p.avatar || (p.name || '?')[0]).toUpperCase()}
                     </span>
                     <div className="interview-people-info">
-                      <span className="interview-people-label">{tFn('entrevista_detail.interviewee')}</span>
-                      <div className="interview-people-name">{interviewee.name}</div>
-                      {interviewee.role && <div className="interview-people-role">{interviewee.role}</div>}
+                      <span className="interview-people-label">
+                        {interviewees.length > 1
+                          ? tFn('entrevista_detail.interviewees')
+                          : tFn('entrevista_detail.interviewee')}
+                      </span>
+                      <div className="interview-people-name">{p.name}</div>
+                      {p.role && <div className="interview-people-role">{p.role}</div>}
                     </div>
                   </div>
-                )}
+                ))}
                 {interviewer.name && (
                   <div className="interview-person-card">
                     <span className="avatar" style={{ background: interviewer.avatarBg || '#0a844f', width: 44, height: 44, fontSize: 16 }}>
@@ -246,21 +257,25 @@ export default async function InterviewDetailPage({ params }) {
 
         {/* SIDEBAR 1/3 */}
         <aside className="interview-sidebar">
-          {interviewee.name && (
-            <div className="interview-sidebar-card interview-sidebar-people">
-              <span className="interview-sidebar-label">{tFn('entrevista_detail.interviewee')}</span>
+          {interviewees.map((p, idx) => (
+            <div key={idx} className="interview-sidebar-card interview-sidebar-people">
+              <span className="interview-sidebar-label">
+                {interviewees.length > 1
+                  ? tFn('entrevista_detail.interviewees')
+                  : tFn('entrevista_detail.interviewee')}
+              </span>
               <div className="interview-person-row">
-                <span className="avatar" style={{ background: interviewee.avatarBg || color, width: 44, height: 44, fontSize: 16 }}>
-                  {(interviewee.avatar || (interviewee.name || '?')[0]).toUpperCase()}
+                <span className="avatar" style={{ background: p.avatarBg || color, width: 44, height: 44, fontSize: 16 }}>
+                  {(p.avatar || (p.name || '?')[0]).toUpperCase()}
                 </span>
                 <div>
-                  <div className="interview-person-name">{interviewee.name}</div>
-                  {interviewee.role && <div className="interview-person-role">{interviewee.role}</div>}
+                  <div className="interview-person-name">{p.name}</div>
+                  {p.role && <div className="interview-person-role">{p.role}</div>}
                 </div>
               </div>
-              {interviewee.bio && <p className="interview-person-bio">{interviewee.bio}</p>}
+              {p.bio && <p className="interview-person-bio">{p.bio}</p>}
             </div>
-          )}
+          ))}
 
           {interviewer.name && (
             <div className="interview-sidebar-card interview-sidebar-people">

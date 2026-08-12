@@ -169,27 +169,6 @@ export default function EntrevistasPageClient({
                 </button>
               ))}
 
-              {/* Ordenação: Mais recentes / Mais vistas */}
-              <div
-                className="inline-flex rounded-full border border-brand-divider overflow-hidden"
-                role="group"
-                aria-label={t('entrevistas_page.sort_label')}
-              >
-                <button
-                  type="button"
-                  className={`interview-sort-btn ${ordenar === 'recent' ? 'active' : ''}`}
-                  onClick={() => handleSortChange('recent')}
-                >
-                  {t('entrevistas_page.sort_recent')}
-                </button>
-                <button
-                  type="button"
-                  className={`interview-sort-btn ${ordenar === 'views' ? 'active' : ''}`}
-                  onClick={() => handleSortChange('views')}
-                >
-                  <Eye size={13} /> {t('entrevistas_page.sort_views')}
-                </button>
-              </div>
             </div>
           </div>
         </div>
@@ -198,6 +177,30 @@ export default function EntrevistasPageClient({
       {/* Grid de cards */}
       <section className="bg-brand-bg-alt sci-pagination-scroll">
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-12">
+          {/* Barra acima dos cards: ordenação (fora do hero, padrão /cientificos) */}
+          <div className="flex flex-wrap items-center justify-end gap-3 mb-8">
+            <div
+              className="inline-flex rounded-full border border-brand-divider overflow-hidden"
+              role="group"
+              aria-label={t('entrevistas_page.sort_label')}
+            >
+              <button
+                type="button"
+                className={`interview-sort-btn ${ordenar === 'recent' ? 'active' : ''}`}
+                onClick={() => handleSortChange('recent')}
+              >
+                {t('entrevistas_page.sort_recent')}
+              </button>
+              <button
+                type="button"
+                className={`interview-sort-btn ${ordenar === 'views' ? 'active' : ''}`}
+                onClick={() => handleSortChange('views')}
+              >
+                <Eye size={13} /> {t('entrevistas_page.sort_views')}
+              </button>
+            </div>
+          </div>
+
           {interviews.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {interviews.map((i) => {
@@ -273,7 +276,10 @@ export default function EntrevistasPageClient({
                           >
                             {(i.interviewee?.avatar || (i.interviewee?.name || '?')[0] || '?').toUpperCase()}
                           </span>
-                          <span>{i.interviewee?.name || t('entrevistas_page.unknown_interviewee')}</span>
+                          <span>
+                            {i.interviewee?.name || t('entrevistas_page.unknown_interviewee')}
+                            {i.interviewees?.length > 1 && ` +${i.interviewees.length - 1}`}
+                          </span>
                         </div>
                         <span className="interview-card-cta">
                           {i.videoId
