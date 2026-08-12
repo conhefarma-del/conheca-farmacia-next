@@ -760,7 +760,8 @@
     "unknown_interviewee": "Interviewee",
     "watch_cta": "Watch interview",
     "read_cta": "Read interview",
-    "no_results": "No interviews found."
+    "no_results": "No interviews found.",
+    "views": "views"
   },
   "entrevista_detail": {
     "has_video": "With video",
@@ -771,6 +772,7 @@
     "interviewee": "Interviewee",
     "interviewer": "Interviewer",
     "share": "Share",
-    "related": "Related"
+    "related": "Related",
+    "views": "views"
   }
 }

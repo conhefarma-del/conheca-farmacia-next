@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useContext } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Search, Clock, Video, Mic, Play } from 'lucide-react'
+import { ArrowLeft, Search, Clock, Video, Mic, Play, Eye } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
 
 const CATEGORIES = [
@@ -156,6 +156,9 @@ export default function EntrevistasPageClient({ interviews = [], lang = 'pt', ba
                             </span>
                           </>
                         )}
+                        <span title={t('entrevistas_page.views')}>
+                          <Eye size={12} aria-hidden="true" /> {i.viewCount || 0}
+                        </span>
                       </div>
                       <h2 className="interview-card-title">{i.title}</h2>
                       {i.excerpt && <p className="interview-card-excerpt">{i.excerpt}</p>}

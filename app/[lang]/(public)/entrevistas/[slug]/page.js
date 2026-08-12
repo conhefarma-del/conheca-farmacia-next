@@ -6,10 +6,11 @@ import Breadcrumb from '@/components/ui/Breadcrumb'
 import ArticleContent from '@/components/content/ArticleContent'
 import YouTubeLazyPlayer from '@/components/content/YouTubeLazyPlayer'
 import ShareSection from '@/components/content/ShareSection'
+import InterviewViewCounter from '@/components/content/InterviewViewCounter'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
-import { Clock, Video, Mic, Calendar, BookOpen } from 'lucide-react'
+import { Clock, Video, Mic, Calendar, BookOpen, Eye } from 'lucide-react'
 
 export const revalidate = 3600
 
@@ -146,8 +147,14 @@ export default async function InterviewDetailPage({ params }) {
                   {tFn('entrevista_detail.has_audio')}
                 </span>
               )}
+              <span title={tFn('entrevista_detail.views')}>
+                <Eye size={14} aria-hidden="true" />
+                {interview.viewCount || 0}
+              </span>
             </div>
           </header>
+
+          <InterviewViewCounter interviewId={interview.id} />
 
           {/* Vídeo (condicional) */}
           {interview.videoId && (
