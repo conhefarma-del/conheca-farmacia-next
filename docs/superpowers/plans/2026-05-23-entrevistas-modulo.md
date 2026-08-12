@@ -341,3 +341,18 @@ Adicionar link "Entrevistas" em:
 18. RLS correto (SEC-SQL-01)
 19. SELECT com colunas explícitas (SEC-API-03)
 20. Delete com verificação de sessão (SEC-API-02)
+
+---
+
+## ✅ Estado de Implementação (2026-08-12)
+
+**Implementado** no projeto atual (Next.js App Router + Supabase), com as decisões do proprietário:
+
+- **Apenas PT** por agora — rota `/entrevistas` (listagem) e `/entrevistas/[slug]` (detalhe). Sem rota EN nem traduções de conteúdo.
+- **Seed fictício** de 4 entrevistas (migração `152_interviews.sql`): Profissionais, Líderes, Educadores, Investigadores — substituíveis pelo admin.
+- **Vídeos reais do YouTube**: campo `video_id` no admin + `YouTubeLazyPlayer` (thumbnail com play, iframe com autoplay só ao clicar). CSP: `frame-src` inclui `www.youtube.com`/`youtube-nocookie.com`; `img-src` inclui `i.ytimg.com`.
+- **Menu**: "Entrevistas" no header e drawer mobile, ao lado de Lives (PT apenas).
+- **Admin**: `/admin/entrevistas` (listagem com stats, filtros, arquivar/restaurar/eliminar) + `/admin/entrevistas/new` + `/admin/entrevistas/[id]` (formulário completo: entrevistado/entrevistador, vídeo, sumário, pull quotes, Q&A, referências).
+- **Hero da listagem**: `events-hero` (mesma altura que /eventos) com pesquisa + `filter-btn` por categoria dentro do hero (padrão de /artigos e /cientificos).
+- **SEO**: `buildInterviewSchema` (Article) + breadcrumbs + sitemap (`/pt/entrevistas` estático + slugs dinâmicos).
+- **Sem emojis** — ícones lucide (`Video`, `Mic`, `Play`, `Clock`, `Calendar`).

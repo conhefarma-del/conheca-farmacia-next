@@ -38,6 +38,7 @@ export default async function sitemap() {
     'cientificos/autores': { pt: '/cientificos/autores', en: '/cientificos/autores' },
     eventos:       { pt: '/eventos',    en: '/events' },
     lives:         { pt: '/lives',      en: '/lives' },
+    entrevistas:   { pt: '/entrevistas', en: '/entrevistas' },
     sobre:         { pt: '/sobre',      en: '/about' },
     pesquisa:      { pt: '/pesquisa',   en: '/search' },
     interacoes:    { pt: '/interacoes', en: '/interactions' },
@@ -280,6 +281,29 @@ export default async function sitemap() {
     })
   } catch {}
 
+  // Entrevistas: módulo apenas PT por agora (migration 152).
+  let interviewEntries = []
+  try {
+    const supabase = await createClient()
+    const { data: interviews } = await supabase
+      .from('interviews')
+      .select('slug, updated_at, date')
+      .eq('status', 'published')
+      .eq('is_archived', false)
+    interviewEntries = (interviews ?? []).map((it) => ({
+      url: `${SITE_URL}/pt/entrevistas/${it.slug}`,
+      lastModified: it.updated_at || it.date || undefined,
+      changeFrequency: 'monthly',
+      priority: 0.6,
+      alternates: {
+        languages: {
+          pt: `${SITE_URL}/pt/entrevistas/${it.slug}`,
+          'x-default': `${SITE_URL}/pt/entrevistas/${it.slug}`,
+        },
+      },
+    }))
+  } catch {}
+
   // Artigos científicos: 1 entry PT + 1 entry EN (se houver tradução),
   // rota própria /cientificos (partilhada entre línguas, slug EN diferente).
   let scientificEntries = []
@@ -366,6 +390,7 @@ export default async function sitemap() {
     ...articleEntries,
     ...eventEntries,
     ...liveEntries,
+    ...interviewEntries,
     ...scientificEntries,
     ...authorEntries,
     ...drugEntries,

@@ -40,6 +40,9 @@ export default function MobileDrawer({ lang, t, open, onClose }) {
     { href: getSectionHref(lang, 'cientificos'), label: t('nav.cientificos'), path: 'cientificos' },
     { href: getSectionHref(lang, 'eventos'), label: t('nav.eventos'), path: 'eventos' },
     { href: getSectionHref(lang, 'lives'), label: t('nav.lives'), path: 'lives' },
+    ...(lang === 'pt'
+      ? [{ href: `/${lang}/entrevistas`, label: t('nav.entrevistas'), path: 'entrevistas' }]
+      : []),
     { href: getSectionHref(lang, 'sobre'), label: t('nav.sobre'), path: 'sobre' },
   ]
 

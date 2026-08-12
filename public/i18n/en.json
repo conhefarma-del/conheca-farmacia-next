@@ -16,7 +16,8 @@
     "sobre": "About Us",
     "faq": "FAQ",
     "privacidade": "Privacy",
-    "cientificos": "Scientific"
+    "cientificos": "Scientific",
+    "entrevistas": "Interviews"
   },
   "hero": {
     "title": "Excellence in Pharmaceutical Care",
@@ -744,5 +745,32 @@
     "no_results": "No authors found.",
     "articles_count_one": "1 article",
     "articles_count_other": "{count} articles"
+  },
+  "entrevistas_page": {
+    "hero_title": "Interviews",
+    "hero_subtitle": "Conversations with professionals, leaders, educators and researchers in healthcare.",
+    "search_placeholder": "Search interviews...",
+    "filter_all": "All",
+    "category_profissionais": "Professionals",
+    "category_lideres": "Leaders",
+    "category_educadores": "Educators",
+    "category_investigadores": "Researchers",
+    "back_to_artigos": "Back to Articles",
+    "min_read": "min",
+    "unknown_interviewee": "Interviewee",
+    "watch_cta": "Watch interview",
+    "read_cta": "Read interview",
+    "no_results": "No interviews found."
+  },
+  "entrevista_detail": {
+    "has_video": "With video",
+    "has_audio": "Podcast",
+    "summary": "Summary",
+    "questions": "Questions",
+    "references": "References",
+    "interviewee": "Interviewee",
+    "interviewer": "Interviewer",
+    "share": "Share",
+    "related": "Related"
   }
 }

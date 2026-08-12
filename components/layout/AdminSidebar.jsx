@@ -28,6 +28,7 @@ import {
   ChevronDown,
   Scale,
   Microscope,
+  Mic,
 } from 'lucide-react'
 
 export default function AdminSidebar({ lang, user, onLogout }) {
@@ -208,6 +209,16 @@ export default function AdminSidebar({ lang, user, onLogout }) {
                   </div>
                 )}
               </div>
+            )
+          })()}
+
+          {/* Entrevistas */}
+          {(() => {
+            const href = `/${lang}/admin/entrevistas`
+            return (
+              <Link href={href} className={isActive(href) ? 'active' : ''}>
+                <Mic size={20} /> Entrevistas
+              </Link>
             )
           })()}
 

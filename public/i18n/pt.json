@@ -16,7 +16,8 @@
     "sobre": "Sobre Nós",
     "faq": "FAQ",
     "privacidade": "Privacidade",
-    "cientificos": "Científicos"
+    "cientificos": "Científicos",
+    "entrevistas": "Entrevistas"
   },
   "hero": {
     "title": "Excelência no Cuidado Farmacêutico",
@@ -744,5 +745,32 @@
     "no_results": "Nenhum autor encontrado.",
     "articles_count_one": "1 artigo",
     "articles_count_other": "{count} artigos"
+  },
+  "entrevistas_page": {
+    "hero_title": "Entrevistas",
+    "hero_subtitle": "Conversas com profissionais, líderes, educadores e investigadores da área da saúde.",
+    "search_placeholder": "Pesquisar entrevistas...",
+    "filter_all": "Todos",
+    "category_profissionais": "Profissionais",
+    "category_lideres": "Líderes",
+    "category_educadores": "Educadores",
+    "category_investigadores": "Investigadores",
+    "back_to_artigos": "Voltar para Artigos",
+    "min_read": "min",
+    "unknown_interviewee": "Entrevistado",
+    "watch_cta": "Ver entrevista",
+    "read_cta": "Ler entrevista",
+    "no_results": "Nenhuma entrevista encontrada."
+  },
+  "entrevista_detail": {
+    "has_video": "Com vídeo",
+    "has_audio": "Podcast",
+    "summary": "Sumário",
+    "questions": "Questões",
+    "references": "Referências",
+    "interviewee": "Entrevistado",
+    "interviewer": "Entrevistador",
+    "share": "Partilhar",
+    "related": "Relacionadas"
   }
 }
