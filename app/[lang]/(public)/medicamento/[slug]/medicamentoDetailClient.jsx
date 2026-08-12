@@ -15,6 +15,7 @@ import {
   Flag,
   HeartPulse,
   Info,
+  Library,
   Pill,
   ShieldAlert,
   Users,
@@ -229,6 +230,8 @@ export default function MedicamentoDetailClient({
       : drug.profile?.overviewPro;
   const profileSourceUrl =
     drug.profile?.source?.match(/https:\/\/[^\s]+/)?.[0] || "";
+  const pharmacologySourceUrl =
+    drug.pharmacology?.source?.match(/https:\/\/[^\s]+/)?.[0] || "";
 
   return (
     <div className="medicamento-page">
@@ -287,25 +290,6 @@ export default function MedicamentoDetailClient({
               </button>
             </div>
             <p className="medicamento-overview">{overview}</p>
-            {drug.profile.source && (
-              <p className="medicamento-source">
-                <span className="detail-title">
-                  {t("interacoes_page.fonte")}
-                </span>
-                <span>
-                  {drug.profile.source}
-                  {profileSourceUrl && (
-                    <a
-                      href={profileSourceUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <ArrowUpRight size={13} aria-hidden="true" />
-                    </a>
-                  )}
-                </span>
-              </p>
-            )}
             {drug.aliases?.length > 0 && (
               <p className="medicamento-aliases">
                 <strong>{t("medicamento_detalhe.aliases")}:</strong>{" "}
@@ -337,6 +321,58 @@ export default function MedicamentoDetailClient({
 
         {/* ---- Farmacologia (lazy-loaded) ---- */}
         <PharmacologySection drug={drug} />
+
+        {/* ---- Fontes (perfil + farmacologia) — um único local ---- */}
+        {(drug.profile?.source || drug.pharmacology?.source) && (
+          <section className="medicamento-section">
+            <h2 className="medicamento-section-title">
+              <Library size={18} aria-hidden="true" />
+              {t("interacoes_page.fontes_title")}
+            </h2>
+            <div className="medicamento-cards">
+              <div className="sources-stack">
+                {drug.profile?.source && (
+                  <div className="sources-block">
+                    <span className="sources-label">
+                      {t("interacoes_page.fonte")}
+                    </span>
+                    <p className="sources-text">
+                      {drug.profile.source}
+                      {profileSourceUrl && (
+                        <a
+                          href={profileSourceUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <ArrowUpRight size={13} aria-hidden="true" />
+                        </a>
+                      )}
+                    </p>
+                  </div>
+                )}
+                {drug.pharmacology?.source && (
+                  <div className="sources-block">
+                    <span className="sources-label">
+                      {t("interacoes_page.fonte")}
+                    </span>
+                    <p className="sources-text">
+                      {drug.pharmacology.source}
+                      {pharmacologySourceUrl && (
+                        <a
+                          href={pharmacologySourceUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <ArrowUpRight size={13} aria-hidden="true" />
+                        </a>
+                      )}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* ---- Fármacos relacionados/similares (lazy-loaded) ---- */}
         <RelatedDrugsSection lang={lang} relatedDrugs={relatedDrugs} />

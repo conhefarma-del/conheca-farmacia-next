@@ -6103,23 +6103,39 @@ html.dark .drug-list-card { background: var(--color-brand-bg-alt); }
   margin: 0 0 12px;
 }
 
-.medicamento-source {
+/* Fontes da ficha (perfil + farmacologia) — empilhadas, texto abaixo do rótulo */
+.sources-stack {
   display: flex;
-  align-items: baseline;
-  gap: 8px;
-  font-size: 12px;
-  color: var(--color-brand-deep);
-  opacity: 0.75;
-  margin: 0 0 8px;
+  flex-direction: column;
+  gap: 14px;
 }
-
-.medicamento-source .detail-title { flex-shrink: 0; }
-
-.medicamento-source a {
+.sources-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.sources-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-brand-deep);
+  opacity: 0.55;
+}
+.sources-text {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--color-brand-deep);
+  opacity: 0.8;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+.sources-text a {
   display: inline-flex;
   align-items: center;
   color: var(--color-brand-accent);
-  margin-left: 4px;
+  margin-left: 6px;
   vertical-align: middle;
 }
 
@@ -6354,6 +6370,12 @@ html.dark .medicamento-profile { background: var(--color-brand-bg-alt); }
   border-radius: 12px;
   background: var(--color-brand-bg-alt);
   padding: 16px;
+}
+
+/* /interacoes: feedback centrado e alinhado com a secção de fontes (900px) */
+.interacoes-page .feedback-box {
+  max-width: 900px;
+  margin: 28px auto 12px;
 }
 
 .feedback-box-toggle {
@@ -6933,6 +6955,12 @@ html.dark .admin-feedback-action.is-archive { color: #f87171; }
   opacity: 0.5;
   flex-wrap: wrap;
 }
+.sci-hero-meta-readtime {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
 
 /* Abstract box */
 .sci-abstract-box {
@@ -6985,6 +7013,7 @@ html.dark .admin-feedback-action.is-archive { color: #f87171; }
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+.sci-about-doi { word-break: break-all; }
 .sci-about-doi:hover,
 .sci-about-license:hover {
   opacity: 0.8;
@@ -7045,7 +7074,7 @@ html.dark .admin-feedback-action.is-archive { color: #f87171; }
 }
 .sci-authors-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
   gap: 10px;
 }
 .sci-author-card {
@@ -7090,6 +7119,32 @@ html.dark .admin-feedback-action.is-archive { color: #f87171; }
   line-height: 1.8;
   color: var(--color-brand-deep);
   opacity: 0.9;
+  overflow-wrap: break-word;
+}
+.sci-article-body pre {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 12px 14px;
+  background: var(--color-brand-bg-alt);
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.sci-article-body table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin-bottom: 18px;
+}
+.sci-article-body th, .sci-article-body td {
+  border: 1px solid var(--color-brand-divider);
+  padding: 6px 10px;
+}
+.sci-article-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
 }
 .sci-article-body h2 {
   font-family: var(--font-sans), system-ui, sans-serif;
@@ -7139,6 +7194,16 @@ html.dark .admin-feedback-action.is-archive { color: #f87171; }
   cursor: pointer;
   transition: background 0.15s, color 0.15s, opacity 0.15s;
   font-family: var(--font-sans), system-ui, sans-serif;
+  white-space: nowrap;
+}
+@media (max-width: 640px) {
+  .citation-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .citation-tab {
+    flex: 0 0 auto;
+  }
 }
 .citation-tab:hover { opacity: 0.8; background: var(--color-brand-bg-alt); }
 .citation-tab.active { opacity: 1; border-bottom: 2px solid var(--color-brand-accent); }
@@ -7200,7 +7265,10 @@ html.dark .admin-feedback-action.is-archive { color: #f87171; }
   gap: 8px;
   align-items: flex-start;
 }
-.sci-reference-item > span { min-width: 0; }
+.sci-reference-item > span {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
 .sci-ref-link {
   color: var(--color-brand-accent);
   text-decoration: none;

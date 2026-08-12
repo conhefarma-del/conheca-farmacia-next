@@ -12,6 +12,7 @@ import ArticleLangToggle from '@/components/content/ArticleLangToggle'
 import AuthorMenu from '@/components/content/AuthorMenu'
 import ArticleViewCounter from '@/components/content/ArticleViewCounter'
 import ShareSection from '@/components/content/ShareSection'
+import { Clock } from 'lucide-react'
 import { notFound } from 'next/navigation'
 
 export const dynamic = 'force-dynamic'
@@ -181,7 +182,10 @@ export default async function CientificoDetailPage({ params }) {
               {article.readTime && (
                 <>
                   <span>·</span>
-                  <span>🕒 {article.readTime} {tFn('cientifico_detail.min_read')}</span>
+                  <span className="sci-hero-meta-readtime">
+                    <Clock size={13} aria-hidden="true" />
+                    {article.readTime} {tFn('cientifico_detail.min_read')}
+                  </span>
                 </>
               )}
               {article.doi && (

@@ -50,12 +50,6 @@ export default function PharmacologySection({ drug }) {
             text={drug.pharmacology.halfLife}
           />
         </div>
-        {drug.pharmacology.source && (
-          <p className="medicamento-source">
-            <span className="detail-title">{t('interacoes_page.fonte')}</span>
-            <span>{drug.pharmacology.source}</span>
-          </p>
-        )}
       </div>
     </section>
   )
