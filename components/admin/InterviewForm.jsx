@@ -20,6 +20,31 @@ function generateSlug(title) {
     .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 }
 
+/**
+ * Extrai o ID de vídeo do YouTube a partir de um link completo ou ID puro.
+ * Suporta: youtube.com/watch?v=, youtu.be/, /embed/, /shorts/, /live/ e ID
+ * simples (11 caracteres). Devolve null se não reconhecer nenhum formato.
+ */
+function extractYouTubeId(value) {
+  if (!value) return ''
+  const v = String(value).trim()
+  if (!v) return ''
+
+  // ID puro: 11 caracteres [A-Za-z0-9_-]
+  if (/^[A-Za-z0-9_-]{11}$/.test(v)) return v
+
+  // Links com parâmetro v= (watch, short, etc.) ou path direto
+  const m = v.match(/(?:youtube(?:-nocookie)?\.com\/(?:watch\?.*v=|embed\/|shorts\/|live\/|v\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/)
+  if (m) return m[1]
+
+  // watch com v= antes do domain (ex.: https://www.youtube.com/watch?v=...) já
+  // coberto acima; fallback final: qualquer v= no URL
+  const vParam = v.match(/[?&]v=([A-Za-z0-9_-]{11})/)
+  if (vParam) return vParam[1]
+
+  return ''
+}
+
 export default function InterviewForm({ mode = 'create', initialData = null, lang = 'pt' }) {
   const router = useRouter()
   const [saving, setSaving] = useState(false)
@@ -37,6 +62,12 @@ export default function InterviewForm({ mode = 'create', initialData = null, lan
   const [readTime, setReadTime] = useState(initialData?.read_time || '')
   const [videoDuration, setVideoDuration] = useState(initialData?.video_duration || '')
   const [videoId, setVideoId] = useState(initialData?.video_id || '')
+  const [videoInput, setVideoInput] = useState(
+    initialData?.video_id
+      ? `https://www.youtube.com/watch?v=${initialData.video_id}`
+      : ''
+  )
+  const [videoInputValid, setVideoInputValid] = useState(true)
   const [thumbnailUrl, setThumbnailUrl] = useState(initialData?.thumbnail_url || '')
   const [audioUrl, setAudioUrl] = useState(initialData?.audio_url || '')
   const [executiveSummary, setExecutiveSummary] = useState(initialData?.executive_summary || '')
@@ -199,9 +230,30 @@ export default function InterviewForm({ mode = 'create', initialData = null, lan
       {/* Vídeo */}
       <div className="admin-form-grid">
         <div className="admin-form-group">
-          <label>YouTube Video ID</label>
-          <input type="text" value={videoId} onChange={(e) => setVideoId(e.target.value)}
-            className="admin-input" placeholder="dQw4w9WgXcQ (opcional)" />
+          <label>Vídeo do YouTube (link ou ID)</label>
+          <input
+            type="text"
+            value={videoInput}
+            onChange={(e) => {
+              const raw = e.target.value
+              setVideoInput(raw)
+              const extracted = extractYouTubeId(raw)
+              setVideoInputValid(!raw.trim() || Boolean(extracted))
+              setVideoId(extracted)
+            }}
+            className="admin-input"
+            placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ ou só dQw4w9WgXcQ (opcional)"
+          />
+          {!videoInputValid && (
+            <p style={{ color: '#b45309', fontSize: 12, marginTop: 6 }}>
+              Não reconhecido como link do YouTube. Cola o link normal (watch/youtu.be/embed/shorts) ou só o ID de 11 caracteres.
+            </p>
+          )}
+          {videoId && videoInputValid && (
+            <p style={{ color: 'var(--admin-text-muted)', fontSize: 12, marginTop: 6 }}>
+              ID detetado: <code style={{ fontFamily: 'monospace' }}>{videoId}</code>
+            </p>
+          )}
         </div>
         <div className="admin-form-group">
           <label>Thumbnail URL</label>
