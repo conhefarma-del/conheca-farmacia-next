@@ -2,7 +2,7 @@
 
 import { useContext, useState } from 'react'
 import Link from 'next/link'
-import { ClipboardList, FlaskConical, Flame, Gauge, Layers, Seedling, ShieldAlert } from 'lucide-react'
+import { ClipboardList, FlaskConical, Flame, Gauge, Layers, ShieldAlert, Sprout } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
 
 /**
@@ -19,7 +19,7 @@ export default function QuizModesClient({ lang = 'pt', decks = [], typeCounts = 
   const levels = [
     {
       level: 'facil',
-      icon: Seedling,
+      icon: Sprout,
       color: '#0a844f',
       count: 8,
       title: t('quiz_page.level_facil'),
