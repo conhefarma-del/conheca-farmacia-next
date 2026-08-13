@@ -1,0 +1,160 @@
+# =============================================================================
+# Conheça Farmácia — WhatsApp Bot (stack Docker Compose)
+# -----------------------------------------------------------------------------
+# Serviços: Caddy (proxy/HTTPS) · n8n (workflows) · Evolution API (WhatsApp)
+#           · Postgres x2 (n8n + Evolution) · Redis · Portainer (GUI Docker)
+#
+# Regras de segurança:
+#   - Só o Caddy expõe portas (80/443). n8n/Evolution/Portainer ficam
+#     internos na rede `whatsapp-net`.
+#   - Evolution API autentica com AUTHENTICATION_API_KEY (obrigatório).
+#   - n8n com basic auth (N8N_BASIC_AUTH_*) e N8N_ENCRYPTION_KEY (obrigatório).
+#   - Preenche .env (copia de .env.example) ANTES de `docker compose up -d`.
+#
+# Para arrancar:  cp .env.example .env  &&  docker compose up -d
+# =============================================================================
+
+services:
+  # --- Reverse proxy + HTTPS automático (portas públicas 80/443) -----------
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - whatsapp-net
+
+  # --- n8n (workflows / orquestração do bot) --------------------------------
+  n8n:
+    image: n8nio/n8n:latest
+    restart: unless-stopped
+    environment:
+      - N8N_HOST=${N8N_HOST}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=https://${N8N_HOST}/
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD}
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=n8n-db
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=${N8N_DB_NAME}
+      - DB_POSTGRESDB_USER=${N8N_DB_USER}
+      - DB_POSTGRESDB_PASSWORD=${N8N_DB_PASSWORD}
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      n8n-db:
+        condition: service_healthy
+    networks:
+      - whatsapp-net
+
+  n8n-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=${N8N_DB_NAME}
+      - POSTGRES_USER=${N8N_DB_USER}
+      - POSTGRES_PASSWORD=${N8N_DB_PASSWORD}
+    volumes:
+      - n8n_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${N8N_DB_USER} -d ${N8N_DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - whatsapp-net
+
+  # --- Evolution API (ligação ao WhatsApp) ----------------------------------
+  evolution:
+    image: evoapicloud/evolution-api:latest
+    restart: unless-stopped
+    environment:
+      - SERVER_URL=https://${EVOLUTION_HOST}
+      - AUTHENTICATION_API_KEY=${EVOLUTION_API_KEY}
+      - DOCKER_ENV=true
+      # Base de dados (PostgreSQL — requisito oficial)
+      - DATABASE_PROVIDER=postgresql
+      - DATABASE_HOST=evolution-db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=${EVOLUTION_DB_NAME}
+      - DATABASE_USER=${EVOLUTION_DB_USER}
+      - DATABASE_PASSWORD=${EVOLUTION_DB_PASSWORD}
+      - DATABASE_ENABLE_SSL=false
+      # Cache / eventos
+      - REDIS_ENABLED=true
+      - REDIS_URI=redis://redis:6379/6
+      # Webhooks para o n8n (assinatura com segredo — obrigatório)
+      - WEBHOOK_GLOBAL_ENABLED=true
+      - WEBHOOK_GLOBAL_URL=${EVOLUTION_WEBHOOK_URL}
+      - WEBHOOK_GLOBAL_WEBHOOK_BY_EVENTS=true
+      - WEBHOOK_GLOBAL_SECRET_KEY=${EVOLUTION_WEBHOOK_SECRET}
+      - WEBHOOK_EVENTS=${EVOLUTION_WEBHOOK_EVENTS}
+      # Guardar mensagens na BD (útil para histórico/debug)
+      - STORE_MESSAGES=true
+      - STORE_MESSAGE_UP=true
+      - STORE_MESSAGE_CONTACT=true
+      - STORE_MESSAGE_CHAT=true
+    volumes:
+      - evolution_media:/evolution/store
+    depends_on:
+      - evolution-db
+      - redis
+    networks:
+      - whatsapp-net
+
+  evolution-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=${EVOLUTION_DB_NAME}
+      - POSTGRES_USER=${EVOLUTION_DB_USER}
+      - POSTGRES_PASSWORD=${EVOLUTION_DB_PASSWORD}
+    volumes:
+      - evolution_db:/var/lib/postgresql/data
+    networks:
+      - whatsapp-net
+
+  # --- Redis (requisito da Evolution API) -----------------------------------
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    networks:
+      - whatsapp-net
+
+  # --- Portainer (GUI web para gerir o Docker — ideal para principiantes) ---
+  portainer:
+    image: portainer/portainer-ce:latest
+    restart: unless-stopped
+    command: -H unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - whatsapp-net
+
+networks:
+  whatsapp-net:
+    driver: bridge
+
+volumes:
+  caddy_data:
+  caddy_config:
+  n8n_data:
+  n8n_db:
+  evolution_media:
+  evolution_db:
+  redis_data:
+  portainer_data:

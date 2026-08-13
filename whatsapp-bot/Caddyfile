@@ -1,0 +1,23 @@
+# =============================================================================
+# Conheça Farmácia — WhatsApp Bot · Caddyfile
+# -----------------------------------------------------------------------------
+# O Caddy emite certificados HTTPS automáticos (Let's Encrypt) para cada
+# domínio. ANTES de arrancar: aponta estes subdomínios no DNS para o IP
+# público da VPS (registo A).
+#
+# Ex.: n8n.exemplo.com  A  1.2.3.4
+#      evo.exemplo.com  A  1.2.3.4
+#      portainer.exemplo.com  A  1.2.3.4
+# =============================================================================
+
+n8n.exemplo.com {
+    reverse_proxy n8n:5678
+}
+
+evo.exemplo.com {
+    reverse_proxy evolution:8080
+}
+
+portainer.exemplo.com {
+    reverse_proxy portainer:9000
+}
