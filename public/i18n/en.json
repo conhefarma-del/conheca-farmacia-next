@@ -31,7 +31,7 @@
     "animated_lives": "Lives & Webinars"
   },
   "search": {
-    "placeholder": "Search articles, events, lives, guides, protocols and drugs...",
+    "placeholder": "Search articles, events, lives, guides, protocols, drugs, interviews and interviewees...",
     "button": "Search",
     "todos": "All",
     "artigos": "Articles",
@@ -56,7 +56,9 @@
     "interacoes": "Interactions",
     "fechar_pesquisa": "Close search",
     "cientificos": "Scientific",
-    "autores": "Authors"
+    "autores": "Authors",
+    "entrevistas": "Interviews",
+    "entrevistados": "Interviewees"
   },
   "content": {
     "artigo": "Article",
