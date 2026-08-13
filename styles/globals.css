@@ -9529,6 +9529,70 @@ html.dark .flash-grade-btn {
   color: #6fd3a3;
   white-space: nowrap;
 }
+.quiz-level-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+  background: var(--color-brand-card);
+  border: 1px solid var(--color-brand-divider);
+  border-radius: 16px;
+  padding: 20px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+.quiz-level-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--level-color, var(--color-brand-accent));
+}
+.quiz-level-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md-soft);
+  border-color: var(--level-color, var(--color-brand-accent));
+}
+.quiz-level-ic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--level-color, var(--color-brand-accent));
+  color: #fff;
+}
+.quiz-level-count {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--level-color, var(--color-brand-accent));
+  margin-top: 6px;
+}
+.quiz-level-name {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.quiz-level-desc {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-brand-deep);
+  opacity: 0.6;
+  flex: 1;
+}
+.quiz-level-go {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--level-color, var(--color-brand-accent));
+  margin-top: 8px;
+}
 .quiz-section-title {
   font-size: 20px;
   font-weight: 800;

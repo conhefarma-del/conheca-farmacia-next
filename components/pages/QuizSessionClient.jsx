@@ -14,7 +14,7 @@ import { normalizeAnswer } from '@/lib/quiz/engine'
  * As perguntas vêm do servidor SEM a resposta correta; cada resposta é
  * validada no servidor (answerQuiz) contra o dado real.
  */
-export default function QuizSessionClient({ lang = 'pt', mode = 'rapido', source = 'mixed', deckSlug = '', deckName = '', save = true }) {
+export default function QuizSessionClient({ lang = 'pt', mode = 'rapido', level = '', source = 'mixed', deckSlug = '', deckName = '', save = true }) {
   const { t } = useContext(LangContext)
 
   const [phase, setPhase] = useState('loading') // loading | question | summary | error
@@ -30,7 +30,7 @@ export default function QuizSessionClient({ lang = 'pt', mode = 'rapido', source
   useEffect(() => {
     let cancelled = false
     setPhase('loading')
-    startQuiz({ mode, deckSlug, source, count: 10 }).then((res) => {
+    startQuiz({ mode, level, deckSlug, source, count: 10 }).then((res) => {
       if (cancelled) return
       if (!res.ok) {
         setPhase('error')
@@ -50,7 +50,9 @@ export default function QuizSessionClient({ lang = 'pt', mode = 'rapido', source
       cancelled = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, deckSlug, source])
+  }, [mode, level, deckSlug, source])
+
+  const levelLabel = mode === 'nivel' && level ? t(`quiz_page.level_${level}`) : ''
 
   const current = questions[index]
 
@@ -83,6 +85,7 @@ export default function QuizSessionClient({ lang = 'pt', mode = 'rapido', source
       if (save) {
         const res = await finishQuiz({
           mode,
+          level,
           source,
           deckId,
           total: questions.length,
@@ -108,7 +111,7 @@ export default function QuizSessionClient({ lang = 'pt', mode = 'rapido', source
     setResults([])
     setSaveMsg('')
     setPhase('loading')
-    startQuiz({ mode, deckSlug, source, count: 10 }).then((res) => {
+    startQuiz({ mode, level, deckSlug, source, count: 10 }).then((res) => {
       if (!res.ok || !res.questions?.length) {
         setPhase('error')
         setError(res.error || t('quiz_session.no_questions'))
@@ -198,7 +201,7 @@ export default function QuizSessionClient({ lang = 'pt', mode = 'rapido', source
       </Link>
 
       <div className="quiz-session-head">
-        <h1 className="quiz-session-title">{deckName || t('quiz_session.page_title')}</h1>
+        <h1 className="quiz-session-title">{deckName || levelLabel || t('quiz_session.page_title')}</h1>
         <span className="quiz-session-meta">
           {t('quiz_session.question_of', { current: index + 1, total: questions.length })}
         </span>

@@ -908,7 +908,15 @@
     "type_protocol_desc": "Questions from the clinical protocols",
     "cards_label": "cards",
     "questions_label": "questions",
-    "start_deck": "Start"
+    "start_deck": "Start",
+    "levels_title": "By difficulty level",
+    "level_facil": "Easy",
+    "level_facil_desc": "Flashcards and therapeutic classes — basic recall",
+    "level_medio": "Medium",
+    "level_medio_desc": "Adds mechanism of action and food/disease interactions",
+    "level_dificil": "Hard",
+    "level_dificil_desc": "Adds half-life, drug-drug interactions and protocols",
+    "level_cta": "Start"
   },
   "quiz_session": {
     "page_title": "Quiz",

@@ -6,24 +6,31 @@ import QuizSessionClient from '@/components/pages/QuizSessionClient'
 export const revalidate = 0
 
 const VALID_SOURCES = ['flashcard', 'pharmacology', 'interaction', 'protocol']
+const VALID_LEVELS = ['facil', 'medio', 'dificil']
 
 /**
  * Interpreta o slug da sessão:
  *  - `rapido`                    → modo rápido (mistura)
+ *  - `nivel-<level>`             → modo por nível de dificuldade
  *  - `tipo-<source>`             → modo por tipo
  *  - `deck-<deckSlug>`           → modo por deck
  */
 function parseSlug(slug) {
-  if (slug === 'rapido') return { mode: 'rapido', source: 'mixed', deckSlug: '' }
+  if (slug === 'rapido') return { mode: 'rapido', source: 'mixed', deckSlug: '', level: '' }
+  if (slug.startsWith('nivel-')) {
+    const level = slug.slice(6)
+    if (!VALID_LEVELS.includes(level)) return null
+    return { mode: 'nivel', source: level, deckSlug: '', level }
+  }
   if (slug.startsWith('tipo-')) {
     const source = slug.slice(5)
     if (!VALID_SOURCES.includes(source)) return null
-    return { mode: 'tipo', source, deckSlug: '' }
+    return { mode: 'tipo', source, deckSlug: '', level: '' }
   }
   if (slug.startsWith('deck-')) {
     const deckSlug = slug.slice(5)
     if (!deckSlug) return null
-    return { mode: 'deck', source: 'flashcard', deckSlug }
+    return { mode: 'deck', source: 'flashcard', deckSlug, level: '' }
   }
   return null
 }
@@ -43,11 +50,11 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function QuizSessionPage({ params, searchParams }) {
-  const { lang } = await params
+  const { lang, slug } = await params
   const sp = await searchParams
   const safeLang = SUPPORTED_LANGS.includes(lang) ? lang : DEFAULT_LANG
 
-  const config = parseSlug(String(params.slug || ''))
+  const config = parseSlug(slug)
   if (!config) notFound()
 
   // Nome do deck (só para o cabeçalho da sessão)
@@ -67,6 +74,7 @@ export default async function QuizSessionPage({ params, searchParams }) {
     <QuizSessionClient
       lang={safeLang}
       mode={config.mode}
+      level={config.level}
       source={config.source}
       deckSlug={config.deckSlug}
       deckName={deckName}

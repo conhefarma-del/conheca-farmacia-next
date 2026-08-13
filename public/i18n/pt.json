@@ -908,7 +908,15 @@
     "type_protocol_desc": "Perguntas dos protocolos clínicos",
     "cards_label": "cartões",
     "questions_label": "perguntas",
-    "start_deck": "Começar"
+    "start_deck": "Começar",
+    "levels_title": "Por nível de dificuldade",
+    "level_facil": "Fácil",
+    "level_facil_desc": "Flashcards e classes terapêuticas — memória básica",
+    "level_medio": "Médio",
+    "level_medio_desc": "Soma mecanismo de ação e interações alimento/doença",
+    "level_dificil": "Difícil",
+    "level_dificil_desc": "Soma meia-vida, interações fármaco-fármaco e protocolos",
+    "level_cta": "Começar"
   },
   "quiz_session": {
     "page_title": "Quiz",

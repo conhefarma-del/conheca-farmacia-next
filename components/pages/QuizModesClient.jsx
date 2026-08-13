@@ -2,7 +2,7 @@
 
 import { useContext, useState } from 'react'
 import Link from 'next/link'
-import { ClipboardList, FlaskConical, Layers, ShieldAlert, Zap } from 'lucide-react'
+import { ClipboardList, FlaskConical, Flame, Gauge, Layers, Seedling, ShieldAlert } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
 
 /**
@@ -15,6 +15,33 @@ export default function QuizModesClient({ lang = 'pt', decks = [], typeCounts = 
   const { t } = useContext(LangContext)
   const [save, setSave] = useState(true)
   const qs = save ? '' : '?save=0'
+
+  const levels = [
+    {
+      level: 'facil',
+      icon: Seedling,
+      color: '#0a844f',
+      count: 8,
+      title: t('quiz_page.level_facil'),
+      desc: t('quiz_page.level_facil_desc'),
+    },
+    {
+      level: 'medio',
+      icon: Gauge,
+      color: '#d97706',
+      count: 12,
+      title: t('quiz_page.level_medio'),
+      desc: t('quiz_page.level_medio_desc'),
+    },
+    {
+      level: 'dificil',
+      icon: Flame,
+      color: '#dc2626',
+      count: 16,
+      title: t('quiz_page.level_dificil'),
+      desc: t('quiz_page.level_dificil_desc'),
+    },
+  ]
 
   const types = [
     {
@@ -88,17 +115,27 @@ export default function QuizModesClient({ lang = 'pt', decks = [], typeCounts = 
 
       <section className="bg-brand-bg-alt">
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-12">
-          {/* Modo rápido */}
-          <Link href={`/${lang}/quiz/rapido${qs}`} className="quiz-quick-card">
-            <span className="quiz-quick-ic">
-              <Zap size={26} aria-hidden="true" />
-            </span>
-            <div className="quiz-quick-body">
-              <h2 className="quiz-quick-title">{t('quiz_page.quick_title')}</h2>
-              <p className="quiz-quick-desc">{t('quiz_page.quick_desc')}</p>
-            </div>
-            <span className="quiz-quick-cta">{t('quiz_page.quick_cta')} →</span>
-          </Link>
+          {/* Por nível de dificuldade */}
+          <h2 className="quiz-section-title">{t('quiz_page.levels_title')}</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {levels.map((lvl) => {
+              const Icon = lvl.icon
+              return (
+                <Link
+                  key={lvl.level}
+                  href={`/${lang}/quiz/nivel-${lvl.level}${qs}`}
+                  className="quiz-level-card"
+                  style={{ '--level-color': lvl.color }}
+                >
+                  <span className="quiz-level-ic"><Icon size={22} aria-hidden="true" /></span>
+                  <span className="quiz-level-count">{lvl.count} {t('quiz_page.questions_label')}</span>
+                  <h3 className="quiz-level-name">{lvl.title}</h3>
+                  <p className="quiz-level-desc">{lvl.desc}</p>
+                  <span className="quiz-level-go">{t('quiz_page.level_cta')} →</span>
+                </Link>
+              )
+            })}
+          </div>
 
           {/* Por deck */}
           <h2 className="quiz-section-title">{t('quiz_page.decks_title')}</h2>
