@@ -3,7 +3,7 @@
 import { useContext, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import {
-  AlertTriangle, ArrowLeft, ArrowRight, CheckCircle2, RotateCcw, Sparkles, XCircle,
+  AlertTriangle, ArrowLeft, ArrowRight, CheckCircle2, RotateCcw, Sparkles, Target, TrendingDown, TrendingUp, XCircle,
 } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
 import { startQuiz, answerQuiz, finishQuiz } from '@/lib/actions/quiz'
@@ -126,6 +126,31 @@ export default function QuizSessionClient({ lang = 'pt', mode = 'rapido', level 
   const correctCount = results.filter(Boolean).length
   const pct = questions.length > 0 ? Math.round((correctCount / questions.length) * 100) : 0
 
+  // Sugestão de nível no fim da sessão (só em modo nível) com base no acerto
+  const levelSuggestion = (() => {
+    if (mode !== 'nivel' || !level || questions.length === 0) return null
+    const order = ['facil', 'medio', 'dificil']
+    const idx = order.indexOf(level)
+    if (idx === -1) return null
+    if (pct >= 80 && idx < order.length - 1) {
+      const next = order[idx + 1]
+      return {
+        tone: 'up',
+        next,
+        text: t('quiz_session.level_suggest_up', { pct, level: t(`quiz_page.level_${next}`) }),
+      }
+    }
+    if (pct < 50 && idx > 0) {
+      const next = order[idx - 1]
+      return {
+        tone: 'down',
+        next,
+        text: t('quiz_session.level_suggest_down', { pct, level: t(`quiz_page.level_${next}`) }),
+      }
+    }
+    return { tone: 'ok', next: '', text: t('quiz_session.level_suggest_ok') }
+  })()
+
   // ---------- Loading ----------
   if (phase === 'loading') {
     return (
@@ -178,6 +203,24 @@ export default function QuizSessionClient({ lang = 'pt', mode = 'rapido', level 
             {saveMsg === 'not_saved' && <p className="quiz-save-msg warn">{t('quiz_session.not_saved')}</p>}
             {saveMsg === 'error' && <p className="quiz-save-msg warn">{t('quiz_session.save_error')}</p>}
           </div>
+          {levelSuggestion && (
+            <div className={`quiz-level-suggest is-${levelSuggestion.tone}`}>
+              {levelSuggestion.tone === 'up' && <TrendingUp size={18} aria-hidden="true" />}
+              {levelSuggestion.tone === 'down' && <TrendingDown size={18} aria-hidden="true" />}
+              {levelSuggestion.tone === 'ok' && <Target size={18} aria-hidden="true" />}
+              <div className="quiz-level-suggest-body">
+                <p className="quiz-level-suggest-text">{levelSuggestion.text}</p>
+                {levelSuggestion.next && (
+                  <Link
+                    href={`/${lang}/quiz/nivel-${levelSuggestion.next}${save ? '' : '?save=0'}`}
+                    className="quiz-level-suggest-cta"
+                  >
+                    {t('quiz_session.level_try')} {t(`quiz_page.level_${levelSuggestion.next}`)} →
+                  </Link>
+                )}
+              </div>
+            </div>
+          )}
           <div className="quiz-summary-actions">
             <button className="quiz-grade-btn quiz-grade-good" onClick={handleRestart}>
               <RotateCcw size={15} /> {t('quiz_session.repeat')}

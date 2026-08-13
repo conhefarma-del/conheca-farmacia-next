@@ -943,6 +943,10 @@
     "another_mode": "Another mode",
     "saved": "Result saved to your progress.",
     "not_saved": "No-account mode — the result was not saved.",
-    "save_error": "Could not save the result."
+    "save_error": "Could not save the result.",
+    "level_suggest_up": "Excellent! With {pct}% accuracy, you are ready for the {level} level.",
+    "level_suggest_down": "With {pct}% accuracy, it is worth consolidating at the {level} level before moving up.",
+    "level_suggest_ok": "Good job! You are at the right level for you — keep practicing.",
+    "level_try": "Try the"
   }
 }

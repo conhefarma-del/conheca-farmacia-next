@@ -9962,6 +9962,58 @@ html.dark .flash-grade-btn {
 .quiz-save-msg.warn {
   color: #b7791f;
 }
+.quiz-level-suggest {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: var(--color-brand-bg-alt);
+  border: 1px solid var(--color-brand-divider);
+  text-align: left;
+  color: var(--color-brand-deep);
+}
+.quiz-level-suggest > svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.quiz-level-suggest.is-up {
+  border-color: rgba(10, 132, 79, 0.45);
+}
+.quiz-level-suggest.is-up > svg {
+  color: var(--color-brand-accent);
+}
+.quiz-level-suggest.is-down {
+  border-color: rgba(217, 119, 6, 0.45);
+}
+.quiz-level-suggest.is-down > svg {
+  color: #d97706;
+}
+.quiz-level-suggest.is-ok {
+  border-color: var(--color-brand-divider);
+}
+.quiz-level-suggest.is-ok > svg {
+  color: var(--color-brand-accent);
+}
+.quiz-level-suggest-body {
+  flex: 1;
+}
+.quiz-level-suggest-text {
+  font-size: 14px;
+  line-height: 1.5;
+}
+.quiz-level-suggest-cta {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-brand-accent);
+  text-decoration: none;
+}
+.quiz-level-suggest-cta:hover {
+  text-decoration: underline;
+}
 .quiz-summary-actions {
   display: flex;
   justify-content: center;

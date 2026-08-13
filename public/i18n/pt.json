@@ -943,6 +943,10 @@
     "another_mode": "Outro modo",
     "saved": "Resultado guardado no teu progresso.",
     "not_saved": "Modo sem registo — o resultado não foi guardado.",
-    "save_error": "Não foi possível guardar o resultado."
+    "save_error": "Não foi possível guardar o resultado.",
+    "level_suggest_up": "Excelente! Com {pct}% de acerto, estás pronto para o nível {level}.",
+    "level_suggest_down": "Com {pct}% de acerto, vale a pena consolidar no nível {level} antes de avançar.",
+    "level_suggest_ok": "Bom trabalho! Estás no nível certo para ti — continua a praticar.",
+    "level_try": "Experimentar o nível"
   }
 }
