@@ -1,5 +1,5 @@
 import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
-import { getInterviews } from '@/lib/api/interviews'
+import { getInterviews, getInterviewCategories } from '@/lib/api/interviews'
 import EntrevistasPageClient from '@/components/pages/EntrevistasPageClient'
 
 export const dynamic = 'force-dynamic'
@@ -71,6 +71,13 @@ export default async function EntrevistasPage({ params, searchParams }) {
     console.error('Error fetching interviews:', err)
   }
 
+  let categories = []
+  try {
+    categories = await getInterviewCategories()
+  } catch (err) {
+    console.error('Error fetching interview categories:', err)
+  }
+
   // Filtro por categoria
   let filtered = categoria ? interviews.filter((i) => i.category === categoria) : interviews
 
@@ -100,6 +107,7 @@ export default async function EntrevistasPage({ params, searchParams }) {
   return (
     <EntrevistasPageClient
       interviews={pageInterviews}
+      categories={categories}
       lang={safeLang}
       total={total}
       page={safePage}

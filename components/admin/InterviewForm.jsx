@@ -6,11 +6,13 @@ import { Save, X, Plus, Trash2 } from 'lucide-react'
 import { createInterview, updateInterview } from '@/lib/actions/content'
 import { parseAudioEmbed } from '@/lib/utils/audio-embed'
 
-const CATEGORIES = [
-  { value: 'profissionais', label: 'Profissionais', color: '#ff6c23' },
-  { value: 'lideres', label: 'Líderes', color: '#0a844f' },
-  { value: 'educadores', label: 'Educadores', color: '#002a32' },
-  { value: 'investigadores', label: 'Investigadores', color: '#006171' },
+// Fallback quando as categorias da BD (interview_categories, 155) ainda não
+// foram carregadas — o form recebe-as via prop `categories` das páginas.
+const FALLBACK_CATEGORIES = [
+  { slug: 'profissionais', name: 'Profissionais', color: '#ff6c23' },
+  { slug: 'lideres', name: 'Líderes', color: '#0a844f' },
+  { slug: 'educadores', name: 'Educadores', color: '#002a32' },
+  { slug: 'investigadores', name: 'Investigadores', color: '#006171' },
 ]
 
 function generateSlug(title) {
@@ -87,8 +89,9 @@ function formatDuration(seconds) {
   return h > 0 ? `${h}:${mm}:${ss}` : `${m}:${ss}`
 }
 
-export default function InterviewForm({ mode = 'create', initialData = null, lang = 'pt' }) {
+export default function InterviewForm({ mode = 'create', initialData = null, lang = 'pt', categories = [] }) {
   const router = useRouter()
+  const availableCategories = categories.length > 0 ? categories : FALLBACK_CATEGORIES
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
@@ -291,7 +294,7 @@ export default function InterviewForm({ mode = 'create', initialData = null, lan
     setError('')
     setSaving(true)
 
-    const categoryLabel = CATEGORIES.find(c => c.value === category)?.label || category
+    const categoryLabel = availableCategories.find(c => c.slug === category)?.name || category
 
     const formData = {
       title, slug, category, category_label: categoryLabel, status, featured,
@@ -324,7 +327,7 @@ export default function InterviewForm({ mode = 'create', initialData = null, lan
   }, [title, slug, category, status, featured, excerpt, metaDescription, date,
     readTime, videoDuration, videoId, thumbnailUrl, audioUrl, executiveSummary, content,
     interviewees, interviewer, pullQuotes, qa, references, related,
-    mode, initialData, router, lang])
+    mode, initialData, router, lang, availableCategories])
 
   return (
     <form onSubmit={handleSubmit} className="admin-card admin-form">
@@ -343,7 +346,7 @@ export default function InterviewForm({ mode = 'create', initialData = null, lan
           <label>Categoria</label>
           <select value={category} onChange={(e) => setCategory(e.target.value)} required className="admin-input">
             <option value="">Selecione...</option>
-            {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+            {availableCategories.map(c => <option key={c.slug} value={c.slug}>{c.name}</option>)}
           </select>
         </div>
         <div className="admin-form-group">

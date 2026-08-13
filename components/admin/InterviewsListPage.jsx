@@ -3,7 +3,7 @@
 import { useState, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Pencil, Trash2, Plus, Search, Archive, ArchiveRestore, Eye } from 'lucide-react'
+import { Pencil, Trash2, Plus, Search, Archive, ArchiveRestore, Eye, Tags } from 'lucide-react'
 import { escapeHtml } from '@/lib/security'
 import { deleteInterview, toggleInterviewStatus, archiveInterview, restoreInterview } from '@/lib/actions/content'
 import ConfirmModal from '@/components/admin/ConfirmModal'
@@ -148,10 +148,16 @@ export default function InterviewsListPage({ interviews = [], stats, lang = 'pt'
       <div className="admin-dashboard-card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <h3>Lista de Entrevistas</h3>
-          <Link href={`/${lang}/admin/entrevistas/new`} className="admin-btn admin-btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-            <Plus size={16} />
-            Adicionar Entrevista
-          </Link>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <Link href={`/${lang}/admin/entrevistas/categorias`} className="admin-btn admin-btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              <Tags size={16} />
+              Gerir Categorias
+            </Link>
+            <Link href={`/${lang}/admin/entrevistas/new`} className="admin-btn admin-btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              <Plus size={16} />
+              Adicionar Entrevista
+            </Link>
+          </div>
         </div>
 
         {filtered.length === 0 ? (

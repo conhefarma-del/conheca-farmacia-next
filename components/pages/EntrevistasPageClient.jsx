@@ -7,11 +7,13 @@ import { Search, Clock, Video, Mic, Play, Eye, ChevronLeft, ChevronRight, Music2
 import { LangContext } from '@/lib/contexts'
 import { parseAudioEmbed } from '@/lib/utils/audio-embed'
 
-const CATEGORIES = [
-  { value: 'profissionais', labelKey: 'entrevistas_page.category_profissionais', color: '#ff6c23' },
-  { value: 'lideres', labelKey: 'entrevistas_page.category_lideres', color: '#0a844f' },
-  { value: 'educadores', labelKey: 'entrevistas_page.category_educadores', color: '#002a32' },
-  { value: 'investigadores', labelKey: 'entrevistas_page.category_investigadores', color: '#006171' },
+// Fallback quando as categorias da BD (interview_categories, 155) ainda não
+// foram carregadas — o servidor passa-as via prop `categories`.
+const FALLBACK_CATEGORIES = [
+  { slug: 'profissionais', name: 'Profissionais', color: '#ff6c23' },
+  { slug: 'lideres', name: 'Líderes', color: '#0a844f' },
+  { slug: 'educadores', name: 'Educadores', color: '#002a32' },
+  { slug: 'investigadores', name: 'Investigadores', color: '#006171' },
 ]
 
 const PER_PAGE = 15
@@ -79,6 +81,7 @@ function getMediaBadge(i) {
  */
 export default function EntrevistasPageClient({
   interviews = [],
+  categories = [],
   lang = 'pt',
   total = 0,
   page = 1,
@@ -90,6 +93,11 @@ export default function EntrevistasPageClient({
   const { t } = useContext(LangContext)
   const router = useRouter()
   const [searchInput, setSearchInput] = useState(q)
+
+  // Categorias dinâmicas (tabela) com fallback para as 4 originais
+  const categoryList = categories.length > 0
+    ? categories.map((c) => ({ slug: c.slug, name: c.name, color: c.color }))
+    : FALLBACK_CATEGORIES
 
   // Sincroniza o input quando a URL muda (navegação/voltar)
   useEffect(() => {
@@ -157,15 +165,15 @@ export default function EntrevistasPageClient({
               >
                 {t('entrevistas_page.filter_all')}
               </button>
-              {CATEGORIES.map((cat) => (
+              {categoryList.map((cat) => (
                 <button
-                  key={cat.value}
+                  key={cat.slug}
                   type="button"
-                  className={`filter-btn ${categoria === cat.value ? 'active' : ''}`}
-                  style={categoria === cat.value ? { background: cat.color, borderColor: cat.color } : undefined}
-                  onClick={() => handleFilterChange(cat.value)}
+                  className={`filter-btn ${categoria === cat.slug ? 'active' : ''}`}
+                  style={categoria === cat.slug ? { background: cat.color, borderColor: cat.color } : undefined}
+                  onClick={() => handleFilterChange(cat.slug)}
                 >
-                  {t(cat.labelKey)}
+                  {cat.name}
                 </button>
               ))}
 
@@ -210,7 +218,7 @@ export default function EntrevistasPageClient({
           {interviews.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {interviews.map((i) => {
-                const cat = CATEGORIES.find((c) => c.value === i.category)
+                const cat = categoryList.find((c) => c.slug === i.category)
                 const color = cat?.color || '#0a844f'
                 return (
                   <Link
@@ -240,7 +248,7 @@ export default function EntrevistasPageClient({
                         </span>
                       )}
                       <span className="interview-badge" style={{ background: color }}>
-                        {cat?.labelKey ? t(cat.labelKey) : i.categoryLabel}
+                        {cat?.name || i.categoryLabel}
                       </span>
                       {i.videoDuration && (
                         <span className="interview-duration">{i.videoDuration}</span>

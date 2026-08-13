@@ -1,5 +1,5 @@
 import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
-import { getInterviewBySlug, getRelatedInterviews } from '@/lib/api/interviews'
+import { getInterviewBySlug, getRelatedInterviews, getInterviewCategories } from '@/lib/api/interviews'
 import { buildInterviewSchema, buildBreadcrumbSchema } from '@/lib/seo'
 import { SITE_URL } from '@/lib/constants'
 import Breadcrumb from '@/components/ui/Breadcrumb'
@@ -79,12 +79,12 @@ export default async function InterviewDetailPage({ params }) {
   }
   if (!interview) notFound()
 
-  const colorMap = {
-    profissionais: '#ff6c23',
-    lideres: '#0a844f',
-    educadores: '#002a32',
-    investigadores: '#006171',
-  }
+  // Cores das categorias geríveis (interview_categories, 155)
+  let categories = []
+  try {
+    categories = await getInterviewCategories()
+  } catch {}
+  const colorMap = Object.fromEntries(categories.map((c) => [c.slug, c.color]))
   const color = colorMap[interview.category] || '#0a844f'
 
   let related = []
