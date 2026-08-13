@@ -17,6 +17,10 @@ Bot de WhatsApp do Conheça Farmácia a correr numa VPS **Oracle Cloud (Always F
 
 ## Checklist de setup na Oracle Cloud
 
+> **Primeira vez numa VPS?** Lê primeiro o guia detalhado
+> **[GUIA-VPS-ORACLE.md](GUIA-VPS-ORACLE.md)** — cobre a criação da VM, a abertura
+> das portas nos dois firewalls e a instalação do Docker, com passos e erros comuns.
+
 ### 1. Criar a VM (5 min)
 
 1. Entra na consola Oracle Cloud → **Compute → Instances → Create instance**.
