@@ -41,6 +41,8 @@ export default async function sitemap() {
     entrevistas:   { pt: '/entrevistas', en: '/entrevistas' },
     'entrevistas/entrevistados': { pt: '/entrevistas/entrevistados', en: '/entrevistas/entrevistados' },
     flashcards:    { pt: '/flashcards', en: '/flashcards' },
+    praticar:      { pt: '/praticar',   en: '/praticar' },
+    quiz:          { pt: '/quiz',       en: '/quiz' },
     sobre:         { pt: '/sobre',      en: '/about' },
     pesquisa:      { pt: '/pesquisa',   en: '/search' },
     interacoes:    { pt: '/interacoes', en: '/interactions' },

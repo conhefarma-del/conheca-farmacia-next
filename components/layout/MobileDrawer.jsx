@@ -46,8 +46,9 @@ export default function MobileDrawer({ lang, t, open, onClose }) {
     { href: getSectionHref(lang, 'sobre'), label: t('nav.sobre'), path: 'sobre' },
   ]
 
-  // Sub-menu "Ferramentas": Guias de Estudo + Protocolos + Interações + Medicamentos
+  // Sub-menu "Ferramentas": Praticar + Guias de Estudo + Protocolos + Interações + Medicamentos
   const toolsLinks = [
+    { href: getSectionHref(lang, 'praticar'), label: t('nav.praticar'), path: 'praticar' },
     { href: getSectionHref(lang, 'guias'), label: t('nav.guias'), path: 'guias' },
     { href: getSectionHref(lang, 'protocolos'), label: t('nav.protocolos'), path: 'protocolos' },
     { href: getSectionHref(lang, 'interacoes'), label: t('nav.interacoes'), path: 'interacoes' },

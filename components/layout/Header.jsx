@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { BookOpen, ChevronDown, ClipboardList, Layers, Pill, Tablets } from 'lucide-react'
+import { BookOpen, BrainCircuit, ChevronDown, ClipboardList, Layers, Pill, Tablets } from 'lucide-react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import { getSectionHref } from '@/lib/i18n-routes'
 
@@ -48,6 +48,13 @@ export default function Header({ lang, t, onToggleDrawer }) {
 
   // Sub-menu "Ferramentas": Guias de Estudo + Protocolos (mega menu com ícones e descrições)
   const toolsLinks = [
+    {
+      href: getSectionHref(lang, 'praticar'),
+      label: t('nav.praticar'),
+      desc: t('nav.praticar_desc'),
+      path: 'praticar',
+      icon: <BrainCircuit size={18} aria-hidden="true" />,
+    },
     {
       href: getSectionHref(lang, 'guias'),
       label: t('nav.guias'),

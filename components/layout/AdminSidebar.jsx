@@ -25,6 +25,7 @@ import {
   Pill,
   MessageSquareText,
   Layers,
+  ListChecks,
   ChevronDown,
   Scale,
   Microscope,
@@ -228,6 +229,16 @@ export default function AdminSidebar({ lang, user, onLogout }) {
             return (
               <Link href={href} className={isActive(href) ? 'active' : ''}>
                 <Layers size={20} /> Flashcards
+              </Link>
+            )
+          })()}
+
+          {/* Quiz */}
+          {(() => {
+            const href = `/${lang}/admin/quiz`
+            return (
+              <Link href={href} className={isActive(href) ? 'active' : ''}>
+                <ListChecks size={20} /> Quiz
               </Link>
             )
           })()}

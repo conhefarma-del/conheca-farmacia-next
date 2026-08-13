@@ -37,12 +37,12 @@ ON CONFLICT (slug) DO UPDATE SET
 
 -- ---------------------------------------------------------------------
 -- 2. CARTÕES GERADOS — mecanismo de ação
---    Front: "Qual é o mecanismo de ação de {fármaco}?"
+--    Front: "Como atua o {fármaco} no organismo?" (simplificado, 158)
 --    Back:  drug_pharmacology.mechanism_pt (fonte da própria farmacologia)
 -- ---------------------------------------------------------------------
 INSERT INTO public.flashcards (deck_id, drug_id, card_type, front_pt, back_pt, source_note, status)
 SELECT d.id, dr.id, 'mecanismo',
-       'Qual é o mecanismo de ação de ' || dr.name_pt || '?',
+       'Como atua o ' || dr.name_pt || ' no organismo?',
        ph.mechanism_pt,
        COALESCE(NULLIF(btrim(ph.source_pt), ''), 'Farmacologia interna'),
        'published'
@@ -64,7 +64,7 @@ DO UPDATE SET front_pt = EXCLUDED.front_pt, back_pt = EXCLUDED.back_pt,
 -- ---------------------------------------------------------------------
 INSERT INTO public.flashcards (deck_id, drug_id, card_type, front_pt, back_pt, source_note, status)
 SELECT d.id, dr.id, 'classe',
-       dr.name_pt || ' — a que classe terapêutica pertence?',
+       'A que grupo de medicamentos pertence o ' || dr.name_pt || '?',
        dr.class_pt,
        'Classificação interna (drugs.class_pt)',
        'published'
@@ -84,7 +84,7 @@ DO UPDATE SET front_pt = EXCLUDED.front_pt, back_pt = EXCLUDED.back_pt,
 -- ---------------------------------------------------------------------
 INSERT INTO public.flashcards (deck_id, drug_id, card_type, front_pt, back_pt, source_note, status)
 SELECT d.id, dr.id, 'perfil',
-       'Qual é a visão geral / indicação de ' || dr.name_pt || '?',
+       'Para que serve o ' || dr.name_pt || '? (visão geral e indicação)',
        pf.overview_public_pt,
        'Perfil do medicamento (drug_profiles)',
        'published'
@@ -112,7 +112,7 @@ WITH ranked_interactions AS (
     d_a.id AS deck_id,
     di.drug_a_id AS drug_id,
     'interacao'::text AS card_type,
-    dr_a.name_pt || ' + ' || dr_b.name_pt || ' — que interação existe?' AS front_pt,
+    'Que interação existe entre ' || dr_a.name_pt || ' e ' || dr_b.name_pt || '?' AS front_pt,
     di.summary_pt || E'\n\nGrau: ' ||
       CASE di.severity WHEN 'critical' THEN 'Crítico' WHEN 'moderate' THEN 'Moderado' ELSE 'Menor' END AS back_pt,
     COALESCE(NULLIF(btrim(di.source_pt), ''), 'Banco de interações') AS source_note,

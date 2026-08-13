@@ -6,6 +6,7 @@ import { ArrowLeft, RotateCcw, CheckCircle2, XCircle, AlertTriangle, Sparkles, B
 import { useAnonymousSession } from '@/hooks/useAnonymousSession'
 import { getDeckReviewState, answerCard, resetDeckProgress } from '@/lib/actions/flashcards'
 import { formatInterval } from '@/lib/flashcards/sm2'
+import { simplifyText } from '@/lib/quiz/simplify'
 
 const TYPE_LABELS = {
   mecanismo: 'Mecanismo de ação',
@@ -207,7 +208,7 @@ export default function FlashcardReviewClient({ deck, drugMap = {}, lang = 'pt' 
           <div className="flash-face flash-face-back">
             <div className="flash-card-tag">Resposta</div>
             <div className="flash-back-scroll">
-              <div className="flash-answer-val">{current.back}</div>
+              <div className="flash-answer-val">{simplifyText(current.back, 'pt')}</div>
             </div>
             <div className="flash-links-row">
               {drug && (

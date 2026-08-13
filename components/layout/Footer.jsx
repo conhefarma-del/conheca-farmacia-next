@@ -39,6 +39,7 @@ export default function Footer({ lang }) {
           <div className="footer-links">
             <h4>{t('nav.ferramentas')}</h4>
             <ul>
+              <li><Link href={getSectionHref(lang, 'praticar')}>{t('nav.praticar')}</Link></li>
               <li><Link href={getSectionHref(lang, 'medicamentos')}>{t('nav.medicamentos')}</Link></li>
               <li><Link href={getSectionHref(lang, 'cientificos')}>{t('nav.cientificos')}</Link></li>
               <li><Link href={getSectionHref(lang, 'flashcards')}>{t('nav.flashcards')}</Link></li>
