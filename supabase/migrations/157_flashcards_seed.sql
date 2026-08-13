@@ -103,24 +103,43 @@ DO UPDATE SET front_pt = EXCLUDED.front_pt, back_pt = EXCLUDED.back_pt,
 
 -- ---------------------------------------------------------------------
 -- 5. CARTÕES GERADOS — interações fármaco-fármaco (críticas/moderadas)
---    Um cartão por par, colocado no deck do fármaco A.
+--    Um cartão por par (drug_a, drug_b), colocado no deck do fármaco A.
+--    Deduplica por (deck_id, drug_a_id) pegando a interação mais severa
+--    (critical > moderate) para evitar "ON CONFLICT ... second time".
 -- ---------------------------------------------------------------------
+WITH ranked_interactions AS (
+  SELECT
+    d_a.id AS deck_id,
+    di.drug_a_id AS drug_id,
+    'interacao'::text AS card_type,
+    dr_a.name_pt || ' + ' || dr_b.name_pt || ' — que interação existe?' AS front_pt,
+    di.summary_pt || E'\n\nGrau: ' ||
+      CASE di.severity WHEN 'critical' THEN 'Crítico' WHEN 'moderate' THEN 'Moderado' ELSE 'Menor' END AS back_pt,
+    COALESCE(NULLIF(btrim(di.source_pt), ''), 'Banco de interações') AS source_note,
+    'published'::text AS status,
+    ROW_NUMBER() OVER (
+      PARTITION BY d_a.id, di.drug_a_id
+      ORDER BY CASE di.severity WHEN 'critical' THEN 1 WHEN 'moderate' THEN 2 ELSE 3 END
+    ) AS rn
+  FROM public.drug_interactions di
+  JOIN public.drugs dr_a
+    ON dr_a.id = di.drug_a_id
+   AND dr_a.status = 'published' AND dr_a.is_archived = false
+  JOIN public.drugs dr_b
+    ON dr_b.id = di.drug_b_id
+   AND dr_b.status = 'published' AND dr_b.is_archived = false
+  JOIN public.flashcard_decks d_a
+    ON d_a.status = 'published'
+   AND ((d_a.atc_prefix IS NOT NULL AND dr_a.atc_code LIKE d_a.atc_prefix || '%')
+     OR (d_a.atc_prefix = 'OTHERS' AND LEFT(dr_a.atc_code, 1) NOT IN ('J','A','C','N','R','B','P','G','M','L','H','S')))
+  WHERE di.status = 'published' AND di.is_archived = false
+    AND di.severity IN ('critical','moderate')
+    AND length(btrim(di.summary_pt)) > 10
+)
 INSERT INTO public.flashcards (deck_id, drug_id, card_type, front_pt, back_pt, source_note, status)
-SELECT d_a.id, di.drug_a_id, 'interacao',
-       dr_a.name_pt || ' + ' || dr_b.name_pt || ' — que interação existe?',
-       di.summary_pt || E'\n\nGrau: ' || CASE di.severity WHEN 'critical' THEN 'Crítico' WHEN 'moderate' THEN 'Moderado' ELSE 'Menor' END,
-       COALESCE(NULLIF(btrim(di.source_pt), ''), 'Banco de interações'),
-       'published'
-FROM public.drug_interactions di
-JOIN public.drugs dr_a ON dr_a.id = di.drug_a_id AND dr_a.status = 'published' AND dr_a.is_archived = false
-JOIN public.drugs dr_b ON dr_b.id = di.drug_b_id AND dr_b.status = 'published' AND dr_b.is_archived = false
-JOIN public.flashcard_decks d_a
-  ON d_a.status = 'published'
- AND ((d_a.atc_prefix IS NOT NULL AND dr_a.atc_code LIKE d_a.atc_prefix || '%')
-   OR (d_a.atc_prefix = 'OTHERS' AND LEFT(dr_a.atc_code, 1) NOT IN ('J','A','C','N','R','B','P','G','M','L','H','S')))
-WHERE di.status = 'published' AND di.is_archived = false
-  AND di.severity IN ('critical','moderate')
-  AND length(btrim(di.summary_pt)) > 10
+SELECT deck_id, drug_id, card_type, front_pt, back_pt, source_note, status
+FROM ranked_interactions
+WHERE rn = 1
 ON CONFLICT (deck_id, drug_id, card_type) WHERE card_type <> 'manual' AND drug_id IS NOT NULL
 DO UPDATE SET front_pt = EXCLUDED.front_pt, back_pt = EXCLUDED.back_pt,
               source_note = EXCLUDED.source_note, status = 'published', updated_at = now();

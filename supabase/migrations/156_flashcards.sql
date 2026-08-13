@@ -105,7 +105,10 @@ CREATE POLICY "admin_all_flashcards" ON public.flashcards
 -- ---------------------------------------------------------------------
 CREATE INDEX IF NOT EXISTS idx_flashcards_deck ON public.flashcards(deck_id, status);
 CREATE INDEX IF NOT EXISTS idx_flashcards_drug ON public.flashcards(drug_id);
-CREATE INDEX IF NOT EXISTS idx_reviews_user_due ON public.flashcard_reviews(user_id, due_at) WHERE due_at <= now();
+-- Índice para consultas de cartões devidos (due_at <= now())
+-- Sem WHERE clause pois now() é VOLATILE; o índice em (user_id, due_at) 
+-- ainda é usado eficientemente pelo planner para range scans em due_at
+CREATE INDEX IF NOT EXISTS idx_reviews_user_due ON public.flashcard_reviews(user_id, due_at);
 
 -- =====================================================================
 -- FIM — 156: flashcards
