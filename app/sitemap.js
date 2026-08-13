@@ -40,6 +40,7 @@ export default async function sitemap() {
     lives:         { pt: '/lives',      en: '/lives' },
     entrevistas:   { pt: '/entrevistas', en: '/entrevistas' },
     'entrevistas/entrevistados': { pt: '/entrevistas/entrevistados', en: '/entrevistas/entrevistados' },
+    flashcards:    { pt: '/flashcards', en: '/flashcards' },
     sobre:         { pt: '/sobre',      en: '/about' },
     pesquisa:      { pt: '/pesquisa',   en: '/search' },
     interacoes:    { pt: '/interacoes', en: '/interactions' },
@@ -390,6 +391,31 @@ export default async function sitemap() {
     })
   } catch {}
 
+  // Decks de flashcards (156/157): slug PARTILHADO entre línguas. Só decks
+  // publicados e não arquivados (RLS anónima).
+  let flashcardEntries = []
+  try {
+    const supabase = await createClient()
+    const { data: decks } = await supabase
+      .from('flashcard_decks')
+      .select('slug, updated_at')
+      .eq('status', 'published')
+      .eq('is_archived', false)
+    flashcardEntries = (decks ?? []).map((deck) => ({
+      url: `${SITE_URL}/pt/flashcards/${deck.slug}`,
+      lastModified: deck.updated_at || undefined,
+      changeFrequency: 'weekly',
+      priority: 0.6,
+      alternates: {
+        languages: {
+          pt: `${SITE_URL}/pt/flashcards/${deck.slug}`,
+          en: `${SITE_URL}/en/flashcards/${deck.slug}`,
+          'x-default': `${SITE_URL}/pt/flashcards/${deck.slug}`,
+        },
+      },
+    }))
+  } catch {}
+
   // Autores científicos (144/145): slug PARTILHADO entre línguas. Cada autor
   // tem duas páginas — artigos (/cientificos/autores/{slug}) e perfil
   // (/cientificos/autores/{slug}/perfil). A RLS anónima de scientific_authors
@@ -432,6 +458,7 @@ export default async function sitemap() {
     ...interviewPeopleEntries,
     ...scientificEntries,
     ...authorEntries,
+    ...flashcardEntries,
     ...drugEntries,
     ...protocolEntries,
     ...guideEntries,

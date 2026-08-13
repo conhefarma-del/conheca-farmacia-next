@@ -222,6 +222,16 @@ export default function AdminSidebar({ lang, user, onLogout }) {
             )
           })()}
 
+          {/* Flashcards */}
+          {(() => {
+            const href = `/${lang}/admin/flashcards`
+            return (
+              <Link href={href} className={isActive(href) ? 'active' : ''}>
+                <Layers size={20} /> Flashcards
+              </Link>
+            )
+          })()}
+
           {/* Lives, Guias, Protocolos */}
           {links.slice(1, 4).map((link) => {
             const Icon = link.icon
