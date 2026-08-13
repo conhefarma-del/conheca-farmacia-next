@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getSectionHref } from "@/lib/i18n-routes";
 import {
   BookOpen,
+  BrainCircuit,
   ClipboardList,
   Pill,
   Plus,
@@ -20,6 +21,12 @@ import {
  */
 export default function ToolsShowcase({ lang = "pt", tFn }) {
   const tools = [
+    {
+      href: getSectionHref(lang, "praticar"),
+      icon: BrainCircuit,
+      label: tFn("nav.praticar"),
+      desc: tFn("nav.praticar_desc"),
+    },
     {
       href: getSectionHref(lang, "guias"),
       icon: BookOpen,
@@ -98,7 +105,7 @@ export default function ToolsShowcase({ lang = "pt", tFn }) {
           </Link>
 
           {/* Restantes ferramentas — cards pequenos */}
-          <div className="md:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="md:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-4">
             {tools.map((tool) => (
               <Link key={tool.href} href={tool.href} className="tools-card">
                 <span className="tools-card-icon">

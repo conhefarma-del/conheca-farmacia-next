@@ -42,7 +42,6 @@ export default function Footer({ lang }) {
               <li><Link href={getSectionHref(lang, 'praticar')}>{t('nav.praticar')}</Link></li>
               <li><Link href={getSectionHref(lang, 'medicamentos')}>{t('nav.medicamentos')}</Link></li>
               <li><Link href={getSectionHref(lang, 'cientificos')}>{t('nav.cientificos')}</Link></li>
-              <li><Link href={getSectionHref(lang, 'flashcards')}>{t('nav.flashcards')}</Link></li>
               <li><Link href={getSectionHref(lang, 'guias')}>{t('footer.guias')}</Link></li>
               <li><Link href={getSectionHref(lang, 'protocolos')}>{t('footer.protocolos')}</Link></li>
               <li><Link href={getSectionHref(lang, 'interacoes')}>{t('footer.interacoes')}</Link></li>
