@@ -772,7 +772,8 @@
     "media_video": "Video",
     "media_audio": "Audio",
     "media_spotify": "Spotify",
-    "media_text": "Text only"
+    "media_text": "Text only",
+    "view_all_interviewees": "View all interviewees"
   },
   "entrevista_detail": {
     "has_video": "With video",
@@ -786,5 +787,27 @@
     "related": "Related",
     "views": "views",
     "interviewees": "Interviewees"
+  },
+  "entrevistados_page": {
+    "title": "Interviewees",
+    "subtitle": "Search and explore the interviewees of the interviews.",
+    "search_placeholder": "Search interviewees...",
+    "sort_label": "Sort interviewees",
+    "sort_az": "A–Z",
+    "sort_most_interviews": "Most interviews",
+    "no_results": "No interviewees found.",
+    "interviews_count_one": "1 interview",
+    "interviews_count_other": "{count} interviews",
+    "view_interviews": "View interviews"
+  },
+  "entrevistado_profile": {
+    "back_to_entrevistas": "Back to Interviews",
+    "back_to_entrevistados": "Back to Interviewees",
+    "interviews_of": "Interviews by {name}",
+    "interviews_count_one": "1 interview",
+    "interviews_count_other": "{count} interviews",
+    "about": "About",
+    "interviews": "Interviews",
+    "no_interviews": "This interviewee has no published interviews yet."
   }
 }

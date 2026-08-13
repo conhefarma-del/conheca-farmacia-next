@@ -39,6 +39,7 @@ export default async function sitemap() {
     eventos:       { pt: '/eventos',    en: '/events' },
     lives:         { pt: '/lives',      en: '/lives' },
     entrevistas:   { pt: '/entrevistas', en: '/entrevistas' },
+    'entrevistas/entrevistados': { pt: '/entrevistas/entrevistados', en: '/entrevistas/entrevistados' },
     sobre:         { pt: '/sobre',      en: '/about' },
     pesquisa:      { pt: '/pesquisa',   en: '/search' },
     interacoes:    { pt: '/interacoes', en: '/interactions' },
@@ -304,6 +305,43 @@ export default async function sitemap() {
     }))
   } catch {}
 
+  // Entrevistados (154): slug PARTILHADO entre línguas (módulo só PT por
+  // agora). Só pessoas ligadas a entrevistas publicadas e não arquivadas.
+  let interviewPeopleEntries = []
+  try {
+    const supabase = await createClient()
+    const { data: links } = await supabase
+      .from('interview_person_links')
+      .select('person_id')
+      .in(
+        'interview_id',
+        supabase
+          .from('interviews')
+          .select('id')
+          .eq('status', 'published')
+          .eq('is_archived', false)
+      )
+    const ids = [...new Set((links ?? []).map((l) => l.person_id))]
+    if (ids.length > 0) {
+      const { data: people } = await supabase
+        .from('interview_people')
+        .select('slug, updated_at')
+        .in('id', ids)
+      interviewPeopleEntries = (people ?? []).map((person) => ({
+        url: `${SITE_URL}/pt/entrevistas/entrevistados/${person.slug}`,
+        lastModified: person.updated_at || undefined,
+        changeFrequency: 'monthly',
+        priority: 0.5,
+        alternates: {
+          languages: {
+            pt: `${SITE_URL}/pt/entrevistas/entrevistados/${person.slug}`,
+            'x-default': `${SITE_URL}/pt/entrevistas/entrevistados/${person.slug}`,
+          },
+        },
+      }))
+    }
+  } catch {}
+
   // Artigos científicos: 1 entry PT + 1 entry EN (se houver tradução),
   // rota própria /cientificos (partilhada entre línguas, slug EN diferente).
   let scientificEntries = []
@@ -391,6 +429,7 @@ export default async function sitemap() {
     ...eventEntries,
     ...liveEntries,
     ...interviewEntries,
+    ...interviewPeopleEntries,
     ...scientificEntries,
     ...authorEntries,
     ...drugEntries,

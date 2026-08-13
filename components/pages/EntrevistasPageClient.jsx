@@ -3,7 +3,7 @@
 import { useState, useEffect, useContext } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Search, Clock, Video, Mic, Play, Eye, ChevronLeft, ChevronRight, Music2, FileText } from 'lucide-react'
+import { Search, Clock, Video, Mic, Play, Eye, ChevronLeft, ChevronRight, Music2, FileText, Users } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
 import { parseAudioEmbed } from '@/lib/utils/audio-embed'
 
@@ -177,8 +177,14 @@ export default function EntrevistasPageClient({
       {/* Grid de cards */}
       <section className="bg-brand-bg-alt sci-pagination-scroll">
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-12">
-          {/* Barra acima dos cards: ordenação (fora do hero, padrão /cientificos) */}
-          <div className="flex flex-wrap items-center justify-end gap-3 mb-8">
+          {/* Barra acima dos cards: link para entrevistados + ordenação (fora do hero, padrão /cientificos) */}
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
+            <Link
+              href={`/${lang}/entrevistas/entrevistados`}
+              className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-brand-accent)] hover:underline"
+            >
+              <Users size={16} /> {t('entrevistas_page.view_all_interviewees')}
+            </Link>
             <div
               className="inline-flex rounded-full border border-brand-divider overflow-hidden"
               role="group"
@@ -276,10 +282,20 @@ export default function EntrevistasPageClient({
                           >
                             {(i.interviewee?.avatar || (i.interviewee?.name || '?')[0] || '?').toUpperCase()}
                           </span>
-                          <span>
-                            {i.interviewee?.name || t('entrevistas_page.unknown_interviewee')}
-                            {i.interviewees?.length > 1 && ` +${i.interviewees.length - 1}`}
-                          </span>
+                          {i.interviewee?.slug ? (
+                            <Link
+                              href={`/${lang}/entrevistas/entrevistados/${i.interviewee.slug}`}
+                              className="interview-card-person-link"
+                            >
+                              {i.interviewee?.name || t('entrevistas_page.unknown_interviewee')}
+                              {i.interviewees?.length > 1 && ` +${i.interviewees.length - 1}`}
+                            </Link>
+                          ) : (
+                            <span>
+                              {i.interviewee?.name || t('entrevistas_page.unknown_interviewee')}
+                              {i.interviewees?.length > 1 && ` +${i.interviewees.length - 1}`}
+                            </span>
+                          )}
                         </div>
                         <span className="interview-card-cta">
                           {i.videoId

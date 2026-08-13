@@ -179,7 +179,16 @@ export default async function InterviewDetailPage({ params }) {
                           ? tFn('entrevista_detail.interviewees')
                           : tFn('entrevista_detail.interviewee')}
                       </span>
-                      <div className="interview-people-name">{p.name}</div>
+                      {p.slug ? (
+                        <Link
+                          href={`/${safeLang}/entrevistas/entrevistados/${p.slug}`}
+                          className="interview-people-name interview-people-link"
+                        >
+                          {p.name}
+                        </Link>
+                      ) : (
+                        <div className="interview-people-name">{p.name}</div>
+                      )}
                       {p.role && <div className="interview-people-role">{p.role}</div>}
                     </div>
                   </div>
@@ -269,7 +278,16 @@ export default async function InterviewDetailPage({ params }) {
                   {(p.avatar || (p.name || '?')[0]).toUpperCase()}
                 </span>
                 <div>
-                  <div className="interview-person-name">{p.name}</div>
+                  {p.slug ? (
+                    <Link
+                      href={`/${safeLang}/entrevistas/entrevistados/${p.slug}`}
+                      className="interview-person-name interview-people-link"
+                    >
+                      {p.name}
+                    </Link>
+                  ) : (
+                    <div className="interview-person-name">{p.name}</div>
+                  )}
                   {p.role && <div className="interview-person-role">{p.role}</div>}
                 </div>
               </div>

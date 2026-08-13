@@ -772,7 +772,8 @@
     "media_video": "Vídeo",
     "media_audio": "Áudio",
     "media_spotify": "Spotify",
-    "media_text": "Só texto"
+    "media_text": "Só texto",
+    "view_all_interviewees": "Ver todos os entrevistados"
   },
   "entrevista_detail": {
     "has_video": "Com vídeo",
@@ -786,5 +787,27 @@
     "related": "Relacionadas",
     "views": "visualizações",
     "interviewees": "Entrevistados"
+  },
+  "entrevistados_page": {
+    "title": "Entrevistados",
+    "subtitle": "Pesquisa e explora os entrevistados das entrevistas.",
+    "search_placeholder": "Pesquisar entrevistados...",
+    "sort_label": "Ordenar entrevistados",
+    "sort_az": "A–Z",
+    "sort_most_interviews": "Mais entrevistas",
+    "no_results": "Nenhum entrevistado encontrado.",
+    "interviews_count_one": "1 entrevista",
+    "interviews_count_other": "{count} entrevistas",
+    "view_interviews": "Ver entrevistas"
+  },
+  "entrevistado_profile": {
+    "back_to_entrevistas": "Voltar para Entrevistas",
+    "back_to_entrevistados": "Voltar para Entrevistados",
+    "interviews_of": "Entrevistas de {name}",
+    "interviews_count_one": "1 entrevista",
+    "interviews_count_other": "{count} entrevistas",
+    "about": "Sobre",
+    "interviews": "Entrevistas",
+    "no_interviews": "Este entrevistado ainda não tem entrevistas publicadas."
   }
 }

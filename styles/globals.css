@@ -8754,3 +8754,15 @@ html.dark .tools-showcase {
   letter-spacing: 0.02em;
   backdrop-filter: blur(4px);
 }
+
+/* ============ Links de mini perfil dos entrevistados ============ */
+.interview-people-link,
+.interview-card-person-link {
+  color: var(--color-brand-accent);
+  text-decoration: none;
+  transition: text-decoration-color 0.15s, opacity 0.15s;
+}
+.interview-people-link:hover,
+.interview-card-person-link:hover {
+  text-decoration: underline;
+}
