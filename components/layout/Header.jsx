@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { BookOpen, BrainCircuit, ChevronDown, ClipboardList, Layers, Pill, Tablets } from 'lucide-react'
+import { BookOpen, BrainCircuit, ChevronDown, ClipboardList, Pill, Tablets } from 'lucide-react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import { getSectionHref } from '@/lib/i18n-routes'
 
@@ -82,13 +82,6 @@ export default function Header({ lang, t, onToggleDrawer }) {
       desc: t('nav.medicamentos_desc'),
       path: 'medicamentos',
       icon: <Tablets size={18} aria-hidden="true" />,
-    },
-    {
-      href: getSectionHref(lang, 'flashcards'),
-      label: t('nav.flashcards'),
-      desc: t('nav.flashcards_desc'),
-      path: 'flashcards',
-      icon: <Layers size={18} aria-hidden="true" />,
     },
   ]
 

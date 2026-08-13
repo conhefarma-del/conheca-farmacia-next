@@ -53,7 +53,6 @@ export default function MobileDrawer({ lang, t, open, onClose }) {
     { href: getSectionHref(lang, 'protocolos'), label: t('nav.protocolos'), path: 'protocolos' },
     { href: getSectionHref(lang, 'interacoes'), label: t('nav.interacoes'), path: 'interacoes' },
     { href: getSectionHref(lang, 'medicamentos'), label: t('nav.medicamentos'), path: 'medicamentos' },
-    { href: getSectionHref(lang, 'flashcards'), label: t('nav.flashcards'), path: 'flashcards' },
   ]
 
   const toolsActive = toolsLinks.some((l) => isActive(l.path))
