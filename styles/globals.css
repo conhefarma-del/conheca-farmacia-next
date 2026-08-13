@@ -8770,47 +8770,7 @@ html.dark .tools-showcase {
 /* ============================================================
    FLASHCARDS (módulo — plano 2026-08-13-flashcards)
    ============================================================ */
-.flash-hero {
-  background: linear-gradient(135deg, #0f1a14 0%, #143528 100%);
-  color: #fff;
-}
-.flash-hero-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 72px 24px 88px;
-  text-align: center;
-}
-.flash-hero-eyebrow {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #6fd3a3;
-  margin-bottom: 14px;
-}
-.flash-hero-title {
-  font-size: clamp(30px, 4.5vw, 50px);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
-  margin-bottom: 16px;
-}
-.flash-hero-sub {
-  font-size: 16px;
-  opacity: 0.75;
-  max-width: 580px;
-  margin: 0 auto;
-  line-height: 1.6;
-}
-
 /* Painel de revisão */
-.flash-review-strip {
-  max-width: 1100px;
-  margin: -48px auto 0;
-  padding: 0 24px;
-  position: relative;
-  z-index: 2;
-}
 .flash-review-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -8870,66 +8830,7 @@ html.dark .tools-showcase {
   margin-top: 2px;
 }
 
-/* Filtros + pesquisa */
-.flash-tools-bar {
-  max-width: 1100px;
-  margin: 32px auto 0;
-  padding: 0 24px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-.flash-filter-btn {
-  padding: 7px 16px;
-  border-radius: 999px;
-  border: 1px solid var(--color-brand-divider);
-  background: var(--color-brand-card);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  color: var(--color-brand-deep);
-  font-family: inherit;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
-}
-.flash-filter-btn:hover {
-  border-color: var(--color-brand-accent);
-  color: var(--color-brand-accent);
-}
-.flash-filter-btn.is-active {
-  background: var(--color-brand-accent);
-  color: #fff;
-  border-color: var(--color-brand-accent);
-}
-.flash-search {
-  margin-left: auto;
-  position: relative;
-}
-.flash-search-icon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--color-brand-deep);
-  opacity: 0.4;
-}
-.flash-search-input {
-  padding: 9px 14px 9px 34px;
-  border-radius: 12px;
-  border: 1px solid var(--color-brand-divider);
-  background: var(--color-brand-card);
-  font-size: 13px;
-  font-family: inherit;
-  width: 220px;
-  color: var(--color-brand-deep);
-}
-
 /* Grid de decks */
-.flash-decks {
-  max-width: 1100px;
-  margin: 28px auto 0;
-  padding: 0 24px 60px;
-}
 .flash-deck-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -9058,7 +8959,7 @@ html.dark .tools-showcase {
   gap: 16px;
 }
 .flash-how-card {
-  background: var(--color-brand-bg-alt);
+  background: var(--color-brand-card);
   border-radius: 14px;
   padding: 18px;
   border: 1px solid var(--color-brand-divider);
@@ -9454,10 +9355,6 @@ html.dark .tools-showcase {
 
 /* Mobile */
 @media (max-width: 640px) {
-  .flash-hero-inner { padding: 48px 20px 72px; }
-  .flash-tools-bar { flex-direction: column; align-items: stretch; }
-  .flash-search { margin-left: 0; width: 100%; }
-  .flash-search-input { width: 100%; }
   .flash-deck-grid { grid-template-columns: 1fr; }
   .flash-grade-row { grid-template-columns: 1fr 1fr; }
   .flash-face-front, .flash-face-back { padding: 22px 20px; }
@@ -9474,8 +9371,6 @@ html.dark .flash-summary {
   background: var(--color-brand-card);
   border-color: var(--color-brand-divider);
 }
-html.dark .flash-filter-btn,
-html.dark .flash-search-input,
 html.dark .flash-grade-btn {
   background: var(--color-brand-card);
   border-color: var(--color-brand-divider);
