@@ -45,7 +45,7 @@ export async function proxy(request) {
     `media-src 'self' blob: https://*.supabase.co https://*.spotify.com https://*.scdn.co https://*.spotifycdn.com https://*.soundcloud.com https://*.sndcdn.com`,
     `font-src 'self' https://fonts.gstatic.com`,
     `connect-src 'self' https://*.supabase.co https://vercel.live https://www.youtube.com https://s.ytimg.com https://open.spotify.com https://*.spotifycdn.com https://*.soundcloud.com https://*.sndcdn.com https://music.youtube.com`,
-    `frame-src https://www.google.com https://maps.google.com https://www.youtube.com https://www.youtube-nocookie.com https://open.spotify.com https://w.soundcloud.com https://player.soundcloud.com https://music.youtube.com`,
+    `frame-src https://www.google.com https://maps.google.com https://www.youtube.com https://www.youtube-nocookie.com https://open.spotify.com https://w.soundcloud.com https://player.soundcloud.com https://music.youtube.com https://vercel.live`,
     `frame-ancestors 'none'`,
     `object-src 'none'`,
     `base-uri 'self'`,

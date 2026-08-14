@@ -7,9 +7,9 @@ export default function NotFound() {
   return (
     <div className="not-found-page">
       <header className="not-found-top-strip">
-        <img
-          src="/logo/logo-principal-verde.svg"
-          alt="Conheça Farmácia"
+        <div
+          role="img"
+          aria-label="Conheça Farmácia"
           className="not-found-logo"
         />
         <span className="not-found-top-meta">2026</span>

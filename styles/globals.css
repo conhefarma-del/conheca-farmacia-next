@@ -889,7 +889,7 @@ html.dark .form-note {
   }
 
   .footer-logo img {
-    @apply h-12 mb-6;
+    @apply h-12 md:h-14 w-auto object-contain mb-6;
   }
 
   .footer-links h4 {
@@ -3414,7 +3414,11 @@ html.dark .comprovativo-event {
   border-bottom: 1px solid var(--color-brand-divider, #e0dcd4);
   background: var(--color-brand-bg, #faf8f5);
 }
-.not-found-logo { height: 32px; }
+.not-found-logo {
+  height: 32px;
+  width: 93px;
+  background: url('/logo/logo-principal-verde.svg') no-repeat center / contain;
+}
 .not-found-top-meta {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-size: 10px;
