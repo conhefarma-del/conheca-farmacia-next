@@ -9,6 +9,7 @@ import { BLUR_PLACEHOLDER } from '@/lib/images'
 import { slugify } from '@/lib/utils/slugify'
 import NewsletterSection from '@/components/ui/NewsletterSection'
 import ScientificBanner from '@/components/ui/ScientificBanner'
+import { featureEnabled } from '@/lib/features'
 import { X } from 'lucide-react'
 
 export default function ArtigosPageClient({ articles, lang, autorFilter = '' }) {
@@ -129,10 +130,12 @@ export default function ArtigosPageClient({ articles, lang, autorFilter = '' }) 
             </div>
           )}
 
-          {/* Banner Artigos Científicos (variante A light) */}
-          <div className="mb-8">
-            <ScientificBanner />
-          </div>
+          {/* Banner Artigos Científicos (oculto via lib/features.js) */}
+          {featureEnabled('cientificos') && (
+            <div className="mb-8">
+              <ScientificBanner />
+            </div>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredArticles.map((article) => {

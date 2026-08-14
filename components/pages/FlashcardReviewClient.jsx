@@ -212,7 +212,7 @@ export default function FlashcardReviewClient({ deck, drugMap = {}, lang = 'pt' 
             <div className="flash-links-row">
               {drug && (
                 <Link
-                  href={`/${lang}/medicamentos/${drug.slug}`}
+                  href={`/${lang}/${lang === 'pt' ? 'medicamento' : 'medicine'}/${drug.slug}`}
                   className="flash-link-chip"
                   onClick={(e) => e.stopPropagation()}
                 >
