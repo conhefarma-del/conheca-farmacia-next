@@ -13,6 +13,13 @@ Bot de WhatsApp do Conheça Farmácia a correr numa VPS **Oracle Cloud (Always F
 
 > **⚠️ Importante antes de começar:** a Evolution API usa o protocolo do WhatsApp Web (Baileys) — API **não oficial**. Para uma marca como o Conheça Farmácia, o caminho recomendado a médio prazo é a **Cloud API oficial da Meta** (a Evolution suporta ambos na mesma instalação). Como o bot só **responde** a utilizadores (sem spam), o risco é baixo. Nunca faças envios em massa não solicitados.
 
+## Documentação
+
+| Documento | Conteúdo |
+|---|---|
+| **[GUIA-VPS-ORACLE.md](GUIA-VPS-ORACLE.md)** | Criar a VM Oracle Cloud, abrir portas e instalar Docker (para quem nunca mexeu numa VPS) |
+| **[FLUXO-REPORTE-STOCK.md](FLUXO-REPORTE-STOCK.md)** | Especificação do reporte de stock por farmácias parceiras via WhatsApp (parsing, validação, atualização de `pharmacy_stock`) |
+
 ---
 
 ## Checklist de setup na Oracle Cloud
@@ -184,5 +191,5 @@ docker compose pull && docker compose up -d   # atualizar tudo (faz backup antes
 ## Próximos passos possíveis
 
 - Migrar para a **Cloud API oficial da Meta** (mesma Evolution API, só muda o *connection type* da instância).
-- Ligar o bot à BD do site (Supabase) para responder com dados reais de medicamentos/interações.
+- Reporte de stock por farmácias parceiras via WhatsApp — fluxo completo especificado em **[FLUXO-REPORTE-STOCK.md](FLUXO-REPORTE-STOCK.md)** (parsing → validação contra a BD de medicamentos → `pharmacy_stock` → confirmação).
 - Notificações proativas (ex.: lembrar inscritos de eventos) — **apenas com Cloud API oficial** e opt-in.
