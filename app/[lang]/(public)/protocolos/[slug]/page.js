@@ -16,6 +16,8 @@ export async function generateMetadata({ params }) {
     title: `${protocol.title} — ${tFn('protocolos_page.hero_title')} | Conheça Farmácia`,
     description: protocol.description,
     alternates: { languages: { pt: `/pt/protocolos/${slug}`, en: `/en/protocols/${slug}` } },
+    // Secção oculta (lib/features.js) — não indexar
+    robots: { index: false, follow: false },
   }
 }
 

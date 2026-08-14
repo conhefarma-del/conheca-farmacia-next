@@ -69,6 +69,8 @@ export async function generateMetadata({ params }) {
         ...(article.langSlugs?.en ? { en: `${SITE_URL}/en/cientificos/${article.langSlugs.en}` } : {}),
       },
     },
+    // Secção oculta (lib/features.js) — não indexar
+    robots: { index: false, follow: false },
     openGraph: {
       title: article.title,
       description: article.abstract || article.title,

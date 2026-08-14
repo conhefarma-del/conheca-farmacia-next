@@ -18,18 +18,17 @@ import { sendContentAlert, getPublishedContent } from '@/lib/actions/newsletter'
  *   - selectedEmails: Set (para modo manual)
  */
 
+// Lives fundidas em Eventos (migração 159) — já não há alertas de tipo 'live'
 const CONTENT_TYPES = [
   { value: 'article', label: 'Artigo' },
   { value: 'event', label: 'Evento' },
-  { value: 'live', label: 'Live' },
 ]
 
 const BASE_URL = 'https://conhecafarmacia.com'
 
 function buildContentUrl(type, slug) {
   if (type === 'article') return `${BASE_URL}/pt/artigos/${slug}`
-  if (type === 'event') return `${BASE_URL}/pt/eventos/${slug}`
-  return `${BASE_URL}/pt/lives/${slug}`
+  return `${BASE_URL}/pt/eventos/${slug}`
 }
 
 export default function SendAlertForm({ sendMode = 'all', randomCount = 10, selectedEmails = new Set() }) {

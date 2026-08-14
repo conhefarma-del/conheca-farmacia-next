@@ -8,7 +8,6 @@ import {
   Home,
   FileText,
   Calendar,
-  Video,
   Languages,
   Mail,
   Settings,
@@ -51,10 +50,9 @@ export default function AdminSidebar({ lang, user, onLogout }) {
     setCanHover(window.matchMedia('(hover: hover) and (pointer: fine)').matches)
   }, [])
 
+  // Lives fundidas em Eventos (migração 159) — já não há admin de lives
   const links = [
     { href: `/${lang}/admin/dashboard`, label: 'Dashboard', icon: Home },
-    { href: `/${lang}/admin/dashboard`, label: 'Dashboard', icon: Home },
-    { href: `/${lang}/admin/lives`, label: 'Lives', icon: Video },
     { href: `/${lang}/admin/guias`, label: 'Guias de Estudo', icon: BookOpen },
     { href: `/${lang}/admin/protocolos`, label: 'Protocolos Clínicos', icon: ClipboardList },
     { href: `/${lang}/admin/newsletter`, label: 'Newsletter', icon: Mail },
@@ -243,8 +241,8 @@ export default function AdminSidebar({ lang, user, onLogout }) {
             )
           })()}
 
-          {/* Lives, Guias, Protocolos */}
-          {links.slice(1, 4).map((link) => {
+          {/* Guias, Protocolos */}
+          {links.slice(1, 3).map((link) => {
             const Icon = link.icon
             return (
               <Link key={link.href} href={link.href} className={isActive(link.href) ? 'active' : ''}>
@@ -292,7 +290,7 @@ export default function AdminSidebar({ lang, user, onLogout }) {
           })()}
 
           {/* Newsletter, Feedback */}
-          {links.slice(4, 6).map((link) => {
+          {links.slice(3, 5).map((link) => {
             const Icon = link.icon
             return (
               <Link key={link.href} href={link.href} className={isActive(link.href) ? 'active' : ''}>

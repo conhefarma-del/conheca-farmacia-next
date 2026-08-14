@@ -1663,6 +1663,12 @@ html.dark .form-note {
     @apply bg-brand-bg-alt rounded-2xl p-8;
   }
 
+  /* Acesso à transmissão (lives/webinars fundidas em eventos — 159) */
+  .event-access-card {
+    @apply bg-brand-bg-alt rounded-2xl p-6;
+    border: 1px solid rgba(10, 132, 79, 0.18);
+  }
+
   .event-capacity-bar-wrapper {
     @apply w-full;
   }

@@ -12,7 +12,7 @@ import Link from 'next/link'
  * quebrar a navegação para `/inscricao?evento=<slug-en>` quando o InscricaoPage
  * faz lookup pelo slug PT.
  */
-export default function RegistrationButton({ eventId, capacity, initialCount = 0, isPast, lang }) {
+export default function RegistrationButton({ eventId, capacity, initialCount = 0, isPast, lang, registrationEnabled = true, accessLink = null }) {
   const { t } = useContext(LangContext)
   const { inscriptionCount } = useCapacityPolling(eventId, initialCount)
   const isFull = capacity && inscriptionCount >= capacity
@@ -26,6 +26,20 @@ export default function RegistrationButton({ eventId, capacity, initialCount = 0
         {t('evento_detail.recording_btn') || 'Evento passado'}
       </button>
     )
+  }
+
+  // Evento sem inscrição (ex.: live/webinar com acesso direto)
+  if (!registrationEnabled) {
+    return accessLink ? (
+      <a
+        href={accessLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="btn btn-primary btn-lg btn-inscrever"
+      >
+        {t('evento_detail.access_btn') || 'Aceder à transmissão'}
+      </a>
+    ) : null
   }
 
   if (isFull) {

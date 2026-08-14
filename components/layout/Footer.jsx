@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { LangContext } from '@/lib/contexts'
 import { getSectionHref } from '@/lib/i18n-routes'
+import { featureEnabled } from '@/lib/features'
 
 export default function Footer({ lang }) {
   const { t } = useContext(LangContext)
@@ -28,7 +29,6 @@ export default function Footer({ lang }) {
               <li><Link href={`/${lang}`}>{t('nav.inicio')}</Link></li>
               <li><Link href={getSectionHref(lang, 'artigos')}>{t('nav.artigos')}</Link></li>
               <li><Link href={getSectionHref(lang, 'eventos')}>{t('nav.eventos')}</Link></li>
-              <li><Link href={getSectionHref(lang, 'lives')}>{t('nav.lives')}</Link></li>
               <li><Link href={getSectionHref(lang, 'sobre')}>{t('nav.sobre')}</Link></li>
               <li><Link href={getSectionHref(lang, 'faq')}>{t('footer.faq')}</Link></li>
               <li><Link href={getSectionHref(lang, 'politica-privacidade')}>{t('footer.privacidade')}</Link></li>
@@ -41,9 +41,13 @@ export default function Footer({ lang }) {
             <ul>
               <li><Link href={getSectionHref(lang, 'praticar')}>{t('nav.praticar')}</Link></li>
               <li><Link href={getSectionHref(lang, 'medicamentos')}>{t('nav.medicamentos')}</Link></li>
-              <li><Link href={getSectionHref(lang, 'cientificos')}>{t('nav.cientificos')}</Link></li>
+              {featureEnabled('cientificos') && (
+                <li><Link href={getSectionHref(lang, 'cientificos')}>{t('nav.cientificos')}</Link></li>
+              )}
               <li><Link href={getSectionHref(lang, 'guias')}>{t('footer.guias')}</Link></li>
-              <li><Link href={getSectionHref(lang, 'protocolos')}>{t('footer.protocolos')}</Link></li>
+              {featureEnabled('protocolos') && (
+                <li><Link href={getSectionHref(lang, 'protocolos')}>{t('footer.protocolos')}</Link></li>
+              )}
               <li><Link href={getSectionHref(lang, 'interacoes')}>{t('footer.interacoes')}</Link></li>
             </ul>
           </div>

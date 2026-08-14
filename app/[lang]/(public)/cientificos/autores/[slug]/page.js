@@ -25,6 +25,8 @@ export async function generateMetadata({ params }) {
     description: author.author.institution
       ? `${author.author.name} — ${author.author.institution}`
       : undefined,
+    // Secção oculta (lib/features.js) — não indexar
+    robots: { index: false, follow: false },
   }
 }
 

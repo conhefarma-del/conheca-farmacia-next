@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { getArticles } from '@/lib/api/articles'
 import { getEvents } from '@/lib/api/events'
-import { getLives } from '@/lib/api/lives'
+import { featureEnabled } from '@/lib/features'
 
 export const revalidate = 43200 // 12 horas
 
@@ -37,7 +37,6 @@ export default async function sitemap() {
     cientificos:   { pt: '/cientificos', en: '/cientificos' },
     'cientificos/autores': { pt: '/cientificos/autores', en: '/cientificos/autores' },
     eventos:       { pt: '/eventos',    en: '/events' },
-    lives:         { pt: '/lives',      en: '/lives' },
     entrevistas:   { pt: '/entrevistas', en: '/entrevistas' },
     'entrevistas/entrevistados': { pt: '/entrevistas/entrevistados', en: '/entrevistas/entrevistados' },
     flashcards:    { pt: '/flashcards', en: '/flashcards' },
@@ -50,6 +49,12 @@ export default async function sitemap() {
     faq:           { pt: '/faq',        en: '/faq' },
     'politica-privacidade': { pt: '/politica-privacidade', en: '/privacy-policy' },
     inscricao:     { pt: '/inscricao',  en: '/register' },
+  }
+
+  // Secções ocultas (lib/features.js): não entram no sitemap
+  if (!featureEnabled('cientificos')) {
+    delete SECTION_PATHS.cientificos
+    delete SECTION_PATHS['cientificos/autores']
   }
   const staticEntries = Object.entries(SECTION_PATHS).flatMap(([path, paths]) =>
     LOCALES.map((lang) => ({
@@ -148,47 +153,7 @@ export default async function sitemap() {
     })
   } catch {}
 
-  // Lives: 1 entry PT + 1 entry EN (se houver tradução)
-  let liveEntries = []
-  try {
-    const lives = await getLives()
-    const tMap = await loadEnTranslationsMap('live_translations')
-    liveEntries = lives.flatMap((live) => {
-      const t = tMap.get(live.id)
-      const lastmod = t?.updated_at || live.updated_at || live.data || live.date
-      const entries = [
-        {
-          url: `${SITE_URL}/pt/lives/${live.slug}`,
-          lastModified: lastmod,
-          changeFrequency: 'monthly',
-          priority: 0.5,
-          alternates: {
-            languages: {
-              pt: `${SITE_URL}/pt/lives/${live.slug}`,
-              ...(t && { en: `${SITE_URL}/en/lives/${t.slug}` }),
-              'x-default': `${SITE_URL}/pt/lives/${live.slug}`,
-            },
-          },
-        },
-      ]
-      if (t) {
-        entries.push({
-          url: `${SITE_URL}/en/lives/${t.slug}`,
-          lastModified: lastmod,
-          changeFrequency: 'monthly',
-          priority: 0.5,
-          alternates: {
-            languages: {
-              pt: `${SITE_URL}/pt/lives/${live.slug}`,
-              en: `${SITE_URL}/en/lives/${t.slug}`,
-              'x-default': `${SITE_URL}/pt/lives/${live.slug}`,
-            },
-          },
-        })
-      }
-      return entries
-    })
-  } catch {}
+  // Lives/webinars fundidas em Eventos (migração 159) — sem entries próprias
 
   // Fármacos: o slug é PARTILHADO entre línguas (não há tabela de traduções
   // de slug — a página resolve o mesmo slug em /medicamento/{slug} e
@@ -223,9 +188,9 @@ export default async function sitemap() {
     })
   } catch {}
 
-  // Protocolos: slug PARTILHADO entre línguas — /pt/protocolos/{slug} ↔
-  // /en/protocols/{slug} (confirmado no generateMetadata). 1 entry por língua.
+  // Protocolos: ocultos via lib/features.js — fora do sitemap enquanto desligados
   let protocolEntries = []
+  if (featureEnabled('protocolos')) {
   try {
     const supabase = await createClient()
     const { data: protocols } = await supabase
@@ -253,6 +218,7 @@ export default async function sitemap() {
       }))
     })
   } catch {}
+  }
 
   // Guias de estudo: slug PARTILHADO entre línguas — /pt/guias/{slug} ↔
   // /en/guides/{slug} (confirmado no generateMetadata). 1 entry por língua.
@@ -345,9 +311,9 @@ export default async function sitemap() {
     }
   } catch {}
 
-  // Artigos científicos: 1 entry PT + 1 entry EN (se houver tradução),
-  // rota própria /cientificos (partilhada entre línguas, slug EN diferente).
+  // Artigos científicos: ocultos via lib/features.js — fora do sitemap
   let scientificEntries = []
+  if (featureEnabled('cientificos')) {
   try {
     const supabase = await createClient()
     const { data: sciArticles } = await supabase
@@ -392,8 +358,7 @@ export default async function sitemap() {
       return entries
     })
   } catch {}
-
-  // Decks de flashcards (156/157): slug PARTILHADO entre línguas. Só decks
+  }
   // publicados e não arquivados (RLS anónima).
   let flashcardEntries = []
   try {
@@ -424,6 +389,7 @@ export default async function sitemap() {
   // só expõe autores ligados a artigos publicados e não arquivados, por isso
   // rascunhos ficam automaticamente fora do sitemap.
   let authorEntries = []
+  if (featureEnabled('cientificos')) {
   try {
     const supabase = await createClient()
     const { data: authors } = await supabase
@@ -450,12 +416,12 @@ export default async function sitemap() {
       )
     })
   } catch {}
+  }
 
   return [
     ...staticEntries,
     ...articleEntries,
     ...eventEntries,
-    ...liveEntries,
     ...interviewEntries,
     ...interviewPeopleEntries,
     ...scientificEntries,

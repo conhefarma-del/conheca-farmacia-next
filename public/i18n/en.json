@@ -198,7 +198,9 @@
     "newsletter_email_placeholder": "Your email",
     "newsletter_submit": "Subscribe",
     "newsletter_submitting": "Subscribing...",
-    "newsletter_privacy": "We respect your privacy!"
+    "newsletter_privacy": "We respect your privacy!",
+    "filter_live": "Live",
+    "filter_webinar": "Webinar"
   },
   "lives_page": {
     "hero_title": "Lives & Webinars",
@@ -253,7 +255,12 @@
     "not_found_text": "Sorry, we couldn't find the event you're looking for.",
     "back_to_events": "Back to Events",
     "open_in_maps": "Open in Google Maps",
-    "map_title": "Event map"
+    "map_title": "Event map",
+    "access_title": "Access the broadcast",
+    "access_platform": "Platform",
+    "access_btn": "Join broadcast",
+    "meeting_id": "Meeting ID",
+    "meeting_password": "Password"
   },
   "live_detail": {
     "quick_access": "Quick Access",

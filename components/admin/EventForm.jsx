@@ -13,6 +13,8 @@ const CATEGORIES = [
   { value: 'congresso', label: 'Congresso' },
   { value: 'seminario', label: 'Seminário' },
   { value: 'outro', label: 'Outro' },
+  { value: 'live', label: 'Live' },
+  { value: 'webinar', label: 'Webinar' },
 ]
 
 const TYPES = [
@@ -50,6 +52,14 @@ export default function EventForm({ mode = 'create', initialData = null, lang = 
   const [type, setType] = useState(initialData?.type || '')
   const [capacity, setCapacity] = useState(initialData?.capacity || '')
   const [registrationLink, setRegistrationLink] = useState(initialData?.registration_link || '')
+  // Campos de evento online (fundidos das lives — migração 159)
+  const [platform, setPlatform] = useState(initialData?.platform || '')
+  const [accessLink, setAccessLink] = useState(initialData?.access_link || '')
+  const [meetingId, setMeetingId] = useState(initialData?.meeting_id || '')
+  const [password, setPassword] = useState(initialData?.password || '')
+  const [materials, setMaterials] = useState(initialData?.materials || '')
+  const [topic, setTopic] = useState(initialData?.topic || '')
+  const [registrationEnabled, setRegistrationEnabled] = useState(initialData?.registration_enabled !== false)
   const [imageUrl, setImageUrl] = useState(initialData?.image_url || '')
   const [hosts, setHosts] = useState(initialData?.hosts || [])
 
@@ -87,6 +97,9 @@ export default function EventForm({ mode = 'create', initialData = null, lang = 
       excerpt, date, time, end_time: endTime, location, location_maps_url: locationMapsUrl,
       location_maps_embed_url: locationMapsEmbedUrl, type, capacity,
       registration_link: registrationLink, image_url: imageUrl, hosts,
+      // Campos de evento online
+      platform, access_link: accessLink, meeting_id: meetingId, password,
+      materials, topic, registration_enabled: registrationEnabled,
       // Campos de certificado
       certificado_cor: certificadoCor,
       certificado_texto: certificadoTexto,
@@ -114,7 +127,9 @@ export default function EventForm({ mode = 'create', initialData = null, lang = 
       setSaving(false)
     }
   }, [title, slug, category, status, featuredLangs, excerpt, date, time, endTime,
-    location, locationMapsUrl, locationMapsEmbedUrl, type, capacity, registrationLink, imageUrl, hosts,
+    location, locationMapsUrl, locationMapsEmbedUrl, type, capacity, registrationLink,
+    platform, accessLink, meetingId, password, materials, topic, registrationEnabled,
+    imageUrl, hosts,
     certificadoCor, certificadoTexto, certificadoLogoUrl, certificadoCargaHoraria,
     assinante1Nome, assinante1Cargo, assinante2Nome, assinante2Cargo,
     mode, initialData, router, lang])
@@ -271,6 +286,68 @@ export default function EventForm({ mode = 'create', initialData = null, lang = 
             className="admin-input" placeholder="https://..." />
         </div>
       </div>
+
+      {/* Inscrições ativas */}
+      <div className="admin-form-group" style={{ marginTop: 8 }}>
+        <label className="admin-checkbox-label">
+          <input
+            type="checkbox"
+            checked={registrationEnabled}
+            onChange={(e) => setRegistrationEnabled(e.target.checked)}
+          />
+          <span>Inscrições ativas — mostrar botão "Inscrever-me" e vagas neste evento</span>
+        </label>
+        <small className="admin-field-hint" style={{ display: 'block', marginTop: 4, color: 'var(--admin-text-muted)', fontSize: 12 }}>
+          Desliga para eventos sem inscrição (ex.: lives/webinars com acesso direto pelo link).
+        </small>
+      </div>
+
+      {/* Evento online — campos da antiga secção Lives */}
+      {type === 'online' && (
+        <div style={{ marginTop: 24, marginBottom: 8, borderTop: '1px solid var(--admin-border)', paddingTop: 20 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 12, color: 'var(--admin-text)' }}>
+            Acesso à transmissão (evento online)
+          </h3>
+          <div className="admin-form-grid">
+            <div className="admin-form-group">
+              <label>Plataforma</label>
+              <select value={platform} onChange={(e) => setPlatform(e.target.value)} className="admin-input">
+                <option value="">Selecione...</option>
+                <option value="Zoom">Zoom</option>
+                <option value="Google Meet">Google Meet</option>
+                <option value="YouTube">YouTube</option>
+                <option value="Outra">Outra</option>
+              </select>
+            </div>
+            <div className="admin-form-group">
+              <label>Link de acesso</label>
+              <input type="url" value={accessLink} onChange={(e) => setAccessLink(e.target.value)}
+                className="admin-input" placeholder="https://..." />
+            </div>
+            <div className="admin-form-group">
+              <label>ID da reunião (opcional)</label>
+              <input type="text" value={meetingId} onChange={(e) => setMeetingId(e.target.value)}
+                className="admin-input" placeholder="123 456 789" />
+            </div>
+            <div className="admin-form-group">
+              <label>Palavra-passe (opcional)</label>
+              <input type="text" value={password} onChange={(e) => setPassword(e.target.value)}
+                className="admin-input" />
+            </div>
+          </div>
+          <div className="admin-form-group">
+            <label>Tópico (opcional)</label>
+            <input type="text" value={topic} onChange={(e) => setTopic(e.target.value)}
+              className="admin-input" placeholder="Tema da transmissão" />
+          </div>
+          <div className="admin-form-group">
+            <label>Materiais (opcional)</label>
+            <textarea value={materials} onChange={(e) => setMaterials(e.target.value)}
+              className="admin-textarea" style={{ minHeight: 70 }}
+              placeholder="Links ou notas para os participantes" />
+          </div>
+        </div>
+      )}
 
       <ImageUpload value={imageUrl} onChange={setImageUrl} bucket="event-images" folder="events" label="Imagem" />
 

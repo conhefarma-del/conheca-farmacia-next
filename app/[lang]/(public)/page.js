@@ -2,12 +2,10 @@ import dynamic from 'next/dynamic'
 import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
 import { getFeaturedArticles } from '@/lib/api/articles'
 import { getFeaturedEvents } from '@/lib/api/events'
-import { getFeaturedLives } from '@/lib/api/lives'
 import { buildOrganizationSchema, buildWebSiteSchema } from '@/lib/seo'
 import ToolsShowcase from '@/components/home/ToolsShowcase'
 import FeaturedArticles from '@/components/home/FeaturedArticles'
 import FeaturedEvents from '@/components/home/FeaturedEvents'
-import FeaturedLives from '@/components/home/FeaturedLives'
 import StatsSection from '@/components/home/StatsSection'
 
 
@@ -59,17 +57,14 @@ export default async function HomePage({ params }) {
 
   let articles = []
   let events = []
-  let lives = []
 
   try {
-    const [a, e, l] = await Promise.all([
+    const [a, e] = await Promise.all([
       getFeaturedArticles(3, safeLang),
       getFeaturedEvents(2, safeLang),
-      getFeaturedLives(2, safeLang),
     ])
     articles = a
     events = e
-    lives = l
   } catch (err) {
     console.error('Error fetching homepage data:', err)
   }
@@ -125,13 +120,6 @@ export default async function HomePage({ params }) {
         events={events}
         lang={safeLang}
         title={tFn('home.eventos_destaque')}
-      />
-
-      {/* Lives e Webinars */}
-      <FeaturedLives
-        lives={lives}
-        lang={safeLang}
-        title={tFn('home.lives_webinars')}
       />
 
       {/* Impacto e Números */}

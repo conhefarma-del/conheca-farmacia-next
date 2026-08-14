@@ -44,6 +44,17 @@ const nextConfig = {
       },
     ]
   },
+
+  // Lives/webinars fundidas em /eventos (migração 159) — links antigos
+  // /lives e /lives/{slug} redirecionam para o evento correspondente.
+  async redirects() {
+    return [
+      { source: '/pt/lives', destination: '/pt/eventos', permanent: true },
+      { source: '/en/lives', destination: '/en/events', permanent: true },
+      { source: '/pt/lives/:path*', destination: '/pt/eventos/:path*', permanent: true },
+      { source: '/en/lives/:path*', destination: '/en/events/:path*', permanent: true },
+    ]
+  },
 };
 
 export default nextConfig;

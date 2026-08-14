@@ -198,7 +198,9 @@
     "newsletter_email_placeholder": "Seu email",
     "newsletter_submit": "Subscrever",
     "newsletter_submitting": "A subscrever...",
-    "newsletter_privacy": "Respeitamos sua privacidade!"
+    "newsletter_privacy": "Respeitamos sua privacidade!",
+    "filter_live": "Live",
+    "filter_webinar": "Webinar"
   },
   "lives_page": {
     "hero_title": "Lives e Webinars",
@@ -253,7 +255,12 @@
     "not_found_text": "Desculpe, não conseguimos encontrar o evento que procura.",
     "back_to_events": "Voltar aos Eventos",
     "open_in_maps": "Abrir no Google Maps",
-    "map_title": "Mapa do evento"
+    "map_title": "Mapa do evento",
+    "access_title": "Acesso à transmissão",
+    "access_platform": "Plataforma",
+    "access_btn": "Aceder à transmissão",
+    "meeting_id": "ID da reunião",
+    "meeting_password": "Palavra-passe"
   },
   "live_detail": {
     "quick_access": "Acesso Rápido",

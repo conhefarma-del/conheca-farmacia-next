@@ -4,8 +4,9 @@ import { useState, useEffect, useContext, useCallback } from 'react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { BookOpen, CalendarDays, ClipboardList, FileText, Layers, Mic, Microscope, Pill, Search, ShieldAlert, UserRound, Users, Video } from 'lucide-react'
+import { BookOpen, CalendarDays, ClipboardList, FileText, Layers, Mic, Microscope, Pill, Search, ShieldAlert, UserRound, Users } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
+import { featureEnabled } from '@/lib/features'
 import { BLUR_PLACEHOLDER } from '@/lib/images'
 import { searchAllContent } from '@/lib/api/search'
 import { escapeHtml } from '@/lib/security'
@@ -13,6 +14,12 @@ import { sanitizeHtml } from '@/lib/sanitize'
 import Breadcrumb from '@/components/ui/Breadcrumb'
 
 const PER_PAGE = 15
+
+// Secções ocultas via lib/features.js — não entram no índice nem nos filtros
+const HIDDEN_SEARCH_TYPES = []
+if (!featureEnabled('cientificos')) HIDDEN_SEARCH_TYPES.push('cientificos', 'autores')
+if (!featureEnabled('protocolos')) HIDDEN_SEARCH_TYPES.push('protocolos')
+const isHiddenType = (key) => HIDDEN_SEARCH_TYPES.includes(key)
 
 const MONTHS_PT = [
   'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
@@ -61,8 +68,9 @@ export default function PesquisaPageClient({ lang }) {
   const router = useRouter()
   const pathname = usePathname()
 
+  const rawTipo = searchParams.get('tipo')
   const [query, setQuery] = useState(searchParams.get('q') || '')
-  const [tipo, setTipo] = useState(searchParams.get('tipo') || 'todos')
+  const [tipo, setTipo] = useState(rawTipo && !isHiddenType(rawTipo) ? rawTipo : 'todos')
   const [ordem, setOrdem] = useState(searchParams.get('ordem') || 'recente')
   const [page, setPage] = useState(parseInt(searchParams.get('p'), 10) || 1)
   const [loading, setLoading] = useState(false)
@@ -78,11 +86,14 @@ export default function PesquisaPageClient({ lang }) {
     const items = []
     allResults.articles.forEach(item => items.push({ ...item, type: 'articles' }))
     allResults.events.forEach(item => items.push({ ...item, type: 'events' }))
-    allResults.lives.forEach(item => items.push({ ...item, type: 'lives' }))
     allResults.guides.forEach(item => items.push({ ...item, type: 'guias' }))
-    allResults.protocolos.forEach(item => items.push({ ...item, type: 'protocolos' }))
-    allResults.cientificos.forEach(item => items.push({ ...item, type: 'cientificos' }))
-    allResults.autores.forEach(item => items.push({ ...item, type: 'autores' }))
+    if (!isHiddenType('protocolos')) {
+      allResults.protocolos.forEach(item => items.push({ ...item, type: 'protocolos' }))
+    }
+    if (!isHiddenType('cientificos')) {
+      allResults.cientificos.forEach(item => items.push({ ...item, type: 'cientificos' }))
+      allResults.autores.forEach(item => items.push({ ...item, type: 'autores' }))
+    }
     allResults.farmacos.forEach(item => items.push({ ...item, type: 'farmacos' }))
     allResults.interacoes.forEach(item => items.push({ ...item, type: 'interacoes' }))
     allResults.entrevistas.forEach(item => items.push({ ...item, type: 'entrevistas' }))
@@ -122,7 +133,7 @@ export default function PesquisaPageClient({ lang }) {
       updateUrl(q, tVal || tipo, o || ordem, 1)
     } catch (err) {
       console.error('Search error:', err)
-      setAllResults({ articles: [], events: [], lives: [], guides: [], protocolos: [], cientificos: [], autores: [], farmacos: [], interacoes: [], entrevistas: [], entrevistados: [], flashcards: [], total: 0 })
+      setAllResults({ articles: [], events: [], guides: [], protocolos: [], cientificos: [], autores: [], farmacos: [], interacoes: [], entrevistas: [], entrevistados: [], flashcards: [], total: 0 })
     } finally {
       setLoading(false)
     }
@@ -172,7 +183,6 @@ export default function PesquisaPageClient({ lang }) {
   const getItemLink = (item) => {
     if (item.type === 'articles') return `/${lang}/artigos/${item.slug}`
     if (item.type === 'events') return `/${lang}/eventos/${item.slug}`
-    if (item.type === 'lives') return `/${lang}/lives/${item.slug}`
     if (item.type === 'guias') return `/${lang}/guias/${item.slug}`
     if (item.type === 'protocolos') return `/${lang}/protocolos/${item.slug}`
     if (item.type === 'cientificos') return `/${lang}/cientificos/${item.slug}`
@@ -213,7 +223,6 @@ export default function PesquisaPageClient({ lang }) {
   const TYPE_ICONS = {
     articles: FileText,
     events: CalendarDays,
-    lives: Video,
     guias: BookOpen,
     protocolos: ClipboardList,
     cientificos: Microscope,
@@ -227,7 +236,6 @@ export default function PesquisaPageClient({ lang }) {
   const TYPE_KEYS = {
     articles: 'search.artigos',
     events: 'search.eventos',
-    lives: 'search.lives',
     guias: 'search.guias',
     protocolos: 'search.protocolos',
     cientificos: 'search.cientificos',
@@ -305,7 +313,9 @@ export default function PesquisaPageClient({ lang }) {
           {/* Filters & Sort */}
           <div className="search-filters">
             <div className="search-type-filters">
-              {['todos', 'artigos', 'eventos', 'lives', 'guias', 'protocolos', 'cientificos', 'autores', 'interacoes', 'farmacos', 'entrevistas', 'entrevistados', 'flashcards'].map((key) => (
+              {['todos', 'artigos', 'eventos', 'guias', 'protocolos', 'cientificos', 'autores', 'interacoes', 'farmacos', 'entrevistas', 'entrevistados', 'flashcards']
+                .filter((key) => !isHiddenType(key))
+                .map((key) => (
                 <button
                   key={key}
                   className={`filter-btn ${tipo === key ? 'active' : ''}`}

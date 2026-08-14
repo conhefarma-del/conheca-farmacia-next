@@ -42,7 +42,6 @@ export default function NotFound() {
             Ou consultar:&nbsp;
             <Link href="/pt/artigos">Artigos</Link>·
             <Link href="/pt/eventos">Eventos</Link>·
-            <Link href="/pt/lives">Lives</Link>·
             <Link href="/pt/pesquisa">Pesquisa</Link>
           </div>
         </div>

@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { ChevronDown } from 'lucide-react'
 import { getSectionHref } from '@/lib/i18n-routes'
+import { featureEnabled } from '@/lib/features'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 
 export default function MobileDrawer({ lang, t, open, onClose }) {
@@ -37,9 +38,10 @@ export default function MobileDrawer({ lang, t, open, onClose }) {
   const navLinks = [
     { href: `/${lang}`, label: t('nav.inicio'), path: '' },
     { href: getSectionHref(lang, 'artigos'), label: t('nav.artigos'), path: 'artigos' },
-    { href: getSectionHref(lang, 'cientificos'), label: t('nav.cientificos'), path: 'cientificos' },
+    ...(featureEnabled('cientificos')
+      ? [{ href: getSectionHref(lang, 'cientificos'), label: t('nav.cientificos'), path: 'cientificos' }]
+      : []),
     { href: getSectionHref(lang, 'eventos'), label: t('nav.eventos'), path: 'eventos' },
-    { href: getSectionHref(lang, 'lives'), label: t('nav.lives'), path: 'lives' },
     ...(lang === 'pt'
       ? [{ href: `/${lang}/entrevistas`, label: t('nav.entrevistas'), path: 'entrevistas' }]
       : []),
@@ -50,7 +52,9 @@ export default function MobileDrawer({ lang, t, open, onClose }) {
   const toolsLinks = [
     { href: getSectionHref(lang, 'praticar'), label: t('nav.praticar'), path: 'praticar' },
     { href: getSectionHref(lang, 'guias'), label: t('nav.guias'), path: 'guias' },
-    { href: getSectionHref(lang, 'protocolos'), label: t('nav.protocolos'), path: 'protocolos' },
+    ...(featureEnabled('protocolos')
+      ? [{ href: getSectionHref(lang, 'protocolos'), label: t('nav.protocolos'), path: 'protocolos' }]
+      : []),
     { href: getSectionHref(lang, 'interacoes'), label: t('nav.interacoes'), path: 'interacoes' },
     { href: getSectionHref(lang, 'medicamentos'), label: t('nav.medicamentos'), path: 'medicamentos' },
   ]

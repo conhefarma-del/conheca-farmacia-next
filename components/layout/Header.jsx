@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation'
 import { BookOpen, BrainCircuit, ChevronDown, ClipboardList, Pill, Tablets } from 'lucide-react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import { getSectionHref } from '@/lib/i18n-routes'
+import { featureEnabled } from '@/lib/features'
 
 export default function Header({ lang, t, onToggleDrawer }) {
   const pathname = usePathname()
@@ -37,16 +38,17 @@ export default function Header({ lang, t, onToggleDrawer }) {
   const navLinks = [
     { href: `/${lang}`, label: t('nav.inicio'), path: '' },
     { href: getSectionHref(lang, 'artigos'), label: t('nav.artigos'), path: 'artigos' },
-    { href: getSectionHref(lang, 'cientificos'), label: t('nav.cientificos'), path: 'cientificos' },
+    ...(featureEnabled('cientificos')
+      ? [{ href: getSectionHref(lang, 'cientificos'), label: t('nav.cientificos'), path: 'cientificos' }]
+      : []),
     { href: getSectionHref(lang, 'eventos'), label: t('nav.eventos'), path: 'eventos' },
-    { href: getSectionHref(lang, 'lives'), label: t('nav.lives'), path: 'lives' },
     ...(lang === 'pt'
       ? [{ href: `/${lang}/entrevistas`, label: t('nav.entrevistas'), path: 'entrevistas' }]
       : []),
     { href: getSectionHref(lang, 'sobre'), label: t('nav.sobre'), path: 'sobre' },
   ]
 
-  // Sub-menu "Ferramentas": Guias de Estudo + Protocolos (mega menu com ícones e descrições)
+  // Sub-menu "Ferramentas": mega menu com ícones e descrições
   const toolsLinks = [
     {
       href: getSectionHref(lang, 'praticar'),
@@ -62,13 +64,15 @@ export default function Header({ lang, t, onToggleDrawer }) {
       path: 'guias',
       icon: <BookOpen size={18} aria-hidden="true" />,
     },
-    {
-      href: getSectionHref(lang, 'protocolos'),
-      label: t('nav.protocolos'),
-      desc: t('nav.protocolos_desc'),
-      path: 'protocolos',
-      icon: <ClipboardList size={18} aria-hidden="true" />,
-    },
+    ...(featureEnabled('protocolos')
+      ? [{
+          href: getSectionHref(lang, 'protocolos'),
+          label: t('nav.protocolos'),
+          desc: t('nav.protocolos_desc'),
+          path: 'protocolos',
+          icon: <ClipboardList size={18} aria-hidden="true" />,
+        }]
+      : []),
     {
       href: getSectionHref(lang, 'interacoes'),
       label: t('nav.interacoes'),

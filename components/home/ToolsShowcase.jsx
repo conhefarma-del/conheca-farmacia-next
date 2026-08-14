@@ -1,26 +1,27 @@
 import Link from "next/link";
 import { getSectionHref } from "@/lib/i18n-routes";
+import { featureEnabled } from "@/lib/features";
 import {
   BookOpen,
   BrainCircuit,
   ClipboardList,
+  FlaskConical,
   Pill,
   Plus,
   Tablets,
-  FlaskConical,
   ArrowRight,
 } from "lucide-react";
 
 /**
  * ToolsShowcase — homepage, entre o hero e os Artigos em Destaque.
  * Bento: a Calculadora de Interações (a ferramenta mais forte) tem destaque
- * próprio (2/3 da largura, badge + CTA), os Artigos Científicos ocupam 1/3,
- * e as restantes ferramentas (Guias, Protocolos, Medicamentos) ficam em
- * cards pequenos por baixo.
+ * próprio (largura total quando os Artigos Científicos estão ocultos), e as
+ * restantes ferramentas (Praticar, Guias, Medicamentos) ficam em cards
+ * pequenos por baixo. Protocolos e Científicos são ocultos via lib/features.js.
  * Server component: recebe `tFn` (a página já tem traduções carregadas).
  */
 export default function ToolsShowcase({ lang = "pt", tFn }) {
-  const tools = [
+  const smallTools = [
     {
       href: getSectionHref(lang, "praticar"),
       icon: BrainCircuit,
@@ -34,18 +35,25 @@ export default function ToolsShowcase({ lang = "pt", tFn }) {
       desc: tFn("nav.guias_desc"),
     },
     {
-      href: getSectionHref(lang, "protocolos"),
-      icon: ClipboardList,
-      label: tFn("nav.protocolos"),
-      desc: tFn("nav.protocolos_desc"),
-    },
-    {
       href: getSectionHref(lang, "medicamentos"),
       icon: Tablets,
       label: tFn("nav.medicamentos"),
       desc: tFn("nav.medicamentos_desc"),
     },
   ];
+
+  // Protocolos (se reativados) voltam aos cards pequenos
+  if (featureEnabled("protocolos")) {
+    smallTools.push({
+      href: getSectionHref(lang, "protocolos"),
+      icon: ClipboardList,
+      label: tFn("nav.protocolos"),
+      desc: tFn("nav.protocolos_desc"),
+    })
+  }
+
+  const featuredSpan = featureEnabled("cientificos") ? "md:col-span-2" : "md:col-span-3"
+  const smallCols = featureEnabled("protocolos") ? "md:grid-cols-4" : "md:grid-cols-3"
 
   return (
     <section className="section-padding tools-showcase">
@@ -58,10 +66,10 @@ export default function ToolsShowcase({ lang = "pt", tFn }) {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Calculadora de Interações — destaque próprio (2/3) */}
+          {/* Calculadora de Interações — destaque próprio */}
           <Link
             href={getSectionHref(lang, "interacoes")}
-            className="tools-card tools-card-featured tools-card-calculator md:col-span-2"
+            className={`tools-card tools-card-featured tools-card-calculator ${featuredSpan}`}
           >
             <span className="tools-calc-badge">
               {tFn("home.calculator_badge")}
@@ -87,26 +95,28 @@ export default function ToolsShowcase({ lang = "pt", tFn }) {
             </span>
           </Link>
 
-          {/* Artigos Científicos — destaque (novo conteúdo académico) */}
-          <Link
-            href={getSectionHref(lang, "cientificos")}
-            className="tools-card tools-card-featured md:col-span-1"
-          >
-            <span className="tools-card-icon">
-              <FlaskConical aria-hidden="true" />
-            </span>
-            <span className="tools-card-title">{tFn("nav.cientificos")}</span>
-            <span className="tools-card-desc">
-              {tFn("cientificos_page.banner_desc")}
-            </span>
-            <span className="tools-card-arrow">
-              <ArrowRight size={14} aria-hidden="true" />
-            </span>
-          </Link>
+          {/* Artigos Científicos — destaque (oculto via lib/features.js) */}
+          {featureEnabled("cientificos") && (
+            <Link
+              href={getSectionHref(lang, "cientificos")}
+              className="tools-card tools-card-featured md:col-span-1"
+            >
+              <span className="tools-card-icon">
+                <FlaskConical aria-hidden="true" />
+              </span>
+              <span className="tools-card-title">{tFn("nav.cientificos")}</span>
+              <span className="tools-card-desc">
+                {tFn("cientificos_page.banner_desc")}
+              </span>
+              <span className="tools-card-arrow">
+                <ArrowRight size={14} aria-hidden="true" />
+              </span>
+            </Link>
+          )}
 
           {/* Restantes ferramentas — cards pequenos */}
-          <div className="md:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-4">
-            {tools.map((tool) => (
+          <div className={`md:col-span-3 grid grid-cols-2 ${smallCols} gap-4`}>
+            {smallTools.map((tool) => (
               <Link key={tool.href} href={tool.href} className="tools-card">
                 <span className="tools-card-icon">
                   <tool.icon aria-hidden="true" />

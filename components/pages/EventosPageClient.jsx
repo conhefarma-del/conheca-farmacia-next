@@ -103,7 +103,7 @@ export default function EventosPageClient({ events, lang }) {
                 >
                   {t('eventos_page.filter_all')}
                 </button>
-                {['workshop', 'palestra', 'congresso', 'seminario', 'outro'].map((key) => (
+                {['workshop', 'palestra', 'congresso', 'seminario', 'outro', 'live', 'webinar'].map((key) => (
                   <button
                     key={key}
                     className={`filter-btn ${activeCategory === key ? 'active' : ''}`}
@@ -125,6 +125,7 @@ export default function EventosPageClient({ events, lang }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {filteredEvents.map((event) => {
               const color = EVENT_CATEGORY_COLORS[event.category] || '#00493a'
+              const canRegister = event.registrationEnabled !== false
               const spotsLeft = event.capacity - (event.inscriptionCount || 0)
               const isCapacityFull = spotsLeft <= 0
               const isPast = event.temporalStatus === 'past'
@@ -180,10 +181,12 @@ export default function EventosPageClient({ events, lang }) {
                       <div className="event-meta-item">
                         <span>{event.time} — {event.endTime}</span>
                       </div>
-                      <div className="event-meta-item">
-                        <span>{event.location}</span>
-                      </div>
-                      {!isPast && (
+                      {(event.location || event.platform) && (
+                        <div className="event-meta-item">
+                          <span>{event.location || (event.type === 'online' ? event.platform : '')}</span>
+                        </div>
+                      )}
+                      {!isPast && canRegister && event.capacity && (
                         spotsLeft > 0 ? (
                           <div className="event-meta-item">
                             <span>{t('evento_detail.spots_available_short', { count: spotsLeft })}</span>
@@ -204,17 +207,29 @@ export default function EventosPageClient({ events, lang }) {
                       >
                         {t('content.saber_mais')}
                       </Link>
-                      <Link
-                        href={`/${lang}/inscricao?evento=${event.slug}`}
-                        className={`btn btn-primary btn-small ${isPast || isCapacityFull ? 'opacity-50 pointer-events-none' : ''}`}
-                      >
-                        {isCapacityFull
-                          ? (t('eventos_page.evento_completo') || 'Completo')
-                          : isPast
-                            ? (t('eventos_page.ver_gravacao') || 'Ver Gravação')
+                      {isPast ? (
+                        <span className="btn btn-primary btn-small opacity-50 pointer-events-none">
+                          {t('evento_detail.recording_btn') || 'Ver Gravação'}
+                        </span>
+                      ) : !canRegister ? (
+                        <a
+                          href={event.accessLink || `/${lang}/eventos/${event.slug}`}
+                          className="btn btn-primary btn-small"
+                          {...(event.accessLink ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                        >
+                          {t('evento_detail.access_btn') || 'Aceder'}
+                        </a>
+                      ) : (
+                        <Link
+                          href={`/${lang}/inscricao?evento=${event.slug}`}
+                          className={`btn btn-primary btn-small ${isCapacityFull ? 'opacity-50 pointer-events-none' : ''}`}
+                        >
+                          {isCapacityFull
+                            ? (t('eventos_page.evento_completo') || 'Completo')
                             : (t('content.inscrever') || 'Inscrever-me')
-                        }
-                      </Link>
+                          }
+                        </Link>
+                      )}
                     </div>
                   </div>
                 </article>

@@ -48,8 +48,8 @@ export async function generateMetadata({ params, searchParams }) {
         'x-default': '/pt/cientificos',
       },
     },
-    // Resultados de pesquisa não são indexáveis (duplicados/parâmetros)
-    robots: isSearch ? { index: false, follow: true } : undefined,
+    // Secção oculta (lib/features.js) — não indexar
+    robots: { index: false, follow: false },
   }
 }
 

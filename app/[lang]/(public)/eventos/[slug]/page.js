@@ -347,8 +347,48 @@ export default async function EventDetailPage({ params }) {
                   )}
                 </div>
 
+                {/* Acesso online (lives/webinars fundidas em eventos — 159) */}
+                {event.type === 'online' && (event.accessLink || event.platform || event.meetingId) && (
+                  <div className="event-access-card mt-12">
+                    <h3 className="text-lg font-bold text-brand-deep mb-2">
+                      {tFn('evento_detail.access_title')}
+                    </h3>
+                    {event.platform && (
+                      <p className="text-sm text-brand-deep/60 mb-1">
+                        {tFn('evento_detail.access_platform')}: {event.platform}
+                      </p>
+                    )}
+                    {event.topic && (
+                      <p className="text-sm text-brand-deep/60 mb-3">{event.topic}</p>
+                    )}
+                    {event.accessLink && (
+                      <a
+                        href={event.accessLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-primary"
+                      >
+                        {tFn('evento_detail.access_btn')}
+                      </a>
+                    )}
+                    {(event.meetingId || event.password) && (
+                      <div className="mt-3 text-sm text-brand-deep/70">
+                        {event.meetingId && (
+                          <p>{tFn('evento_detail.meeting_id')}: {event.meetingId}</p>
+                        )}
+                        {event.password && (
+                          <p>{tFn('evento_detail.meeting_password')}: {event.password}</p>
+                        )}
+                      </div>
+                    )}
+                    {event.materials && (
+                      <p className="mt-3 text-sm text-brand-deep/70 whitespace-pre-line">{event.materials}</p>
+                    )}
+                  </div>
+                )}
+
                 {/* Capacity Information */}
-                {event.capacity && (
+                {event.capacity && event.registrationEnabled !== false && (
                   <div className="event-capacity-section mt-12">
                     <h3 className="text-lg font-bold text-brand-deep mb-4">
                       {tFn('evento_detail.available_spots')}
@@ -370,6 +410,8 @@ export default async function EventDetailPage({ params }) {
                     initialCount={inscriptionCount}
                     isPast={isPast}
                     lang={safeLang}
+                    registrationEnabled={event.registrationEnabled !== false}
+                    accessLink={event.accessLink}
                   />
                 </div>
               </div>
