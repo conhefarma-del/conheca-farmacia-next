@@ -511,6 +511,27 @@ JOIN public.drugs b ON b.id = GREATEST(di.drug_a_id, di.drug_b_id)
 ORDER BY 1, 2;
 ```
 
+### 8.3 Revalidar a cache do website (após aplicar no SQL editor)
+
+Migrações aplicadas **diretamente no SQL editor do Supabase não passam pelas
+Server Actions do admin** e, por isso, **não invalidam a cache ISR** — a página
+`/interacoes` usa `revalidate = 3600` (1 h). Para o website mostrar os dados
+novos em segundos, chamar o endpoint de revalidação on-demand:
+
+```bash
+# Tag (invalida todas as páginas que usam a tag 'interacoes')
+curl "https://<site>/api/revalidate?secret=$REVALIDATE_SECRET&tag=interacoes"
+
+# Path específico (alternativa)
+curl "https://<site>/api/revalidate?secret=$REVALIDATE_SECRET&path=/pt/interacoes"
+```
+
+- O `REVALIDATE_SECRET` vive no `.env.local` (dev) e nas variáveis de ambiente
+  da Vercel (produção).
+- Whitelist de tags/paths em `app/api/revalidate/route.js` — alargar lá quando
+  houver novos módulos.
+- Sem o secret → 401; tags/paths fora da whitelist → 400; >20 pedidos/min → 429.
+
 ---
 
 ## 9. Lições aprendidas (gotchas)
