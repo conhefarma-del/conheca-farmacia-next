@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getSectionHref } from "@/lib/i18n-routes";
 import { featureEnabled } from "@/lib/features";
 import {
+  Atom,
   BookOpen,
   BrainCircuit,
   ClipboardList,
@@ -40,6 +41,12 @@ export default function ToolsShowcase({ lang = "pt", tFn }) {
       label: tFn("nav.medicamentos"),
       desc: tFn("nav.medicamentos_desc"),
     },
+    {
+      href: getSectionHref(lang, "alvos"),
+      icon: Atom,
+      label: tFn("nav.alvos"),
+      desc: tFn("nav.alvos_desc"),
+    },
   ];
 
   // Protocolos (se reativados) voltam aos cards pequenos
@@ -53,7 +60,7 @@ export default function ToolsShowcase({ lang = "pt", tFn }) {
   }
 
   const featuredSpan = featureEnabled("cientificos") ? "md:col-span-2" : "md:col-span-3"
-  const smallCols = featureEnabled("protocolos") ? "md:grid-cols-4" : "md:grid-cols-3"
+  const smallCols = featureEnabled("protocolos") ? "md:grid-cols-5" : "md:grid-cols-4"
 
   return (
     <section className="section-padding tools-showcase">

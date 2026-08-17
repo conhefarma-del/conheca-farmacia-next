@@ -21,7 +21,9 @@
     "flashcards": "Flashcards",
     "flashcards_desc": "Spaced-repetition drug review, generated from the Medicines database",
     "praticar": "Practice",
-    "praticar_desc": "Quiz and flashcards to consolidate what you study"
+    "praticar_desc": "Quiz and flashcards to consolidate what you study",
+    "alvos": "Molecular Targets",
+    "alvos_desc": "CYPs, COX and transporters: what they are and how they explain interactions"
   },
   "hero": {
     "title": "Excellence in Pharmaceutical Care",

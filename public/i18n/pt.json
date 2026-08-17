@@ -21,7 +21,9 @@
     "flashcards": "Flashcards",
     "flashcards_desc": "Revisão espaçada de fármacos, gerada a partir do banco de Medicamentos",
     "praticar": "Praticar",
-    "praticar_desc": "Quiz e flashcards para consolidar o que estudas"
+    "praticar_desc": "Quiz e flashcards para consolidar o que estudas",
+    "alvos": "Alvos Moleculares",
+    "alvos_desc": "CYP, COX e transportadores: o que são e como explicam as interações"
   },
   "hero": {
     "title": "Excelência no Cuidado Farmacêutico",
