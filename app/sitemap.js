@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createAnonClient } from '@/lib/supabase/server-anon'
 import { getArticles } from '@/lib/api/articles'
 import { getEvents } from '@/lib/api/events'
 import { featureEnabled } from '@/lib/features'
@@ -14,7 +14,7 @@ const LOCALES = ['pt', 'en']
  */
 async function loadEnTranslationsMap(table) {
   try {
-    const supabase = await createClient()
+    const supabase = createAnonClient()
     const { data } = await supabase
       .from(table)
       .select('*')
@@ -161,7 +161,7 @@ export default async function sitemap() {
   // alternates para a outra.
   let drugEntries = []
   try {
-    const supabase = await createClient()
+    const supabase = createAnonClient()
     const { data: drugs } = await supabase
       .from('drugs')
       .select('slug, updated_at')
@@ -192,7 +192,7 @@ export default async function sitemap() {
   let protocolEntries = []
   if (featureEnabled('protocolos')) {
   try {
-    const supabase = await createClient()
+    const supabase = createAnonClient()
     const { data: protocols } = await supabase
       .from('clinical_protocols')
       .select('slug, updated_at')
@@ -224,7 +224,7 @@ export default async function sitemap() {
   // /en/guides/{slug} (confirmado no generateMetadata). 1 entry por língua.
   let guideEntries = []
   try {
-    const supabase = await createClient()
+    const supabase = createAnonClient()
     const { data: courses } = await supabase
       .from('guide_courses')
       .select('slug, updated_at')
@@ -254,7 +254,7 @@ export default async function sitemap() {
   // Entrevistas: módulo apenas PT por agora (migration 152).
   let interviewEntries = []
   try {
-    const supabase = await createClient()
+    const supabase = createAnonClient()
     const { data: interviews } = await supabase
       .from('interviews')
       .select('slug, updated_at, date')
@@ -278,7 +278,7 @@ export default async function sitemap() {
   // agora). Só pessoas ligadas a entrevistas publicadas e não arquivadas.
   let interviewPeopleEntries = []
   try {
-    const supabase = await createClient()
+    const supabase = createAnonClient()
     const { data: links } = await supabase
       .from('interview_person_links')
       .select('person_id')
@@ -315,7 +315,7 @@ export default async function sitemap() {
   let scientificEntries = []
   if (featureEnabled('cientificos')) {
   try {
-    const supabase = await createClient()
+    const supabase = createAnonClient()
     const { data: sciArticles } = await supabase
       .from('scientific_articles')
       .select('id, slug, updated_at, published_at')
@@ -362,7 +362,7 @@ export default async function sitemap() {
   // publicados e não arquivados (RLS anónima).
   let flashcardEntries = []
   try {
-    const supabase = await createClient()
+    const supabase = createAnonClient()
     const { data: decks } = await supabase
       .from('flashcard_decks')
       .select('slug, updated_at')
@@ -391,7 +391,7 @@ export default async function sitemap() {
   let authorEntries = []
   if (featureEnabled('cientificos')) {
   try {
-    const supabase = await createClient()
+    const supabase = createAnonClient()
     const { data: authors } = await supabase
       .from('scientific_authors')
       .select('slug, updated_at')
