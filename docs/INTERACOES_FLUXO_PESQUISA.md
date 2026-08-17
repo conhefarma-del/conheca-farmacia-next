@@ -986,9 +986,127 @@ formato `["recXXXX"]`) está documentado passo-a-passo em
 
 ---
 
+## 17. Fluxo 6 — Perfis de fármacos tópicos/locais (sem interações sistémicas)
+
+> Fluxo **aditivo e independente** dos fluxos 1–5: cobre fármacos de aplicação
+> tópica/local (nasais, otológicos, oftálmicos, dérmicos) que **não têm
+> interações fármaco-fármaco sistémicas relevantes**, mas que merecem ficha
+> completa no site (perfil, farmacologia, segurança na gravidez e dimensões
+> aplicáveis) por terem procura real nas farmácias.
+>
+> A infraestrutura **já existe** — reutiliza as tabelas e o padrão 7.6 dos
+> fluxos 2 e 3 (drug_profiles, drug_pharmacology, drug_food_interactions,
+> drug_disease_interactions, drug_pregnancy_info). **Não cria tabelas novas.**
+
+### 17.1 Motivação e âmbito
+
+- O prontuário tem capítulos integralmente tópicos (14 — otorrinolaringológicos;
+  15 — oftalmológicos; parte do 13 — dérmicos) cujas monografias declaram
+  interações "Desconhecidas" ou as remetem para fármacos sistémicos de outros
+  grupos. Pela regra do fluxo 1 ("sem pares artificiais"), **não entram em
+  `drug_interactions`** — e essa ausência é correta, não uma lacuna.
+- O que falta é a **ficha editorial**: quando um utilizador procura
+  "mupirocina" ou "azelastina", deve encontrar o fármaco na BD com perfil,
+  farmacologia e segurança — e, futuramente, as farmácias onde está
+  disponível (estratégia Medicamentos + `pharmacy_stock` do bot WhatsApp).
+- Alinhamento de negócio: muitos fármacos "procurados mas pouco encontrados"
+  nas farmácias angolanas são produtos tópicos (pomada nasal de mupirocina,
+  gotas otológicas, colírios) — terem ficha própria dá-lhes visibilidade e
+  torna a ferramenta de farmácias útil para esta categoria.
+
+### 17.2 Critérios de seleção
+
+1. **Fármaco com monografia própria** no Prontuário Terapêutico (INFARMED,
+   11.ª ed., 2012) num subgrupo tópico/local (ex.: 14.1.1 descongestionantes
+   nasais, 14.1.3 anti-histamínicos tópicos, 14.2 otológicos, 15.x oftálmicos).
+2. **Relevância de procura**: priorizar os que um utilizador angolano
+   procuraria numa farmácia (mupirocina nasal, azelastina, levocabastina,
+   ácido cromoglícico, xilometazolina, neomicina tópica, etc.).
+3. **Rótulo/setID disponível** nas fontes permitidas (secção 2) para ancorar
+   o conteúdo — senão, usar o Prontuário + EMC-UK com a regra do padrão 088
+   (conteúdo autoral, nunca copiado, com a fonte citada).
+
+### 17.3 Regras de conteúdo
+
+- **`drug_interactions`: vazia salvo pares documentados.** Nunca criar pares
+  artificiais por "parecer lógico" (ex.: anti-histamínico tópico × sedativo).
+  Se um rótulo documentar uma interação sistémica relevante (ex.: descongestivo
+  nasal × IMAO, nota explícita do prontuário), aí sim entra como par
+  documentado — caso raro.
+- **`drug_profiles` (1:1)**: overview público (o que é, para que serve, via de
+  aplicação), indicações, efeitos locais (não sistémicos) e precauções — com
+  ênfase em gravidez/aleitamento e em sinais de absorção sistémica excessiva
+  (uso prolongado de descongestivos, corticosteróides tópicos).
+- **`drug_pharmacology` (1:1)**: o campo `absorption_pt/en` é o mais
+  importante — documentar explicitamente "absorção sistémica mínima" (ou o
+  risco quando há, ex.: corticosteróides nasais em uso prolongado, gotas
+  otológicas com perfuração timpânica). Mecanismo local e meia-vida sistémica
+  (quando aplicável).
+- **`drug_pregnancy_info` (1:1)**: sempre preencher — a segurança na gravidez
+  de um tópico é informação de primeira linha (ex.: mupirocina "evitar",
+  levocabastina "contraindicada nos 3 primeiros meses").
+- **`drug_disease_interactions`**: só quando a fonte documenta (ex.:
+  aminoglicosídeos otológicos × perfuração timpânica — ototoxicidade;
+  descongestivos × doença cardiovascular).
+- **`drug_food_interactions`**: normalmente vazia — não forçar entradas.
+
+### 17.4 Fontes (mesmas regras da secção 2)
+
+- **DailyMed/FDA** — rótulos de tópicos existem (mupirocina, azelastina,
+  cromoglicato, neomicina/polimixina) e são a âncora preferida (setIDs
+  validados na API, como nos fluxos 1–4).
+- **EMC-UK (MHRA)** — particularmente útil para tópicos europeus cujos
+  resumos (SmPC) cobrem absorção sistémica, gravidez e duração de uso;
+  usada como corroboração ou fonte primária quando o rótulo FDA é pobre.
+- **Health Canada** — corroboração (Product Monograph).
+- **Prontuário Terapêutico (INFARMED)** — monografias PT (indicações,
+  reações, contraindicações) e a fonte da seleção por grupo.
+- Regra inegociável: **nada inventado** — cada número/frase tem correspondência
+  na fonte citada; os textos PT/EN são autorais (nunca cópia literal).
+
+### 17.5 Padrão SQL (reutiliza 7.6)
+
+Mesmo padrão das migrações 137/164 — `INSERT ... SELECT d.id, v.* FROM
+public.drugs d JOIN (VALUES ...) AS v(slug, ...) ON d.slug = v.slug` + `ON
+CONFLICT (drug_id) DO NOTHING` (e `ON CONFLICT (drug_id, entity_slug)` /
+`(drug_id, condition_slug)` nas dimensões), `status 'published'`:
+
+1. `INSERT INTO public.drugs` — fármacos tópicos que ainda não existem
+   (padrão 7.3, com `class_pt/en` indicando a via: "Antibiótico tópico (nasal)",
+   "Anti-histamínico tópico (nasal)", etc.).
+2. `drug_profiles` + `drug_pharmacology` (1:1) — padrão 7.6.
+3. `drug_pregnancy_info` (1:1) — padrão 7.6.
+4. `drug_disease_interactions` — só as documentadas (padrão 7.6).
+5. `drug_interactions` — **omitida** (sem pares).
+
+Aplicar na ordem: fármacos → perfis/farmacologia → dimensões. Idempotente.
+
+### 17.6 Exemplo (grupo 14 — mupirocina nasal)
+
+- `drugs`: slug `mupirocina`, class_pt "Antibiótico tópico (nasal)".
+- `drug_profiles.indications_pt`: "Erradicação de portadores nasais de
+  Staphylococcus aureus resistente à meticilina (MRSA)" (prontuário 14.1.5).
+- `drug_pharmacology.absorption_pt`: absorção sistémica mínima pela mucosa
+  nasal — uso local sem efeitos sistémicos relevantes (rótulo DailyMed).
+- `drug_pregnancy_info`: evitar durante a gravidez e o aleitamento
+  (prontuário: "Evitar durante a gravidez e o aleitamento").
+- `drug_interactions`: sem entradas.
+
+### 17.7 Estado e cobertura
+
+- Os fármacos sistémicos dos grupos 13–16 já têm perfil completo (fluxos 2–4;
+  migrações 137/164). Os tópicos dos grupos 13 (parte dérmica), 14 e 15
+  **ainda não têm ficha** — é o backlog deste fluxo, por lotes (um grupo por
+  migração, ex.: lote 1 = tópicos do grupo 14).
+- Cada lote segue o mesmo ciclo dos fluxos 1–4: seleção → validação de fontes
+  → migração → validação estrutural (secção 8.1) → aplicação manual no
+  Supabase → revalidação da cache (secção 8.3).
+
+---
+
 ## Referências
 
-- Metodologia clínica + padrões SQL: este documento (secções 1–16).
+- Metodologia clínica + padrões SQL: este documento (secções 1–17).
 - Fluxo do pack Airtable (importar/ligar/verificar): `docs/FLUXO_PACK_AIRTABLE_ATUALIZACAO.md`.
 - Gerador: `scripts/generate_airtable_pack.py` · Manual operacional do pack:
   `_temp/airtable-pack/README.md` · Ligador: `_temp/airtable-pack/link_records_api.py`
