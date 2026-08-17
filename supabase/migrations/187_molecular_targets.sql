@@ -85,7 +85,7 @@ INSERT INTO public.molecular_targets
    what_is_pt, what_is_en, role_pt, role_en,
    substrates_pt, substrates_en, inhibitors_pt, inhibitors_en,
    inducers_pt, inducers_en, clinical_notes_pt, clinical_notes_en,
-   source_pt, source_en, sort_order, status)
+   source_pt, source_en, sort_order)
 VALUES
   ('cyp3a4', 'cyp450', 'CYP3A4', 'CYP3A4', 'Citocromo P450 3A4', 'Cytochrome P450 3A4',
    ARRAY['CYP3A4', 'CYP3A'],
