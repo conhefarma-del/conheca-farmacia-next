@@ -44,6 +44,10 @@ export default async function FlashcardDeckPage({ params }) {
   }
   const drugMapObj = Object.fromEntries(drugMap)
 
+  // DIAGNÓSTICO TEMPORÁRIO — remover quando o erro #441 estiver resolvido
+  console.log('[FLASHCARD-DEBUG] server deck:', JSON.stringify(deck).slice(0, 800))
+  console.log('[FLASHCARD-DEBUG] server drugMap:', JSON.stringify(drugMapObj))
+
   return (
     <FlashcardReviewClient
       deck={deck}
