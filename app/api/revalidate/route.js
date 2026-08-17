@@ -44,6 +44,7 @@ function checkRate(ip) {
 
 // Whitelist — tags e paths que este endpoint pode invalidar.
 const ALLOWED_TAGS = new Set([
+  'alvos',
   'articles',
   'events',
   'flashcards',
@@ -68,6 +69,8 @@ const ALLOWED_PATHS = new Set([
   '/en/articles',
   '/pt/pesquisa',
   '/en/search',
+  '/pt/alvos',
+  '/en/alvos',
   '/',
 ])
 

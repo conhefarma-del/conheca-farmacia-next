@@ -10077,3 +10077,322 @@ html.dark .flash-grade-btn {
     padding: 18px;
   }
 }
+
+/* ============================================================
+   Alvos Moleculares (CYP, COX, transportadores) — /alvos
+   ============================================================ */
+.alvos-page { background: var(--color-brand-bg); }
+
+.alvos-page .events-hero {
+  border-bottom: 1px solid var(--color-brand-divider);
+}
+
+/* Toolbar: pesquisa + filtros dentro do hero, padrão /artigos */
+.alvos-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-bottom: 8px;
+}
+
+.alvos-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--color-brand-bg);
+  border: 1px solid var(--color-brand-divider);
+  border-radius: 12px;
+  padding: 10px 16px;
+  color: var(--color-brand-deep);
+  opacity: 0.85;
+}
+
+.alvos-search input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  color: var(--color-brand-deep);
+}
+
+.alvos-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.alvos-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--color-brand-divider);
+  background: var(--color-brand-bg);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-brand-deep);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.alvos-filter:hover {
+  border-color: var(--color-brand-accent);
+  color: var(--color-brand-accent);
+}
+
+.alvos-filter.active {
+  background: var(--color-brand-accent);
+  border-color: var(--color-brand-accent);
+  color: #fff;
+}
+
+.alvos-filter-count {
+  font-size: 11px;
+  font-weight: 700;
+  opacity: 0.6;
+}
+
+.alvos-filter.active .alvos-filter-count { opacity: 0.85; }
+
+.alvos-section {
+  background: var(--color-brand-bg-alt);
+}
+
+.alvos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.alvo-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--color-brand-bg);
+  border: 1px solid var(--color-brand-divider);
+  border-radius: 14px;
+  padding: 20px;
+  text-decoration: none;
+  color: var(--color-brand-deep);
+  transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
+}
+
+.alvo-card:hover {
+  box-shadow: 0 6px 20px rgba(15, 26, 20, 0.08);
+  border-color: var(--color-brand-accent);
+  transform: translateY(-2px);
+}
+
+.alvo-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.alvo-card-fullname {
+  font-size: 12px;
+  color: var(--color-brand-deep);
+  opacity: 0.5;
+}
+
+.alvo-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.alvo-badge-cyp450 { background: rgba(10, 132, 79, 0.12); color: var(--color-brand-accent); }
+.alvo-badge-cox { background: rgba(255, 108, 35, 0.12); color: #c2410c; }
+.alvo-badge-transporter { background: rgba(0, 42, 50, 0.10); color: var(--color-brand-deep); }
+.alvo-badge-mao { background: rgba(120, 53, 15, 0.12); color: #92400e; }
+.alvo-badge-enzyme { background: rgba(37, 99, 235, 0.12); color: #1d4ed8; }
+.alvo-badge-receptor { background: rgba(147, 51, 234, 0.12); color: #7e22ce; }
+.alvo-badge-other { background: var(--color-brand-bg-alt); color: var(--color-brand-deep); opacity: 0.7; }
+
+.alvo-card-name {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+.alvo-card-role {
+  font-size: 13px;
+  color: var(--color-brand-deep);
+  opacity: 0.65;
+  line-height: 1.55;
+  flex: 1;
+}
+
+.alvo-card-cta {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-brand-accent);
+}
+
+.alvos-empty {
+  text-align: center;
+  padding: 60px 24px;
+  color: var(--color-brand-deep);
+  opacity: 0.5;
+  font-size: 15px;
+}
+
+/* ---- Detalhe /alvos/[slug] ---- */
+.alvo-detail-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+.alvo-detail-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-brand-deep);
+  opacity: 0.6;
+  text-decoration: none;
+  margin-bottom: 28px;
+}
+
+.alvo-detail-back:hover { opacity: 1; color: var(--color-brand-accent); }
+
+.alvo-detail-hero {
+  border-bottom: 1px solid var(--color-brand-divider);
+  padding-bottom: 28px;
+  margin-bottom: 32px;
+}
+
+.alvo-detail-title {
+  font-size: clamp(30px, 4vw, 44px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin-top: 14px;
+  margin-bottom: 8px;
+}
+
+.alvo-detail-fullname {
+  font-size: 16px;
+  color: var(--color-brand-deep);
+  opacity: 0.6;
+  margin-bottom: 6px;
+}
+
+.alvo-detail-aliases {
+  font-size: 13px;
+  color: var(--color-brand-deep);
+  opacity: 0.55;
+}
+
+.alvo-detail-section {
+  margin-bottom: 26px;
+}
+
+.alvo-detail-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--color-brand-accent);
+  margin-bottom: 10px;
+}
+
+.alvo-detail-section-body {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--color-brand-deep);
+  opacity: 0.85;
+}
+
+.alvo-detail-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.alvo-detail-source {
+  font-size: 13px;
+  opacity: 0.6;
+}
+
+@media (max-width: 640px) {
+  .alvo-detail-cols { grid-template-columns: 1fr; }
+  .alvos-filters { flex-direction: column; align-items: stretch; }
+  .alvos-filter { justify-content: center; }
+}
+
+/* ============================================================
+   TargetLinks — ligação automática de alvos nas explicações
+   ============================================================ */
+.target-link-wrap {
+  position: relative;
+  display: inline;
+}
+
+.target-link {
+  color: var(--color-brand-accent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.target-link:hover {
+  text-decoration-style: solid;
+}
+
+.target-tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 0;
+  z-index: 40;
+  max-width: 320px;
+  width: max-content;
+  background: var(--color-brand-deep);
+  color: #fff;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 12px;
+  line-height: 1.55;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.target-tooltip strong {
+  font-size: 13px;
+  color: #fff;
+}
+
+.target-tooltip-text {
+  opacity: 0.85;
+}
+
+.target-tooltip-cta {
+  color: #6ee7a8;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+@media (max-width: 640px) {
+  .target-tooltip {
+    max-width: 240px;
+    width: 240px;
+  }
+}

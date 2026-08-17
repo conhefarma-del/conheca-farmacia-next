@@ -7,6 +7,7 @@ import {
   getPublicDrugBySlug,
   getPublicDrugInteractionsForDrug,
 } from "@/lib/actions/medicamentos";
+import { getPublicTargets } from "@/lib/actions/alvos";
 import MedicamentoDetailClient from "./medicamentoDetailClient";
 
 export const revalidate = 3600;
@@ -36,9 +37,10 @@ export default async function MedicamentoDetalhePage({ params }) {
   const safeLang = SUPPORTED_LANGS.includes(lang) ? lang : DEFAULT_LANG;
   const drug = await getPublicDrugBySlug(slug, safeLang);
   if (!drug) notFound();
-  const [drugs, interactions] = await Promise.all([
+  const [drugs, interactions, targets] = await Promise.all([
     getPublicDrugs(safeLang),
     getPublicDrugInteractionsForDrug(drug.id, safeLang),
+    getPublicTargets(safeLang),
   ]);
 
   // JSON-LD: BreadcrumbList (Início > Medicamentos > Fármaco) + MedicalWebPage
@@ -77,6 +79,7 @@ export default async function MedicamentoDetalhePage({ params }) {
         drug={drug}
         drugs={drugs}
         interactions={interactions}
+        targets={targets}
       />
     </>
   );

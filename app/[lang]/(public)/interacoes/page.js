@@ -8,6 +8,7 @@ import {
   getPublishedPregnancyInfo,
 } from '@/lib/actions/interacoes'
 import InteracoesPageClient from './interacoesPageClient'
+import { getPublicTargets } from '@/lib/actions/alvos'
 
 export const revalidate = 3600
 
@@ -27,13 +28,14 @@ export async function generateMetadata({ params }) {
 export default async function InteracoesPage({ params }) {
   const { lang } = await params
   const safeLang = SUPPORTED_LANGS.includes(lang) ? lang : DEFAULT_LANG
-  const [drugs, interactions, foodInteractions, diseaseInteractions, pregnancyInfo] =
+  const [drugs, interactions, foodInteractions, diseaseInteractions, pregnancyInfo, targets] =
     await Promise.all([
       getPublicDrugs(safeLang),
       getPublishedInteractions(safeLang),
       getPublishedFoodInteractions(safeLang),
       getPublishedDiseaseInteractions(safeLang),
       getPublishedPregnancyInfo(safeLang),
+      getPublicTargets(safeLang),
     ])
   const translations = loadTranslations(safeLang)
   const tFn = (key) => t(translations, key)
@@ -54,6 +56,7 @@ export default async function InteracoesPage({ params }) {
         foodInteractions={foodInteractions}
         diseaseInteractions={diseaseInteractions}
         pregnancyInfo={pregnancyInfo}
+        targets={targets}
       />
     </>
   )

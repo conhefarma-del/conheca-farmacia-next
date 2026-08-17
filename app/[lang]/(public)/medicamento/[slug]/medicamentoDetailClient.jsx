@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { LangContext } from "@/lib/contexts";
 import FeedbackBox from "@/components/feedback/FeedbackBox";
+import TargetLinks from "@/components/interacoes/TargetLinks";
 
 // Secções abaixo da dobra da ficha do fármaco — lazy-loaded via next/dynamic:
 // farmacologia e fármacos relacionados/similares só carregam quando necessárias.
@@ -154,6 +155,7 @@ export default function MedicamentoDetailClient({
   drug,
   drugs,
   interactions,
+  targets = [],
 }) {
   const { t } = useContext(LangContext);
   const [audience, setAudience] = useState("public");
@@ -441,7 +443,7 @@ export default function MedicamentoDetailClient({
                     titleKey="interacoes_page.explicacao"
                     className="detail-explanation"
                   >
-                    {pair.explanation}
+                    <TargetLinks text={pair.explanation} targets={targets} lang={lang} />
                   </DetailBlock>
                   {audience === "public" && (
                     <DetailBlock titleKey="interacoes_page.resumo_profissionais">
@@ -449,7 +451,7 @@ export default function MedicamentoDetailClient({
                     </DetailBlock>
                   )}
                   <DetailBlock titleKey="interacoes_page.mecanismo">
-                    {pair.mechanism}
+                    <TargetLinks text={pair.mechanism} targets={targets} lang={lang} />
                   </DetailBlock>
                   <DetailBlock titleKey="interacoes_page.monitorizacao">
                     {pair.monitoring}

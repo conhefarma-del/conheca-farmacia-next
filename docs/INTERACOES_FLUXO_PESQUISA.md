@@ -882,6 +882,9 @@ PT/EN (texto corrido): **farmacodinâmica**, **mecanismo de ação**,
   antiepiléticos, vancomicina/aminoglicosídeos, eritromicina+anti-histamínicos,
   IECA/ARA, levotiroxina, azatioprina) + minor/none (111).
 - **134**: explicações dos pares novos da benzilpenicilina-benzatina.
+- **175/176/180/183**: explicações profissionais (summary_pro + explanation)
+  dos pares do QUADRO 2 — 10 críticos (180) e os 34 restantes (183), fechando
+  a cobertura editorial a 551/551 pares.
 
 ### 15.5 Exemplo (padrão 7.1 com explicação)
 
@@ -1101,6 +1104,128 @@ Aplicar na ordem: fármacos → perfis/farmacologia → dimensões. Idempotente.
 - Cada lote segue o mesmo ciclo dos fluxos 1–4: seleção → validação de fontes
   → migração → validação estrutural (secção 8.1) → aplicação manual no
   Supabase → revalidação da cache (secção 8.3).
+
+---
+
+## 18. Auditoria dos 12 fármacos sem par fármaco-fármaco (2026-08)
+
+### 18.1 Contexto
+
+Após o fecho do Fluxo 4 (explicações dos 551 pares, migração 183), a BD
+ficou com **12 fármacos sem nenhum par em `drug_interactions`** (todos com
+as outras 3 vertentes — doença, alimento, gravidez/aleitamento — preenchidas).
+Esta secção regista a auditoria de cada um contra as fontes de referência
+(Prontuário INFARMED Anexo 7, DailyMed/FDA, EMC-UK) e a decisão tomada:
+**3 fármacos receberam pares reais (migração 184); 9 foram excluídos** por
+não terem interações fármaco-fármaco documentadas nas fontes.
+
+### 18.2 Resultado: 3 fármacos receberam pares (migração 184)
+
+| Fármaco | Pares criados | Severidade | Fonte exata |
+|---|---|---|---|
+| **Acenocumarol** | × amiodarona, diclofenac, cimetidina, paracetamol, levotiroxina, propafenona, alopurinol | moderate | Prontuário QUADRO 2 — "Acenocumarol: V. Varfarina" + entrada Varfarina |
+| | × clopidogrel, aspirina, cotrimoxazol | critical | idem (hemorragia aditiva) |
+| **Micofenolato** | × colestiramina, ferro | moderate | Prontuário QUADRO 2 (resinas sequestradoras; Ferro) + DailyMed CellCept 7.1 |
+| | × probenecida, rifampicina | moderate | DailyMed CellCept 7.1 (probenecida eleva MPAG 3×; indutores da glucuronidação reduzem MPA) |
+| **Filgrastim** | × lítio | moderate | DailyMed Neupogen — "Drugs which may potentiate the release of neutrophils, such as lithium, should be used with caution" |
+
+**Justificação do acenocumarol:** o QUADRO 2 remete explicitamente para a
+varfarina ("Acenocumarol: V. Varfarina") — as interações documentadas da
+varfarina aplicam-se aos derivados cumarínicos. A varfarina já tinha 62 pares
+na BD; dos parceiros documentados na entrada Varfarina, 10 estão na BD e
+foram replicados para o acenocumarol com a mesma severidade (critical para
+clopidogrel/aspirina/cotrimoxazol — hemorragia aditiva; moderate para os
+restantes).
+
+**Justificação do micofenolato:** duas fontes independentes — o DailyMed
+CellCept (secção 7.1: probenecida eleva a AUC do MPAG em 3×; fármacos que
+induzem a glucuronidação, como a rifampicina, diminuem a exposição ao MPA) e
+o Prontuário QUADRO 2 (resinas sequestradoras e ferro reduzem a absorção do
+micofenolato).
+
+**Justificação do filgrastim:** o rótulo DailyMed Neupogen documenta a
+precaução com fármacos que potenciam a libertação de neutrófilos (lítio).
+
+### 18.3 Resultado: 9 fármacos excluídos (sem interação FF documentada)
+
+| Fármaco | Motivo da exclusão |
+|---|---|
+| **Aminoácidos** | Solução nutritiva — sem interações fármaco-fármaco clínicas documentadas nas fontes. |
+| **Poractanto alfa** | Surfactante endotraqueal neonatal — sem interações sistémicas documentadas. |
+| **Mupirocina** | Uso tópico com absorção sistémica mínima — sem interações FF nas fontes. |
+| **Azelastina** | Via nasal/ocular tópica — sem interações sistémicas documentadas. |
+| **Levocabastina** | Via nasal/ocular tópica — sem interações sistémicas documentadas. |
+| **Nistatina** | Não absorvida por via oral — sem interações sistémicas. |
+| **Butilbrometo de hioscina** | EMC-UK (Buscopan) não lista interações FF específicas (apenas efeito antimuscarínico aditivo teórico). |
+| **Artesunato** | Interações FF não documentadas nas fontes (as de rifampicina/mefloquina pertencem ao arteméter/lumefantrina, não ao artesunato). |
+| **Primaquina** | DailyMed/Health Canada: apenas interações genéricas (agentes hemolíticos, prolongamento do QT) — sem par específico com fármaco na BD (a quinacrina, o par clássico, não está na BD). |
+
+### 18.4 Validação e estado
+
+- **18 slugs usados na 184** — todos existem na BD (verificado por query).
+- **Nenhum dos 15 pares existia antes** (cruzamento com `drug_interactions`
+  antes da aplicação) — a 184 usa `ON CONFLICT (drug_a_id, drug_b_id) DO
+  NOTHING`, por isso reaplicar é seguro.
+- **setIDs DailyMed verificados** — CellCept `37241e87-4af4-4dc3-a1aa-ea6f20d8dc40`,
+  Neupogen `97cc73cc-b5b7-458a-a933-77b00523e193` (nunca inventar fontes;
+  secção 2).
+- **Migração**: `supabase/migrations/184_pares_acenocumarol_micofenolato_filgrastim.sql`
+  (15 pares; 3 critical + 12 moderate; padrão 7.4 com LEAST/GREATEST).
+- **Estado pós-184**: 226 fármacos · 566 pares · 9 fármacos sem par
+  (todos tópicos/não-sistémicos com justificação registada acima).
+
+> **Nota de manutenção:** se um destes 9 fármacos ganhar futuro uso sistémico
+> (ex.: azelastina oral, artesunato IV), reavaliar contra as fontes antes de
+> adicionar pares. O mesmo se aplica à primaquina se a quinacrina (mepacrina)
+> for adicionada à BD.
+
+### 18.5 Fecho das vertentes doença e alimento (migrações 185 e 186)
+
+Após a 184, uma auditoria de cobertura por vertente revelou lacunas nas
+outras dimensões: **18 fármacos sem alimento** e **4 sem doença**. As
+migrações 185 e 186 fecharam ambas (todos os fármacos já existiam na BD;
+nenhuma depende de fármacos novos).
+
+**Migração 185 — alimento (19 entradas, 18 fármacos):**
+
+| Grupo | Fármacos | Entidade | Severidade |
+|---|---|---|---|
+| Sumo de toranja (CYP3A4) | diltiazem, verapamilo, tacrolimus, sirolimus, pimozida | `sumo_toranja` | moderate (5) |
+| Jejum recomendado | micofenolato | `toma_em_jejum` | moderate (1) |
+| Vitamina K + álcool | acenocumarol (2, "V. Varfarina") | `vitamina_k`, `alcool` | moderate (2) |
+| Sem interação relevante | mupirocina, levocabastina, cetamina, cloranfenicol, ertapenem, indacaterol, ticagrelor, probenecida, eslicarbazepina, cimetidina, degarelix | `sem_interacao_alimentar` | none (11) |
+
+Âncoras: DailyMed Cardizem/Verapamil + PubMed (Bailey et al.) p/ CCB;
+DailyMed tacrolimus/sirolimus/pimozida (citações literais do rótulo);
+DailyMed CellCept (jejum); Prontuário QUADRO 2 p/ acenocumarol; DailyMed
+Brilinta/Zebinix ("with or without food"); EMC-UK Onbrez (indacaterol).
+15 setIDs DailyMed reais verificados (incl. cimetidina Mylan
+`06c0a509-026f-44e0-9975-a94a8de51d43`).
+
+**Migração 186 — doença (8 entradas, 4 fármacos):**
+
+| Fármaco | Condições | Fonte |
+|---|---|---|
+| Tacrolimus | `insuficiencia_renal`, `insuficiencia_hepatica` | DailyMed Prograf (Astellas) — "Dosage Modification for Patients with Renal/Hepatic Impairment" |
+| Sirolimus | `insuficiencia_hepatica` (reduzir ~1/3), `insuficiencia_hepatica_grave` (reduzir ~1/2) | DailyMed Rapamune 8.6 |
+| Indacaterol | `insuficiencia_hepatica_grave` (sem dados), `doenca_cardiovascular_grave`, `hipocaliemia` | EMC-UK Onbrez Breezhaler SmPC 4.2/4.4 |
+| Azelastina | `insuficiencia_renal` (Cmax/AUC +70-75% com Clcr <50) | DailyMed Astelin "Special Populations" |
+
+Todas `precaution`/`moderate` (nenhuma contraindicação nas fontes).
+
+### 18.6 Estado final de cobertura (pós-184/185/186)
+
+| Vertente | Registos | Fármacos cobertos | Em falta |
+|---|---|---|---|
+| **Fármaco-fármaco** | 566 pares | 217/226 | 9 (todos justificados — 18.3) |
+| **Doença/condição** | 512 | **226/226** | **0** ✅ |
+| **Alimento/bebida** | 359 | **226/226** | **0** ✅ |
+| **Gravidez/aleitamento** | 226 | 226/226 | **0** ✅ |
+
+**~216/226 fármacos (≈96%) com as 4 vertentes completas**; os 9 restantes
+sem par FF são os tópicos/não-sistémicos com justificação individual na
+secção 18.3. As migrações 184/185/186 usam todas `ON CONFLICT ... DO NOTHING`
+— reaplicar é seguro.
 
 ---
 

@@ -4,7 +4,7 @@ import { useState, useEffect, useContext, useCallback } from 'react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { BookOpen, CalendarDays, ClipboardList, FileText, Layers, Mic, Microscope, Pill, Search, ShieldAlert, UserRound, Users } from 'lucide-react'
+import { Atom, BookOpen, CalendarDays, ClipboardList, FileText, Layers, Mic, Microscope, Pill, Search, ShieldAlert, UserRound, Users } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
 import { featureEnabled } from '@/lib/features'
 import { BLUR_PLACEHOLDER } from '@/lib/images'
@@ -99,6 +99,7 @@ export default function PesquisaPageClient({ lang }) {
     allResults.entrevistas.forEach(item => items.push({ ...item, type: 'entrevistas' }))
     allResults.entrevistados.forEach(item => items.push({ ...item, type: 'entrevistados' }))
     allResults.flashcards.forEach(item => items.push({ ...item, type: 'flashcards' }))
+    allResults.alvos.forEach(item => items.push({ ...item, type: 'alvos' }))
 
     items.sort((a, b) => {
       const da = a.published_date || a.date || ''
@@ -133,7 +134,7 @@ export default function PesquisaPageClient({ lang }) {
       updateUrl(q, tVal || tipo, o || ordem, 1)
     } catch (err) {
       console.error('Search error:', err)
-      setAllResults({ articles: [], events: [], guides: [], protocolos: [], cientificos: [], autores: [], farmacos: [], interacoes: [], entrevistas: [], entrevistados: [], flashcards: [], total: 0 })
+      setAllResults({ articles: [], events: [], guides: [], protocolos: [], cientificos: [], autores: [], farmacos: [], interacoes: [], entrevistas: [], entrevistados: [], flashcards: [], alvos: [], total: 0 })
     } finally {
       setLoading(false)
     }
@@ -199,6 +200,7 @@ export default function PesquisaPageClient({ lang }) {
     if (item.type === 'entrevistas') return `/${lang}/entrevistas/${item.slug}`
     if (item.type === 'entrevistados') return `/${lang}/entrevistas/entrevistados/${item.slug}`
     if (item.type === 'flashcards') return `/${lang}/flashcards/${item.slug}`
+    if (item.type === 'alvos') return `/${lang}/alvos/${item.slug}`
     return '#'
   }
 
@@ -232,6 +234,7 @@ export default function PesquisaPageClient({ lang }) {
     entrevistas: Mic,
     entrevistados: UserRound,
     flashcards: Layers,
+    alvos: Atom,
   }
   const TYPE_KEYS = {
     articles: 'search.artigos',
@@ -245,6 +248,7 @@ export default function PesquisaPageClient({ lang }) {
     entrevistas: 'search.entrevistas',
     entrevistados: 'search.entrevistados',
     flashcards: 'search.flashcards',
+    alvos: 'search.alvos',
   }
   const renderTypeBadge = (type) => {
     const Icon = TYPE_ICONS[type]
@@ -313,7 +317,7 @@ export default function PesquisaPageClient({ lang }) {
           {/* Filters & Sort */}
           <div className="search-filters">
             <div className="search-type-filters">
-              {['todos', 'artigos', 'eventos', 'guias', 'protocolos', 'cientificos', 'autores', 'interacoes', 'farmacos', 'entrevistas', 'entrevistados', 'flashcards']
+              {['todos', 'artigos', 'eventos', 'guias', 'protocolos', 'cientificos', 'autores', 'interacoes', 'farmacos', 'entrevistas', 'entrevistados', 'flashcards', 'alvos']
                 .filter((key) => !isHiddenType(key))
                 .map((key) => (
                 <button

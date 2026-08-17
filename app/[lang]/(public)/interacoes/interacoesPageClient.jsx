@@ -28,6 +28,7 @@ import {
 } from 'lucide-react'
 import { LangContext } from '@/lib/contexts'
 import { getInteractionDetail } from '@/lib/actions/interacoes'
+import TargetLinks from '@/components/interacoes/TargetLinks'
 import FeedbackBox from '@/components/feedback/FeedbackBox'
 
 // Secção FAQ da calculadora — lazy-loaded (fica abaixo da dobra, conteúdo estático).
@@ -143,6 +144,7 @@ export default function InteracoesPageClient({
   foodInteractions = [],
   diseaseInteractions = [],
   pregnancyInfo = [],
+  targets = [],
 }) {
   const { t } = useContext(LangContext)
   const [activeTab, setActiveTab] = useState(() => {
@@ -725,7 +727,7 @@ export default function InteracoesPageClient({
                                   {detail && detail.explanation && (
                                     <div className="detail-block detail-explanation">
                                       <h4 className="detail-title">{t('interacoes_page.explicacao')}</h4>
-                                      <p>{detail.explanation}</p>
+                                      <p><TargetLinks text={detail.explanation} targets={targets} lang={lang} /></p>
                                     </div>
                                   )}
                                   {detail && detail.summaryPro && (
@@ -737,7 +739,7 @@ export default function InteracoesPageClient({
                                   {detail && detail.mechanism && (
                                     <div className="detail-block">
                                       <h4 className="detail-title">{t('interacoes_page.mecanismo')}</h4>
-                                      <p>{detail.mechanism}</p>
+                                      <p><TargetLinks text={detail.mechanism} targets={targets} lang={lang} /></p>
                                     </div>
                                   )}
                                   {detail && detail.monitoring && (
