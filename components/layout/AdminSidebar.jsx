@@ -29,6 +29,7 @@ import {
   Scale,
   Microscope,
   Mic,
+  Atom,
 } from 'lucide-react'
 
 export default function AdminSidebar({ lang, user, onLogout }) {
@@ -255,11 +256,13 @@ export default function AdminSidebar({ lang, user, onLogout }) {
           {(() => {
             const interacoesHref = `/${lang}/admin/interacoes`
             const dimensoesHref = `/${lang}/admin/interacoes/dimensoes`
+            const alvosHref = `/${lang}/admin/alvos`
             const interacoesActive = isActive(interacoesHref)
             const dimensoesActive = isActive(dimensoesHref)
+            const alvosActive = isActive(alvosHref)
             return (
               <div
-                className={`admin-nav-group${interacoesOpen ? ' is-open' : ''}${interacoesActive || dimensoesActive ? ' has-active' : ''}`}
+                className={`admin-nav-group${interacoesOpen ? ' is-open' : ''}${interacoesActive || dimensoesActive || alvosActive ? ' has-active' : ''}`}
                 onMouseEnter={canHover ? () => setInteracoesOpen(true) : undefined}
                 onMouseLeave={canHover ? () => setInteracoesOpen(false) : undefined}
               >
@@ -282,6 +285,9 @@ export default function AdminSidebar({ lang, user, onLogout }) {
                   <div className="admin-nav-submenu">
                     <Link href={dimensoesHref} className={dimensoesActive ? 'active' : ''}>
                       <Layers size={16} /> Dimensões
+                    </Link>
+                    <Link href={alvosHref} className={alvosActive ? 'active' : ''}>
+                      <Atom size={16} /> Alvos Moleculares
                     </Link>
                   </div>
                 )}

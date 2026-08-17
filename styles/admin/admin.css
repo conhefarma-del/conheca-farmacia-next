@@ -3367,3 +3367,41 @@ html.dark .settings-error {
 .spin {
   animation: spin 1s linear infinite;
 }
+
+/* ============================================================
+   Admin — Alvos Moleculares
+   ============================================================ */
+.admin-table-sub {
+  font-size: 12px;
+  color: var(--color-brand-deep, #002a32);
+  opacity: 0.55;
+  margin-top: 2px;
+}
+
+.alvo-admin-form .admin-dim-body {
+  padding-bottom: 24px;
+}
+
+.alvo-admin-preview {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--color-brand-divider, #dddddd);
+}
+
+.alvo-admin-preview-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-brand-accent, #0a844f);
+  margin-bottom: 10px;
+}
+
+.alvo-admin-form .alvo-card {
+  max-width: 340px;
+}
+
+.alvo-admin-form .alvo-card:hover {
+  transform: none;
+  box-shadow: none;
+}
