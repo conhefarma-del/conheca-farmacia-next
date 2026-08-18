@@ -219,7 +219,7 @@ JOIN (VALUES
    'Metabolised by UGT1A1 (glucuronidation) and CYP3A4 (oxidation). Induced by rifampicin, carbamazepine, phenytoin, phenobarbital (via UGT1A1). Does not require ritonavir as a booster.',
    'Absorção oral rápida. Biodisponibilidade: ~63%. Tmax: 2-3 horas. Alimentos não afetam significativamente a absorção. Pode ser administrado com ou sem alimentos.',
    'Rapid oral absorption. Bioavailability: ~63%. Tmax: 2-3 hours. Food does not significantly affect absorption. Can be taken with or without food.',
-   '14 horas (33 horas para o metabolito葡萄糖醛酸). Eliminação: 53% fezes, 33% urina (metabolitos). Não requer ajuste de dose na maioria dos casos.',
+   '14 horas (33 horas para o metabolito glucurónico). Eliminação: 53% fezes, 33% urina (metabolitos). Não requer ajuste de dose na maioria dos casos.',
    '14 hours (33 hours for glucuronide metabolite). Elimination: 53% faeces, 33% urine (metabolites). No dose adjustment required in most cases.',
    'DailyMed/FDA (NIH/NLM) — rótulo aprovado Dolutegravir (Tivicay), secção 12 Clinical Pharmacology: https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=485bc9db-8665-9f5a-e063-6394a90a7921',
    'DailyMed/FDA (NIH/NLM) — approved Dolutegravir (Tivicay) label, section 12 Clinical Pharmacology: https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=485bc9db-8665-9f5a-e063-6394a90a7921'),
