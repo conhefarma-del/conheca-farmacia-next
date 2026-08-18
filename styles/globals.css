@@ -10354,6 +10354,48 @@ html.dark .flash-grade-btn {
   flex: 1;
 }
 
+/* Contagens de fármacos por papel (drug_target_roles) nos cards de alvos */
+.alvo-card-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.alvo-role-count {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.alvo-role-substrate {
+  background: rgba(10, 132, 79, 0.1);
+  color: #0a844f;
+  border: 1px solid rgba(10, 132, 79, 0.3);
+}
+
+.alvo-role-inhibitor {
+  background: rgba(255, 108, 35, 0.1);
+  color: #c2410c;
+  border: 1px solid rgba(255, 108, 35, 0.3);
+}
+
+.alvo-role-inducer {
+  background: rgba(37, 99, 235, 0.1);
+  color: #1d4ed8;
+  border: 1px solid rgba(37, 99, 235, 0.3);
+}
+
+.alvo-role-empty {
+  background: var(--color-brand-bg-alt);
+  color: var(--color-brand-deep);
+  opacity: 0.55;
+  font-weight: 500;
+}
+
 .alvo-card-cta {
   font-size: 13px;
   font-weight: 700;

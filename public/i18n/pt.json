@@ -91,7 +91,12 @@
     "inibidores": "Inibidores",
     "indutores": "Indutores",
     "notas_clinicas": "Notas clínicas",
-    "fonte": "Fonte"
+    "fonte": "Fonte",
+    "contagem": "fármacos na base",
+    "papel_plural_substrate": "substratos",
+    "papel_plural_inhibitor": "inibidores",
+    "papel_plural_inducer": "indutores",
+    "sem_papeis": "sem papéis derivados ainda"
   },
   "content": {
     "artigo": "Artigo",

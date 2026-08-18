@@ -8,7 +8,7 @@ import { LangContext } from "@/lib/contexts";
 // Tipos de alvo com rótulo i18n (chave base: alvos_page.tipo_*)
 const TYPE_KEYS = ["cyp450", "cox", "transporter", "mao", "enzyme"];
 
-export default function AlvosPageClient({ lang, targets }) {
+export default function AlvosPageClient({ lang, targets, drugCounts = {} }) {
   const { t } = useContext(LangContext);
   const [query, setQuery] = useState("");
   const [type, setType] = useState("todos");
@@ -110,27 +110,60 @@ export default function AlvosPageClient({ lang, targets }) {
             </p>
           ) : (
             <div className="alvos-grid">
-              {filtered.map((target) => (
-                <Link
-                  key={target.slug}
-                  href={`/${lang}/alvos/${target.slug}`}
-                  className="alvo-card"
-                >
-                  <div className="alvo-card-head">
-                    <span className={`alvo-badge alvo-badge-${target.targetType}`}>
-                      {typeLabel(target.targetType)}
+              {filtered.map((target) => {
+                const counts = drugCounts[target.id] || {
+                  substrate: 0,
+                  inhibitor: 0,
+                  inducer: 0,
+                };
+                const hasRoles = counts.substrate + counts.inhibitor + counts.inducer > 0;
+                return (
+                  <Link
+                    key={target.slug}
+                    href={`/${lang}/alvos/${target.slug}`}
+                    className="alvo-card"
+                  >
+                    <div className="alvo-card-head">
+                      <span className={`alvo-badge alvo-badge-${target.targetType}`}>
+                        {typeLabel(target.targetType)}
+                      </span>
+                      {target.fullName && (
+                        <span className="alvo-card-fullname">{target.fullName}</span>
+                      )}
+                    </div>
+                    <h2 className="alvo-card-name">{target.name}</h2>
+                    <p className="alvo-card-role">{target.role}</p>
+                    <div className="alvo-card-roles">
+                      {hasRoles ? (
+                        <>
+                          {counts.substrate > 0 && (
+                            <span className="alvo-role-count alvo-role-substrate">
+                              {counts.substrate} {t("alvos_page.papel_plural_substrate")}
+                            </span>
+                          )}
+                          {counts.inhibitor > 0 && (
+                            <span className="alvo-role-count alvo-role-inhibitor">
+                              {counts.inhibitor} {t("alvos_page.papel_plural_inhibitor")}
+                            </span>
+                          )}
+                          {counts.inducer > 0 && (
+                            <span className="alvo-role-count alvo-role-inducer">
+                              {counts.inducer} {t("alvos_page.papel_plural_inducer")}
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <span className="alvo-role-count alvo-role-empty">
+                          {t("alvos_page.sem_papeis")}
+                        </span>
+                      )}
+                    </div>
+                    <span className="alvo-card-cta">
+                      {t("alvos_page.ver_detalhe")} →
                     </span>
-                    {target.fullName && (
-                      <span className="alvo-card-fullname">{target.fullName}</span>
-                    )}
-                  </div>
-                  <h2 className="alvo-card-name">{target.name}</h2>
-                  <p className="alvo-card-role">{target.role}</p>
-                  <span className="alvo-card-cta">
-                    {t("alvos_page.ver_detalhe")} →
-                  </span>
-                </Link>
-              ))}
+                  </Link>
+                );
+              })}
             </div>
           )}
         </div>
