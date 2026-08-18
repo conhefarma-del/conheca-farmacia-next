@@ -3,6 +3,7 @@ import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from "@/lib/i18n";
 import { buildBreadcrumbSchema } from "@/lib/seo";
 import { SITE_URL } from "@/lib/constants";
 import { getPublicTargetBySlug } from "@/lib/actions/alvos";
+import { getPublicDrugs } from "@/lib/actions/interacoes";
 import AlvoDetailClient from "./alvoDetailClient";
 
 export const revalidate = 3600;
@@ -30,7 +31,10 @@ export async function generateMetadata({ params }) {
 export default async function AlvoDetailPage({ params }) {
   const { lang, slug } = await params;
   const safeLang = SUPPORTED_LANGS.includes(lang) ? lang : DEFAULT_LANG;
-  const target = await getPublicTargetBySlug(slug, safeLang);
+  const [target, drugs] = await Promise.all([
+    getPublicTargetBySlug(slug, safeLang),
+    getPublicDrugs(safeLang),
+  ]);
   if (!target) notFound();
 
   const translations = loadTranslations(safeLang);
@@ -52,7 +56,7 @@ export default async function AlvoDetailPage({ params }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
         />
       )}
-      <AlvoDetailClient lang={safeLang} target={target} />
+      <AlvoDetailClient lang={safeLang} target={target} drugs={drugs} />
     </>
   );
 }

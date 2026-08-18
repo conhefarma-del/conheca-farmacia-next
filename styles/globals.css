@@ -10626,6 +10626,20 @@ html.dark .flash-grade-btn {
   .alvos-sort-select { flex: 1; min-width: 0; }
 }
 
+/* Links para fármacos da BD nos textos de substratos/inibidores/indutores
+   do detalhe do alvo (/alvos/[slug]) — só os que existem na base */
+.alvo-drug-link {
+  color: var(--color-brand-accent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: opacity 0.15s;
+}
+
+.alvo-drug-link:hover {
+  opacity: 0.75;
+}
+
 /* ============================================================
    TargetLinks — ligação automática de alvos nas explicações
    ============================================================ */
