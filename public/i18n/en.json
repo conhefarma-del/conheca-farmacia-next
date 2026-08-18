@@ -103,7 +103,8 @@
     "ordenar": "Sort by",
     "ordenar_nome": "Name (A–Z)",
     "ordenar_mais_ligados": "Most drugs",
-    "ordenar_tipo": "Type"
+    "ordenar_tipo": "Type",
+    "de_contagem": "targets"
   },
   "content": {
     "artigo": "Article",

@@ -110,35 +110,37 @@ export default function AlvosPageClient({ lang, targets, drugCounts = {} }) {
 
   return (
     <div className="alvos-page">
-      {/* Hero — padrão events-hero (mesma dimensão das restantes páginas) */}
+      {/* Hero — mesmo modelo de /cientificos: título + subtítulo + pesquisa e
+          filtros dentro do mesmo hero (dimensão igual a /eventos) */}
       <section className="events-hero">
         <div className="container-center">
           <div className="text-center py-12 md:py-16">
-            <h1 className="text-5xl md:text-7xl font-bold text-brand-deep mb-6 break-words">
+            <h1 className="text-5xl md:text-7xl font-bold text-brand-deep mb-6">
               {t("alvos_page.hero_title")}
             </h1>
             <p className="hero-subtitle text-center">
               {t("alvos_page.hero_subtitle")}
             </p>
-          </div>
-        </div>
-      </section>
 
-      {/* Pesquisa + filtros por tipo — dentro do hero, como /artigos */}
-      <section className="events-hero">
-        <div className="container-center pb-10">
-          <div className="alvos-toolbar">
-            <div className="alvos-search">
-              <Search size={16} aria-hidden="true" />
+            {/* Pesquisa — centrada, como /cientificos */}
+            <div className="max-w-3xl mx-auto mt-10 relative">
+              <Search
+                size={18}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-deep/40"
+                aria-hidden="true"
+              />
               <input
                 type="search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t("alvos_page.search_placeholder")}
                 aria-label={t("alvos_page.search_placeholder")}
+                className="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-brand-divider bg-brand-bg text-brand-deep shadow-soft focus:ring-2 focus:ring-brand-accent focus:outline-none transition-all placeholder:text-brand-deep/40"
               />
             </div>
-            <div className="alvos-filters">
+
+            {/* Filtros por tipo — centrados, como /cientificos */}
+            <div className="alvos-filters flex flex-wrap items-center justify-center gap-3 mt-6">
               <button
                 type="button"
                 className={`alvos-filter ${type === "todos" ? "active" : ""}`}
@@ -163,6 +165,18 @@ export default function AlvosPageClient({ lang, targets, drugCounts = {} }) {
                 </button>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Lista de alvos */}
+      <section className="alvos-section section-padding">
+        <div className="container-center">
+          {/* Barra acima dos cards: ordenação (fora do hero, como /cientificos) */}
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
+            <span className="alvos-total">
+              {filtered.length} {t("alvos_page.de_contagem")}
+            </span>
             <div className="alvos-sort">
               <label htmlFor="alvos-sort" className="alvos-sort-label">
                 {t("alvos_page.ordenar")}
@@ -182,12 +196,7 @@ export default function AlvosPageClient({ lang, targets, drugCounts = {} }) {
               </select>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Lista de alvos */}
-      <section className="alvos-section section-padding">
-        <div className="container-center">
           {filtered.length === 0 ? (
             <p className="alvos-empty">
               {t("alvos_page.sem_resultados")}

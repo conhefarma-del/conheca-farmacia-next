@@ -10282,39 +10282,19 @@ html.dark .flash-grade-btn {
   border-bottom: 1px solid var(--color-brand-divider);
 }
 
-/* Toolbar: pesquisa + filtros dentro do hero, padrão /artigos */
-.alvos-toolbar {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding-bottom: 8px;
-}
-
-.alvos-search {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--color-brand-bg);
-  border: 1px solid var(--color-brand-divider);
-  border-radius: 12px;
-  padding: 10px 16px;
-  color: var(--color-brand-deep);
-  opacity: 0.85;
-}
-
-.alvos-search input {
-  flex: 1;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-size: 14px;
-  color: var(--color-brand-deep);
-}
-
+/* Filtros por tipo — pills centradas no hero, padrão /cientificos */
 .alvos-filters {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.alvos-total {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-brand-deep);
+  opacity: 0.6;
 }
 
 .alvos-sort {
@@ -10390,7 +10370,7 @@ html.dark .flash-grade-btn {
 
 .alvos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
   gap: 18px;
 }
 
@@ -10642,10 +10622,8 @@ html.dark .flash-grade-btn {
 
 @media (max-width: 640px) {
   .alvo-detail-cols { grid-template-columns: 1fr; }
-  .alvos-filters { flex-direction: column; align-items: stretch; }
-  .alvos-filter { justify-content: center; }
-  .alvos-sort { justify-content: space-between; }
-  .alvos-sort-select { flex: 1; }
+  .alvos-sort { width: 100%; justify-content: space-between; }
+  .alvos-sort-select { flex: 1; min-width: 0; }
 }
 
 /* ============================================================

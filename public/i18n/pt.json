@@ -103,7 +103,8 @@
     "ordenar": "Ordenar por",
     "ordenar_nome": "Nome (A–Z)",
     "ordenar_mais_ligados": "Mais fármacos",
-    "ordenar_tipo": "Tipo"
+    "ordenar_tipo": "Tipo",
+    "de_contagem": "alvos"
   },
   "content": {
     "artigo": "Artigo",
