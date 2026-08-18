@@ -3405,3 +3405,46 @@ html.dark .settings-error {
   transform: none;
   box-shadow: none;
 }
+
+/* ---- Ligações Fármaco ↔ Alvo (drug_target_roles) ---- */
+.admin-badge-info {
+  background: var(--admin-info-bg, rgba(37, 99, 235, 0.1));
+  color: var(--admin-info, #1d4ed8);
+}
+
+.admin-filters-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  max-width: 360px;
+}
+
+.admin-filters-search-wrap svg {
+  position: absolute;
+  left: 12px;
+  color: var(--admin-muted, #6b7280);
+  pointer-events: none;
+}
+
+.admin-filters-search-wrap .admin-filters-search {
+  padding-left: 36px;
+  width: 100%;
+}
+
+.admin-inline-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 220px;
+}
+
+.admin-inline-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.admin-rederive-result ul {
+  max-height: 220px;
+  overflow-y: auto;
+}

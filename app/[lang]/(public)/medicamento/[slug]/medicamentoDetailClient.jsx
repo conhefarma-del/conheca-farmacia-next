@@ -35,6 +35,10 @@ const RelatedDrugsSection = dynamic(
   () => import("@/components/medicamento/RelatedDrugsSection"),
   { loading: () => <div className="medicamento-section-skeleton" /> }
 );
+const MetabolismSection = dynamic(
+  () => import("@/components/medicamento/MetabolismSection"),
+  { loading: () => <div className="medicamento-section-skeleton" /> }
+);
 
 // Ao abrir um <details>, garante que o conteúdo expandido fica visível no ecrã
 // (scroll mínimo até ao cartão, sem "saltos" bruscos).
@@ -156,6 +160,7 @@ export default function MedicamentoDetailClient({
   drugs,
   interactions,
   targets = [],
+  targetRoles = [],
 }) {
   const { t } = useContext(LangContext);
   const [audience, setAudience] = useState("public");
@@ -323,6 +328,9 @@ export default function MedicamentoDetailClient({
 
         {/* ---- Farmacologia (lazy-loaded) ---- */}
         <PharmacologySection drug={drug} />
+
+        {/* ---- Metabolismo — alvos moleculares (lazy-loaded) ---- */}
+        <MetabolismSection roles={targetRoles} lang={lang} />
 
         {/* ---- Fontes (perfil + farmacologia) — um único local ---- */}
         {(drug.profile?.source || drug.pharmacology?.source) && (

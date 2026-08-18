@@ -30,6 +30,7 @@ import {
   Microscope,
   Mic,
   Atom,
+  Workflow,
 } from 'lucide-react'
 
 export default function AdminSidebar({ lang, user, onLogout }) {
@@ -257,12 +258,14 @@ export default function AdminSidebar({ lang, user, onLogout }) {
             const interacoesHref = `/${lang}/admin/interacoes`
             const dimensoesHref = `/${lang}/admin/interacoes/dimensoes`
             const alvosHref = `/${lang}/admin/alvos`
+            const drugLinksHref = `/${lang}/admin/alvos/drug-links`
             const interacoesActive = isActive(interacoesHref)
             const dimensoesActive = isActive(dimensoesHref)
             const alvosActive = isActive(alvosHref)
+            const drugLinksActive = isActive(drugLinksHref)
             return (
               <div
-                className={`admin-nav-group${interacoesOpen ? ' is-open' : ''}${interacoesActive || dimensoesActive || alvosActive ? ' has-active' : ''}`}
+                className={`admin-nav-group${interacoesOpen ? ' is-open' : ''}${interacoesActive || dimensoesActive || alvosActive || drugLinksActive ? ' has-active' : ''}`}
                 onMouseEnter={canHover ? () => setInteracoesOpen(true) : undefined}
                 onMouseLeave={canHover ? () => setInteracoesOpen(false) : undefined}
               >
@@ -288,6 +291,9 @@ export default function AdminSidebar({ lang, user, onLogout }) {
                     </Link>
                     <Link href={alvosHref} className={alvosActive ? 'active' : ''}>
                       <Atom size={16} /> Alvos Moleculares
+                    </Link>
+                    <Link href={drugLinksHref} className={drugLinksActive ? 'active' : ''}>
+                      <Workflow size={16} /> Fármaco ↔ Alvo
                     </Link>
                   </div>
                 )}

@@ -6323,6 +6323,128 @@ html.dark .drug-list-card { background: var(--color-brand-bg-alt); }
   margin: -6px 0 14px;
 }
 
+/* ---- Secção "Metabolismo — alvos moleculares" (drug_target_roles) ---- */
+.target-roles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 820px;
+}
+
+.target-role-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--color-brand-bg);
+  border: 1px solid var(--color-brand-divider);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--color-brand-deep);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.target-role-row:hover {
+  border-color: var(--color-brand-accent);
+  box-shadow: 0 2px 10px rgba(10, 132, 79, 0.08);
+}
+
+.target-role {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  min-width: 86px;
+  justify-content: center;
+}
+
+.target-role-substrate {
+  background: rgba(10, 132, 79, 0.1);
+  color: #0a844f;
+  border: 1px solid rgba(10, 132, 79, 0.35);
+}
+
+.target-role-inhibitor {
+  background: rgba(255, 108, 35, 0.1);
+  color: #c2410c;
+  border: 1px solid rgba(255, 108, 35, 0.35);
+}
+
+.target-role-inducer {
+  background: rgba(37, 99, 235, 0.1);
+  color: #1d4ed8;
+  border: 1px solid rgba(37, 99, 235, 0.35);
+}
+
+.target-role-name {
+  font-weight: 700;
+  font-size: 14px;
+  flex: 1;
+}
+
+.target-role-type {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-brand-deep);
+  opacity: 0.45;
+}
+
+.target-role-arrow {
+  color: var(--color-brand-accent);
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.target-auto-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 820px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  background: rgba(255, 108, 35, 0.07);
+  border: 1px solid rgba(255, 108, 35, 0.3);
+  color: #7c2d12;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.target-auto-warning svg {
+  color: #c2410c;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.target-auto-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: 700;
+  color: #c2410c;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 560px) {
+  .target-role-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .target-role-type {
+    width: 100%;
+    padding-left: 98px;
+  }
+}
+
 .medicamento-filter-bar {
   display: flex;
   align-items: center;
