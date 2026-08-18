@@ -10281,7 +10281,7 @@ html.dark .flash-grade-btn {
 /* ============================================================
    Alvos Moleculares (CYP, COX, transportadores) — /alvos
    ============================================================ */
-.alvos-page { background: var(--color-brand-bg); }
+.alvos-page { background: var(--color-brand-bg); overflow-x: hidden; }
 
 .alvos-page .events-hero {
   border-bottom: 1px solid var(--color-brand-divider);
@@ -10547,6 +10547,7 @@ html.dark .flash-grade-btn {
   max-width: 900px;
   margin: 0 auto;
   padding: 40px 24px 80px;
+  overflow-x: hidden;
 }
 
 .alvo-detail-back {
@@ -10576,6 +10577,8 @@ html.dark .flash-grade-btn {
   line-height: 1.15;
   margin-top: 14px;
   margin-bottom: 8px;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .alvo-detail-fullname {
@@ -10589,6 +10592,8 @@ html.dark .flash-grade-btn {
   font-size: 13px;
   color: var(--color-brand-deep);
   opacity: 0.55;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .alvo-detail-section {
@@ -10612,12 +10617,18 @@ html.dark .flash-grade-btn {
   line-height: 1.7;
   color: var(--color-brand-deep);
   opacity: 0.85;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .alvo-detail-cols {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
+}
+
+.alvo-detail-cols > * {
+  min-width: 0;
 }
 
 .alvo-detail-source {

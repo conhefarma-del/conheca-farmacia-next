@@ -78,7 +78,7 @@ export default function PublicLayout({ children }) {
         onToggleDrawer={() => setDrawerOpen((open) => !open)}
         onCloseDrawer={() => setDrawerOpen(false)}
       />
-      <main style={{ paddingTop: MAIN_PADDING_TOP }}>{children}</main>
+      <main style={{ paddingTop: MAIN_PADDING_TOP, overflowX: 'hidden' }}>{children}</main>
       <Footer lang={lang} t={t} />
     </>
   )
