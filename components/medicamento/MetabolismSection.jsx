@@ -1,23 +1,28 @@
 "use client";
 
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Atom, ShieldAlert } from "lucide-react";
 import { LangContext } from "@/lib/contexts";
 
-// Rótulos e cores dos papéis (substrato/inibidor/indutor) — padrão do módulo
-// de alvos moleculares. Cada badge liga ao perfil do alvo em /alvos/[slug].
+// Rótulos, cores e tooltips dos papéis (substrato/inibidor/indutor) — padrão
+// do módulo de alvos moleculares. As chaves de tooltip reutilizam as mesmas
+// dos cards de /alvos (alvos_page.papel_tip_*). Cada badge liga ao perfil do
+// alvo em /alvos/[slug].
 const ROLE_META = {
   substrate: {
     labelKey: "medicamento_detalhe.papel_substrato",
+    tipKey: "alvos_page.papel_tip_substrate",
     className: "target-role target-role-substrate",
   },
   inhibitor: {
     labelKey: "medicamento_detalhe.papel_inibidor",
+    tipKey: "alvos_page.papel_tip_inhibitor",
     className: "target-role target-role-inhibitor",
   },
   inducer: {
     labelKey: "medicamento_detalhe.papel_indutor",
+    tipKey: "alvos_page.papel_tip_inducer",
     className: "target-role target-role-inducer",
   },
 };
@@ -50,6 +55,9 @@ function findAutoInteraction(roles) {
 // e aviso clínico quando há auto-interação no mesmo alvo.
 export default function MetabolismSection({ roles = [], lang = "pt" }) {
   const { t } = useContext(LangContext);
+  // Tooltip aberto por badge (chave = id da linha) — um de cada vez, padrão
+  // dos TargetLinks: desktop hover abre; mobile 1.º toque abre, 2.º navega.
+  const [openTip, setOpenTip] = useState(null);
   if (!roles || roles.length === 0) return null;
 
   const auto = findAutoInteraction(roles);
@@ -88,9 +96,27 @@ export default function MetabolismSection({ roles = [], lang = "pt" }) {
         {sorted.map((r) => {
           const meta = ROLE_META[r.role] || ROLE_META.substrate;
           const href = `/${lang}/alvos/${r.target?.slug || "#"}`;
+          const tipOpen = openTip === r.id;
           return (
             <Link key={r.id} href={href} className="target-role-row" title={r.target?.whatIs || r.target?.name}>
-              <span className={`${meta.className}`}>{t(meta.labelKey)}</span>
+              <span
+                className="target-role-wrap"
+                onMouseEnter={() => setOpenTip(r.id)}
+                onMouseLeave={() => setOpenTip((cur) => (cur === r.id ? null : cur))}
+                onClick={(e) => {
+                  if (tipOpen) return; // 2.º toque → deixa a linha navegar
+                  e.preventDefault(); // 1.º toque → abre o tooltip
+                  setOpenTip(r.id);
+                }}
+              >
+                <span className={`${meta.className}`}>{t(meta.labelKey)}</span>
+                <span
+                  className={`target-role-tip${tipOpen ? " is-open" : ""}`}
+                  role="tooltip"
+                >
+                  {t(meta.tipKey)}
+                </span>
+              </span>
               <span className="target-role-name">{r.target?.name || "—"}</span>
               <span className="target-role-type">{r.target?.targetType || ""}</span>
               <ArrowUpRight size={14} className="target-role-arrow" aria-hidden="true" />
