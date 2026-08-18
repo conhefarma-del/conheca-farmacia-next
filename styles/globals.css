@@ -10489,7 +10489,8 @@ html.dark .flash-grade-btn {
   pointer-events: none;
 }
 
-.alvo-role-wrap:hover .alvo-role-tip {
+.alvo-role-wrap:hover .alvo-role-tip,
+.alvo-role-tip.is-open {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);

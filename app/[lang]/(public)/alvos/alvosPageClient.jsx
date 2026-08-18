@@ -8,12 +8,27 @@ import { LangContext } from "@/lib/contexts";
 // Tipos de alvo com rótulo i18n (chave base: alvos_page.tipo_*)
 const TYPE_KEYS = ["cyp450", "cox", "transporter", "mao", "enzyme"];
 
-// Tooltip simples (CSS puro, hover) para explicar o papel da contagem.
-function RoleTip({ label, tip }) {
+// Badge de contagem com tooltip, padrão TargetLinks:
+//  - desktop: hover abre o tooltip
+//  - mobile: o 1.º toque abre o tooltip (preventDefault bloqueia a
+//    navegação do card); o 2.º toque deixa o link do card navegar
+function RoleTip({ label, tip, open, onOpen, onClose }) {
   return (
-    <span className="alvo-role-wrap">
+    <span
+      className="alvo-role-wrap"
+      onMouseEnter={onOpen}
+      onMouseLeave={onClose}
+      onClick={(e) => {
+        if (open) return; // 2.º toque → deixa o card navegar
+        e.preventDefault(); // 1.º toque → abre o tooltip, não navega
+        onOpen();
+      }}
+    >
       {label}
-      <span className="alvo-role-tip" role="tooltip">
+      <span
+        className={`alvo-role-tip${open ? " is-open" : ""}`}
+        role="tooltip"
+      >
         {tip}
       </span>
     </span>
@@ -25,6 +40,8 @@ export default function AlvosPageClient({ lang, targets, drugCounts = {} }) {
   const [query, setQuery] = useState("");
   const [type, setType] = useState("todos");
   const [sort, setSort] = useState("nome");
+  // Tooltip aberto por badge (chave `${slug}:${role}`) — um de cada vez.
+  const [openTip, setOpenTip] = useState(null);
 
   const typeLabel = (key) => t(`alvos_page.tipo_${key}`);
 
@@ -184,6 +201,13 @@ export default function AlvosPageClient({ lang, targets, drugCounts = {} }) {
                   inducer: 0,
                 };
                 const hasRoles = counts.substrate + counts.inhibitor + counts.inducer > 0;
+                const roleKey = (role) => `${target.slug}:${role}`;
+                const roleProps = (role) => ({
+                  open: openTip === roleKey(role),
+                  onOpen: () => setOpenTip(roleKey(role)),
+                  onClose: () =>
+                    setOpenTip((cur) => (cur === roleKey(role) ? null : cur)),
+                });
                 return (
                   <Link
                     key={target.slug}
@@ -208,6 +232,7 @@ export default function AlvosPageClient({ lang, targets, drugCounts = {} }) {
                               <RoleTip
                                 label={`${counts.substrate} ${t("alvos_page.papel_plural_substrate")}`}
                                 tip={t("alvos_page.papel_tip_substrate")}
+                                {...roleProps("substrate")}
                               />
                             </span>
                           )}
@@ -216,6 +241,7 @@ export default function AlvosPageClient({ lang, targets, drugCounts = {} }) {
                               <RoleTip
                                 label={`${counts.inhibitor} ${t("alvos_page.papel_plural_inhibitor")}`}
                                 tip={t("alvos_page.papel_tip_inhibitor")}
+                                {...roleProps("inhibitor")}
                               />
                             </span>
                           )}
@@ -224,6 +250,7 @@ export default function AlvosPageClient({ lang, targets, drugCounts = {} }) {
                               <RoleTip
                                 label={`${counts.inducer} ${t("alvos_page.papel_plural_inducer")}`}
                                 tip={t("alvos_page.papel_tip_inducer")}
+                                {...roleProps("inducer")}
                               />
                             </span>
                           )}
