@@ -175,7 +175,7 @@ Exemplo: `191_expansao_antirretrovirais.sql`
 
 | # | Classe | Tier | Fármacos | Pares | Dimensões | Perfil | Estado |
 |---|--------|------|----------|-------|-----------|--------|--------|
-| 1 | Antirretrovirais | 1 | —/25 | — | — | — | ⏳ Pendente |
+| 1 | Antirretrovirais | 1 | 17/25 | 13 | 11 | 11 | ✅ 191-193 |
 | 2 | Antimaláricos | 1 | —/10 | — | — | — | ⏳ Pendente |
 | 3 | Antituberculares | 1 | —/10 | — | — | — | ⏳ Pendente |
 | 4 | Antibióticos essenciais | 1 | —/30 | — | — | — | ⏳ Pendente |
