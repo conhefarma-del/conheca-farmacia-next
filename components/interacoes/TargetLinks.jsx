@@ -98,9 +98,13 @@ export default function TargetLinks({ text, targets = [], lang }) {
               <span className="target-tooltip" onMouseEnter={() => clearTimeout(openTimer.current)}>
                 <strong>{seg.target.name}</strong>
                 {seg.target.whatIs && <span className="target-tooltip-text">{seg.target.whatIs}</span>}
-                <span className="target-tooltip-cta">
+                <Link
+                  href={`/${lang || "pt"}/alvos/${seg.target.slug}`}
+                  className="target-tooltip-cta"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   {t("alvos_page.ver_detalhe")} →
-                </span>
+                </Link>
               </span>
             )}
           </span>

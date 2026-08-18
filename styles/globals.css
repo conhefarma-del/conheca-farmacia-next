@@ -10706,9 +10706,18 @@ html.dark .flash-grade-btn {
 }
 
 .target-tooltip-cta {
+  display: inline-block;
+  margin-top: 6px;
   color: #6ee7a8;
   font-weight: 700;
   font-size: 12px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.target-tooltip-cta:hover {
+  opacity: 0.8;
 }
 
 @media (max-width: 640px) {
