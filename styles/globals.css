@@ -17,6 +17,9 @@
   /* Elevation */
   --shadow-soft: 0 4px 20px rgba(0, 42, 50, 0.05);
   --shadow-md-soft: 0 10px 30px rgba(0, 42, 50, 0.08);
+
+  /* Superfícies inversas (tooltips/toasts) — SEMPRE escuras, mesmo em dark */
+  --color-tooltip-bg: #002a32;
 }
 /* Dark Mode Theme Overrides */
 html.dark {
@@ -27,6 +30,8 @@ html.dark {
   --color-brand-deep: #e5e7eb;
   --color-brand-primary: #005c4a;
   --color-brand-accent: #0d995f;
+  /* Mantém tooltips/toasts escuros — o brand-deep fica claro neste tema */
+  --color-tooltip-bg: #0f1a14;
 }
 
 /* Dark mode body background */
@@ -1119,7 +1124,7 @@ html.dark .form-note {
     bottom: 24px;
     left: 50%;
     transform: translateX(-50%) translateY(20px);
-    background: var(--color-brand-deep);
+    background: var(--color-tooltip-bg);
     color: white;
     padding: 12px 24px;
     border-radius: 10px;
@@ -3593,7 +3598,7 @@ html.dark .comprovativo-event {
   transition: background 0.2s ease;
   align-self: flex-start;
 }
-.not-found-cta:hover { background: var(--color-brand-deep, #002a32); }
+.not-found-cta:hover { background: var(--color-tooltip-bg, #002a32); }
 .not-found-cta::after {
   content: '→';
   font-family: var(--font-sans, 'Inter', sans-serif);
@@ -6395,7 +6400,7 @@ html.dark .drug-list-card { background: var(--color-brand-bg-alt); }
   z-index: 40;
   width: max-content;
   max-width: 300px;
-  background: var(--color-brand-deep);
+  background: var(--color-tooltip-bg);
   color: #fff;
   border-radius: 10px;
   padding: 10px 12px;
@@ -10495,7 +10500,7 @@ html.dark .flash-grade-btn {
   z-index: 40;
   width: max-content;
   max-width: 300px;
-  background: var(--color-brand-deep);
+  background: var(--color-tooltip-bg);
   color: #fff;
   border-radius: 10px;
   padding: 10px 12px;
@@ -10668,7 +10673,7 @@ html.dark .flash-grade-btn {
   z-index: 40;
   max-width: 320px;
   width: max-content;
-  background: var(--color-brand-deep);
+  background: var(--color-tooltip-bg);
   color: #fff;
   border-radius: 12px;
   padding: 12px 14px;
