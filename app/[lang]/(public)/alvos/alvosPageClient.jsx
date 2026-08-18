@@ -24,12 +24,32 @@ export default function AlvosPageClient({ lang, targets, drugCounts = {} }) {
   const { t } = useContext(LangContext);
   const [query, setQuery] = useState("");
   const [type, setType] = useState("todos");
+  const [sort, setSort] = useState("nome");
 
   const typeLabel = (key) => t(`alvos_page.tipo_${key}`);
 
+  // Total de fármacos por alvo (soma dos três papéis) para a ordenação.
+  const totalByTarget = useMemo(() => {
+    const totals = {};
+    for (const [targetId, c] of Object.entries(drugCounts || {})) {
+      totals[targetId] =
+        (c.substrate || 0) + (c.inhibitor || 0) + (c.inducer || 0);
+    }
+    return totals;
+  }, [drugCounts]);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return (targets || []).filter((target) => {
+    const TYPE_ORDER = [
+      "cyp450",
+      "cox",
+      "transporter",
+      "mao",
+      "enzyme",
+      "receptor",
+      "other",
+    ];
+    const list = (targets || []).filter((target) => {
       if (type !== "todos" && target.targetType !== type) return false;
       if (!q) return true;
       const haystack = [
@@ -44,7 +64,24 @@ export default function AlvosPageClient({ lang, targets, drugCounts = {} }) {
         .toLowerCase();
       return haystack.includes(q);
     });
-  }, [targets, query, type]);
+    const sorted = [...list];
+    if (sort === "mais_ligados") {
+      sorted.sort(
+        (a, b) =>
+          (totalByTarget[b.id] || 0) - (totalByTarget[a.id] || 0) ||
+          a.name.localeCompare(b.name)
+      );
+    } else if (sort === "tipo") {
+      sorted.sort(
+        (a, b) =>
+          TYPE_ORDER.indexOf(a.targetType) - TYPE_ORDER.indexOf(b.targetType) ||
+          a.name.localeCompare(b.name)
+      );
+    } else {
+      sorted.sort((a, b) => a.name.localeCompare(b.name));
+    }
+    return sorted;
+  }, [targets, query, type, sort, totalByTarget]);
 
   const countByType = useMemo(() => {
     const counts = {};
@@ -108,6 +145,24 @@ export default function AlvosPageClient({ lang, targets, drugCounts = {} }) {
                   </span>
                 </button>
               ))}
+            </div>
+            <div className="alvos-sort">
+              <label htmlFor="alvos-sort" className="alvos-sort-label">
+                {t("alvos_page.ordenar")}
+              </label>
+              <select
+                id="alvos-sort"
+                className="alvos-sort-select"
+                value={sort}
+                onChange={(e) => setSort(e.target.value)}
+                aria-label={t("alvos_page.ordenar")}
+              >
+                <option value="nome">{t("alvos_page.ordenar_nome")}</option>
+                <option value="mais_ligados">
+                  {t("alvos_page.ordenar_mais_ligados")}
+                </option>
+                <option value="tipo">{t("alvos_page.ordenar_tipo")}</option>
+              </select>
             </div>
           </div>
         </div>

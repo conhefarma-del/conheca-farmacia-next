@@ -99,7 +99,11 @@
     "sem_papeis": "sem papéis derivados ainda",
     "papel_tip_substrate": "Substrato: fármaco metabolizado (ou transportado) por este alvo — o alvo atua sobre ele.",
     "papel_tip_inhibitor": "Inibidor: fármaco que bloqueia ou reduz a atividade deste alvo, aumentando a exposição dos substratos.",
-    "papel_tip_inducer": "Indutor: fármaco que aumenta a atividade deste alvo, acelerando o metabolismo (e reduzindo o efeito) dos substratos."
+    "papel_tip_inducer": "Indutor: fármaco que aumenta a atividade deste alvo, acelerando o metabolismo (e reduzindo o efeito) dos substratos.",
+    "ordenar": "Ordenar por",
+    "ordenar_nome": "Nome (A–Z)",
+    "ordenar_mais_ligados": "Mais fármacos",
+    "ordenar_tipo": "Tipo"
   },
   "content": {
     "artigo": "Artigo",

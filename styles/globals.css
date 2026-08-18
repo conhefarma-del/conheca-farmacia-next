@@ -10276,6 +10276,39 @@ html.dark .flash-grade-btn {
   flex-wrap: wrap;
 }
 
+.alvos-sort {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.alvos-sort-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-brand-deep);
+  opacity: 0.6;
+}
+
+.alvos-sort-select {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--color-brand-divider);
+  background: var(--color-brand-bg);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-brand-deep);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.alvos-sort-select:hover,
+.alvos-sort-select:focus {
+  border-color: var(--color-brand-accent);
+  color: var(--color-brand-accent);
+}
+
 .alvos-filter {
   display: inline-flex;
   align-items: center;
@@ -10569,6 +10602,8 @@ html.dark .flash-grade-btn {
   .alvo-detail-cols { grid-template-columns: 1fr; }
   .alvos-filters { flex-direction: column; align-items: stretch; }
   .alvos-filter { justify-content: center; }
+  .alvos-sort { justify-content: space-between; }
+  .alvos-sort-select { flex: 1; }
 }
 
 /* ============================================================

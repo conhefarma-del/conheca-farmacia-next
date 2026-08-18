@@ -99,7 +99,11 @@
     "sem_papeis": "no roles derived yet",
     "papel_tip_substrate": "Substrate: a medicine metabolized (or transported) by this target — the target acts on it.",
     "papel_tip_inhibitor": "Inhibitor: a medicine that blocks or reduces this target’s activity, increasing substrate exposure.",
-    "papel_tip_inducer": "Inducer: a medicine that increases this target’s activity, speeding up metabolism (and reducing the effect) of substrates."
+    "papel_tip_inducer": "Inducer: a medicine that increases this target’s activity, speeding up metabolism (and reducing the effect) of substrates.",
+    "ordenar": "Sort by",
+    "ordenar_nome": "Name (A–Z)",
+    "ordenar_mais_ligados": "Most drugs",
+    "ordenar_tipo": "Type"
   },
   "content": {
     "artigo": "Article",
