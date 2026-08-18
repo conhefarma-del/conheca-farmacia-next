@@ -161,7 +161,7 @@ export default function MedicamentoDetailClient({
   interactions,
   targets = [],
   targetRoles = [],
-  targetRolesByDrug = {},
+  autoInteractionPairs = [],
 }) {
   const { t } = useContext(LangContext);
   const [audience, setAudience] = useState("public");
@@ -232,37 +232,28 @@ export default function MedicamentoDetailClient({
     return drugsById[partnerId]?.name || "—";
   };
 
-  // Auto-interação do PAR: quando este fármaco é substrato de um alvo e o
-  // parceiro é inibidor/indutor do mesmo alvo (ou vice-versa). Devolve o
-  // aviso { alvo, papelDeste, papelParceiro, href } ou null. Usa o mapa
-  // targetRolesByDrug carregado no servidor (drug_target_roles).
-  const pairAutoInteraction = (pair) => {
-    const partnerId = pair.drugAId === drug.id ? pair.drugBId : pair.drugAId;
-    const mine = targetRolesByDrug[drug.id] || [];
-    const partner = targetRolesByDrug[partnerId] || [];
-    if (!mine.length || !partner.length) return null;
-    for (const a of mine) {
-      for (const b of partner) {
-        if (a.target?.id !== b.target?.id) continue;
-        const mineRole = a.role;
-        const partnerRole = b.role;
-        const isAuto =
-          (mineRole === "substrate" &&
-            (partnerRole === "inhibitor" || partnerRole === "inducer")) ||
-          (partnerRole === "substrate" &&
-            (mineRole === "inhibitor" || mineRole === "inducer"));
-        if (isAuto) {
-          return {
-            targetName: a.target?.name || "",
-            targetSlug: a.target?.slug || "",
-            mineRole,
-            partnerRole,
-          };
-        }
-      }
+  // Auto-interação do PAR, pré-computada em SQL na view materializada
+  // auto_interaction_pairs (migração 190): pares onde este fármaco é
+  // substrato de um alvo e o parceiro é inibidor/indutor do mesmo alvo
+  // (ou vice-versa). Lookup por par — sem cruzar no cliente.
+  const autoPairsByPairId = useMemo(() => {
+    const map = {};
+    for (const row of autoInteractionPairs || []) {
+      const mineIsA = row.drugAId === drug.id;
+      if (!mineIsA && row.drugBId !== drug.id) continue;
+      if (!map[row.pairId]) map[row.pairId] = [];
+      map[row.pairId].push({
+        targetName: row.targetName,
+        targetSlug: row.targetSlug,
+        mineRole: mineIsA ? row.roleA : row.roleB,
+        partnerRole: mineIsA ? row.roleB : row.roleA,
+      });
     }
-    return null;
-  };
+    return map;
+  }, [autoInteractionPairs, drug.id]);
+
+  const pairAutoInteraction = (pair) =>
+    (autoPairsByPairId[pair.id] || [])[0] || null;
 
   const overview =
     audience === "public"
