@@ -161,6 +161,7 @@ export default function MedicamentoDetailClient({
   interactions,
   targets = [],
   targetRoles = [],
+  targetRolesByDrug = {},
 }) {
   const { t } = useContext(LangContext);
   const [audience, setAudience] = useState("public");
@@ -229,6 +230,38 @@ export default function MedicamentoDetailClient({
   const partnerName = (pair) => {
     const partnerId = pair.drugAId === drug.id ? pair.drugBId : pair.drugAId;
     return drugsById[partnerId]?.name || "—";
+  };
+
+  // Auto-interação do PAR: quando este fármaco é substrato de um alvo e o
+  // parceiro é inibidor/indutor do mesmo alvo (ou vice-versa). Devolve o
+  // aviso { alvo, papelDeste, papelParceiro, href } ou null. Usa o mapa
+  // targetRolesByDrug carregado no servidor (drug_target_roles).
+  const pairAutoInteraction = (pair) => {
+    const partnerId = pair.drugAId === drug.id ? pair.drugBId : pair.drugAId;
+    const mine = targetRolesByDrug[drug.id] || [];
+    const partner = targetRolesByDrug[partnerId] || [];
+    if (!mine.length || !partner.length) return null;
+    for (const a of mine) {
+      for (const b of partner) {
+        if (a.target?.id !== b.target?.id) continue;
+        const mineRole = a.role;
+        const partnerRole = b.role;
+        const isAuto =
+          (mineRole === "substrate" &&
+            (partnerRole === "inhibitor" || partnerRole === "inducer")) ||
+          (partnerRole === "substrate" &&
+            (mineRole === "inhibitor" || mineRole === "inducer"));
+        if (isAuto) {
+          return {
+            targetName: a.target?.name || "",
+            targetSlug: a.target?.slug || "",
+            mineRole,
+            partnerRole,
+          };
+        }
+      }
+    }
+    return null;
   };
 
   const overview =
@@ -447,6 +480,38 @@ export default function MedicamentoDetailClient({
                     )
                   }
                 >
+                  {(() => {
+                    const auto = pairAutoInteraction(pair);
+                    if (!auto) return null;
+                    const mineIsSub = auto.mineRole === "substrate";
+                    const mineLabel = t(
+                      `medicamento_detalhe.papel_${mineIsSub ? "substrato" : auto.mineRole === "inhibitor" ? "inibidor" : "indutor"}`
+                    );
+                    const partnerLabel = t(
+                      `medicamento_detalhe.papel_${mineIsSub ? (auto.partnerRole === "inhibitor" ? "inibidor" : "indutor") : "substrato"}`
+                    );
+                    return (
+                      <div className="pair-auto-warning">
+                        <ShieldAlert size={15} aria-hidden="true" />
+                        <div>
+                          <strong>{t("medicamento_detalhe.aviso_auto_interacao")}:</strong>{" "}
+                          {t("medicamento_detalhe.aviso_auto_interacao_par")
+                            .replace("{alvo}", auto.targetName)
+                            .replace("{farmaco}", drug.name)
+                            .replace("{papel_farmaco}", mineLabel.toLowerCase())
+                            .replace("{parceiro}", partnerName(pair))
+                            .replace("{papel_parceiro}", partnerLabel.toLowerCase())}{" "}
+                          <Link
+                            href={`/${lang}/alvos/${auto.targetSlug}`}
+                            className="pair-auto-link"
+                          >
+                            {t("medicamento_detalhe.ver_alvo")}
+                            <ArrowUpRight size={12} aria-hidden="true" />
+                          </Link>
+                        </div>
+                      </div>
+                    );
+                  })()}
                   <DetailBlock
                     titleKey="interacoes_page.explicacao"
                     className="detail-explanation"

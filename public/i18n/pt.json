@@ -684,7 +684,8 @@
     "indications": "Indicações",
     "side_effects": "Efeitos secundários comuns",
     "precautions": "Precauções",
-    "disclaimer": "Ferramenta de apoio clínico e educativo. A informação não substitui a prescrição médica nem o parecer de um profissional de saúde qualificado."
+    "disclaimer": "Ferramenta de apoio clínico e educativo. A informação não substitui a prescrição médica nem o parecer de um profissional de saúde qualificado.",
+    "aviso_auto_interacao_par": "Este par corresponde a uma auto-interação do {alvo}: {farmaco} ({papel_farmaco}) e {parceiro} ({papel_parceiro}) — o substrato é metabolizado pela mesma enzima que o outro fármaco inibe/induz."
   },
   "feedback": {
     "cta": "Encontraste algum erro ou tens uma sugestão?",

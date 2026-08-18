@@ -6434,6 +6434,38 @@ html.dark .drug-list-card { background: var(--color-brand-bg-alt); }
   text-underline-offset: 3px;
 }
 
+/* Aviso de auto-interação do PAR dentro do cartão de interações fármaco-fármaco */
+.pair-auto-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 14px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  background: rgba(255, 108, 35, 0.07);
+  border: 1px solid rgba(255, 108, 35, 0.3);
+  color: #7c2d12;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.pair-auto-warning svg {
+  color: #c2410c;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.pair-auto-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: 700;
+  color: #c2410c;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  margin-left: 4px;
+}
+
 @media (max-width: 560px) {
   .target-role-row {
     flex-wrap: wrap;

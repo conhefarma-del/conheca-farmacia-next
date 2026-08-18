@@ -684,7 +684,8 @@
     "indications": "Indications",
     "side_effects": "Common side effects",
     "precautions": "Precautions",
-    "disclaimer": "Clinical and educational support tool. The information does not replace a medical prescription or the opinion of a qualified healthcare professional."
+    "disclaimer": "Clinical and educational support tool. The information does not replace a medical prescription or the opinion of a qualified healthcare professional.",
+    "aviso_auto_interacao_par": "This pair matches a self-interaction of {alvo}: {farmaco} ({papel_farmaco}) and {parceiro} ({papel_parceiro}) — the substrate is metabolized by the same enzyme the other medicine inhibits/induces."
   },
   "feedback": {
     "cta": "Found a mistake or have a suggestion?",
