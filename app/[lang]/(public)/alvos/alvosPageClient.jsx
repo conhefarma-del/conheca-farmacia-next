@@ -8,6 +8,18 @@ import { LangContext } from "@/lib/contexts";
 // Tipos de alvo com rótulo i18n (chave base: alvos_page.tipo_*)
 const TYPE_KEYS = ["cyp450", "cox", "transporter", "mao", "enzyme"];
 
+// Tooltip simples (CSS puro, hover) para explicar o papel da contagem.
+function RoleTip({ label, tip }) {
+  return (
+    <span className="alvo-role-wrap">
+      {label}
+      <span className="alvo-role-tip" role="tooltip">
+        {tip}
+      </span>
+    </span>
+  );
+}
+
 export default function AlvosPageClient({ lang, targets, drugCounts = {} }) {
   const { t } = useContext(LangContext);
   const [query, setQuery] = useState("");
@@ -138,17 +150,26 @@ export default function AlvosPageClient({ lang, targets, drugCounts = {} }) {
                         <>
                           {counts.substrate > 0 && (
                             <span className="alvo-role-count alvo-role-substrate">
-                              {counts.substrate} {t("alvos_page.papel_plural_substrate")}
+                              <RoleTip
+                                label={`${counts.substrate} ${t("alvos_page.papel_plural_substrate")}`}
+                                tip={t("alvos_page.papel_tip_substrate")}
+                              />
                             </span>
                           )}
                           {counts.inhibitor > 0 && (
                             <span className="alvo-role-count alvo-role-inhibitor">
-                              {counts.inhibitor} {t("alvos_page.papel_plural_inhibitor")}
+                              <RoleTip
+                                label={`${counts.inhibitor} ${t("alvos_page.papel_plural_inhibitor")}`}
+                                tip={t("alvos_page.papel_tip_inhibitor")}
+                              />
                             </span>
                           )}
                           {counts.inducer > 0 && (
                             <span className="alvo-role-count alvo-role-inducer">
-                              {counts.inducer} {t("alvos_page.papel_plural_inducer")}
+                              <RoleTip
+                                label={`${counts.inducer} ${t("alvos_page.papel_plural_inducer")}`}
+                                tip={t("alvos_page.papel_tip_inducer")}
+                              />
                             </span>
                           )}
                         </>

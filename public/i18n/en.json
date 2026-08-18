@@ -96,7 +96,10 @@
     "papel_plural_substrate": "substrates",
     "papel_plural_inhibitor": "inhibitors",
     "papel_plural_inducer": "inducers",
-    "sem_papeis": "no roles derived yet"
+    "sem_papeis": "no roles derived yet",
+    "papel_tip_substrate": "Substrate: a medicine metabolized (or transported) by this target — the target acts on it.",
+    "papel_tip_inhibitor": "Inhibitor: a medicine that blocks or reduces this target’s activity, increasing substrate exposure.",
+    "papel_tip_inducer": "Inducer: a medicine that increases this target’s activity, speeding up metabolism (and reducing the effect) of substrates."
   },
   "content": {
     "artigo": "Article",

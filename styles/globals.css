@@ -10428,6 +10428,46 @@ html.dark .flash-grade-btn {
   font-weight: 500;
 }
 
+/* Tooltip das contagens de papel (substrato/inibidor/indutor) */
+.alvo-role-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.alvo-role-tip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 0;
+  z-index: 40;
+  width: max-content;
+  max-width: 300px;
+  background: var(--color-brand-deep);
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  font-weight: 500;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(4px);
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+  pointer-events: none;
+}
+
+.alvo-role-wrap:hover .alvo-role-tip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+@media (max-width: 640px) {
+  .alvo-role-tip {
+    max-width: 220px;
+  }
+}
+
 .alvo-card-cta {
   font-size: 13px;
   font-weight: 700;
