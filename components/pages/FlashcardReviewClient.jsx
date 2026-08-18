@@ -6,7 +6,6 @@ import { ArrowLeft, RotateCcw, CheckCircle2, XCircle, AlertTriangle, Sparkles, B
 import { useAnonymousSession } from '@/hooks/useAnonymousSession'
 import { getDeckReviewState, answerCard, resetDeckProgress } from '@/lib/actions/flashcards'
 import { formatInterval } from '@/lib/flashcards/sm2'
-import FlashcardHydrationDebug, { FlashcardErrorBoundary } from '@/components/debug/FlashcardHydrationDebug'
 
 const TYPE_LABELS = {
   mecanismo: 'Mecanismo de ação',
@@ -21,7 +20,7 @@ const TYPE_LABELS = {
  * Flip card (perspective) → 4 botões SM-2 → resumo final.
  * O progresso vive na cloud via sessão anónima (decisão 1A).
  */
-function FlashcardReviewInner({ deck, drugMap = {}, lang = 'pt' }) {
+export default function FlashcardReviewClient({ deck, drugMap = {}, lang = 'pt' }) {
   const { status, error: sessionError } = useAnonymousSession()
 
   const [sessionIds, setSessionIds] = useState([])
@@ -172,7 +171,6 @@ function FlashcardReviewInner({ deck, drugMap = {}, lang = 'pt' }) {
 
   return (
     <div className="flash-session">
-      <FlashcardHydrationDebug deck={deck} drugMap={drugMap} />
       <Link href={`/${lang}/flashcards`} className="flash-topbar-link">
         <ArrowLeft size={14} /> Voltar para os decks
       </Link>
@@ -319,10 +317,4 @@ function FlashcardReviewInner({ deck, drugMap = {}, lang = 'pt' }) {
   )
 }
 
-export default function FlashcardReviewClient(props) {
-  return (
-    <FlashcardErrorBoundary>
-      <FlashcardReviewInner {...props} />
-    </FlashcardErrorBoundary>
-  )
-}
+

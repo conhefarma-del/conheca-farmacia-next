@@ -36,22 +36,17 @@ export default async function FlashcardDeckPage({ params }) {
 
   // Mapa fármaco → { slug, name } para os links "Ver perfil"
   const drugIds = [...new Set(deck.cards.map((c) => c.drugId).filter(Boolean))]
-  let drugMap = new Map()
+  let drugMap = {}
   try {
     drugMap = await getFlashcardDrugMap(drugIds)
   } catch {
-    drugMap = new Map()
+    drugMap = {}
   }
-  const drugMapObj = Object.fromEntries(drugMap)
-
-  // DIAGNÓSTICO TEMPORÁRIO — remover quando o erro #441 estiver resolvido
-  console.log('[FLASHCARD-DEBUG] server deck:', JSON.stringify(deck).slice(0, 800))
-  console.log('[FLASHCARD-DEBUG] server drugMap:', JSON.stringify(drugMapObj))
 
   return (
     <FlashcardReviewClient
       deck={deck}
-      drugMap={drugMapObj}
+      drugMap={drugMap}
       lang={safeLang}
     />
   )
