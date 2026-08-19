@@ -2194,6 +2194,31 @@ html.dark .theme-toggle .sun-icon {
 html.dark .theme-toggle .moon-icon {
   @apply hidden;
 }
+
+/* Hover fixo no botão de toggle de tema */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.5rem;
+  color: var(--color-brand-deep);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, transform 0.2s;
+}
+
+.theme-toggle:hover {
+  background-color: var(--color-brand-primary);
+  color: var(--color-white);
+  transform: scale(1.08);
+}
+
+.theme-toggle:active {
+  transform: scale(0.95);
+}
 }
 
 /* =============================================
