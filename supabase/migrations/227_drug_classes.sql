@@ -334,7 +334,7 @@ WHERE class_id IS NULL AND (
   OR class_pt ILIKE '%Corticosteroide inalado%' OR class_pt ILIKE '%CSI%'
   OR class_pt ILIKE '%LTRA%' OR class_pt ILIKE '%leucotrieno%'
   OR class_pt ILIKE '%Mucolítico%' OR class_pt ILIKE '%Surfactante%'
-  OR class_pt ILIKE '%PDE4%' OR class_pt ILIKE '%fosfodiesterase%'
+  OR class_pt ILIKE '%PDE4%' OR class_pt ILIKE '%fosfodiesterase-4%'
   OR slug IN ('salbutamol','salmeterol','formoterol','budesonida','fluticasona',
     'beclometasona','tiotropio','ipratropio','montelukast','roflumilast',
     'indacaterol','teofilina','acetilcisteina','poractant_alfa')
