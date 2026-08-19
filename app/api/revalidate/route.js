@@ -46,6 +46,7 @@ function checkRate(ip) {
 const ALLOWED_TAGS = new Set([
   'alvos',
   'articles',
+  'classes',
   'events',
   'flashcards',
   'guides',
@@ -57,6 +58,8 @@ const ALLOWED_TAGS = new Set([
 ])
 
 const ALLOWED_PATHS = new Set([
+  '/pt/classes',
+  '/en/classes',
   '/pt/interacoes',
   '/en/interactions',
   '/pt/medicamentos',

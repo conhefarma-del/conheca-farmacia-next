@@ -32,9 +32,9 @@ ON CONFLICT (slug) DO NOTHING;
 -- 2. Perfis (drug_profiles)
 -- =====================================================================
 INSERT INTO public.drug_profiles
-  (drug_id, overview_public_pt, overview_public_en, indications_pt, indications_en,
+  (drug_id, overview_public_pt, overview_public_en, overview_pro_pt, overview_pro_en, indications_pt, indications_en,
    side_effects_pt, side_effects_en, precautions_pt, precautions_en, source_pt, source_en, status)
-SELECT d.id, v.overview_public_pt, v.overview_public_en,
+SELECT d.id, v.overview_public_pt, v.overview_public_en, v.overview_pro_pt, v.overview_pro_en,
   v.indications_pt, v.indications_en,
   v.side_effects_pt, v.side_effects_en,
   v.precautions_pt, v.precautions_en,
@@ -162,7 +162,7 @@ JOIN (VALUES
    'SERIOUS SIDE EFFECTS — replace with newer drugs when possible\nTake on empty stomach (1h before or 2h after meals)\nMonitor amylase, lipase, uric acid\nRisk of pancreatitis — discontinue immediately if abdominal pain',
    'DailyMed/FDA (NIH/NLM) — rótulo aprovado Didanosina: https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=829e744d-7bd4-43dc-9b58-ffb016cb8e67',
    'DailyMed/FDA (NIH/NLM) — approved Didanosine label: https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=829e744d-7bd4-43dc-9b58-ffb016cb8e67')
-) AS v(slug, overview_public_pt, overview_public_en, indications_pt, indications_en,
+) AS v(slug, overview_public_pt, overview_public_en, overview_pro_pt, overview_pro_en, indications_pt, indications_en,
       side_effects_pt, side_effects_en, precautions_pt, precautions_en, source_pt, source_en)
 ON d.slug = v.slug
 ON CONFLICT (drug_id) DO NOTHING;

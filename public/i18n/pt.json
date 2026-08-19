@@ -1005,5 +1005,18 @@
     "level_suggest_down": "Com {pct}% de acerto, vale a pena consolidar no nível {level} antes de avançar.",
     "level_suggest_ok": "Bom trabalho! Estás no nível certo para ti — continua a praticar.",
     "level_try": "Experimentar o nível"
+  },
+  "classes_page": {
+    "hero_title": "Classes de Fármacos",
+    "hero_subtitle": "Explore as classes terapêuticas e os seus fármacos",
+    "search_placeholder": "Pesquisar classe...",
+    "resultados": "{count} classe(s)",
+    "sem_resultados": "Nenhuma classe encontrada.",
+    "ver_detalhes": "Ver detalhes",
+    "voltar": "Voltar a Classes",
+    "o_que_sao": "O que são",
+    "farmacos_da_classe": "Fármacos desta classe",
+    "drug_count": "{count} fármaco(s)",
+    "sem_farmacos": "Nenhum fármaco registado nesta classe."
   }
 }

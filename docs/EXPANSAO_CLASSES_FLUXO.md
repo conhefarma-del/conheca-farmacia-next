@@ -175,16 +175,16 @@ Exemplo: `191_expansao_antirretrovirais.sql`
 
 | # | Classe | Tier | Fármacos | Pares | Dimensões | Perfil | Estado |
 |---|--------|------|----------|-------|-----------|--------|--------|
-| 1 | Antirretrovirais | 1 | 17/25 | 13 | 11 | 11 | ✅ 191-193 |
-| 2 | Antimaláricos | 1 | —/10 | — | — | — | ⏳ Pendente |
-| 3 | Antituberculares | 1 | 14/10 | 8 | 5 | 7 | ✅ 195-197 |
-| 4 | Antibióticos essenciais | 1 | —/30 | — | — | — | ⏳ Pendente |
-| 5 | Cardiovasculares | 1 | —/25 | — | — | — | ⏳ Pendente |
-| 6 | Antidiabéticos | 2 | —/10 | — | — | — | ⏳ Pendente |
-| 7 | Analgésicos/Anti-inflamatórios | 2 | —/15 | — | — | — | ⏳ Pendente |
-| 8 | Anti-asma/COPD | 2 | —/8 | — | — | — | ⏳ Pendente |
-| 9 | Antiepilépticos | 2 | —/10 | — | — | — | ⏳ Pendente |
-| 10 | Antipsicóticos/Antidepressivos | 2 | —/15 | — | — | — | ⏳ Pendente |
+| 1 | Antirretrovirais | 1 | 11/25 | 13 | 10 | 11 | ✅ 191-194 |
+| 2 | Antimaláricos | 1 | 12/10 | — | — | 12 | ✅ Completo |
+| 3 | Antituberculares | 1 | 7/10 | 8 | 5 | 7 | ✅ 195-197 |
+| 4 | Antibióticos essenciais | 1 | 7/30 | 9 | 5 | 7 | ✅ 205-207 |
+| 5 | Cardiovasculares | 1 | 11/25 | 16 | 4 | 11 | ✅ 198-200 |
+| 6 | Antidiabéticos | 2 | 9/10 | 5 | 3 | 9 | ✅ 202-204 |
+| 7 | Analgésicos/Anti-inflamatórios | 208-210 | 6/15 | 10 | 6 | 9 | ✅ Completo |
+| 8 | Anti-asma/COPD | 220-222 | 3/10 | 10 | 4 | 10 | ✅ Completo |
+| 9 | Antiepilépticos | 216-218 | 9/10 | 15 | 3 | 15 | ✅ Completo |
+| 10 | Antipsicóticos/Antidepressivos | 213-215 | 15/15 | 20 | 3 | 20 | ✅ Completo |
 | 11 | Antifúngicos | 3 | —/8 | — | — | — | ⏳ Pendente |
 | 12 | Antivirais (não-HIV) | 3 | —/6 | — | — | — | ⏳ Pendente |
 | 13 | Hormônios/Contraceptivos | 3 | —/10 | — | — | — | ⏳ Pendente |

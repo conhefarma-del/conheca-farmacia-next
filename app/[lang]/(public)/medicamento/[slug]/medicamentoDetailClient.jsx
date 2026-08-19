@@ -280,7 +280,18 @@ export default function MedicamentoDetailClient({
               {drug.name}
             </h1>
             {drug.className && (
-              <p className="hero-subtitle text-center">{drug.className}</p>
+              <p className="hero-subtitle text-center">
+                {drug.classSlug ? (
+                  <Link
+                    href={`/${lang}/classes/${drug.classSlug}`}
+                    className="underline hover:text-brand-deep dark:hover:text-white transition-colors"
+                  >
+                    {drug.className}
+                  </Link>
+                ) : (
+                  drug.className
+                )}
+              </p>
             )}
             <p className="text-center mt-4">
               <Link href={checkerPath} className="medicamento-checker-btn">

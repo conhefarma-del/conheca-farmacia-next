@@ -1005,5 +1005,18 @@
     "level_suggest_down": "With {pct}% accuracy, it is worth consolidating at the {level} level before moving up.",
     "level_suggest_ok": "Good job! You are at the right level for you — keep practicing.",
     "level_try": "Try the"
+  },
+  "classes_page": {
+    "hero_title": "Drug Classes",
+    "hero_subtitle": "Explore therapeutic classes and their drugs",
+    "search_placeholder": "Search class...",
+    "resultados": "{count} class(es)",
+    "sem_resultados": "No class found.",
+    "ver_detalhes": "View details",
+    "voltar": "Back to Classes",
+    "o_que_sao": "What are they",
+    "farmacos_da_classe": "Drugs in this class",
+    "drug_count": "{count} drug(s)",
+    "sem_farmacos": "No drugs registered in this class."
   }
 }

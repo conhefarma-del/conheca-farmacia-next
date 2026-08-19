@@ -27,9 +27,9 @@ ON CONFLICT (slug) DO NOTHING;
 -- 2. Perfis (drug_profiles)
 -- =====================================================================
 INSERT INTO public.drug_profiles
-  (drug_id, overview_public_pt, overview_public_en, indications_pt, indications_en,
+  (drug_id, overview_public_pt, overview_public_en, overview_pro_pt, overview_pro_en, indications_pt, indications_en,
    side_effects_pt, side_effects_en, precautions_pt, precautions_en, source_pt, source_en, status)
-SELECT d.id, v.overview_public_pt, v.overview_public_en,
+SELECT d.id, v.overview_public_pt, v.overview_public_en, v.overview_pro_pt, v.overview_pro_en,
   v.indications_pt, v.indications_en,
   v.side_effects_pt, v.side_effects_en,
   v.precautions_pt, v.precautions_en,
@@ -113,7 +113,7 @@ JOIN (VALUES
    'Administer intramuscularly\nMonitor audiogram and renal function\nAVOID with other aminoglycosides (additive toxicity)',
    'EMC-UK (MHRA) — SmPC aprovada Capreomicina: https://www.medicines.org.uk/emc/product/6852/smpc',
    'EMC-UK (MHRA) — approved Capreomycin SmPC: https://www.medicines.org.uk/emc/product/6852/smpc')
-) AS v(slug, overview_public_pt, overview_public_en, indications_pt, indications_en,
+) AS v(slug, overview_public_pt, overview_public_en, overview_pro_pt, overview_pro_en, indications_pt, indications_en,
       side_effects_pt, side_effects_en, precautions_pt, precautions_en, source_pt, source_en)
 ON d.slug = v.slug
 ON CONFLICT (drug_id) DO NOTHING;
@@ -164,8 +164,10 @@ JOIN (VALUES
    'DailyMed/FDA (NIH/NLM) — rótulo aprovado Clofazimina (Lamprene), secção 12 Clinical Pharmacology: https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=2e07448f-f888-4747-80ab-570c1b621250',
    'DailyMed/FDA (NIH/NLM) — approved Clofazimine (Lamprene) label, section 12 Clinical Pharmacology: https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=2e07448f-f888-4747-80ab-570c1b621250'),
   ('amicacina',
-   'A amicacina liga-se à subunidade 30S do ribossoma bacteriano, causando leitura incorreta do mRNA e inibição da síntese proteica. Tem activity tuberculostática potente contra M. tuberculosis.',
-   'Amikacin binds to the 30S bacterial ribosomal subunit, causing misreading of mRNA and inhibition of protein synthesis. It has potent tuberculostatic activity against M. tuberculosis.',
+   'A amicacina é um aminoglicosídeo com atividade bactericida potente contra M. tuberculosis, reservado para tuberculose multirresistente.',
+   'Amikacin is an aminoglycoside with potent bactericidal activity against M. tuberculosis, reserved for multidrug-resistant tuberculosis.',
+   'Liga-se à subunidade 30S do ribossoma bacteriano, causando leitura incorreta do mRNA e inibição da síntese proteica. Tem atividade tuberculostática potente contra M. tuberculosis.',
+   'Binds to the 30S bacterial ribosomal subunit, causing misreading of mRNA and inhibition of protein synthesis. It has potent tuberculostatic activity against M. tuberculosis.',
    'Não é metabolizado — excretado essencialmente inalterado por filtração glomerular. Não sofre metabolismo hepático significativo.',
    'Not metabolised — excreted essentially unchanged by glomerular filtration. Does not undergo significant hepatic metabolism.',
    'Absorção oral: negligível (<1%). Deve ser administrado por via parenteral (IV ou IM). Tmax (IM): 0,75-1,5 horas.',
