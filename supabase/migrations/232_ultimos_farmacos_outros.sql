@@ -30,7 +30,8 @@ WHERE slug IN (
 UPDATE public.drugs SET class_id = (SELECT id FROM public.drug_classes WHERE slug = 'cardiovasculares')
 WHERE slug IN (
   'etilefrina',  -- C01CA01 (simpaticomimético agonista alfa/beta)
-  'losartana'    -- C09CA01 (ARA II)
+  'losartana',   -- C09CA01 (ARA II) — slug da migração 198
+  'losartano'    -- C09CA01 (ARA II) — slug original da migração 084
 );
 
 -- =====================================================================
