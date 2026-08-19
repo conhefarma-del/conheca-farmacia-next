@@ -1017,6 +1017,14 @@
     "o_que_sao": "What are they",
     "farmacos_da_classe": "Drugs in this class",
     "drug_count": "{count} drug(s)",
-    "sem_farmacos": "No drugs registered in this class."
+    "sem_farmacos": "No drugs registered in this class.",
+    "organizar": "Sort by",
+    "modo_flat": "List",
+    "modo_atc": "ATC section",
+    "modo_size": "Drug count",
+    "atc_sem_grupo": "No ATC section",
+    "size_many": "Many (≥10)",
+    "size_medium": "Medium (4–9)",
+    "size_few": "Few (1–3)"
   }
 }
