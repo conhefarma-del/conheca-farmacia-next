@@ -3,6 +3,7 @@ import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from "@/lib/i18n";
 import { buildBreadcrumbSchema } from "@/lib/seo";
 import { SITE_URL } from "@/lib/constants";
 import { getPublicDrugClassBySlug } from "@/lib/actions/classes";
+import Breadcrumb from "@/components/ui/Breadcrumb";
 import ClassDetailClient from "./classDetailClient";
 
 export const revalidate = 3600;
@@ -39,6 +40,12 @@ export default async function ClassDetailPage({ params }) {
     ].map((l) => ({ ...l, href: `${SITE_URL}${l.href}` }))
   );
 
+  const breadcrumbLevels = [
+    { label: tFn("nav.inicio"), href: `/${safeLang}` },
+    { label: tFn("classes_page.hero_title"), href: listPath },
+    { label: cls.name },
+  ];
+
   return (
     <>
       {breadcrumbSchema && (
@@ -47,6 +54,9 @@ export default async function ClassDetailPage({ params }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
         />
       )}
+      <nav id="breadcrumb" aria-label="Breadcrumb">
+        <Breadcrumb items={breadcrumbLevels} />
+      </nav>
       <ClassDetailClient lang={safeLang} cls={cls} />
     </>
   );
