@@ -34,13 +34,13 @@ ALTER TABLE public.drug_classes ENABLE ROW LEVEL SECURITY;
 
 -- Admin: full access
 CREATE POLICY admin_all_drug_classes ON public.drug_classes
-  FOR ALL
-  USING (public.is_admin())
-  WITH CHECK (public.is_admin());
+  FOR ALL TO authenticated
+  USING (EXISTS (SELECT 1 FROM public.admin_users WHERE user_id = auth.uid()))
+  WITH CHECK (EXISTS (SELECT 1 FROM public.admin_users WHERE user_id = auth.uid()));
 
 -- Anon: read published
 CREATE POLICY anon_read_drug_classes ON public.drug_classes
-  FOR SELECT
+  FOR SELECT TO anon, authenticated
   USING (status = 'published' AND NOT is_archived);
 
 -- =====================================================================
