@@ -1,5 +1,5 @@
 import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from "@/lib/i18n";
-import { buildBreadcrumbSchema } from "@/lib/seo";
+import { buildBreadcrumbSchema, buildClassesListSchema } from "@/lib/seo";
 import { SITE_URL } from "@/lib/constants";
 import { getPublicDrugClasses } from "@/lib/actions/classes";
 import ClassesPageClient from "./classesPageClient";
@@ -34,6 +34,8 @@ export default async function ClassesPage({ params }) {
     ].map((l) => ({ ...l, href: `${SITE_URL}${l.href}` }))
   );
 
+  const classesListSchema = buildClassesListSchema(classes, safeLang);
+
   return (
     <>
       {breadcrumbSchema && (
@@ -42,6 +44,14 @@ export default async function ClassesPage({ params }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
         />
       )}
+      {classesListSchema &&
+        classesListSchema.map((schema, i) => (
+          <script
+            key={i}
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+          />
+        ))}
       <ClassesPageClient lang={safeLang} classes={classes} />
     </>
   );
