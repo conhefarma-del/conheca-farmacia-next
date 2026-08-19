@@ -31,6 +31,7 @@ import {
   Mic,
   Atom,
   Workflow,
+  Grid3x3,
 } from 'lucide-react'
 
 export default function AdminSidebar({ lang, user, onLogout }) {
@@ -252,6 +253,16 @@ export default function AdminSidebar({ lang, user, onLogout }) {
               </Link>
             )
           })}
+
+          {/* Classes Terapêuticas */}
+          {(() => {
+            const href = `/${lang}/admin/classes`
+            return (
+              <Link href={href} className={isActive(href) ? 'active' : ''}>
+                <Grid3x3 size={20} /> Classes
+              </Link>
+            )
+          })()}
 
           {/* Interações → submenu: Dimensões */}
           {(() => {
