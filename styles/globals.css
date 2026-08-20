@@ -2820,15 +2820,21 @@ html.dark .bell-dropdown-link:hover {
 .profile-stat-card {
   background: var(--color-brand-card);
   border-radius: 14px;
-  padding: 20px 16px;
-  text-align: center;
+  padding: 18px 16px;
   border: 1px solid var(--color-brand-divider);
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .profile-stat-card:hover {
-  border-color: var(--color-brand-accent);
-  box-shadow: 0 4px 16px rgba(10, 132, 79, 0.08);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 42, 50, 0.1);
+}
+
+.profile-stat-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .profile-stat-icon {
@@ -2840,7 +2846,7 @@ html.dark .bell-dropdown-link:hover {
   align-items: center;
   justify-content: center;
   color: var(--color-brand-accent);
-  margin: 0 auto 10px;
+  flex-shrink: 0;
 }
 
 .profile-stat-value {
@@ -2880,13 +2886,6 @@ html.dark .bell-dropdown-link:hover {
   border-radius: 14px;
   border: 1px solid var(--color-brand-divider);
   padding: 24px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-.profile-card-v2:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 42, 50, 0.08);
-  border-color: var(--color-brand-accent);
 }
 
 .profile-card-header {
@@ -2923,14 +2922,11 @@ html.dark .bell-dropdown-link:hover {
   border: 1px solid var(--color-brand-divider);
   text-decoration: none;
   color: inherit;
-  transition: border-color 0.2s, background 0.2s, transform 0.2s, box-shadow 0.2s;
+  transition: background 0.15s;
 }
 
 .profile-tool-card:hover {
-  border-color: var(--color-brand-accent);
   background: rgba(10, 132, 79, 0.04);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(10, 132, 79, 0.06);
 }
 
 .profile-tool-icon {
@@ -2946,10 +2942,7 @@ html.dark .bell-dropdown-link:hover {
   transition: background 0.2s, color 0.2s;
 }
 
-.profile-tool-card:hover .profile-tool-icon {
-  background: var(--color-brand-accent);
-  color: white;
-}
+
 
 .profile-tool-label {
   font-weight: 600;
