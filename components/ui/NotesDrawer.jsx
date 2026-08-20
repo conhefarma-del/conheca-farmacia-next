@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import {
   ChevronUp, ChevronDown, X, ExternalLink, Loader2, Check, Pencil, Plus
 } from 'lucide-react'
-import { getNoteForItem, upsertNote, upsertStandaloneNote, deleteNoteById } from '@/lib/actions/saved'
+import { getNoteForItem, upsertNote, upsertStandaloneNote, deleteNoteById, getNoteById } from '@/lib/actions/saved'
 import { LangContext } from '@/lib/contexts'
 
 const TYPE_LINKS = {
@@ -111,16 +111,10 @@ export default function NotesDrawer({
       try {
         // Nota solta: buscar pelo noteId
         if (isStandalone && noteId) {
-          const { createClient } = await import('@/lib/supabase/server')
-          const supabase = await createClient()
-          const { data } = await supabase
-            .from('saved_item_notes')
-            .select('content')
-            .eq('id', noteId)
-            .maybeSingle()
+          const note = await getNoteById(noteId)
           if (!cancelled) {
-            setContent(data?.content || '')
-            setOriginalContent(data?.content || '')
+            setContent(note?.content || '')
+            setOriginalContent(note?.content || '')
           }
         } else if (itemId && itemType) {
           // Nota de item: buscar pelo item
