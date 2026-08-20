@@ -1,13 +1,15 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { LogOut, Mail, Bookmark, Pill, ShieldAlert, ClipboardList, Atom, Newspaper, Loader2, School, Target, BrainCircuit, Flame, Edit3, Save, X, ChevronRight } from 'lucide-react'
 import { getUserStats, getUserCompetitionHistory } from '@/lib/actions/profile'
 import { getSavedItems, getSavedCounts } from '@/lib/actions/saved'
+import { LangContext } from '@/lib/contexts'
 
 export default function PerfilClient({ lang }) {
+  const { t } = useContext(LangContext)
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const [signingOut, setSigningOut] = useState(false)
@@ -274,7 +276,7 @@ export default function PerfilClient({ lang }) {
             {/* Saved Items Card */}
             <div className="profile-card-v2 profile-saved-card">
               <div className="profile-card-header">
-                <div className="profile-card-dot" /> Guardados
+                <div className="profile-card-dot" /> {t('saved.title')}
                 {savedCounts && savedCounts.total > 0 && (
                   <span className="profile-saved-count">{savedCounts.total}</span>
                 )}
@@ -301,14 +303,14 @@ export default function PerfilClient({ lang }) {
                     })}
                   </div>
                   <Link href={`/${lang}/guardados`} className="profile-saved-viewall">
-                    Ver todos
+                    {t('saved.view_all')}
                     <ChevronRight size={14} />
                   </Link>
                 </>
               ) : (
                 <div className="profile-saved-empty">
                   <Bookmark size={24} className="opacity-20 mb-2" />
-                  <p className="text-sm opacity-50">Ainda não guardaste nada</p>
+                  <p className="text-sm opacity-50">{t('saved.empty')}</p>
                 </div>
               )}
             </div>

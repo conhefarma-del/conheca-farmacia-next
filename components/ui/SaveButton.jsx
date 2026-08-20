@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { useRouter } from 'next/navigation'
 import { Bookmark, BookmarkCheck, Loader2 } from 'lucide-react'
 import { toggleSaveItem, isItemSaved } from '@/lib/actions/saved'
+import { LangContext } from '@/lib/contexts'
 
 /**
  * SaveButton — bookmark toggle for any saveable content.
@@ -30,6 +31,7 @@ export default function SaveButton({
   size = 'md',
   className = '',
 }) {
+  const { t } = useContext(LangContext)
   const [saved, setSaved] = useState(false)
   const [loading, setLoading] = useState(true)
   const [toggling, setToggling] = useState(false)
@@ -104,8 +106,8 @@ export default function SaveButton({
       onClick={handleClick}
       disabled={toggling}
       className={`save-button ${saved ? 'save-button--saved' : ''} ${className}`}
-      title={saved ? 'Remover dos guardados' : 'Guardar'}
-      aria-label={saved ? 'Remover dos guardados' : 'Guardar'}
+      title={saved ? (t('saved.unsave') || 'Remover dos guardados') : (t('saved.save') || 'Guardar')}
+      aria-label={saved ? (t('saved.unsave') || 'Remover dos guardados') : (t('saved.save') || 'Guardar')}
       aria-pressed={saved}
     >
       {toggling ? (

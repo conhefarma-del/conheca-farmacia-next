@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useContext } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import { getSavedItems, getSavedCounts, deleteNote, addNote, updateNote, getNotes } from '@/lib/actions/saved'
 import NotesPanel from './NotesPanel'
+import { LangContext } from '@/lib/contexts'
 
 const ITEM_TYPES = [
   { key: 'all', icon: Bookmark, labelKey: 'all' },
@@ -19,13 +20,13 @@ const ITEM_TYPES = [
   { key: 'article', icon: Newspaper, labelKey: 'article' },
 ]
 
-const TAB_LABELS = {
-  all: 'Todos',
-  drug: 'Medicamentos',
-  interaction: 'Interações',
-  drug_class: 'Classes',
-  molecular_target: 'Alvos',
-  article: 'Artigos',
+const TAB_KEYS = {
+  all: 'saved.tabs_all',
+  drug: 'saved.tab_drug',
+  interaction: 'saved.tab_interaction',
+  drug_class: 'saved.tab_drug_class',
+  molecular_target: 'saved.tab_molecular_target',
+  article: 'saved.tab_article',
 }
 
 const TYPE_LINKS = {
@@ -45,6 +46,7 @@ const TYPE_ICONS = {
 }
 
 export default function SavedPageClient({ lang }) {
+  const { t } = useContext(LangContext)
   const [items, setItems] = useState([])
   const [counts, setCounts] = useState(null)
   const [activeTab, setActiveTab] = useState('all')
@@ -171,12 +173,12 @@ export default function SavedPageClient({ lang }) {
               <Bookmark size={28} className="text-brand-accent" />
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-brand-deep mb-3">
-              Guardados
+              {t('saved.title')}
             </h1>
             <p className="text-brand-deep/60 max-w-md mx-auto">
               {total > 0
-                ? `Tens ${total} ${total === 1 ? 'item guardado' : 'itens guardados'}`
-                : 'Ainda não guardaste nada. Guarda medicamentos, interações e mais para consultar rapidamente.'}
+                ? t('saved.count', { n: total })
+                : t('saved.empty_hint')}
             </p>
           </div>
         </div>
@@ -198,7 +200,7 @@ export default function SavedPageClient({ lang }) {
                     className={`saved-tab ${activeTab === key ? 'saved-tab--active' : ''}`}
                   >
                     <Icon size={14} />
-                    <span className="saved-tab-label">{TAB_LABELS[key]}</span>
+                    <span className="saved-tab-label">{t(TAB_KEYS[key])}</span>
                     {count > 0 && (
                       <span className="saved-tab-badge">{count}</span>
                     )}
@@ -214,7 +216,7 @@ export default function SavedPageClient({ lang }) {
                 type="text"
                 value={search}
                 onChange={handleSearchChange}
-                placeholder="Pesquisar guardados..."
+                placeholder={t('saved.search_placeholder')}
                 className="saved-search-input"
               />
             </div>
@@ -233,12 +235,12 @@ export default function SavedPageClient({ lang }) {
             <div className="saved-empty">
               <Frown size={48} className="mx-auto mb-4 opacity-30" />
               <p className="text-lg font-medium mb-2">
-                {search ? 'Nenhum resultado encontrado' : 'Nada guardado aqui'}
+                {search ? t('saved.no_results') : t('saved.empty')}
               </p>
               <p className="text-sm opacity-60">
                 {search
-                  ? `Sem resultados para "${search}"`
-                  : 'Guarda conteúdo do site para ver aqui'}
+                  ? `${t('saved.no_results_hint')} "${search}"`
+                  : t('saved.empty_hint')}
               </p>
             </div>
           ) : (
@@ -302,10 +304,7 @@ export default function SavedPageClient({ lang }) {
                     className="saved-page-btn"
                   >
                     <ChevronLeft size={16} />
-                  </button>
-                  <span className="saved-page-info">
-                    {page} / {totalPages}
-                  </span>
+                  </button>                    <span className="saved-page-info">
                   <button
                     type="button"
                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}

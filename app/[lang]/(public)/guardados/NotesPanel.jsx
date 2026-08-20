@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import { StickyNote, Plus, Pencil, Trash2, Check, X, Loader2 } from 'lucide-react'
+import { LangContext } from '@/lib/contexts'
 
 /**
  * NotesPanel — expandable list of annotations for a saved item.
@@ -14,6 +15,7 @@ import { StickyNote, Plus, Pencil, Trash2, Check, X, Loader2 } from 'lucide-reac
  *   onDelete(noteId)      → Promise<{ success }>
  */
 export default function NotesPanel({ savedItemId, notes, onAdd, onUpdate, onDelete }) {
+  const { t } = useContext(LangContext)
   const [newContent, setNewContent] = useState('')
   const [adding, setAdding] = useState(false)
   const [editingId, setEditingId] = useState(null)
@@ -58,7 +60,7 @@ export default function NotesPanel({ savedItemId, notes, onAdd, onUpdate, onDele
     <div className="notes-panel">
       <div className="notes-panel-header">
         <StickyNote size={14} />
-        <span>Anotações</span>
+        <span>{t('saved.notes_title')}</span>
         <span className="notes-count">{notes.length}</span>
       </div>
 
@@ -140,7 +142,7 @@ export default function NotesPanel({ savedItemId, notes, onAdd, onUpdate, onDele
         <textarea
           value={newContent}
           onChange={(e) => setNewContent(e.target.value)}
-          placeholder="Nova anotação..."
+          placeholder={t('saved.notes_add_placeholder')}
           className="notes-add-input"
           rows={2}
           maxLength={2000}
@@ -159,7 +161,7 @@ export default function NotesPanel({ savedItemId, notes, onAdd, onUpdate, onDele
             {adding ? (
               <Loader2 size={12} className="animate-spin" />
             ) : (
-              <><Plus size={12} /> Adicionar</>
+              <>            <Plus size={12} /> {t('saved.notes_add')}</>
             )}
           </button>
         </div>
