@@ -3809,10 +3809,17 @@ html.dark .save-button--saved:hover {
   opacity: 0.35;
 }
 
+/* Tabs centered */
+.saved-tabs-center {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 /* Content */
 .saved-content {
   padding: 24px 0 64px;
-  background: var(--color-brand-bg-alt);
   min-height: 40vh;
 }
 
@@ -4238,21 +4245,9 @@ html.dark .notes-btn-cancel {
 
 /* Mobile */
 @media (max-width: 768px) {
-  .saved-toolbar-inner {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .saved-tabs {
+  .saved-tabs-center {
     gap: 4px;
-  }
-
-  .saved-search-input {
-    width: 100%;
-  }
-
-  .saved-search-input:focus {
-    width: 100%;
+    justify-content: center;
   }
 
   .saved-item-main {

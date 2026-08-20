@@ -176,13 +176,10 @@ export default function SavedPageClient({ lang }) {
       <section className="articles-hero">
         <div className="container-center">
           <div className="text-center py-12 md:py-16">
-            <div className="w-14 h-14 rounded-2xl bg-brand-accent/10 flex items-center justify-center mx-auto mb-4">
-              <Bookmark size={28} className="text-brand-accent" />
-            </div>
             <h1 className="text-4xl md:text-5xl font-bold text-brand-deep mb-3">
               {t('saved.title')}
             </h1>
-            <p className="text-brand-deep/60 max-w-md mx-auto">
+            <p className="hero-subtitle text-center">
               {total > 0
                 ? t('saved.count', { n: total })
                 : t('saved.empty_hint')}
@@ -191,43 +188,41 @@ export default function SavedPageClient({ lang }) {
         </div>
       </section>
 
-      {/* Tabs + Search */}
-      <section className="saved-toolbar">
-        <div className="container-center">
-          <div className="saved-toolbar-inner">
-            {/* Tabs */}
-            <div className="saved-tabs">
-              {ITEM_TYPES.map(({ key, icon: Icon }) => {
-                const count = key === 'all' ? counts?.total : counts?.[key] || 0
-                return (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => handleTabChange(key)}
-                    className={`saved-tab ${activeTab === key ? 'saved-tab--active' : ''}`}
-                  >
-                    <Icon size={14} />
-                    <span className="saved-tab-label">{t(TAB_KEYS[key])}</span>
-                    {count > 0 && (
-                      <span className="saved-tab-badge">{count}</span>
-                    )}
-                  </button>
-                )
-              })}
-            </div>
-
-            {/* Search */}
-            <div className="saved-search">
-              <Search size={16} className="saved-search-icon" />
-              <input
-                type="text"
-                value={search}
-                onChange={handleSearchChange}
-                placeholder={t('saved.search_placeholder')}
-                className="saved-search-input"
-              />
-            </div>
+      {/* Search + Tabs centered */}
+      <section className="max-w-7xl mx-auto px-4 py-8">
+        {/* Search */}
+        <div className="max-w-md mx-auto mb-6">
+          <div className="relative">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-deep/40" />
+            <input
+              type="text"
+              value={search}
+              onChange={handleSearchChange}
+              placeholder={t('saved.search_placeholder')}
+              className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] text-brand-deep"
+            />
           </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="saved-tabs-center">
+          {ITEM_TYPES.map(({ key, icon: Icon }) => {
+            const count = key === 'all' ? counts?.total : counts?.[key] || 0
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={() => handleTabChange(key)}
+                className={`saved-tab ${activeTab === key ? 'saved-tab--active' : ''}`}
+              >
+                <Icon size={14} />
+                <span className="saved-tab-label">{t(TAB_KEYS[key])}</span>
+                {count > 0 && (
+                  <span className="saved-tab-badge">{count}</span>
+                )}
+              </button>
+            )
+          })}
         </div>
       </section>
 
