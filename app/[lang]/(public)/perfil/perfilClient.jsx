@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { LogOut, User, Mail, Calendar, Trophy, BookOpen, Pill, ShieldAlert, ClipboardList, Atom, Loader2, Settings, School, Target, ChevronRight, Edit3, Save, X, BrainCircuit } from 'lucide-react'
+import { LogOut, User, Mail, Calendar, Trophy, BookOpen, Pill, ShieldAlert, ClipboardList, Atom, Loader2, Settings, School, Target, ChevronRight, Edit3, Save, X, BrainCircuit, BarChart3, Zap, Clock, Award, Flame } from 'lucide-react'
+import { getUserStats } from '@/lib/actions/profile'
 
 export default function PerfilClient({ lang }) {
   const [user, setUser] = useState(null)
@@ -13,6 +14,8 @@ export default function PerfilClient({ lang }) {
   const [newName, setNewName] = useState('')
   const [saving, setSaving] = useState(false)
   const [saveMsg, setSaveMsg] = useState('')
+  const [stats, setStats] = useState(null)
+  const [statsLoading, setStatsLoading] = useState(true)
 
   useEffect(() => {
     async function loadUser() {
@@ -25,6 +28,15 @@ export default function PerfilClient({ lang }) {
       setUser(user)
       setNewName(user.user_metadata?.full_name || user.user_metadata?.display_name || '')
       setLoading(false)
+      // Load stats after user is loaded
+      try {
+        const s = await getUserStats()
+        setStats(s)
+      } catch {
+        // Stats load failed silently
+      } finally {
+        setStatsLoading(false)
+      }
     }
     loadUser()
   }, [lang])
@@ -170,6 +182,103 @@ export default function PerfilClient({ lang }) {
               </div>
             </div>
           </div>
+
+          {/* Progress Stats */}
+          {!statsLoading && stats && (stats.quiz.totalQuizzes > 0 || stats.flashcards.totalFlashcardsStudied > 0 || stats.competitions.totalSessions > 0) && (
+            <div className="bg-card rounded-2xl border border-brand-divider p-6">
+              <h3 className="text-lg font-bold text-brand-deep mb-4 flex items-center gap-2">
+                <BarChart3 size={20} className="text-brand-accent" />
+                O Meu Progresso
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                {/* Quiz stats */}
+                {stats.quiz.totalQuizzes > 0 && (
+                  <>
+                    <div className="bg-background rounded-xl p-4">
+                      <div className="flex items-center gap-2 text-brand-deep/60 text-xs mb-2">
+                        <BrainCircuit size={14} />
+                        Quiz
+                      </div>
+                      <div className="text-2xl font-bold text-brand-deep">{stats.quiz.totalQuizzes}</div>
+                      <div className="text-xs text-brand-deep/50 mt-1">tentativas</div>
+                    </div>
+                    <div className="bg-background rounded-xl p-4">
+                      <div className="flex items-center gap-2 text-brand-deep/60 text-xs mb-2">
+                        <Target size={14} />
+                        Precisão
+                      </div>
+                      <div className="text-2xl font-bold text-brand-accent">{stats.quiz.quizAccuracy}%</div>
+                      <div className="text-xs text-brand-deep/50 mt-1">{stats.quiz.totalQuizCorrect}/{stats.quiz.totalQuizQuestions}</div>
+                    </div>
+                    {stats.quiz.bestQuizStreak > 0 && (
+                      <div className="bg-background rounded-xl p-4">
+                        <div className="flex items-center gap-2 text-brand-deep/60 text-xs mb-2">
+                          <Flame size={14} />
+                          Melhor Sequência
+                        </div>
+                        <div className="text-2xl font-bold text-amber-500">{stats.quiz.bestQuizStreak}</div>
+                        <div className="text-xs text-brand-deep/50 mt-1">respostas corretas</div>
+                      </div>
+                    )}
+                  </>
+                )}
+                {/* Flashcard stats */}
+                {stats.flashcards.totalFlashcardsStudied > 0 && (
+                  <>
+                    <div className="bg-background rounded-xl p-4">
+                      <div className="flex items-center gap-2 text-brand-deep/60 text-xs mb-2">
+                        <BookOpen size={14} />
+                        Flashcards
+                      </div>
+                      <div className="text-2xl font-bold text-brand-deep">{stats.flashcards.totalFlashcardsStudied}</div>
+                      <div className="text-xs text-brand-deep/50 mt-1">cartões estudados</div>
+                    </div>
+                    <div className="bg-background rounded-xl p-4">
+                      <div className="flex items-center gap-2 text-brand-deep/60 text-xs mb-2">
+                        <Zap size={14} />
+                        Revisões
+                      </div>
+                      <div className="text-2xl font-bold text-brand-accent">{stats.flashcards.totalReviews}</div>
+                      <div className="text-xs text-brand-deep/50 mt-1">total</div>
+                    </div>
+                    {stats.flashcards.cardsDue > 0 && (
+                      <div className="bg-background rounded-xl p-4">
+                        <div className="flex items-center gap-2 text-brand-deep/60 text-xs mb-2">
+                          <Clock size={14} />
+                          Para Rever
+                        </div>
+                        <div className="text-2xl font-bold text-orange-500">{stats.flashcards.cardsDue}</div>
+                        <div className="text-xs text-brand-deep/50 mt-1">cartões devidos</div>
+                      </div>
+                    )}
+                  </>
+                )}
+                {/* Competition stats */}
+                {stats.competitions.totalSessions > 0 && (
+                  <>
+                    <div className="bg-background rounded-xl p-4">
+                      <div className="flex items-center gap-2 text-brand-deep/60 text-xs mb-2">
+                        <Trophy size={14} />
+                        Competições
+                      </div>
+                      <div className="text-2xl font-bold text-brand-deep">{stats.competitions.totalSessions}</div>
+                      <div className="text-xs text-brand-deep/50 mt-1">participações</div>
+                    </div>
+                    {stats.competitions.bestScore > 0 && (
+                      <div className="bg-background rounded-xl p-4">
+                        <div className="flex items-center gap-2 text-brand-deep/60 text-xs mb-2">
+                          <Award size={14} />
+                          Melhor Pontuação
+                        </div>
+                        <div className="text-2xl font-bold text-brand-accent">{stats.competitions.bestScore}</div>
+                        <div className="text-xs text-brand-deep/50 mt-1">{stats.competitions.bestAccuracy}% precisão</div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Quick Links */}
           <div className="bg-card rounded-2xl border border-brand-divider p-6">
