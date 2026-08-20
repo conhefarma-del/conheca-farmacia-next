@@ -98,12 +98,17 @@ export default function NotesDrawer({
 
   // Carregar nota existente
   useEffect(() => {
-    if (!isOpen || !itemId || !itemType) return
+    if (!isOpen || !itemId || !itemType) {
+      setLoading(false)
+      return
+    }
     let cancelled = false
     async function load() {
       setLoading(true)
       try {
+        console.log('Loading note for:', itemType, itemId)
         const note = await getNoteForItem(itemType, itemId)
+        console.log('Note loaded:', note)
         if (!cancelled) {
           setContent(note?.content || '')
           setOriginalContent(note?.content || '')
@@ -111,7 +116,10 @@ export default function NotesDrawer({
       } catch (err) {
         console.error('Error loading note:', err)
       } finally {
-        if (!cancelled) setLoading(false)
+        if (!cancelled) {
+          console.log('Setting loading to false')
+          setLoading(false)
+        }
       }
     }
     load()
