@@ -30,11 +30,18 @@ const TAB_KEYS = {
 }
 
 const TYPE_LINKS = {
-  drug: (slug) => `/medicamentos/${slug}`,
-  interaction: (slug) => `/interacoes`,
-  drug_class: (slug) => `/classes/${slug}`,
-  molecular_target: (slug) => `/alvos/${slug}`,
-  article: (slug) => `/artigos/${slug}`,
+  drug: (lang, slug) => `/${lang}/medicamentos/${slug}`,
+  interaction: (lang, slug) => {
+    // slug format: "drugA-slug+drugB-slug" or just "interacoes"
+    if (slug && slug.includes('+')) {
+      const [a, b] = slug.split('+')
+      return `/${lang}/interacoes?farmaco=${a}&par=${b}`
+    }
+    return `/${lang}/interacoes`
+  },
+  drug_class: (lang, slug) => `/${lang}/classes/${slug}`,
+  molecular_target: (lang, slug) => `/${lang}/alvos/${slug}`,
+  article: (lang, slug) => `/${lang}/artigos/${slug}`,
 }
 
 const TYPE_ICONS = {
@@ -248,7 +255,7 @@ export default function SavedPageClient({ lang }) {
               <div className="saved-list">
                 {items.map((item) => {
                   const TypeIcon = TYPE_ICONS[item.item_type] || Bookmark
-                  const href = TYPE_LINKS[item.item_type]?.(item.item_slug) || '#'
+                  const href = TYPE_LINKS[item.item_type]?.(lang, item.item_slug) || '#'
 
                   return (
                     <div key={item.id} className="saved-item">

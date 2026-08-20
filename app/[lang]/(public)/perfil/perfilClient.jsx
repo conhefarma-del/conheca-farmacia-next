@@ -40,23 +40,13 @@ export default function PerfilClient({ lang }) {
       setNewSchool(user.user_metadata?.school || '')
       setNewClass(user.user_metadata?.class_name || '')
       setLoading(false)
-      // Load stats after user is loaded
-      try {
-        const [s, ch, savedResult, counts] = await Promise.all([
-          getUserStats(),
-          getUserCompetitionHistory(),
-          getSavedItems({ limit: 4 }),
-          getSavedCounts(),
-        ])
-        setStats(s)
-        setCompHistory(ch || [])
-        setSavedItems(savedResult.items || [])
-        setSavedCounts(counts)
-      } catch {
-        // Stats load failed silently
-      } finally {
-        setStatsLoading(false)
-      }
+      // Load stats + saved in parallel (non-blocking)
+      Promise.allSettled([
+        getUserStats().then(s => setStats(s)),
+        getUserCompetitionHistory().then(ch => setCompHistory(ch || [])),
+        getSavedItems({ limit: 4 }).then(r => setSavedItems(r.items || [])),
+        getSavedCounts().then(c => setSavedCounts(c)),
+      ]).finally(() => setStatsLoading(false))
     }
     loadUser()
   }, [lang])
@@ -231,7 +221,13 @@ export default function PerfilClient({ lang }) {
 
   const savedTypeLinks = {
     drug: (slug) => `/${lang}/medicamentos/${slug}`,
-    interaction: () => `/${lang}/interacoes`,
+    interaction: (slug) => {
+      if (slug && slug.includes('+')) {
+        const [a, b] = slug.split('+')
+        return `/${lang}/interacoes?farmaco=${a}&par=${b}`
+      }
+      return `/${lang}/interacoes`
+    },
     drug_class: (slug) => `/${lang}/classes/${slug}`,
     molecular_target: (slug) => `/${lang}/alvos/${slug}`,
     article: (slug) => `/${lang}/artigos/${slug}`,

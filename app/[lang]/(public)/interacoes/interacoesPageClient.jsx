@@ -693,7 +693,7 @@ export default function InteracoesPageClient({
                                 <SaveButton
                                   itemType="interaction"
                                   itemId={inter.id}
-                                  itemSlug={`${drugA?.slug || ''}-${drugB?.slug || ''}`}
+                                  itemSlug={`${drugA?.slug || ''}+${drugB?.slug || ''}`}
                                   itemName={`${drugA?.name || ''} + ${drugB?.name || ''}`}
                                   itemSubtitle={severity}
                                   lang={lang}
