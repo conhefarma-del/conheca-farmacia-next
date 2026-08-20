@@ -320,21 +320,20 @@ export default function NotasPageClient({ lang }) {
                         </div>
                       )}
                       
-                      {/* Note preview */}
-                      <div className="saved-card-note-preview">
-                        <StickyNote size={12} className="inline mr-1 opacity-50" />
-                        {note.content.substring(0, 80)}...
+                      {/* Note preview + Edit button inline */}
+                      <div className="saved-card-note-row">
+                        <div className="saved-card-note-preview">
+                          {note.content.substring(0, 80)}...
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => openDrawer(note, isStandalone)}
+                          className="saved-card-note-edit-btn"
+                          title={t('saved.notes_title')}
+                        >
+                          <Pencil size={12} />
+                        </button>
                       </div>
-                      
-                      {/* Notes button */}
-                      <button
-                        type="button"
-                        onClick={() => openDrawer(note, isStandalone)}
-                        className="saved-card-notes-btn saved-card-notes-btn--has-note"
-                        title={t('saved.notes_title')}
-                      >
-                        <Pencil size={14} />
-                      </button>
                     </div>
                   )
                 })}
