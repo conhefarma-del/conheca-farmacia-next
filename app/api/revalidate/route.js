@@ -47,6 +47,7 @@ const ALLOWED_TAGS = new Set([
   'alvos',
   'articles',
   'classes',
+  'competitions',
   'events',
   'flashcards',
   'guides',
@@ -55,6 +56,7 @@ const ALLOWED_TAGS = new Set([
   'protocolos',
   'quiz',
   'scientific',
+  'schools',
 ])
 
 const ALLOWED_PATHS = new Set([

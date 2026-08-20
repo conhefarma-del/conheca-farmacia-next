@@ -32,6 +32,8 @@ import {
   Atom,
   Workflow,
   Grid3x3,
+  Trophy,
+  School,
 } from 'lucide-react'
 
 export default function AdminSidebar({ lang, user, onLogout }) {
@@ -260,6 +262,26 @@ export default function AdminSidebar({ lang, user, onLogout }) {
             return (
               <Link href={href} className={isActive(href) ? 'active' : ''}>
                 <Grid3x3 size={20} /> Classes
+              </Link>
+            )
+          })()}
+
+          {/* Competições */}
+          {(() => {
+            const href = `/${lang}/admin/competicoes`
+            return (
+              <Link href={href} className={isActive(href) ? 'active' : ''}>
+                <Trophy size={20} /> Competições
+              </Link>
+            )
+          })()}
+
+          {/* Escolas */}
+          {(() => {
+            const href = `/${lang}/admin/schools`
+            return (
+              <Link href={href} className={isActive(href) ? 'active' : ''}>
+                <School size={20} /> Escolas
               </Link>
             )
           })()}

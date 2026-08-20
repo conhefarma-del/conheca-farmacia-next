@@ -1026,5 +1026,35 @@
     "size_many": "Many (≥10)",
     "size_medium": "Medium (4–9)",
     "size_few": "Few (1–3)"
+  },
+  "competition": {
+    "nav": "Competition",
+    "page_title": "Competition",
+    "page_description": "Join a pharmacology quiz competition",
+    "quiz_title": "Quiz Competition",
+    "quiz_description": "Live pharmacology quiz",
+    "claim_title": "Save Progress",
+    "join": {
+      "title": "Join a Competition",
+      "subtitle": "Enter the competition code to join the interactive quiz",
+      "code_label": "Competition Code",
+      "lookup": "Check Code",
+      "error_not_found": "Competition not found or inactive",
+      "name_label": "Your name",
+      "name_placeholder": "What is your name?",
+      "school_label": "School (optional)",
+      "school_placeholder": "School name",
+      "class_label": "Class (optional)",
+      "class_placeholder": "e.g. 10th Grade A",
+      "enter": "Join Competition"
+    }
+  },
+  "auth": {
+    "login_title": "Login",
+    "login_description": "Sign in to your Conheça Farmácia account",
+    "register_title": "Create Account",
+    "register_description": "Join the Conheça Farmácia community",
+    "profile_title": "Profile",
+    "profile_description": "Your Conheça Farmácia account"
   }
 }

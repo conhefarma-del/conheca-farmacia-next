@@ -1026,5 +1026,35 @@
     "size_many": "Muitos (≥10)",
     "size_medium": "Médios (4–9)",
     "size_few": "Poucos (1–3)"
+  },
+  "competition": {
+    "nav": "Competição",
+    "page_title": "Competição",
+    "page_description": "Entra numa competição de quiz de farmacologia",
+    "quiz_title": "Quiz Competição",
+    "quiz_description": "Quiz de farmacologia em tempo real",
+    "claim_title": "Guardar Progresso",
+    "join": {
+      "title": "Entrar numa Competição",
+      "subtitle": "Insere o código da competição para te juntares ao quiz interativo",
+      "code_label": "Código da Competição",
+      "lookup": "Verificar Código",
+      "error_not_found": "Competição não encontrada ou inativa",
+      "name_label": "O teu nome",
+      "name_placeholder": "Como te chamas?",
+      "school_label": "Escola (opcional)",
+      "school_placeholder": "Nome da escola",
+      "class_label": "Turma (opcional)",
+      "class_placeholder": "Ex: 10.ª A",
+      "enter": "Entrar na Competição"
+    }
+  },
+  "auth": {
+    "login_title": "Entrar",
+    "login_description": "Entra na tua conta Conheça Farmácia",
+    "register_title": "Criar Conta",
+    "register_description": "Cria uma conta Conheça Farmácia",
+    "profile_title": "Perfil",
+    "profile_description": "A tua conta Conheça Farmácia"
   }
 }
