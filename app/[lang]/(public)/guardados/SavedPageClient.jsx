@@ -304,7 +304,10 @@ export default function SavedPageClient({ lang }) {
                     className="saved-page-btn"
                   >
                     <ChevronLeft size={16} />
-                  </button>                    <span className="saved-page-info">
+                  </button>
+                  <span className="saved-page-info">
+                    {page} / {totalPages}
+                  </span>
                   <button
                     type="button"
                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
