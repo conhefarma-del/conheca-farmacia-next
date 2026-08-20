@@ -172,7 +172,7 @@ export default function NotesDrawer({
       if (isStandalone) {
         result = await upsertStandaloneNote(noteId, content.trim())
       } else {
-        result = await upsertNote(itemType, itemId, content.trim())
+        result = await upsertNote(itemType, itemId, content.trim(), itemSlug, itemName)
       }
       if (result.success) {
         setOriginalContent(content.trim())
@@ -230,7 +230,7 @@ export default function NotesDrawer({
 
   const handleClose = () => {
     if (editing && content !== originalContent) {
-      upsertNote(itemType, itemId, content)
+      upsertNote(itemType, itemId, content, itemSlug, itemName)
     }
     setEditing(false)
     setCollapsed(true)

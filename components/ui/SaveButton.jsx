@@ -52,7 +52,7 @@ export default function SaveButton({
       try {
         const [isSaved, noteExists] = await Promise.all([
           isItemSaved(itemType, itemId),
-          showNotesBtn ? hasNoteForItem(itemId) : Promise.resolve(false),
+          showNotesBtn ? hasNoteForItem(itemType, itemId) : Promise.resolve(false),
         ])
         if (!cancelled) {
           setSaved(isSaved)
@@ -94,7 +94,7 @@ export default function SaveButton({
         setSaved(result.saved)
         // Se guardou, verificar se tem nota
         if (result.saved) {
-          const noteExists = await hasNoteForItem(itemId)
+          const noteExists = await hasNoteForItem(itemType, itemId)
           setHasNote(noteExists)
         }
       }
@@ -105,17 +105,9 @@ export default function SaveButton({
     }
   }
 
-  const [showTooltip, setShowTooltip] = useState(false)
-
   const handleNotesClick = (e) => {
     e.preventDefault()
     e.stopPropagation()
-    if (!saved) {
-      // Show custom tooltip warning
-      setShowTooltip(true)
-      setTimeout(() => setShowTooltip(false), 4000)
-      return
-    }
     if (onNotesClick) onNotesClick()
   }
 
@@ -153,24 +145,15 @@ export default function SaveButton({
 
       {/* Botão Notas */}
       {showNotesBtn && (
-        <div className="save-notes-wrapper">
-          <button
-            type="button"
-            onClick={handleNotesClick}
-            className={`save-notes-button ${hasNote ? 'save-notes-button--has-note' : ''} ${!saved ? 'save-notes-button--disabled' : ''}`}
-            title={saved ? t('notes_drawer.title', { name: itemName }) : (t('notes_drawer.save_first') || 'Guarda primeiro para adicionar notas')}
-            aria-label={saved ? t('notes_drawer.title', { name: itemName }) : (t('notes_drawer.save_first') || 'Guarda primeiro para adicionar notas')}
-          >
-            <Pencil size={iconSize - 2} />
-          </button>
-          {/* Tooltip aviso */}
-          {showTooltip && !saved && (
-            <div className="save-notes-tooltip">
-              <Info size={14} />
-              <span>{t('notes_drawer.save_first_tooltip') || 'Guarda o item primeiro para poder adicionar e editar notas'}</span>
-            </div>
-          )}
-        </div>
+        <button
+          type="button"
+          onClick={handleNotesClick}
+          className={`save-notes-button ${hasNote ? 'save-notes-button--has-note' : ''}`}
+          title={t('notes_drawer.title', { name: itemName })}
+          aria-label={t('notes_drawer.title', { name: itemName })}
+        >
+          <Pencil size={iconSize - 2} />
+        </button>
       )}
     </div>
   )
