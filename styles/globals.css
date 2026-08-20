@@ -3703,15 +3703,16 @@ html.dark .save-button--saved:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
   border: 1px solid var(--color-brand-divider);
   background: var(--color-brand-card);
   color: var(--color-brand-deep);
   cursor: pointer;
   transition: all 0.2s ease;
   opacity: 0.6;
+  flex-shrink: 0;
 }
 
 .save-notes-button:hover {
@@ -3758,11 +3759,12 @@ html.dark .save-notes-button--has-note {
   height: 100vh;
   background: var(--color-brand-bg);
   border-left: 1px solid var(--color-brand-divider);
-  z-index: 50;
+  z-index: 40; /* Below header (50) and utility bar (60) */
   transform: translateX(100%);
   transition: transform 0.3s ease;
   display: flex;
   flex-direction: column;
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.08);
 }
 
 .notes-drawer-desktop.is-open {
@@ -3808,6 +3810,32 @@ html.dark .save-notes-button--has-note {
 .notes-drawer-backdrop.is-open {
   opacity: 1;
   pointer-events: auto;
+}
+
+/* Close button */
+.notes-drawer-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--color-brand-deep);
+  opacity: 0.5;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.notes-drawer-close:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+html.dark .notes-drawer-close:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* Handle */

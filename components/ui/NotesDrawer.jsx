@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef, useContext } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-  ChevronUp, ChevronDown, Pencil, ExternalLink, Loader2, Check
+  ChevronUp, ChevronDown, X, ExternalLink, Loader2, Check
 } from 'lucide-react'
 import { getNoteForItem, upsertNote } from '@/lib/actions/saved'
 import { LangContext } from '@/lib/contexts'
@@ -63,6 +63,7 @@ export default function NotesDrawer({
   const saveTimerRef = useRef(null)
   const dragStartY = useRef(0)
   const dragCurrentY = useRef(0)
+  const scrollYRef = useRef(0)
 
   // Detectar mobile
   useEffect(() => {
@@ -71,6 +72,31 @@ export default function NotesDrawer({
     window.addEventListener('resize', check)
     return () => window.removeEventListener('resize', check)
   }, [])
+
+  // Block scroll when drawer is open
+  useEffect(() => {
+    if (isOpen && !collapsed) {
+      scrollYRef.current = window.scrollY
+      document.body.style.position = 'fixed'
+      document.body.style.top = `-${scrollYRef.current}px`
+      document.body.style.width = '100%'
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.width = ''
+      document.body.style.overflow = ''
+      if (scrollYRef.current > 0) {
+        window.scrollTo(0, scrollYRef.current)
+      }
+    }
+    return () => {
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.width = ''
+      document.body.style.overflow = ''
+    }
+  }, [isOpen, collapsed])
 
   // Carregar nota existente
   useEffect(() => {
@@ -159,6 +185,11 @@ export default function NotesDrawer({
   const goToItem = () => {
     const href = TYPE_LINKS[itemType]?.(lang, itemSlug)
     if (href) {
+      // Fechar drawer antes de navegar
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.width = ''
+      document.body.style.overflow = ''
       router.push(href)
       onClose()
     }
@@ -180,13 +211,11 @@ export default function NotesDrawer({
 
   return (
     <>
-      {/* Backdrop (mobile) */}
-      {isMobile && (
-        <div
-          className={`notes-drawer-backdrop ${!collapsed ? 'is-open' : ''}`}
-          onClick={handleClose}
-        />
-      )}
+      {/* Backdrop */}
+      <div
+        className={`notes-drawer-backdrop ${!collapsed ? 'is-open' : ''}`}
+        onClick={handleClose}
+      />
 
       {/* Drawer */}
       <div
@@ -241,6 +270,14 @@ export default function NotesDrawer({
                 {content.length}
               </span>
             )}
+            <button
+              type="button"
+              onClick={handleClose}
+              className="notes-drawer-close"
+              title={t('notes_drawer.close')}
+            >
+              <X size={16} />
+            </button>
           </div>
         </div>
 
