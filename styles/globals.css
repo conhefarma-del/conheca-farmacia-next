@@ -2414,6 +2414,235 @@ html.dark .profile-dropdown-item:hover {
 }
 
 /* =============================================
+   INVITE NOTIFICATION BELL (Header)
+   ============================================= */
+.bell-wrapper {
+  position: relative;
+}
+
+.bell-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.5rem;
+  color: var(--color-brand-deep);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.2s, color 0.2s, transform 0.2s;
+}
+
+.bell-btn:hover {
+  background-color: var(--color-brand-primary);
+  color: white;
+  transform: scale(1.08);
+}
+
+.bell-btn:active {
+  transform: scale(0.95);
+}
+
+.bell-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 9999px;
+  background: #dc2626;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.bell-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  min-width: 280px;
+  max-width: 340px;
+  background: var(--color-brand-card);
+  border: 1px solid var(--color-brand-divider);
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow-md-soft);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+  z-index: 50;
+  overflow: hidden;
+}
+
+.bell-dropdown.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.bell-dropdown-header {
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bell-dropdown-title {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--color-brand-deep);
+}
+
+.bell-dropdown-count {
+  background: #dc2626;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 9999px;
+}
+
+.bell-dropdown-divider {
+  height: 1px;
+  background: var(--color-brand-divider);
+}
+
+.bell-dropdown-empty {
+  padding: 1.5rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bell-dropdown-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.bell-invite {
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: background-color 0.15s;
+}
+
+.bell-invite:hover {
+  background: var(--color-brand-bg-alt);
+}
+
+.bell-invite-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.bell-invite-name {
+  font-weight: 600;
+  font-size: 0.8125rem;
+  color: var(--color-brand-deep);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bell-invite-comp {
+  font-size: 0.75rem;
+  color: var(--color-brand-deep);
+  opacity: 0.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bell-invite-actions {
+  display: flex;
+  gap: 0.375rem;
+  flex-shrink: 0;
+}
+
+.bell-invite-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s, transform 0.15s;
+}
+
+.bell-invite-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.bell-invite-accept {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.bell-invite-accept:hover:not(:disabled) {
+  background: #bbf7d0;
+  transform: scale(1.1);
+}
+
+.bell-invite-decline {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.bell-invite-decline:hover:not(:disabled) {
+  background: #fecaca;
+  transform: scale(1.1);
+}
+
+.bell-dropdown-link {
+  display: block;
+  padding: 0.625rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-brand-accent);
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.15s;
+}
+
+.bell-dropdown-link:hover {
+  background: var(--color-brand-bg-alt);
+}
+
+html.dark .bell-dropdown {
+  background: var(--color-brand-card);
+  border-color: var(--color-brand-divider);
+}
+
+html.dark .bell-invite:hover {
+  background: var(--color-brand-bg-alt);
+}
+
+html.dark .bell-invite-accept {
+  background: rgba(22, 163, 74, 0.2);
+  color: #4ade80;
+}
+
+html.dark .bell-invite-decline {
+  background: rgba(220, 38, 38, 0.2);
+  color: #f87171;
+}
+
+html.dark .bell-dropdown-link:hover {
+  background: var(--color-brand-bg-alt);
+}
+
+/* =============================================
    FOOTER ADMIN ACCESS BUTTON (discreet)
    ============================================= */
 .footer-admin-access {

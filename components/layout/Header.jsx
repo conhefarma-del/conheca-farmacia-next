@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { Atom, BookOpen, BrainCircuit, ChevronDown, ClipboardList, LogIn, LogOut, Pill, Tablets, Trophy, User } from 'lucide-react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
+import InviteNotifications from '@/components/ui/InviteNotifications'
 import { getSectionHref } from '@/lib/i18n-routes'
 import { featureEnabled } from '@/lib/features'
 import { createClient } from '@/lib/supabase/client'
@@ -187,6 +188,7 @@ export default function Header({ lang, t, onToggleDrawer }) {
 
         <div className="header-right">
           <ThemeToggle />
+          {user && <InviteNotifications lang={lang} />}
 
           {/* Profile dropdown / Entrar link */}
           <div className="profile-wrapper" ref={profileRef}>
