@@ -70,7 +70,7 @@ export default function FriendChallengeClient({ lang, code }) {
             if (comp.status === 'active' && !session.finished_at) {
               // Quiz already started — rejoin
               const quizData = await startFriendQuiz(comp.id)
-              if (quizData?.ok) {
+              if (quizData?.success) {
                 setQuestions(quizData.questions)
                 setTimeLeft(quizData.timePerQuestion || 30)
                 setPhase('quiz')
@@ -94,7 +94,7 @@ export default function FriendChallengeClient({ lang, code }) {
         } else if (comp.status === 'active') {
           // Quiz in progress — try to start
           const quizData = await startFriendQuiz(comp.id)
-          if (quizData?.ok) {
+          if (quizData?.success) {
             setQuestions(quizData.questions)
             setTimeLeft(quizData.timePerQuestion || 30)
             setPhase('quiz')
@@ -142,7 +142,7 @@ export default function FriendChallengeClient({ lang, code }) {
           // Quiz started — try to get questions
           if (me?.sessionId) {
             const quizData = await startFriendQuiz(compInfo.id)
-            if (quizData?.ok) {
+            if (quizData?.success) {
               setQuestions(quizData.questions)
               setTimeLeft(quizData.timePerQuestion || 30)
               setPhase('quiz')
@@ -174,7 +174,7 @@ export default function FriendChallengeClient({ lang, code }) {
     if (!compInfo) return
     try {
       const result = await startFriendQuiz(compInfo.id)
-      if (result?.ok) {
+      if (result?.success) {
         setQuestions(result.questions)
         setTimeLeft(result.timePerQuestion || 30)
         setPhase('quiz')
