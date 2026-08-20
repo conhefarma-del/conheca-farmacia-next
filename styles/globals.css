@@ -3762,22 +3762,33 @@ html.dark .save-notes-button--has-note {
 /* Desktop sidebar — above header/utility, slide animation */
 .notes-drawer-desktop {
   position: fixed;
-  top: 0;
   right: 0;
   width: 380px;
-  height: 100vh;
   background: var(--color-brand-bg);
   border-left: 1px solid var(--color-brand-divider);
   z-index: 61; /* Above utility bar (60) */
-  transform: translateX(100%);
-  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  transition: all 0.35s cubic-bezier(0.32, 0.72, 0, 1);
   display: flex;
   flex-direction: column;
   box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
 }
 
-.notes-drawer-desktop.is-open {
+/* Desktop expanded */
+.notes-drawer-desktop.is-expanded {
+  top: 0;
+  height: 100vh;
   transform: translateX(0);
+}
+
+/* Desktop collapsed — goes to bottom right */
+.notes-drawer-desktop.is-collapsed {
+  bottom: 0;
+  height: auto;
+  transform: translateX(0);
+  border-left: none;
+  border-top: 1px solid var(--color-brand-divider);
+  border-radius: 12px 0 0 0;
+  box-shadow: -4px -4px 20px rgba(0, 0, 0, 0.1);
 }
 
 /* Mobile bottom sheet */
@@ -3879,6 +3890,10 @@ html.dark .notes-drawer-close:hover {
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
+}
+
+.notes-drawer-toggle--desktop {
+  padding: 0;
 }
 
 .notes-drawer-title {

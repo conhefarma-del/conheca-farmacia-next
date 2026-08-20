@@ -69,15 +69,15 @@ export default function NotesDrawer({
     }
   }, [isOpen, isMobile])
 
-  // Block scroll when drawer is open and expanded
+  // Block scroll only on mobile when drawer is expanded
   useEffect(() => {
-    if (isOpen && !collapsed) {
+    if (isOpen && isMobile && !collapsed) {
       scrollYRef.current = window.scrollY
       document.body.style.position = 'fixed'
       document.body.style.top = `-${scrollYRef.current}px`
       document.body.style.width = '100%'
       document.body.style.overflow = 'hidden'
-    } else {
+    } else if (isMobile) {
       document.body.style.position = ''
       document.body.style.top = ''
       document.body.style.width = ''
@@ -87,12 +87,14 @@ export default function NotesDrawer({
       }
     }
     return () => {
-      document.body.style.position = ''
-      document.body.style.top = ''
-      document.body.style.width = ''
-      document.body.style.overflow = ''
+      if (isMobile) {
+        document.body.style.position = ''
+        document.body.style.top = ''
+        document.body.style.width = ''
+        document.body.style.overflow = ''
+      }
     }
-  }, [isOpen, collapsed])
+  }, [isOpen, collapsed, isMobile])
 
   // Carregar nota existente
   useEffect(() => {
@@ -256,9 +258,20 @@ export default function NotesDrawer({
               </span>
             </button>
           ) : (
-            <span className="notes-drawer-title notes-drawer-title--desktop">
-              {t('notes_drawer.title', { name: itemName })}
-            </span>
+            <button
+              type="button"
+              onClick={toggleCollapsed}
+              className="notes-drawer-toggle notes-drawer-toggle--desktop"
+            >
+              {collapsed ? (
+                <ChevronUp size={16} />
+              ) : (
+                <ChevronDown size={16} />
+              )}
+              <span className="notes-drawer-title notes-drawer-title--desktop">
+                {t('notes_drawer.title', { name: itemName })}
+              </span>
+            </button>
           )}
 
           <div className="notes-drawer-header-meta">
