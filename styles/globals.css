@@ -3913,6 +3913,11 @@ html.dark .save-button--saved:hover {
   background: rgba(10, 132, 79, 0.15);
 }
 
+.saved-item-notes-badge--active {
+  background: rgba(10, 132, 79, 0.15);
+  color: var(--color-brand-accent);
+}
+
 .saved-item-date {
   font-size: 11px;
   color: var(--color-brand-deep);

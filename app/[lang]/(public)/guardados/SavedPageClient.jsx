@@ -297,16 +297,15 @@ export default function SavedPageClient({ lang }) {
                           )}
                         </Link>
                         <div className="saved-item-meta">
-                          {item.notesCount > 0 && (
-                            <button
-                              type="button"
-                              onClick={() => toggleNotes(item.id)}
-                              className="saved-item-notes-badge"
-                            >
-                              <StickyNote size={12} />
-                              {item.notesCount}
-                            </button>
-                          )}
+                          <button
+                            type="button"
+                            onClick={() => toggleNotes(item.id)}
+                            className={`saved-item-notes-badge ${expandedNotes === item.id ? 'saved-item-notes-badge--active' : ''}`}
+                            title={t('saved.notes_title')}
+                          >
+                            <StickyNote size={12} />
+                            {item.notesCount > 0 && item.notesCount}
+                          </button>
                           <span className="saved-item-date">
                             {new Date(item.created_at).toLocaleDateString('pt-PT', { day: 'numeric', month: 'short' })}
                           </span>
