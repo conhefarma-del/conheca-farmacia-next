@@ -108,6 +108,14 @@ export default function CompeticaoJoinClient({ lang }) {
         <div className="container-center max-w-xl mx-auto px-4">
           {step === 'code' && (
             <form onSubmit={handleLookupCode} className="space-y-6">
+              <div className="bg-brand-accent/5 border border-brand-accent/20 rounded-2xl p-4 text-center">
+                <p className="text-sm text-brand-deep/70">
+                  Este código é para <strong>competições oficiais</strong> criadas por instituições ou pelo Conheça Farmácia.
+                </p>
+                <p className="text-xs text-brand-deep/50 mt-1">
+                  Se quiseres desafiar um amigo, vai à secção abaixo.
+                </p>
+              </div>
               <div>
                 <label className="block text-sm font-medium text-brand-deep mb-2">
                   {t('competition.join.code_label') || 'Código da Competição'}
@@ -234,17 +242,17 @@ export default function CompeticaoJoinClient({ lang }) {
       {/* Friend Challenge CTA */}
       <section className="py-8 bg-background">
         <div className="container-center max-w-xl mx-auto px-4">
-          <div className="bg-card rounded-2xl border border-brand-divider p-6 text-center">
-            <Swords size={24} className="mx-auto mb-3 text-brand-accent" />
-            <h3 className="font-bold text-brand-deep mb-1">Desafiar Amigos</h3>
-            <p className="text-sm text-brand-deep/50 mb-4">
-              Cria um quiz privado e desafia os teus amigos!
+          <div className="bg-card rounded-2xl border-2 border-brand-accent/30 p-6 text-center">
+            <Swords size={32} className="mx-auto mb-3 text-brand-accent" />
+            <h3 className="text-lg font-bold text-brand-deep mb-2">Desafiar Amigos</h3>
+            <p className="text-sm text-brand-deep/60 mb-4">
+              Código de amigo? Entra aqui para criar ou participar num desafio privado.
             </p>
             <Link
               href={`/${lang}/competicao/amigos`}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-accent text-white text-sm font-semibold hover:bg-brand-accent/90 transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-accent text-white font-semibold hover:bg-brand-accent/90 transition-all"
             >
-              <Swords size={16} /> Ir para Desafios
+              <Swords size={18} /> Entrar com Código de Amigo
             </Link>
           </div>
         </div>
