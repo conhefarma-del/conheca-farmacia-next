@@ -395,7 +395,7 @@ export default function PerfilClient({ lang }) {
                   <div className="flex-1 min-w-0">
                     <div className="profile-info-label">Escola</div>
                     {editingSchool ? (
-                      <div className="flex items-center gap-1.5 mt-1">
+                      <div className="flex items-center gap-1.5 mt-1 min-w-0">
                         <input
                           type="text"
                           value={newSchool}
@@ -411,7 +411,7 @@ export default function PerfilClient({ lang }) {
                         <button onClick={() => { setEditingSchool(false); setNewSchool(schoolName || '') }} className="profile-info-edit-btn cancel"><X size={12} /></button>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 min-w-0">
                         <div className="profile-info-value">{schoolName || '—'}</div>
                         <button onClick={() => setEditingSchool(true)} className="profile-info-edit-trigger"><Edit3 size={12} /></button>
                       </div>
@@ -424,7 +424,7 @@ export default function PerfilClient({ lang }) {
                   <div className="flex-1 min-w-0">
                     <div className="profile-info-label">Turma</div>
                     {editingClass ? (
-                      <div className="flex items-center gap-1.5 mt-1">
+                      <div className="flex items-center gap-1.5 mt-1 min-w-0">
                         <input
                           type="text"
                           value={newClass}
@@ -440,7 +440,7 @@ export default function PerfilClient({ lang }) {
                         <button onClick={() => { setEditingClass(false); setNewClass(className_ || '') }} className="profile-info-edit-btn cancel"><X size={12} /></button>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 min-w-0">
                         <div className="profile-info-value">{className_ || '—'}</div>
                         <button onClick={() => setEditingClass(true)} className="profile-info-edit-trigger"><Edit3 size={12} /></button>
                       </div>
@@ -450,7 +450,7 @@ export default function PerfilClient({ lang }) {
                 {/* Email (read-only) */}
                 <div className="profile-info-item">
                   <div className="profile-info-icon"><Mail size={14} /></div>
-                  <div>
+                  <div className="flex-1 min-w-0">
                     <div className="profile-info-label">Email</div>
                     <div className="profile-info-value">{user.email}</div>
                   </div>
