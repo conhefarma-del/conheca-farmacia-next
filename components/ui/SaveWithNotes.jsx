@@ -39,7 +39,7 @@ export default function SaveWithNotes({
       <NotesDrawer
         isOpen={notesOpen}
         onClose={() => setNotesOpen(false)}
-        savedItemId={itemId}
+        itemId={itemId}
         itemName={itemName}
         itemSlug={itemSlug}
         itemType={itemType}
