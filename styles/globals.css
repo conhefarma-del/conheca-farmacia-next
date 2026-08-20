@@ -3788,7 +3788,7 @@ html.dark .save-notes-button--has-note {
 }
 
 .notes-drawer-mobile.is-collapsed {
-  height: 48px;
+  height: 60px;
   overflow: hidden;
 }
 

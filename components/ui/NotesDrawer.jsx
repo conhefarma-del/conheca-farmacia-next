@@ -73,6 +73,26 @@ export default function NotesDrawer({
     return () => window.removeEventListener('resize', check)
   }, [])
 
+  // Detect header position for desktop drawer
+  const [headerTop, setHeaderTop] = useState(140)
+  useEffect(() => {
+    if (isMobile) return
+    const updateHeaderTop = () => {
+      const headerWrapper = document.querySelector('.header-wrapper')
+      if (headerWrapper) {
+        const transform = window.getComputedStyle(headerWrapper).transform
+        if (transform && transform !== 'none') {
+          const matrix = new DOMMatrix(transform)
+          const translateY = matrix.m42
+          setHeaderTop(translateY > 100 ? 140 : 80)
+        }
+      }
+    }
+    updateHeaderTop()
+    const interval = setInterval(updateHeaderTop, 100)
+    return () => clearInterval(interval)
+  }, [isMobile])
+
   // Block scroll when drawer is open
   useEffect(() => {
     if (isOpen && !collapsed) {
@@ -221,6 +241,10 @@ export default function NotesDrawer({
       <div
         ref={drawerRef}
         className={`notes-drawer ${isMobile ? 'notes-drawer-mobile' : 'notes-drawer-desktop'} ${collapsed ? 'is-collapsed' : 'is-expanded'} ${isOpen ? 'is-open' : ''}`}
+        style={!isMobile ? {
+          top: `${headerTop}px`,
+          height: `calc(100vh - ${headerTop}px)`,
+        } : undefined}
         onTouchStart={handleDragStart}
         onTouchMove={handleDragMove}
         onTouchEnd={handleDragEnd}
