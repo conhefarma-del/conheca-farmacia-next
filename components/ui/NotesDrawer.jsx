@@ -105,23 +105,30 @@ export default function NotesDrawer({
       setLoading(false)
       return
     }
-    // Nota solta: já temos o conteúdo via props
-    if (isStandalone && content !== undefined) {
-      setLoading(false)
-      return
-    }
-    if (!itemId || !itemType) {
-      setLoading(false)
-      return
-    }
     let cancelled = false
     async function load() {
       setLoading(true)
       try {
-        const note = await getNoteForItem(itemType, itemId)
-        if (!cancelled) {
-          setContent(note?.content || '')
-          setOriginalContent(note?.content || '')
+        // Nota solta: buscar pelo noteId
+        if (isStandalone && noteId) {
+          const { createClient } = await import('@/lib/supabase/server')
+          const supabase = await createClient()
+          const { data } = await supabase
+            .from('saved_item_notes')
+            .select('content')
+            .eq('id', noteId)
+            .maybeSingle()
+          if (!cancelled) {
+            setContent(data?.content || '')
+            setOriginalContent(data?.content || '')
+          }
+        } else if (itemId && itemType) {
+          // Nota de item: buscar pelo item
+          const note = await getNoteForItem(itemType, itemId)
+          if (!cancelled) {
+            setContent(note?.content || '')
+            setOriginalContent(note?.content || '')
+          }
         }
       } catch (err) {
         console.error('Error loading note:', err)
@@ -133,7 +140,7 @@ export default function NotesDrawer({
     }
     load()
     return () => { cancelled = true }
-  }, [isOpen, itemId, itemType, isStandalone])
+  }, [isOpen, itemId, itemType, isStandalone, noteId])
 
   // Focus textarea when editing starts on desktop
   useEffect(() => {
