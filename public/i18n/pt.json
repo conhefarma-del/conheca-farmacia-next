@@ -1137,5 +1137,24 @@
     "cancel": "Cancelar",
     "edit": "Editar",
     "delete": "Eliminar"
+  },
+  "settings": {
+    "page_title": "Definições",
+    "page_description": "Atualiza a tua palavra-passe, escola e turma",
+    "back_to_profile": "Voltar ao perfil",
+    "change_password": "Palavra-passe",
+    "new_password": "Nova palavra-passe",
+    "confirm_password": "Confirmar palavra-passe",
+    "password_placeholder": "Mínimo 6 caracteres",
+    "confirm_password_placeholder": "Repete a palavra-passe",
+    "save_password": "Atualizar palavra-passe",
+    "school": "Escola",
+    "school_name": "Nome da escola",
+    "school_placeholder": "Pesquisar escola...",
+    "save_school": "Guardar escola",
+    "class_name": "Turma",
+    "class_label": "Nome da turma",
+    "class_placeholder": "Ex: 10ª Classe A",
+    "save_class": "Guardar turma"
   }
 }

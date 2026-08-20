@@ -1137,5 +1137,24 @@
     "cancel": "Cancel",
     "edit": "Edit",
     "delete": "Delete"
+  },
+  "settings": {
+    "page_title": "Settings",
+    "page_description": "Update your password, school and class",
+    "back_to_profile": "Back to profile",
+    "change_password": "Password",
+    "new_password": "New password",
+    "confirm_password": "Confirm password",
+    "password_placeholder": "Minimum 6 characters",
+    "confirm_password_placeholder": "Repeat password",
+    "save_password": "Update password",
+    "school": "School",
+    "school_name": "School name",
+    "school_placeholder": "Search school...",
+    "save_school": "Save school",
+    "class_name": "Class",
+    "class_label": "Class name",
+    "class_placeholder": "Ex: 10th Grade A",
+    "save_class": "Save class"
   }
 }
