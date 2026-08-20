@@ -2945,6 +2945,110 @@ html.dark .bell-dropdown-link:hover {
   transition: background 0.2s, color 0.2s;
 }
 
+/* Saved Items Card (profile) */
+.profile-saved-count {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 10px;
+  background: rgba(10, 132, 79, 0.1);
+  color: var(--color-brand-accent);
+  margin-left: auto;
+}
+
+.profile-saved-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.profile-saved-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-brand-divider);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s;
+}
+
+.profile-saved-item:last-child {
+  border-bottom: none;
+}
+
+.profile-saved-item:hover {
+  background: rgba(10, 132, 79, 0.03);
+  margin: 0 -24px;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.profile-saved-item-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(10, 132, 79, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-brand-accent);
+  flex-shrink: 0;
+}
+
+.profile-saved-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-saved-item-name {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--color-brand-deep);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-saved-item:hover .profile-saved-item-name {
+  color: var(--color-brand-accent);
+}
+
+.profile-saved-item-subtitle {
+  font-size: 11px;
+  color: var(--color-brand-deep);
+  opacity: 0.45;
+  margin-top: 1px;
+}
+
+.profile-saved-viewall {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 12px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--color-brand-divider);
+  background: transparent;
+  color: var(--color-brand-accent);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.profile-saved-viewall:hover {
+  background: rgba(10, 132, 79, 0.05);
+  border-color: var(--color-brand-accent);
+}
+
+.profile-saved-empty {
+  text-align: center;
+  padding: 16px 0;
+  color: var(--color-brand-deep);
+}
+
 
 
 .profile-tool-label {
@@ -3214,43 +3318,15 @@ html.dark .bell-dropdown-link:hover {
     grid-template-columns: 1fr;
   }
 
-  /* Tools — horizontal scroll */
-  .profile-tools-card {
-    overflow: hidden;
-    padding: 20px 0;
+  /* Saved card mobile */
+  .profile-saved-item {
+    padding: 8px 0;
+  }
+
+  .profile-saved-item:hover {
     margin: 0 -16px;
     padding-left: 16px;
     padding-right: 16px;
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
-  }
-
-  .profile-tools-grid {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    padding-bottom: 4px;
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x proximity;
-  }
-
-  .profile-tools-grid::-webkit-scrollbar {
-    display: none;
-  }
-
-  .profile-tool-card {
-    min-width: 110px;
-    max-width: 120px;
-    flex-shrink: 0;
-    flex-direction: column;
-    text-align: center;
-    padding: 14px 10px;
-    scroll-snap-align: start;
-  }
-
-  .profile-tool-icon {
-    margin: 0 auto 6px;
   }
 
   .profile-tool-label {
@@ -3410,6 +3486,23 @@ html.dark .profile-tool-card {
 
 html.dark .profile-tool-card:hover {
   background: rgba(13, 153, 95, 0.08);
+}
+
+html.dark .profile-saved-item-icon {
+  background: rgba(13, 153, 95, 0.12);
+}
+
+html.dark .profile-saved-item:hover {
+  background: rgba(13, 153, 95, 0.05);
+}
+
+html.dark .profile-saved-viewall {
+  border-color: var(--color-brand-divider);
+}
+
+html.dark .profile-saved-viewall:hover {
+  background: rgba(13, 153, 95, 0.08);
+  border-color: var(--color-brand-accent);
 }
 
 html.dark .profile-tool-icon {

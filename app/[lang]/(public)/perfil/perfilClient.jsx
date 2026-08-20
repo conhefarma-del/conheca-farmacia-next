@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { LogOut, Mail, Trophy, BookOpen, Pill, ShieldAlert, ClipboardList, Atom, Loader2, School, Target, BrainCircuit, Flame, Edit3, Save, X } from 'lucide-react'
+import { LogOut, Mail, Bookmark, Pill, ShieldAlert, ClipboardList, Atom, Newspaper, Loader2, School, Target, BrainCircuit, Flame, Edit3, Save, X, ChevronRight } from 'lucide-react'
 import { getUserStats, getUserCompetitionHistory } from '@/lib/actions/profile'
+import { getSavedItems, getSavedCounts } from '@/lib/actions/saved'
 
 export default function PerfilClient({ lang }) {
   const [user, setUser] = useState(null)
@@ -17,6 +18,8 @@ export default function PerfilClient({ lang }) {
   const [stats, setStats] = useState(null)
   const [statsLoading, setStatsLoading] = useState(true)
   const [compHistory, setCompHistory] = useState([])
+  const [savedItems, setSavedItems] = useState([])
+  const [savedCounts, setSavedCounts] = useState(null)
   const [editingSchool, setEditingSchool] = useState(false)
   const [newSchool, setNewSchool] = useState('')
   const [editingClass, setEditingClass] = useState(false)
@@ -37,9 +40,16 @@ export default function PerfilClient({ lang }) {
       setLoading(false)
       // Load stats after user is loaded
       try {
-        const [s, ch] = await Promise.all([getUserStats(), getUserCompetitionHistory()])
+        const [s, ch, savedResult, counts] = await Promise.all([
+          getUserStats(),
+          getUserCompetitionHistory(),
+          getSavedItems({ limit: 4 }),
+          getSavedCounts(),
+        ])
         setStats(s)
         setCompHistory(ch || [])
+        setSavedItems(savedResult.items || [])
+        setSavedCounts(counts)
       } catch {
         // Stats load failed silently
       } finally {
@@ -142,15 +152,21 @@ export default function PerfilClient({ lang }) {
   const avatarUrl = user.user_metadata?.avatar_url
   const createdAt = new Date(user.created_at).toLocaleDateString('pt-PT', { year: 'numeric', month: 'long', day: 'numeric' })
 
-  const tools = [
-    { href: `/${lang}/medicamentos`, label: 'Medicamentos', desc: 'Explora fármacos, mecanismos e perfis clínicos', icon: <Pill size={20} /> },
-    { href: `/${lang}/interacoes`, label: 'Interações', desc: 'Verifica interações medicamentosas', icon: <ShieldAlert size={20} /> },
-    { href: `/${lang}/competicao`, label: 'Competição', desc: 'Quiz competitivo entre escolas', icon: <Trophy size={20} /> },
-    { href: `/${lang}/praticar`, label: 'Quiz', desc: 'Testa os teus conhecimentos', icon: <BrainCircuit size={20} /> },
-    { href: `/${lang}/flashcards`, label: 'Flashcards', desc: 'Memoriza conceitos-chave', icon: <BookOpen size={20} /> },
-    { href: `/${lang}/classes`, label: 'Classes Terapêuticas', desc: 'Explora classes ATC e exemplos', icon: <ClipboardList size={20} /> },
-    { href: `/${lang}/alvos`, label: 'Alvos Moleculares', desc: 'Mecanismos de ação dos fármacos', icon: <Atom size={20} /> },
-  ]
+  const savedTypeIcons = {
+    drug: Pill,
+    interaction: ShieldAlert,
+    drug_class: ClipboardList,
+    molecular_target: Atom,
+    article: Newspaper,
+  }
+
+  const savedTypeLinks = {
+    drug: (slug) => `/${lang}/medicamentos/${slug}`,
+    interaction: () => `/${lang}/interacoes`,
+    drug_class: (slug) => `/${lang}/classes/${slug}`,
+    molecular_target: (slug) => `/${lang}/alvos/${slug}`,
+    article: (slug) => `/${lang}/artigos/${slug}`,
+  }
 
   const schoolName = !statsLoading && stats?.competitions?.schoolName
     || user.user_metadata?.school || null
@@ -255,19 +271,46 @@ export default function PerfilClient({ lang }) {
           )}
 
           <div className="profile-grid-v2">
-            {/* Tools Card */}
-            <div className="profile-card-v2 profile-tools-card">
+            {/* Saved Items Card */}
+            <div className="profile-card-v2 profile-saved-card">
               <div className="profile-card-header">
-                <div className="profile-card-dot" /> Ferramentas
+                <div className="profile-card-dot" /> Guardados
+                {savedCounts && savedCounts.total > 0 && (
+                  <span className="profile-saved-count">{savedCounts.total}</span>
+                )}
               </div>
-              <div className="profile-tools-grid">
-                {tools.map((tool) => (
-                  <Link key={tool.href} href={tool.href} className="profile-tool-card">
-                    <div className="profile-tool-icon">{tool.icon}</div>
-                    <div className="profile-tool-label">{tool.label}</div>
+              {savedItems.length > 0 ? (
+                <>
+                  <div className="profile-saved-list">
+                    {savedItems.map((item) => {
+                      const TypeIcon = savedTypeIcons[item.item_type] || Bookmark
+                      const href = savedTypeLinks[item.item_type]?.(item.item_slug) || '#'
+                      return (
+                        <Link key={item.id} href={href} className="profile-saved-item">
+                          <div className="profile-saved-item-icon">
+                            <TypeIcon size={16} />
+                          </div>
+                          <div className="profile-saved-item-info">
+                            <div className="profile-saved-item-name">{item.item_name}</div>
+                            {item.item_subtitle && (
+                              <div className="profile-saved-item-subtitle">{item.item_subtitle}</div>
+                            )}
+                          </div>
+                        </Link>
+                      )
+                    })}
+                  </div>
+                  <Link href={`/${lang}/guardados`} className="profile-saved-viewall">
+                    Ver todos
+                    <ChevronRight size={14} />
                   </Link>
-                ))}
-              </div>
+                </>
+              ) : (
+                <div className="profile-saved-empty">
+                  <Bookmark size={24} className="opacity-20 mb-2" />
+                  <p className="text-sm opacity-50">Ainda não guardaste nada</p>
+                </div>
+              )}
             </div>
 
             {/* Institution Card */}
