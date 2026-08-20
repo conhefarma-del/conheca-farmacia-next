@@ -3728,6 +3728,15 @@ html.dark .save-button--saved:hover {
   opacity: 1;
 }
 
+.save-notes-button--disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.save-notes-button--disabled:hover {
+  opacity: 0.5;
+}
+
 html.dark .save-notes-button {
   background: var(--color-brand-card);
   border-color: var(--color-brand-divider);

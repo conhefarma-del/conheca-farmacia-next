@@ -1104,6 +1104,7 @@
     "title": "Notes for {name}",
     "empty": "Write your note here...",
     "create": "Create Note",
+    "save_first": "Save the item first to add notes",
     "saved": "Saved automatically",
     "saving": "Saving...",
     "error": "Error saving",

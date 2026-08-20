@@ -108,6 +108,11 @@ export default function SaveButton({
   const handleNotesClick = (e) => {
     e.preventDefault()
     e.stopPropagation()
+    if (!saved) {
+      // Show warning that item needs to be saved first
+      alert(t('saved.login_required') || 'Guarda o item primeiro para adicionar notas')
+      return
+    }
     if (onNotesClick) onNotesClick()
   }
 
@@ -144,13 +149,13 @@ export default function SaveButton({
       </button>
 
       {/* Botão Notas */}
-      {showNotesBtn && saved && (
+      {showNotesBtn && (
         <button
           type="button"
           onClick={handleNotesClick}
-          className={`save-notes-button ${hasNote ? 'save-notes-button--has-note' : ''}`}
-          title={t('notes_drawer.title', { name: itemName })}
-          aria-label={t('notes_drawer.title', { name: itemName })}
+          className={`save-notes-button ${hasNote ? 'save-notes-button--has-note' : ''} ${!saved ? 'save-notes-button--disabled' : ''}`}
+          title={saved ? t('notes_drawer.title', { name: itemName }) : (t('notes_drawer.save_first') || 'Guarda primeiro para adicionar notas')}
+          aria-label={saved ? t('notes_drawer.title', { name: itemName }) : (t('notes_drawer.save_first') || 'Guarda primeiro para adicionar notas')}
         >
           <Pencil size={iconSize - 2} />
         </button>

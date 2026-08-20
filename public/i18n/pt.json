@@ -1104,6 +1104,7 @@
     "title": "Notas de {name}",
     "empty": "Escreve a tua nota aqui...",
     "create": "Criar Nota",
+    "save_first": "Guarda o item primeiro para adicionar notas",
     "saved": "Guardado automaticamente",
     "saving": "A guardar...",
     "error": "Erro ao guardar",
