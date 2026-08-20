@@ -3,7 +3,7 @@
 import { useContext, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import SaveButton from '@/components/ui/SaveButton'
+import SaveWithNotes from '@/components/ui/SaveWithNotes'
 import {
   AlertTriangle,
   Apple,
@@ -690,7 +690,7 @@ export default function InteracoesPageClient({
                                 {t(severityLabelKey(severity))}
                               </span>
                               {inter?.id && (
-                                <SaveButton
+                                <SaveWithNotes
                                   itemType="interaction"
                                   itemId={inter.id}
                                   itemSlug={`${drugA?.slug || ''}+${drugB?.slug || ''}`}

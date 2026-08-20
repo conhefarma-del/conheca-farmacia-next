@@ -1,12 +1,14 @@
 "use client";
 
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import Link from "next/link";
 import SaveButton from "@/components/ui/SaveButton";
+import NotesDrawer from "@/components/ui/NotesDrawer";
 import { ArrowLeft, ArrowRight, ExternalLink, Pill } from "lucide-react";
 import { LangContext } from "@/lib/contexts";
 
 export default function ClassDetailClient({ lang, cls }) {
+  const [notesOpen, setNotesOpen] = useState(false);
   const { t } = useContext(LangContext);
   const basePath = `/${lang}/classes`;
   const medsBase = `/${lang}/${lang === "pt" ? "medicamento" : "medicine"}`;
@@ -36,6 +38,8 @@ export default function ClassDetailClient({ lang, cls }) {
                 lang={lang}
                 size="lg"
                 className="save-button-hero"
+                showNotesBtn={true}
+                onNotesClick={() => setNotesOpen(true)}
               />
             </div>
             {cls.atcPrefix && (
@@ -105,6 +109,17 @@ export default function ClassDetailClient({ lang, cls }) {
           </div>
         )}
       </div>
+
+      {/* Notes Drawer */}
+      <NotesDrawer
+        isOpen={notesOpen}
+        onClose={() => setNotesOpen(false)}
+        savedItemId={cls.id}
+        itemName={cls.name}
+        itemSlug={cls.slug}
+        itemType="drug_class"
+        lang={lang}
+      />
     </div>
   );
 }

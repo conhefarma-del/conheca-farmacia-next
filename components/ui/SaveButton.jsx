@@ -2,23 +2,25 @@
 
 import { useState, useEffect, useContext } from 'react'
 import { useRouter } from 'next/navigation'
-import { Bookmark, BookmarkCheck, Loader2 } from 'lucide-react'
-import { toggleSaveItem, isItemSaved } from '@/lib/actions/saved'
+import { Bookmark, BookmarkCheck, Pencil, Loader2 } from 'lucide-react'
+import { toggleSaveItem, isItemSaved, hasNoteForItem } from '@/lib/actions/saved'
 import { LangContext } from '@/lib/contexts'
 
 /**
- * SaveButton — bookmark toggle for any saveable content.
+ * SaveButton — bookmark toggle + notes button for any saveable content.
  *
  * Props:
- *   itemType     — 'drug' | 'interaction' | 'drug_class' | 'molecular_target' | 'article'
- *   itemId       — UUID of the item
- *   itemSlug     — slug for quick link
- *   itemName     — display name (denormalized)
- *   itemSubtitle — optional subtitle
- *   itemImageUrl — optional thumbnail
- *   lang         — current language
- *   size         — 'sm' (16px) | 'md' (20px) | 'lg' (24px)
- *   className    — extra classes
+ *   itemType       — 'drug' | 'interaction' | 'drug_class' | 'molecular_target' | 'article'
+ *   itemId         — UUID of the item
+ *   itemSlug       — slug for quick link
+ *   itemName       — display name (denormalized)
+ *   itemSubtitle   — optional subtitle
+ *   itemImageUrl   — optional thumbnail
+ *   lang           — current language
+ *   size           — 'sm' (16px) | 'md' (20px) | 'lg' (24px)
+ *   className      — extra classes
+ *   onNotesClick   — () => void (abre o NotesDrawer)
+ *   showNotesBtn   — boolean (mostrar botão de notas)
  */
 export default function SaveButton({
   itemType,
@@ -30,9 +32,12 @@ export default function SaveButton({
   lang = 'pt',
   size = 'md',
   className = '',
+  onNotesClick,
+  showNotesBtn = false,
 }) {
   const { t } = useContext(LangContext)
   const [saved, setSaved] = useState(false)
+  const [hasNote, setHasNote] = useState(false)
   const [loading, setLoading] = useState(true)
   const [toggling, setToggling] = useState(false)
   const router = useRouter()
@@ -45,8 +50,14 @@ export default function SaveButton({
     let cancelled = false
     async function check() {
       try {
-        const result = await isItemSaved(itemType, itemId)
-        if (!cancelled) setSaved(result)
+        const [isSaved, noteExists] = await Promise.all([
+          isItemSaved(itemType, itemId),
+          showNotesBtn ? hasNoteForItem(itemId) : Promise.resolve(false),
+        ])
+        if (!cancelled) {
+          setSaved(isSaved)
+          setHasNote(noteExists)
+        }
       } catch {
         // silently fail — default to unsaved
       } finally {
@@ -55,9 +66,9 @@ export default function SaveButton({
     }
     check()
     return () => { cancelled = true }
-  }, [itemType, itemId])
+  }, [itemType, itemId, showNotesBtn])
 
-  const handleClick = async (e) => {
+  const handleSaveClick = async (e) => {
     e.preventDefault()
     e.stopPropagation()
 
@@ -81,12 +92,23 @@ export default function SaveButton({
 
       if (result.success) {
         setSaved(result.saved)
+        // Se guardou, verificar se tem nota
+        if (result.saved) {
+          const noteExists = await hasNoteForItem(itemId)
+          setHasNote(noteExists)
+        }
       }
     } catch {
       // silently fail
     } finally {
       setToggling(false)
     }
+  }
+
+  const handleNotesClick = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (onNotesClick) onNotesClick()
   }
 
   if (loading) {
@@ -101,22 +123,38 @@ export default function SaveButton({
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleClick}
-      disabled={toggling}
-      className={`save-button ${saved ? 'save-button--saved' : ''} ${className}`}
-      title={saved ? (t('saved.unsave') || 'Remover dos guardados') : (t('saved.save') || 'Guardar')}
-      aria-label={saved ? (t('saved.unsave') || 'Remover dos guardados') : (t('saved.save') || 'Guardar')}
-      aria-pressed={saved}
-    >
-      {toggling ? (
-        <Loader2 size={iconSize} className="animate-spin" />
-      ) : saved ? (
-        <BookmarkCheck size={iconSize} />
-      ) : (
-        <Bookmark size={iconSize} />
+    <div className={`save-button-group ${className}`}>
+      {/* Botão Guardar */}
+      <button
+        type="button"
+        onClick={handleSaveClick}
+        disabled={toggling}
+        className={`save-button ${saved ? 'save-button--saved' : ''}`}
+        title={saved ? (t('saved.unsave') || 'Remover dos guardados') : (t('saved.save') || 'Guardar')}
+        aria-label={saved ? (t('saved.unsave') || 'Remover dos guardados') : (t('saved.save') || 'Guardar')}
+        aria-pressed={saved}
+      >
+        {toggling ? (
+          <Loader2 size={iconSize} className="animate-spin" />
+        ) : saved ? (
+          <BookmarkCheck size={iconSize} />
+        ) : (
+          <Bookmark size={iconSize} />
+        )}
+      </button>
+
+      {/* Botão Notas */}
+      {showNotesBtn && saved && (
+        <button
+          type="button"
+          onClick={handleNotesClick}
+          className={`save-notes-button ${hasNote ? 'save-notes-button--has-note' : ''}`}
+          title={t('notes_drawer.title', { name: itemName })}
+          aria-label={t('notes_drawer.title', { name: itemName })}
+        >
+          <Pencil size={iconSize - 2} />
+        </button>
       )}
-    </button>
+    </div>
   )
 }

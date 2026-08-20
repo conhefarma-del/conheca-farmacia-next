@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
   Bookmark, Search, Pill, ShieldAlert, ClipboardList, Atom, Newspaper,
-  ChevronLeft, ChevronRight, Loader2, Frown, StickyNote
+  ChevronLeft, ChevronRight, Loader2, Frown, StickyNote, Pencil
 } from 'lucide-react'
 import { getSavedItems, getSavedCounts, deleteNote, addNote, updateNote, getNotes } from '@/lib/actions/saved'
 import NotesPanel from './NotesPanel'
@@ -231,7 +231,12 @@ export default function SavedPageClient({ lang }) {
               value={search}
               onChange={handleSearchChange}
               placeholder={t('saved.search_placeholder')}
-              className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] text-brand-deep"
+              className="w-full pl-10 pr-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+              style={{
+                borderColor: 'var(--color-brand-divider)',
+                background: 'var(--color-brand-bg)',
+                color: 'var(--color-brand-deep)',
+              }}
             />
           </div>
         </div>
@@ -300,11 +305,14 @@ export default function SavedPageClient({ lang }) {
                           <button
                             type="button"
                             onClick={() => toggleNotes(item.id)}
-                            className={`saved-item-notes-badge ${expandedNotes === item.id ? 'saved-item-notes-badge--active' : ''}`}
+                            className={`saved-item-notes-btn ${expandedNotes === item.id ? 'saved-item-notes-btn--active' : ''}`}
                             title={t('saved.notes_title')}
                           >
-                            <StickyNote size={12} />
-                            {item.notesCount > 0 && item.notesCount}
+                            <Pencil size={14} />
+                            <span className="saved-item-notes-label">{t('saved.notes_title')}</span>
+                            {item.notesCount > 0 && (
+                              <span className="saved-item-notes-count">{item.notesCount}</span>
+                            )}
                           </button>
                           <span className="saved-item-date">
                             {new Date(item.created_at).toLocaleDateString('pt-PT', { day: 'numeric', month: 'short' })}

@@ -1099,5 +1099,38 @@
     "notes_edit": "Edit",
     "notes_delete": "Delete",
     "notes_max_length": "Maximum 2000 characters"
+  },
+  "notes_drawer": {
+    "title": "Notes for {name}",
+    "empty": "Write your note here...",
+    "saved": "Saved automatically",
+    "saving": "Saving...",
+    "error": "Error saving",
+    "retry": "Try again",
+    "characters": "{n} characters",
+    "view_item": "View on {page}",
+    "close": "Close"
+  },
+  "notes_page": {
+    "title": "Notes",
+    "subtitle": "{n} notes",
+    "search_placeholder": "Search notes...",
+    "tabs_all": "All",
+    "tab_drug": "Medications",
+    "tab_interaction": "Interactions",
+    "tab_drug_class": "Classes",
+    "tab_molecular_target": "Targets",
+    "tab_article": "Articles",
+    "empty": "You don't have any notes yet",
+    "empty_hint": "Create notes on medications, interactions and more",
+    "no_results": "No results found",
+    "no_results_hint": "No results for",
+    "updated_ago": "Updated {time}",
+    "view_item": "View on {page}",
+    "confirm_delete": "Delete this note?",
+    "login_required": "You need an account to view your notes",
+    "load_more": "Load more...",
+    "save": "Save",
+    "cancel": "Cancel"
   }
 }

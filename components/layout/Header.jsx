@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Atom, BookOpen, BrainCircuit, ChevronDown, ClipboardList, LogIn, LogOut, Pill, Tablets, Trophy, User } from 'lucide-react'
+import { Atom, Bookmark, BookOpen, BrainCircuit, ChevronDown, ClipboardList, LogIn, LogOut, Pencil, Pill, Tablets, Trophy, User } from 'lucide-react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import InviteNotifications from '@/components/ui/InviteNotifications'
 import { getSectionHref } from '@/lib/i18n-routes'
@@ -221,9 +221,13 @@ export default function Header({ lang, t, onToggleDrawer }) {
                     <User size={16} />
                     Perfil
                   </Link>
-                  <Link href={`/${lang}/medicamentos`} className="profile-dropdown-item" onClick={() => setProfileOpen(false)}>
-                    <Pill size={16} />
-                    Medicamentos
+                  <Link href={`/${lang}/anotacoes`} className="profile-dropdown-item" onClick={() => setProfileOpen(false)}>
+                    <Pencil size={16} />
+                    Anotações
+                  </Link>
+                  <Link href={`/${lang}/guardados`} className="profile-dropdown-item" onClick={() => setProfileOpen(false)}>
+                    <Bookmark size={16} />
+                    Guardados
                   </Link>
                   <div className="profile-dropdown-divider" />
                   <button

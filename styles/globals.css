@@ -3692,6 +3692,272 @@ html.dark .save-button--saved:hover {
   color: #f87171;
 }
 
+/* Save button group (save + notes) */
+.save-button-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.save-notes-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--color-brand-divider);
+  background: var(--color-brand-card);
+  color: var(--color-brand-deep);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0.6;
+}
+
+.save-notes-button:hover {
+  border-color: var(--color-brand-accent);
+  color: var(--color-brand-accent);
+  opacity: 1;
+}
+
+.save-notes-button--has-note {
+  background: rgba(10, 132, 79, 0.08);
+  border-color: var(--color-brand-accent);
+  color: var(--color-brand-accent);
+  opacity: 1;
+}
+
+html.dark .save-notes-button {
+  background: var(--color-brand-card);
+  border-color: var(--color-brand-divider);
+  color: var(--color-brand-deep);
+}
+
+html.dark .save-notes-button:hover {
+  border-color: var(--color-brand-accent);
+  color: var(--color-brand-accent);
+  background: rgba(13, 153, 95, 0.1);
+}
+
+html.dark .save-notes-button--has-note {
+  background: rgba(13, 153, 95, 0.12);
+  border-color: var(--color-brand-accent);
+  color: var(--color-brand-accent);
+}
+
+/* =============================================
+   NOTES DRAWER
+   ============================================= */
+
+/* Desktop sidebar */
+.notes-drawer-desktop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 380px;
+  height: 100vh;
+  background: var(--color-brand-bg);
+  border-left: 1px solid var(--color-brand-divider);
+  z-index: 50;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.notes-drawer-desktop.is-open {
+  transform: translateX(0);
+}
+
+/* Mobile bottom sheet */
+.notes-drawer-mobile {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--color-brand-bg);
+  border-top: 1px solid var(--color-brand-divider);
+  border-radius: 16px 16px 0 0;
+  z-index: 50;
+  transition: height 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.notes-drawer-mobile.is-collapsed {
+  height: 48px;
+  overflow: hidden;
+}
+
+.notes-drawer-mobile.is-expanded {
+  height: 85vh;
+}
+
+/* Backdrop */
+.notes-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 49;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.notes-drawer-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Handle */
+.notes-drawer-handle {
+  width: 36px;
+  height: 4px;
+  background: var(--color-brand-divider);
+  border-radius: 2px;
+  margin: 8px auto;
+  cursor: grab;
+  flex-shrink: 0;
+}
+
+/* Header */
+.notes-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-brand-divider);
+  flex-shrink: 0;
+}
+
+.notes-drawer-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: var(--color-brand-deep);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.notes-drawer-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.notes-drawer-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--color-brand-deep);
+  opacity: 0.6;
+}
+
+.notes-drawer-status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+}
+
+.notes-drawer-status--saved {
+  color: var(--color-brand-accent);
+}
+
+.notes-drawer-chars {
+  font-size: 11px;
+  opacity: 0.5;
+}
+
+/* Body */
+.notes-drawer-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.notes-drawer-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 24px;
+}
+
+.notes-drawer-textarea {
+  flex: 1;
+  width: 100%;
+  padding: 16px;
+  border: none;
+  background: transparent;
+  color: var(--color-brand-deep);
+  font-size: 14px;
+  line-height: 1.6;
+  resize: none;
+  outline: none;
+  font-family: inherit;
+}
+
+.notes-drawer-textarea::placeholder {
+  color: var(--color-brand-deep);
+  opacity: 0.35;
+}
+
+/* Footer */
+.notes-drawer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-top: 1px solid var(--color-brand-divider);
+  flex-shrink: 0;
+}
+
+.notes-drawer-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--color-brand-accent);
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.notes-drawer-link:hover {
+  text-decoration: underline;
+}
+
+/* Dark mode */
+html.dark .notes-drawer-desktop {
+  background: var(--color-brand-bg);
+  border-color: var(--color-brand-divider);
+}
+
+html.dark .notes-drawer-mobile {
+  background: var(--color-brand-bg);
+  border-color: var(--color-brand-divider);
+}
+
+html.dark .notes-drawer-handle {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+html.dark .notes-drawer-header {
+  border-color: var(--color-brand-divider);
+}
+
+html.dark .notes-drawer-footer {
+  border-color: var(--color-brand-divider);
+}
+
 /* =============================================
    SAVED ITEMS PAGE
    ============================================= */
@@ -3916,6 +4182,49 @@ html.dark .save-button--saved:hover {
 .saved-item-notes-badge--active {
   background: rgba(10, 132, 79, 0.15);
   color: var(--color-brand-accent);
+}
+
+/* New notes button with label */
+.saved-item-notes-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(10, 132, 79, 0.08);
+  color: var(--color-brand-accent);
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.saved-item-notes-btn:hover {
+  background: rgba(10, 132, 79, 0.15);
+}
+
+.saved-item-notes-btn--active {
+  background: var(--color-brand-accent);
+  color: white;
+}
+
+.saved-item-notes-label {
+  font-size: 12px;
+}
+
+.saved-item-notes-count {
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 8px;
+  background: rgba(10, 132, 79, 0.15);
+  color: var(--color-brand-accent);
+  font-weight: 700;
+}
+
+.saved-item-notes-btn--active .saved-item-notes-count {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
 }
 
 .saved-item-date {

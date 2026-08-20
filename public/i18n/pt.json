@@ -1099,5 +1099,38 @@
     "notes_edit": "Editar",
     "notes_delete": "Eliminar",
     "notes_max_length": "Máximo 2000 caracteres"
+  },
+  "notes_drawer": {
+    "title": "Notas de {name}",
+    "empty": "Escreve a tua nota aqui...",
+    "saved": "Guardado automaticamente",
+    "saving": "A guardar...",
+    "error": "Erro ao guardar",
+    "retry": "Tentar novamente",
+    "characters": "{n} caracteres",
+    "view_item": "Ver em {page}",
+    "close": "Fechar"
+  },
+  "notes_page": {
+    "title": "Anotações",
+    "subtitle": "{n} anotações",
+    "search_placeholder": "Pesquisar anotações...",
+    "tabs_all": "Todas",
+    "tab_drug": "Medicamentos",
+    "tab_interaction": "Interações",
+    "tab_drug_class": "Classes",
+    "tab_molecular_target": "Alvos",
+    "tab_article": "Artigos",
+    "empty": "Ainda não tens anotações",
+    "empty_hint": "Cria anotações nos medicamentos, interações e mais",
+    "no_results": "Nenhum resultado encontrado",
+    "no_results_hint": "Sem resultados para",
+    "updated_ago": "Atualizado {time}",
+    "view_item": "Ver em {page}",
+    "confirm_delete": "Eliminar esta anotação?",
+    "login_required": "Precisas de conta para ver as tuas anotações",
+    "load_more": "Carregar mais...",
+    "save": "Guardar",
+    "cancel": "Cancelar"
   }
 }
