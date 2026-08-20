@@ -136,21 +136,22 @@ export default function FriendChallengeClient({ lang, code }) {
       }
 
       // Check if quiz started
-      if (compInfo) {
-        const comp = await getCompetitionByCode(code)
-        if (comp?.status === 'active') {
-          // Quiz started — get questions from session
-          if (me?.sessionId) {
-            const session = await getCompetitionSession(me.sessionId)
-            if (session?.questions && session.questions.length > 0) {
-              setQuestions(session.questions.map(({ correctIndex, ...q }) => q))
-              setTimeLeft(comp.time_per_question || 30)
-              setPhase('quiz')
-            }
+      const comp = await getCompetitionByCode(code)
+      if (comp?.status === 'active') {
+        // Quiz started — get questions from session
+        const storedSession = localStorage.getItem('comp_session')
+        if (storedSession) {
+          const session = await getCompetitionSession(storedSession)
+          if (session?.questions && session.questions.length > 0) {
+            setQuestions(session.questions.map(({ correctIndex, ...q }) => q))
+            setTimeLeft(comp.time_per_question || 30)
+            setPhase('quiz')
           }
         }
       }
-    } catch {}
+    } catch (err) {
+      console.error('pollLobby error:', err)
+    }
   }, [compInfo, code])
 
   useEffect(() => {
