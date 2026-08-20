@@ -245,7 +245,6 @@ export default function Header({ lang, t, onToggleDrawer }) {
               </>
             ) : (
               <Link href={`/${lang}/entrar`} className="profile-login-link">
-                <LogIn size={18} />
                 <span>Entrar</span>
               </Link>
             )}

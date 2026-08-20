@@ -2327,6 +2327,13 @@ html.dark .theme-toggle .moon-icon {
   transform: scale(1.03);
 }
 
+/* Hide login link on mobile — it's in the drawer menu */
+@media (max-width: 767px) {
+  .profile-login-link {
+    display: none;
+  }
+}
+
 .profile-dropdown {
   position: absolute;
   top: calc(100% + 0.5rem);
