@@ -4,10 +4,9 @@ import { useState, useEffect, useCallback, useContext } from 'react'
 import Link from 'next/link'
 import {
   Bookmark, Search, Pill, ShieldAlert, ClipboardList, Atom, Newspaper,
-  ChevronLeft, ChevronRight, Loader2, Frown, StickyNote, Pencil
+  ChevronLeft, ChevronRight, Loader2, Frown
 } from 'lucide-react'
-import { getSavedItems, getSavedCounts, getNoteForItem } from '@/lib/actions/saved'
-import NotesDrawer from '@/components/ui/NotesDrawer'
+import { getSavedItems, getSavedCounts } from '@/lib/actions/saved'
 import { LangContext } from '@/lib/contexts'
 
 const ITEM_TYPES = [
@@ -61,11 +60,6 @@ export default function SavedPageClient({ lang }) {
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
   const [loadingItems, setLoadingItems] = useState(false)
-  const [notesCache, setNotesCache] = useState({})
-  
-  // NotesDrawer state
-  const [drawerOpen, setDrawerOpen] = useState(false)
-  const [drawerItem, setDrawerItem] = useState(null)
 
   // Load counts
   useEffect(() => {
@@ -112,22 +106,6 @@ export default function SavedPageClient({ lang }) {
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value)
-  }
-
-  const openDrawer = async (item) => {
-    setDrawerItem(item)
-    setDrawerOpen(true)
-    
-    // Load note if not cached
-    if (notesCache[item.id] === undefined) {
-      const note = await getNoteForItem(item.item_type, item.item_id)
-      setNotesCache((prev) => ({ ...prev, [item.id]: note }))
-    }
-  }
-
-  const handleDrawerClose = () => {
-    setDrawerOpen(false)
-    setDrawerItem(null)
   }
 
   if (loading) {
@@ -242,8 +220,6 @@ export default function SavedPageClient({ lang }) {
                 {items.map((item) => {
                   const TypeIcon = TYPE_ICONS[item.item_type] || Bookmark
                   const href = TYPE_LINKS[item.item_type]?.(lang, item.item_slug) || '#'
-                  const note = notesCache[item.id]
-                  const hasNote = note?.content?.trim().length > 0
 
                   return (
                     <div key={item.id} className="saved-card">
@@ -263,24 +239,6 @@ export default function SavedPageClient({ lang }) {
                           </div>
                         </div>
                       </Link>
-                      
-                      {/* Note preview */}
-                      {hasNote && (
-                        <div className="saved-card-note-preview">
-                          <StickyNote size={12} className="inline mr-1 opacity-50" />
-                          {note.content.substring(0, 80)}...
-                        </div>
-                      )}
-                      
-                      {/* Notes button */}
-                      <button
-                        type="button"
-                        onClick={() => openDrawer(item)}
-                        className={`saved-card-notes-btn ${hasNote ? 'saved-card-notes-btn--has-note' : ''}`}
-                        title={t('saved.notes_title')}
-                      >
-                        <Pencil size={14} />
-                      </button>
                     </div>
                   )
                 })}
@@ -314,19 +272,6 @@ export default function SavedPageClient({ lang }) {
           )}
         </div>
       </section>
-
-      {/* Notes Drawer */}
-      {drawerItem && (
-        <NotesDrawer
-          isOpen={drawerOpen}
-          onClose={handleDrawerClose}
-          itemId={drawerItem.item_id}
-          itemName={drawerItem.item_name}
-          itemSlug={drawerItem.item_slug}
-          itemType={drawerItem.item_type}
-          lang={lang}
-        />
-      )}
     </div>
   )
 }
