@@ -373,15 +373,12 @@ export default function PerfilClient({ lang }) {
               </div>
               {compHistory.map((comp) => (
                 <div key={comp.id} className="profile-comp-item">
-                  <div className={`profile-comp-rank ${comp.position === 1 ? 'gold' : comp.position === 2 ? 'silver' : comp.position === 3 ? 'bronze' : ''}`}>
-                    {comp.position}º
-                  </div>
                   <div className="profile-comp-info">
                     <div className="profile-comp-name">{comp.competitionName}</div>
-                    <div className="profile-comp-meta">vs {comp.opponents.map((o) => o.name).join(', ')} • {new Date(comp.finishedAt).toLocaleDateString('pt-PT', { day: 'numeric', month: 'short' })}</div>
+                    <div className="profile-comp-meta">{comp.correctCount}/{comp.totalAnswered} corretas • {comp.accuracy}% • {new Date(comp.createdAt).toLocaleDateString('pt-PT', { day: 'numeric', month: 'short' })}</div>
                   </div>
                   <div className="profile-comp-score">
-                    <div className="profile-comp-score-value">{comp.myScore}</div>
+                    <div className="profile-comp-score-value">{comp.totalScore}</div>
                     <div className="profile-comp-score-label">pontos</div>
                   </div>
                 </div>
