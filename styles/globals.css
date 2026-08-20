@@ -3136,7 +3136,14 @@ html.dark .bell-dropdown-link:hover {
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .profile-hero-v2 {
-    padding: 48px 20px 32px;
+    padding: 48px 20px 36px;
+    text-align: center;
+  }
+
+  .profile-hero-inner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
 
   .profile-hero-avatar {
@@ -3148,17 +3155,41 @@ html.dark .bell-dropdown-link:hover {
     font-size: 24px;
   }
 
+  .profile-hero-info {
+    text-align: center;
+  }
+
+  .profile-hero-name-row {
+    justify-content: center;
+  }
+
   .profile-hero-name {
     font-size: 22px;
   }
 
+  .profile-hero-tags {
+    justify-content: center;
+  }
+
+  /* Stats — 2x2 grid floating over hero */
+  .profile-stats-v2 {
+    padding: 0 16px;
+    margin-top: -20px;
+  }
+
   .profile-stats-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
   }
 
   .profile-stat-card {
-    padding: 18px 16px;
+    padding: 18px;
+    text-align: center;
+  }
+
+  .profile-stat-top {
+    justify-content: center;
+    margin-bottom: 8px;
   }
 
   .profile-stat-icon {
@@ -3171,23 +3202,83 @@ html.dark .bell-dropdown-link:hover {
   }
 
   .profile-stat-label {
-    font-size: 10px;
+    font-size: 12px;
+  }
+
+  /* Content */
+  .profile-content-v2 {
+    padding: 20px 16px 48px;
   }
 
   .profile-grid-v2 {
     grid-template-columns: 1fr;
   }
 
+  /* Tools — horizontal scroll */
   .profile-tools-grid {
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .profile-tools-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .profile-tools-grid > *:last-child {
+    margin-right: 16px;
   }
 
   .profile-tool-card {
-    padding: 12px 6px;
+    min-width: 120px;
+    flex-shrink: 0;
+    flex-direction: column;
+    text-align: center;
+    padding: 14px 10px;
+  }
+
+  .profile-tool-icon {
+    margin: 0 auto 6px;
   }
 
   .profile-tool-label {
-    font-size: 11px;
+    font-size: 12px;
+  }
+
+  /* Competition items */
+  .profile-comp-item {
+    gap: 10px;
+    padding: 12px 0;
+  }
+
+  .profile-comp-rank {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+
+  .profile-comp-name {
+    font-size: 13px;
+  }
+
+  .profile-comp-score-value {
+    font-size: 15px;
+  }
+
+  /* Info rows */
+  .profile-info-item {
+    padding: 10px 0;
+  }
+
+  /* Edit inputs */
+  .profile-hero-edit-input {
+    font-size: 20px;
+  }
+
+  .profile-hero-edit-input:focus {
+    min-width: 160px;
   }
 }
 
