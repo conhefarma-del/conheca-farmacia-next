@@ -41,7 +41,7 @@ export default function Loading() {
         <div className="container-center">
           <div className="profile-stats-grid">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="profile-stat-card" style={{ background: 'transparent', border: '1px solid transparent' }}>
+              <div key={i} className="profile-stat-card">
                 <div className="profile-stat-top">
                   <div className="w-10 h-10 rounded-xl" style={{ ...pulse, opacity: 0.15 }} />
                 </div>
