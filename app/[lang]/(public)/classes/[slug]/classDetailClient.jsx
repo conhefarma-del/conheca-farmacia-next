@@ -2,6 +2,7 @@
 
 import { useContext } from "react";
 import Link from "next/link";
+import SaveButton from "@/components/ui/SaveButton";
 import { ArrowLeft, ArrowRight, ExternalLink, Pill } from "lucide-react";
 import { LangContext } from "@/lib/contexts";
 
@@ -22,9 +23,21 @@ export default function ClassDetailClient({ lang, cls }) {
                 {t("classes_page.voltar")}
               </Link>
             </p>
-            <h1 className="text-5xl md:text-7xl font-bold text-brand-deep mb-4 break-words">
-              {cls.name}
-            </h1>
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <h1 className="text-5xl md:text-7xl font-bold text-brand-deep break-words">
+                {cls.name}
+              </h1>
+              <SaveButton
+                itemType="drug_class"
+                itemId={cls.id}
+                itemSlug={cls.slug}
+                itemName={cls.name}
+                itemSubtitle={cls.atcPrefix ? `ATC: ${cls.atcPrefix}` : null}
+                lang={lang}
+                size="lg"
+                className="save-button-hero"
+              />
+            </div>
             {cls.atcPrefix && (
               <p className="text-center text-sm text-gray-500 dark:text-gray-400 mb-2 font-mono">
                 ATC: {cls.atcPrefix}

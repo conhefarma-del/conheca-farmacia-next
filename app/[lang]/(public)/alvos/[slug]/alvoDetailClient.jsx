@@ -2,6 +2,7 @@
 
 import { useContext, useMemo } from "react";
 import Link from "next/link";
+import SaveButton from "@/components/ui/SaveButton";
 import { ArrowLeft, BookOpen, Info, Lightbulb } from "lucide-react";
 import { LangContext } from "@/lib/contexts";
 
@@ -100,7 +101,19 @@ export default function AlvoDetailClient({ lang, target, drugs = [] }) {
           <span className={`alvo-badge alvo-badge-${target.targetType}`}>
             {typeLabel}
           </span>
-          <h1 className="alvo-detail-title">{target.name}</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="alvo-detail-title">{target.name}</h1>
+            <SaveButton
+              itemType="molecular_target"
+              itemId={target.id}
+              itemSlug={target.slug}
+              itemName={target.name}
+              itemSubtitle={target.fullName || target.targetType || null}
+              lang={lang}
+              size="lg"
+              className="save-button-hero"
+            />
+          </div>
           {target.fullName && (
             <p className="alvo-detail-fullname">{target.fullName}</p>
           )}

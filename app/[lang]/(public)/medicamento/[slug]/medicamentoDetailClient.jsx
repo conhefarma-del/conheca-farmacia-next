@@ -3,6 +3,7 @@
 import { useContext, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import SaveButton from "@/components/ui/SaveButton";
 import {
   AlertTriangle,
   Apple,
@@ -276,9 +277,21 @@ export default function MedicamentoDetailClient({
                 {t("medicamento_detalhe.voltar")}
               </Link>
             </p>
-            <h1 className="text-5xl md:text-7xl font-bold text-brand-deep mb-4 break-words">
-              {drug.name}
-            </h1>
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <h1 className="text-5xl md:text-7xl font-bold text-brand-deep break-words">
+                {drug.name}
+              </h1>
+              <SaveButton
+                itemType="drug"
+                itemId={drug.id}
+                itemSlug={drug.slug}
+                itemName={drug.name}
+                itemSubtitle={drug.className || null}
+                lang={lang}
+                size="lg"
+                className="save-button-hero"
+              />
+            </div>
             {drug.className && (
               <p className="hero-subtitle text-center">
                 {drug.classSlug ? (
