@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { Mail, Lock, UserPlus, Chrome, Eye, EyeOff } from 'lucide-react'
+import { Mail, Lock, UserPlus, Eye, EyeOff } from 'lucide-react'
 
 export default function RegistoClient({ lang }) {
   const [email, setEmail] = useState('')
@@ -35,6 +35,7 @@ export default function RegistoClient({ lang }) {
         email,
         password,
         options: {
+          emailRedirectTo: `${window.location.origin}/${lang}/perfil`,
           data: {
             display_name: email.split('@')[0],
           },

@@ -4,14 +4,27 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, LogIn, LogOut, Trophy, User } from 'lucide-react'
 import { getSectionHref } from '@/lib/i18n-routes'
 import { featureEnabled } from '@/lib/features'
 import ThemeToggle from '@/components/ui/ThemeToggle'
+import { createClient } from '@/lib/supabase/client'
 
 export default function MobileDrawer({ lang, t, open, onClose }) {
   const pathname = usePathname()
   const [toolsOpen, setToolsOpen] = useState(false)
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) setUser(data.user)
+    })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user || null)
+    })
+    return () => subscription.unsubscribe()
+  }, [])
 
   // Map subpaths to their parent section (matches MPA PAGE_SECTION_MAP)
   const SECTION_MAP = {
@@ -58,6 +71,7 @@ export default function MobileDrawer({ lang, t, open, onClose }) {
     { href: getSectionHref(lang, 'interacoes'), label: t('nav.interacoes'), path: 'interacoes' },
     { href: getSectionHref(lang, 'medicamentos'), label: t('nav.medicamentos'), path: 'medicamentos' },
     { href: getSectionHref(lang, 'alvos'), label: t('nav.alvos'), path: 'alvos' },
+    { href: `/${lang}/competicao`, label: t('competition.nav') || 'Competição', path: 'competicao' },
   ]
 
   const toolsActive = toolsLinks.some((l) => isActive(l.path))
@@ -120,6 +134,30 @@ export default function MobileDrawer({ lang, t, open, onClose }) {
         </ul>
 
         <div className="drawer-footer">
+          {user ? (
+            <div className="drawer-auth-links">
+              <Link href={`/${lang}/perfil`} className="drawer-auth-link" onClick={handleClose}>
+                <User size={18} />
+                Perfil
+              </Link>
+              <button
+                className="drawer-auth-link drawer-auth-logout"
+                onClick={async () => {
+                  const supabase = createClient()
+                  await supabase.auth.signOut()
+                  window.location.href = `/${lang}`
+                }}
+              >
+                <LogOut size={18} />
+                Terminar Sessão
+              </button>
+            </div>
+          ) : (
+            <Link href={`/${lang}/entrar`} className="drawer-auth-link" onClick={handleClose}>
+              <LogIn size={18} />
+              Entrar
+            </Link>
+          )}
           <ThemeToggle className="drawer-theme-toggle" />
         </div>
       </div>

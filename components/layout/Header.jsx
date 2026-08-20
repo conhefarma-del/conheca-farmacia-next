@@ -4,15 +4,40 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Atom, BookOpen, BrainCircuit, ChevronDown, ClipboardList, Pill, Tablets, Trophy } from 'lucide-react'
+import { Atom, BookOpen, BrainCircuit, ChevronDown, ClipboardList, LogIn, LogOut, Pill, Tablets, Trophy, User } from 'lucide-react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import { getSectionHref } from '@/lib/i18n-routes'
 import { featureEnabled } from '@/lib/features'
+import { createClient } from '@/lib/supabase/client'
 
 export default function Header({ lang, t, onToggleDrawer }) {
   const pathname = usePathname()
   const [toolsOpen, setToolsOpen] = useState(false)
   const toolsRef = useRef(null)
+  const [profileOpen, setProfileOpen] = useState(false)
+  const profileRef = useRef(null)
+  const [user, setUser] = useState(null)
+  const [avatarUrl, setAvatarUrl] = useState(null)
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) {
+        setUser(data.user)
+        setAvatarUrl(data.user.user_metadata?.avatar_url || null)
+      }
+    })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setUser(session.user)
+        setAvatarUrl(session.user.user_metadata?.avatar_url || null)
+      } else {
+        setUser(null)
+        setAvatarUrl(null)
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [])
 
   // Map subpaths to their parent section (matches MPA PAGE_SECTION_MAP)
   const SECTION_MAP = {
@@ -26,10 +51,11 @@ export default function Header({ lang, t, onToggleDrawer }) {
     return mapped === path ? 'nav-link-active' : ''
   }
 
-  // Fecha o dropdown ao clicar fora
+  // Fecha os dropdowns ao clicar fora
   useEffect(() => {
     const onDocClick = (e) => {
       if (toolsRef.current && !toolsRef.current.contains(e.target)) setToolsOpen(false)
+      if (profileRef.current && !profileRef.current.contains(e.target)) setProfileOpen(false)
     }
     document.addEventListener('click', onDocClick)
     return () => document.removeEventListener('click', onDocClick)
@@ -161,6 +187,64 @@ export default function Header({ lang, t, onToggleDrawer }) {
 
         <div className="header-right">
           <ThemeToggle />
+
+          {/* Profile dropdown / Entrar link */}
+          <div className="profile-wrapper" ref={profileRef}>
+            {user ? (
+              <>
+                <button
+                  className="profile-btn"
+                  onClick={() => setProfileOpen((o) => !o)}
+                  aria-expanded={profileOpen}
+                  aria-haspopup="true"
+                  aria-label="Perfil"
+                >
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt="" className="profile-avatar" width={32} height={32} />
+                  ) : (
+                    <div className="profile-avatar-placeholder">
+                      <User size={18} />
+                    </div>
+                  )}
+                </button>
+                <div className={`profile-dropdown${profileOpen ? ' is-open' : ''}`}>
+                  <div className="profile-dropdown-header">
+                    <span className="profile-dropdown-name">
+                      {user.user_metadata?.full_name || user.user_metadata?.display_name || user.email?.split('@')[0]}
+                    </span>
+                    <span className="profile-dropdown-email">{user.email}</span>
+                  </div>
+                  <div className="profile-dropdown-divider" />
+                  <Link href={`/${lang}/perfil`} className="profile-dropdown-item" onClick={() => setProfileOpen(false)}>
+                    <User size={16} />
+                    Perfil
+                  </Link>
+                  <Link href={`/${lang}/medicamentos`} className="profile-dropdown-item" onClick={() => setProfileOpen(false)}>
+                    <Pill size={16} />
+                    Medicamentos
+                  </Link>
+                  <div className="profile-dropdown-divider" />
+                  <button
+                    className="profile-dropdown-item profile-dropdown-logout"
+                    onClick={async () => {
+                      const supabase = createClient()
+                      await supabase.auth.signOut()
+                      window.location.href = `/${lang}`
+                    }}
+                  >
+                    <LogOut size={16} />
+                    Terminar Sessão
+                  </button>
+                </div>
+              </>
+            ) : (
+              <Link href={`/${lang}/entrar`} className="profile-login-link">
+                <LogIn size={18} />
+                <span>Entrar</span>
+              </Link>
+            )}
+          </div>
+
           <button
             className="hamburger"
             onClick={onToggleDrawer}
