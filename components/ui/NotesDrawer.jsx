@@ -61,11 +61,11 @@ export default function NotesDrawer({
     return () => window.removeEventListener('resize', check)
   }, [])
 
-  // Desktop: always open expanded + editing mode
+  // Desktop: always open expanded (editing will be set after content loads)
   useEffect(() => {
     if (isOpen && !isMobile) {
       setCollapsed(false)
-      setEditing(true)
+      setEditing(false) // Will be set to true after content loads if note is empty
     } else if (isOpen && isMobile) {
       setCollapsed(true)
       setEditing(false)
@@ -109,23 +109,27 @@ export default function NotesDrawer({
     async function load() {
       setLoading(true)
       try {
+        let noteContent = ''
         // Nota solta: buscar pelo noteId
         if (isStandalone && noteId) {
           const note = await getNoteById(noteId)
-          if (!cancelled) {
-            setContent(note?.content || '')
-            setOriginalContent(note?.content || '')
-          }
+          noteContent = note?.content || ''
         } else if (itemId && itemType) {
           // Nota de item: buscar pelo item
           const note = await getNoteForItem(itemType, itemId)
-          if (!cancelled) {
-            setContent(note?.content || '')
-            setOriginalContent(note?.content || '')
-          }
+          noteContent = note?.content || ''
+        }
+        if (!cancelled) {
+          setContent(noteContent)
+          setOriginalContent(noteContent)
+          // Se não tem conteúdo, abre em modo edição; se tem, mostra visualização
+          setEditing(!noteContent)
         }
       } catch (err) {
         console.error('Error loading note:', err)
+        if (!cancelled) {
+          setEditing(true) // Em caso de erro, abre em modo edição
+        }
       } finally {
         if (!cancelled) {
           setLoading(false)
