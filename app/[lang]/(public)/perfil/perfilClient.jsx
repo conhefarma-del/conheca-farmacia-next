@@ -160,7 +160,7 @@ export default function PerfilClient({ lang }) {
 
             {saveMsg && <p className="text-sm text-center text-brand-accent mb-4">{saveMsg}</p>}
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 gap-3">
               <div className="bg-background rounded-xl p-4 text-center">
                 <div className="text-brand-accent mb-1"><Calendar size={18} className="mx-auto" /></div>
                 <div className="text-xs text-brand-deep/50">Membro desde</div>
@@ -177,9 +177,21 @@ export default function PerfilClient({ lang }) {
                 <div className="text-brand-accent mb-1"><School size={18} className="mx-auto" /></div>
                 <div className="text-xs text-brand-deep/50">Escola</div>
                 <div className="font-medium text-brand-deep text-sm mt-1">
-                  {user.user_metadata?.school || '—'}
+                  {!statsLoading && stats?.competitions?.schoolName
+                    || user.user_metadata?.school
+                    || '—'}
                 </div>
               </div>
+              {(!statsLoading && stats?.competitions?.className) || user.user_metadata?.class_name ? (
+                <div className="bg-background rounded-xl p-4 text-center">
+                  <div className="text-brand-accent mb-1"><ClipboardList size={18} className="mx-auto" /></div>
+                  <div className="text-xs text-brand-deep/50">Turma</div>
+                  <div className="font-medium text-brand-deep text-sm mt-1">
+                    {!statsLoading && stats?.competitions?.className
+                      || user.user_metadata?.class_name}
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
 
@@ -272,6 +284,18 @@ export default function PerfilClient({ lang }) {
                         </div>
                         <div className="text-2xl font-bold text-brand-accent">{stats.competitions.bestScore}</div>
                         <div className="text-xs text-brand-deep/50 mt-1">{stats.competitions.bestAccuracy}% precisão</div>
+                      </div>
+                    )}
+                    {stats.competitions.schoolName && (
+                      <div className="bg-background rounded-xl p-4">
+                        <div className="flex items-center gap-2 text-brand-deep/60 text-xs mb-2">
+                          <School size={14} />
+                          Escola
+                        </div>
+                        <div className="text-sm font-bold text-brand-deep leading-tight">{stats.competitions.schoolName}</div>
+                        {stats.competitions.className && (
+                          <div className="text-xs text-brand-deep/50 mt-1">{stats.competitions.className}</div>
+                        )}
                       </div>
                     )}
                   </>
