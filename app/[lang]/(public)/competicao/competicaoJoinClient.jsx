@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useContext } from 'react'
 import { LangContext } from '@/lib/contexts'
 import { joinCompetition, getCompetitionByCode } from '@/lib/actions/competition'
+import { createClient } from '@/lib/supabase/client'
 import { Trophy, Users, ArrowRight, Search, Swords } from 'lucide-react'
 
 export default function CompeticaoJoinClient({ lang }) {
@@ -18,6 +19,25 @@ export default function CompeticaoJoinClient({ lang }) {
   const [schoolName, setSchoolName] = useState('')
   const [className, setClassName] = useState('')
   const [joining, setJoining] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  // Auto-fill fields for logged-in users
+  useEffect(() => {
+    async function loadUser() {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        setIsLoggedIn(true)
+        const name = user.user_metadata?.full_name || user.user_metadata?.display_name || ''
+        const school = user.user_metadata?.school || ''
+        const cls = user.user_metadata?.class_name || ''
+        setStudentName(name)
+        setSchoolName(school)
+        setClassName(cls)
+      }
+    }
+    loadUser()
+  }, [])
 
   const handleLookupCode = async (e) => {
     e.preventDefault()
@@ -188,7 +208,7 @@ export default function CompeticaoJoinClient({ lang }) {
                     onClick={() => { setStep('code'); setCompInfo(null); setError('') }}
                     className="px-6 py-3 rounded-xl border border-brand-divider text-brand-deep hover:bg-brand-deep/5 transition-all"
                   >
-                    {t('common.back') || 'Voltar'}
+                    {t('common.voltar') || 'Voltar'}
                   </button>
                   <button
                     type="submit"
