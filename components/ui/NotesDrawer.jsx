@@ -41,6 +41,8 @@ export default function NotesDrawer({
 
   const [collapsed, setCollapsed] = useState(true)
   const [editing, setEditing] = useState(false)
+  const [title, setTitle] = useState('')
+  const [originalTitle, setOriginalTitle] = useState('')
   const [content, setContent] = useState('')
   const [originalContent, setOriginalContent] = useState('')
   const [saving, setSaving] = useState(false)
@@ -110,18 +112,23 @@ export default function NotesDrawer({
       setLoading(true)
       try {
         let noteContent = ''
+        let noteTitle = ''
         // Nota solta: buscar pelo noteId
         if (isStandalone && noteId) {
           const note = await getNoteById(noteId)
           noteContent = note?.content || ''
+          noteTitle = note?.title || ''
         } else if (itemId && itemType) {
           // Nota de item: buscar pelo item
           const note = await getNoteForItem(itemType, itemId)
           noteContent = note?.content || ''
+          noteTitle = note?.title || ''
         }
         if (!cancelled) {
           setContent(noteContent)
           setOriginalContent(noteContent)
+          setTitle(noteTitle)
+          setOriginalTitle(noteTitle)
           // Se não tem conteúdo, abre em modo edição; se tem, mostra visualização
           setEditing(!noteContent)
         }
@@ -165,17 +172,18 @@ export default function NotesDrawer({
   }
 
   const handleSave = async () => {
-    if (content.trim() === originalContent) return
+    if (content.trim() === originalContent && title === originalTitle) return
     setSaving(true)
     try {
       let result
       if (isStandalone) {
-        result = await upsertStandaloneNote(noteId, content.trim())
+        result = await upsertStandaloneNote(noteId, content.trim(), title.trim() || null)
       } else {
-        result = await upsertNote(itemType, itemId, content.trim(), itemSlug, itemName)
+        result = await upsertNote(itemType, itemId, content.trim(), itemSlug, itemName, title.trim() || null)
       }
       if (result.success) {
         setOriginalContent(content.trim())
+        setOriginalTitle(title.trim())
         setSaved(true)
         if (isMobile) setEditing(false)
         setTimeout(() => setSaved(false), 2000)
@@ -187,6 +195,7 @@ export default function NotesDrawer({
 
   const handleCancel = () => {
     setContent(originalContent)
+    setTitle(originalTitle)
     if (isMobile) {
       setEditing(false)
       if (!originalContent) setCollapsed(true)
@@ -229,8 +238,8 @@ export default function NotesDrawer({
   }
 
   const handleClose = () => {
-    if (editing && content !== originalContent) {
-      upsertNote(itemType, itemId, content, itemSlug, itemName)
+    if (editing && (content !== originalContent || title !== originalTitle)) {
+      upsertNote(itemType, itemId, content, itemSlug, itemName, title.trim() || null)
     }
     setEditing(false)
     setCollapsed(true)
@@ -334,6 +343,14 @@ export default function NotesDrawer({
               </div>
             ) : editing ? (
               <>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder={isStandalone ? 'Título da nota...' : 'Título (opcional)...'}
+                  className="notes-drawer-title-input"
+                  maxLength={100}
+                />
                 <textarea
                   ref={textareaRef}
                   value={content}
@@ -374,6 +391,11 @@ export default function NotesDrawer({
               </>
             ) : hasNote ? (
               <div className="notes-drawer-view">
+                {originalTitle && (
+                  <div className="notes-drawer-view-title">
+                    {originalTitle}
+                  </div>
+                )}
                 <div className="notes-drawer-content-display">
                   {originalContent}
                 </div>

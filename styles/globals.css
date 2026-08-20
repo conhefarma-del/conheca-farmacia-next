@@ -4023,6 +4023,25 @@ html.dark .notes-drawer-close:hover {
   padding: 24px;
 }
 
+.notes-drawer-title-input {
+  width: 100%;
+  padding: 12px 16px 8px;
+  border: none;
+  border-bottom: 1px solid var(--color-brand-divider);
+  background: transparent;
+  color: var(--color-brand-deep);
+  font-size: 15px;
+  font-weight: 600;
+  outline: none;
+  font-family: inherit;
+}
+
+.notes-drawer-title-input::placeholder {
+  color: var(--color-brand-deep);
+  opacity: 0.4;
+  font-weight: 400;
+}
+
 .notes-drawer-textarea {
   flex: 1;
   width: 100%;
@@ -4048,6 +4067,14 @@ html.dark .notes-drawer-close:hover {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+.notes-drawer-view-title {
+  padding: 16px 16px 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-brand-deep);
+  border-bottom: 1px solid var(--color-brand-divider);
 }
 
 .notes-drawer-content-display {
