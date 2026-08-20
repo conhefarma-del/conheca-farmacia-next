@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useContext } from 'react'
 import { LangContext } from '@/lib/contexts'
 import { joinCompetition, getCompetitionByCode } from '@/lib/actions/competition'
-import { Trophy, Users, ArrowRight, Search } from 'lucide-react'
+import { Trophy, Users, ArrowRight, Search, Swords } from 'lucide-react'
 
 export default function CompeticaoJoinClient({ lang }) {
   const { t } = useContext(LangContext)
@@ -208,6 +208,25 @@ export default function CompeticaoJoinClient({ lang }) {
               </form>
             </div>
           )}
+        </div>
+      </section>
+
+      {/* Friend Challenge CTA */}
+      <section className="py-8 bg-background">
+        <div className="container-center max-w-xl mx-auto px-4">
+          <div className="bg-card rounded-2xl border border-brand-divider p-6 text-center">
+            <Swords size={24} className="mx-auto mb-3 text-brand-accent" />
+            <h3 className="font-bold text-brand-deep mb-1">Desafiar Amigos</h3>
+            <p className="text-sm text-brand-deep/50 mb-4">
+              Cria um quiz privado e desafia os teus amigos!
+            </p>
+            <Link
+              href={`/${lang}/competicao/amigos`}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-accent text-white text-sm font-semibold hover:bg-brand-accent/90 transition-all"
+            >
+              <Swords size={16} /> Ir para Desafios
+            </Link>
+          </div>
         </div>
       </section>
     </>
