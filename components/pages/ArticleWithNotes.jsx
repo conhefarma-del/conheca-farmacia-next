@@ -18,7 +18,7 @@ export default function ArticleWithNotes({ article, lang, children }) {
       <NotesDrawer
         isOpen={notesOpen}
         onClose={() => setNotesOpen(false)}
-        savedItemId={article.id}
+        itemId={article.id}
         itemName={article.title}
         itemSlug={article.slug}
         itemType="article"

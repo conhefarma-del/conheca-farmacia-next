@@ -182,7 +182,7 @@ export default function AlvoDetailClient({ lang, target, drugs = [] }) {
       <NotesDrawer
         isOpen={notesOpen}
         onClose={() => setNotesOpen(false)}
-        savedItemId={target.id}
+        itemId={target.id}
         itemName={target.name}
         itemSlug={target.slug}
         itemType="molecular_target"

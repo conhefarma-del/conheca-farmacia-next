@@ -3789,23 +3789,21 @@ html.dark .save-notes-button--has-note {
   background: var(--color-brand-bg);
   border-top: 1px solid var(--color-brand-divider);
   border-radius: 16px 16px 0 0;
-  z-index: 50;
-  transition: height 0.35s cubic-bezier(0.32, 0.72, 0, 1), transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  z-index: 61; /* Above utility bar */
+  transition: height 0.35s cubic-bezier(0.32, 0.72, 0, 1);
   display: flex;
   flex-direction: column;
-  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.12);
-  transform: translateY(0);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
 }
 
 .notes-drawer-mobile.is-collapsed {
-  height: 60px;
+  height: 64px;
   overflow: hidden;
-  transform: translateY(0);
 }
 
 .notes-drawer-mobile.is-expanded {
-  height: 85vh;
-  transform: translateY(0);
+  height: 100vh;
+  border-radius: 0;
 }
 
 /* Backdrop */

@@ -114,7 +114,7 @@ export default function ClassDetailClient({ lang, cls }) {
       <NotesDrawer
         isOpen={notesOpen}
         onClose={() => setNotesOpen(false)}
-        savedItemId={cls.id}
+        itemId={cls.id}
         itemName={cls.name}
         itemSlug={cls.slug}
         itemType="drug_class"

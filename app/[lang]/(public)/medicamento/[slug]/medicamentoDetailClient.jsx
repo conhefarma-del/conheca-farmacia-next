@@ -759,7 +759,7 @@ export default function MedicamentoDetailClient({
       <NotesDrawer
         isOpen={notesOpen}
         onClose={() => setNotesOpen(false)}
-        savedItemId={drug.id}
+        itemId={drug.id}
         itemName={drug.name}
         itemSlug={drug.slug}
         itemType="drug"

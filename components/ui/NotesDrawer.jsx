@@ -27,7 +27,7 @@ const TYPE_LABELS = {
 export default function NotesDrawer({
   isOpen,
   onClose,
-  savedItemId,
+  itemId,
   itemName,
   itemSlug,
   itemType,
@@ -96,12 +96,12 @@ export default function NotesDrawer({
 
   // Carregar nota existente
   useEffect(() => {
-    if (!isOpen || !savedItemId) return
+    if (!isOpen || !itemId) return
     let cancelled = false
     async function load() {
       setLoading(true)
       try {
-        const note = await getNoteForItem(savedItemId)
+        const note = await getNoteForItem(itemType, itemId)
         if (!cancelled) {
           setContent(note?.content || '')
           setOriginalContent(note?.content || '')
@@ -114,7 +114,7 @@ export default function NotesDrawer({
     }
     load()
     return () => { cancelled = true }
-  }, [isOpen, savedItemId])
+  }, [isOpen, itemId])
 
   // Focus textarea when editing starts on desktop
   useEffect(() => {
@@ -144,7 +144,7 @@ export default function NotesDrawer({
     if (content.trim() === originalContent) return
     setSaving(true)
     try {
-      const result = await upsertNote(savedItemId, content.trim())
+      const result = await upsertNote(itemType, itemId, content.trim())
       if (result.success) {
         setOriginalContent(content.trim())
         setSaved(true)
@@ -201,7 +201,7 @@ export default function NotesDrawer({
 
   const handleClose = () => {
     if (editing && content !== originalContent) {
-      upsertNote(savedItemId, content)
+      upsertNote(itemType, itemId, content)
     }
     setEditing(false)
     setCollapsed(true)

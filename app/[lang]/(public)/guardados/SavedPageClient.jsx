@@ -122,13 +122,19 @@ export default function SavedPageClient({ lang }) {
     }
     setExpandedNotes(savedItemId)
     if (notesCache[savedItemId] === undefined) {
-      const note = await getNoteForItem(savedItemId)
-      setNotesCache((prev) => ({ ...prev, [savedItemId]: note }))
+      // Find the item to get item_type and item_id
+      const item = items.find(i => i.id === savedItemId)
+      if (item) {
+        const note = await getNoteForItem(item.item_type, item.item_id)
+        setNotesCache((prev) => ({ ...prev, [savedItemId]: note }))
+      }
     }
   }
 
   const handleUpsertNote = async (savedItemId, content) => {
-    const result = await upsertNote(savedItemId, content)
+    const item = items.find(i => i.id === savedItemId)
+    if (!item) return { success: false, error: 'not_found' }
+    const result = await upsertNote(item.item_type, item.item_id, content)
     if (result.success) {
       setNotesCache((prev) => ({
         ...prev,
