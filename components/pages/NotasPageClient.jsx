@@ -4,7 +4,8 @@ import { useState, useEffect, useCallback, useContext } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
-  Search, Loader2, Frown, ExternalLink, Pencil, Trash2, Check, X
+  Search, Loader2, Frown, ExternalLink, Pencil, Trash2, Check, X,
+  Pill, ShieldAlert, ClipboardList, Atom, Newspaper
 } from 'lucide-react'
 import { getAllNotes, getNotesCount, updateNote, deleteNote } from '@/lib/actions/saved'
 import { LangContext } from '@/lib/contexts'
@@ -19,11 +20,11 @@ const TAB_KEYS = {
 }
 
 const TYPE_ICONS = {
-  drug: '💊',
-  interaction: '🔗',
-  drug_class: '📋',
-  molecular_target: '🎯',
-  article: '📰',
+  drug: Pill,
+  interaction: ShieldAlert,
+  drug_class: ClipboardList,
+  molecular_target: Atom,
+  article: Newspaper,
 }
 
 const TYPE_LINKS = {
@@ -288,7 +289,7 @@ export default function NotasPageClient({ lang }) {
 
                   const isExpanded = expandedId === note.id
                   const isEditing = editingId === note.id
-                  const TypeIcon = TYPE_ICONS[item.item_type] || '📝'
+                  const TypeIcon = TYPE_ICONS[item.item_type] || Pencil
                   const href = TYPE_LINKS[item.item_type]?.(lang, item.item_slug) || '#'
 
                   return (
@@ -298,7 +299,9 @@ export default function NotasPageClient({ lang }) {
                     >
                       {/* Header */}
                       <div className="flex items-center gap-3 cursor-pointer" onClick={() => toggleExpand(note.id)}>
-                        <span className="text-lg">{TypeIcon}</span>
+                        <div className="saved-item-icon">
+                          <TypeIcon size={16} />
+                        </div>
                         <div className="flex-1 min-w-0">
                           <div className="font-semibold text-sm" style={{ color: 'var(--color-brand-deep)' }}>
                             {item.item_name}

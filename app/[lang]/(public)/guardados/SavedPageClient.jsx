@@ -7,7 +7,7 @@ import {
   Bookmark, Search, Pill, ShieldAlert, ClipboardList, Atom, Newspaper,
   ChevronLeft, ChevronRight, Loader2, Frown, StickyNote, Pencil
 } from 'lucide-react'
-import { getSavedItems, getSavedCounts, deleteNote, addNote, updateNote, getNotes } from '@/lib/actions/saved'
+import { getSavedItems, getSavedCounts, deleteNote, upsertNote, getNoteForItem } from '@/lib/actions/saved'
 import NotesPanel from './NotesPanel'
 import { LangContext } from '@/lib/contexts'
 
@@ -121,42 +121,31 @@ export default function SavedPageClient({ lang }) {
       return
     }
     setExpandedNotes(savedItemId)
-    if (!notesCache[savedItemId]) {
-      const notes = await getNotes(savedItemId)
-      setNotesCache((prev) => ({ ...prev, [savedItemId]: notes }))
+    if (notesCache[savedItemId] === undefined) {
+      const note = await getNoteForItem(savedItemId)
+      setNotesCache((prev) => ({ ...prev, [savedItemId]: note }))
     }
   }
 
-  const handleAddNote = async (savedItemId, content) => {
-    const result = await addNote(savedItemId, content)
+  const handleUpsertNote = async (savedItemId, content) => {
+    const result = await upsertNote(savedItemId, content)
     if (result.success) {
       setNotesCache((prev) => ({
         ...prev,
-        [savedItemId]: [result.note, ...(prev[savedItemId] || [])],
+        [savedItemId]: result.note,
       }))
     }
     return result
   }
 
-  const handleUpdateNote = async (savedItemId, noteId, content) => {
-    const result = await updateNote(noteId, content)
+  const handleDeleteNote = async (savedItemId) => {
+    const note = notesCache[savedItemId]
+    if (!note) return { success: true }
+    const result = await deleteNote(note.id)
     if (result.success) {
       setNotesCache((prev) => ({
         ...prev,
-        [savedItemId]: (prev[savedItemId] || []).map((n) =>
-          n.id === noteId ? result.note : n
-        ),
-      }))
-    }
-    return result
-  }
-
-  const handleDeleteNote = async (savedItemId, noteId) => {
-    const result = await deleteNote(noteId)
-    if (result.success) {
-      setNotesCache((prev) => ({
-        ...prev,
-        [savedItemId]: (prev[savedItemId] || []).filter((n) => n.id !== noteId),
+        [savedItemId]: null,
       }))
     }
     return result
@@ -324,10 +313,9 @@ export default function SavedPageClient({ lang }) {
                       {expandedNotes === item.id && (
                         <NotesPanel
                           savedItemId={item.id}
-                          notes={notesCache[item.id] || []}
-                          onAdd={(content) => handleAddNote(item.id, content)}
-                          onUpdate={(noteId, content) => handleUpdateNote(item.id, noteId, content)}
-                          onDelete={(noteId) => handleDeleteNote(item.id, noteId)}
+                          note={notesCache[item.id]}
+                          onUpsert={(content) => handleUpsertNote(item.id, content)}
+                          onDelete={() => handleDeleteNote(item.id)}
                         />
                       )}
                     </div>

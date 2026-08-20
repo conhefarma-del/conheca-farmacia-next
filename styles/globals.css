@@ -4318,6 +4318,88 @@ html.dark .notes-drawer-footer {
   background: var(--color-brand-bg);
 }
 
+.notes-panel--single {
+  padding: 12px 16px 14px;
+}
+
+.notes-save-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--color-brand-accent);
+  margin-left: auto;
+}
+
+.notes-save-status--saved {
+  color: var(--color-brand-accent);
+}
+
+/* Single note textarea */
+.notes-single {
+  margin-top: 8px;
+}
+
+.notes-single-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--color-brand-divider);
+  background: var(--color-brand-card);
+  color: var(--color-brand-deep);
+  font-size: 13px;
+  line-height: 1.5;
+  resize: none;
+  outline: none;
+  font-family: inherit;
+}
+
+.notes-single-input:focus {
+  border-color: var(--color-brand-accent);
+}
+
+.notes-single-input::placeholder {
+  color: var(--color-brand-deep);
+  opacity: 0.35;
+}
+
+.notes-single-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.notes-single-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.notes-confirm-delete {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--color-brand-deep);
+  opacity: 0.7;
+}
+
+.notes-btn-delete--confirm {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+html.dark .notes-single-input {
+  background: var(--color-brand-card);
+  border-color: var(--color-brand-divider);
+  color: var(--color-brand-deep);
+}
+
 .notes-panel-header {
   display: flex;
   align-items: center;
