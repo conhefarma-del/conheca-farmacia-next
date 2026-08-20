@@ -1049,6 +1049,20 @@
       "enter": "Join Competition"
     }
   },
+  "friend_challenge": {
+    "title": "Friend Challenges",
+    "subtitle": "Challenge your friends to a pharmacy quiz!",
+    "create_title": "Create Challenge",
+    "create_subtitle": "Set up your quiz and invite friends!",
+    "pending_title": "Pending Challenges",
+    "accept": "Accept",
+    "decline": "Decline",
+    "lobby_title": "Waiting Room",
+    "quiz_title": "Challenge in Progress",
+    "result_title": "Final Results",
+    "winner": "Winner!",
+    "history_title": "Challenge History"
+  },
   "auth": {
     "login_title": "Login",
     "login_description": "Sign in to your Conheça Farmácia account",

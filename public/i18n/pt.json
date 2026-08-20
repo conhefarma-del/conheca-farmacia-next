@@ -1049,6 +1049,20 @@
       "enter": "Entrar na Competição"
     }
   },
+  "friend_challenge": {
+    "title": "Desafios entre Amigos",
+    "subtitle": "Desafia os teus amigos a um quiz de farmacologia!",
+    "create_title": "Criar Desafio",
+    "create_subtitle": "Configura o teu quiz e convida amigos!",
+    "pending_title": "Desafios Pendentes",
+    "accept": "Aceitar",
+    "decline": "Rejeitar",
+    "lobby_title": "Sala de Espera",
+    "quiz_title": "Desafio em Curso",
+    "result_title": "Resultado Final",
+    "winner": "Vencedor!",
+    "history_title": "Histórico de Desafios"
+  },
   "auth": {
     "login_title": "Entrar",
     "login_description": "Entra na tua conta Conheça Farmácia",
