@@ -142,9 +142,76 @@ export default function PerfilClient({ lang }) {
 
   if (loading) {
     return (
-      <section className="py-20 text-center">
-        <Loader2 size={40} className="mx-auto mb-4 text-brand-accent animate-spin" />
-      </section>
+      <>
+        {/* Hero skeleton */}
+        <section className="profile-hero-v2">
+          <div className="container-center">
+            <div className="profile-hero-inner">
+              <div className="w-22 h-22 rounded-full" style={{ background: 'var(--color-brand-divider)', animation: 'pulse 1.5s ease-in-out infinite', opacity: 0.3, width: 88, height: 88 }} />
+              <div className="profile-hero-info">
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-48 rounded-lg" style={{ background: 'var(--color-brand-divider)', animation: 'pulse 1.5s ease-in-out infinite', opacity: 0.3 }} />
+                </div>
+                <div className="h-4 w-40 rounded mt-2" style={{ background: 'var(--color-brand-divider)', animation: 'pulse 1.5s ease-in-out infinite', opacity: 0.2 }} />
+                <div className="flex gap-2 mt-3">
+                  <div className="h-6 w-36 rounded-md" style={{ background: 'var(--color-brand-divider)', animation: 'pulse 1.5s ease-in-out infinite', opacity: 0.2 }} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        {/* Stats skeleton */}
+        <section className="profile-stats-v2">
+          <div className="container-center">
+            <div className="profile-stats-grid">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="profile-stat-card">
+                  <div className="profile-stat-top">
+                    <div className="w-10 h-10 rounded-xl" style={{ background: 'var(--color-brand-divider)', animation: 'pulse 1.5s ease-in-out infinite', opacity: 0.15 }} />
+                  </div>
+                  <div className="h-9 w-16 mx-auto rounded-lg mb-2" style={{ background: 'var(--color-brand-divider)', animation: 'pulse 1.5s ease-in-out infinite', opacity: 0.2 }} />
+                  <div className="h-3 w-20 mx-auto rounded" style={{ background: 'var(--color-brand-divider)', animation: 'pulse 1.5s ease-in-out infinite', opacity: 0.4 }} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+        {/* Content skeleton */}
+        <section className="profile-content-v2">
+          <div className="container-center">
+            <div className="profile-grid-v2">
+              <div className="profile-card-v2">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--color-brand-accent)', opacity: 0.4 }} />
+                  <div className="h-4 w-24 rounded" style={{ background: 'var(--color-brand-divider)', animation: 'pulse 1.5s ease-in-out infinite', opacity: 0.6 }} />
+                </div>
+                <div className="space-y-3">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="h-14 rounded-xl" style={{ background: 'var(--color-brand-divider)', animation: 'pulse 1.5s ease-in-out infinite', opacity: 0.1 }} />
+                  ))}
+                </div>
+              </div>
+              <div className="profile-card-v2">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--color-brand-accent)', opacity: 0.4 }} />
+                  <div className="h-4 w-24 rounded" style={{ background: 'var(--color-brand-divider)', animation: 'pulse 1.5s ease-in-out infinite', opacity: 0.6 }} />
+                </div>
+                <div className="space-y-0">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="flex items-center gap-3 py-3" style={{ borderBottom: i < 2 ? '1px solid var(--color-brand-divider)' : 'none' }}>
+                      <div className="w-7 h-7 rounded-lg flex-shrink-0" style={{ background: 'var(--color-brand-divider)', animation: 'pulse 1.5s ease-in-out infinite', opacity: 0.12 }} />
+                      <div className="flex-1">
+                        <div className="h-3 w-12 rounded mb-1.5" style={{ background: 'var(--color-brand-divider)', animation: 'pulse 1.5s ease-in-out infinite', opacity: 0.3 }} />
+                        <div className="h-4 w-28 rounded" style={{ background: 'var(--color-brand-divider)', animation: 'pulse 1.5s ease-in-out infinite', opacity: 0.5 }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </>
     )
   }
 
