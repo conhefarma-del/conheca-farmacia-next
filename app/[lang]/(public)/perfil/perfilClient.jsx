@@ -22,6 +22,7 @@ export default function PerfilClient({ lang }) {
   const [compHistory, setCompHistory] = useState([])
   const [savedItems, setSavedItems] = useState([])
   const [savedCounts, setSavedCounts] = useState(null)
+  const [savedLoading, setSavedLoading] = useState(true)
   const [editingSchool, setEditingSchool] = useState(false)
   const [newSchool, setNewSchool] = useState('')
   const [editingClass, setEditingClass] = useState(false)
@@ -45,7 +46,7 @@ export default function PerfilClient({ lang }) {
         getUserStats().then(s => setStats(s)),
         getUserCompetitionHistory().then(ch => setCompHistory(ch || [])),
         getSavedItems({ limit: 4 }).then(r => setSavedItems(r.items || [])),
-        getSavedCounts().then(c => setSavedCounts(c)),
+        getSavedCounts().then(c => setSavedCounts(c)).finally(() => setSavedLoading(false)),
       ]).finally(() => setStatsLoading(false))
     }
     loadUser()
@@ -344,7 +345,11 @@ export default function PerfilClient({ lang }) {
                   <span className="profile-saved-count">{savedCounts.total}</span>
                 )}
               </div>
-              {savedItems.length > 0 ? (
+              {savedLoading ? (
+                <div className="profile-saved-loading">
+                  <Loader2 size={20} className="animate-spin" />
+                </div>
+              ) : savedItems.length > 0 ? (
                 <>
                   <div className="profile-saved-list">
                     {savedItems.map((item) => {

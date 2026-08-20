@@ -3049,6 +3049,15 @@ html.dark .bell-dropdown-link:hover {
   color: var(--color-brand-deep);
 }
 
+.profile-saved-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 0;
+  color: var(--color-brand-accent);
+  opacity: 0.5;
+}
+
 
 
 .profile-tool-label {
