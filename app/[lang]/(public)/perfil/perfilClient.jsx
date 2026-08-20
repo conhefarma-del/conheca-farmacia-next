@@ -17,6 +17,10 @@ export default function PerfilClient({ lang }) {
   const [stats, setStats] = useState(null)
   const [statsLoading, setStatsLoading] = useState(true)
   const [compHistory, setCompHistory] = useState([])
+  const [editingSchool, setEditingSchool] = useState(false)
+  const [newSchool, setNewSchool] = useState('')
+  const [editingClass, setEditingClass] = useState(false)
+  const [newClass, setNewClass] = useState('')
 
   useEffect(() => {
     async function loadUser() {
@@ -28,6 +32,8 @@ export default function PerfilClient({ lang }) {
       }
       setUser(user)
       setNewName(user.user_metadata?.full_name || user.user_metadata?.display_name || '')
+      setNewSchool(user.user_metadata?.school || '')
+      setNewClass(user.user_metadata?.class_name || '')
       setLoading(false)
       // Load stats after user is loaded
       try {
@@ -68,6 +74,52 @@ export default function PerfilClient({ lang }) {
         }))
         setEditingName(false)
         setSaveMsg('Nome atualizado!')
+      }
+    } catch {
+      setSaveMsg('Erro ao conectar ao servidor')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleSaveSchool = async () => {
+    setSaving(true)
+    try {
+      const supabase = await createClient()
+      const { error } = await supabase.auth.updateUser({
+        data: { school: newSchool.trim() },
+      })
+      if (error) {
+        setSaveMsg('Erro ao guardar escola')
+      } else {
+        setUser((prev) => ({
+          ...prev,
+          user_metadata: { ...prev.user_metadata, school: newSchool.trim() },
+        }))
+        setSaveMsg('Escola atualizada!')
+      }
+    } catch {
+      setSaveMsg('Erro ao conectar ao servidor')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleSaveClass = async () => {
+    setSaving(true)
+    try {
+      const supabase = await createClient()
+      const { error } = await supabase.auth.updateUser({
+        data: { class_name: newClass.trim() },
+      })
+      if (error) {
+        setSaveMsg('Erro ao guardar turma')
+      } else {
+        setUser((prev) => ({
+          ...prev,
+          user_metadata: { ...prev.user_metadata, class_name: newClass.trim() },
+        }))
+        setSaveMsg('Turma atualizada!')
       }
     } catch {
       setSaveMsg('Erro ao conectar ao servidor')
@@ -216,20 +268,65 @@ export default function PerfilClient({ lang }) {
                 <div className="profile-card-dot" /> Instituição
               </div>
               <div className="profile-info-list">
+                {/* School */}
                 <div className="profile-info-item">
                   <div className="profile-info-icon"><School size={14} /></div>
-                  <div>
+                  <div className="flex-1 min-w-0">
                     <div className="profile-info-label">Escola</div>
-                    <div className="profile-info-value">{schoolName || '—'}</div>
+                    {editingSchool ? (
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <input
+                          type="text"
+                          value={newSchool}
+                          onChange={(e) => setNewSchool(e.target.value)}
+                          className="profile-info-edit-input"
+                          autoFocus
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') { handleSaveSchool(); setEditingSchool(false) }
+                            if (e.key === 'Escape') { setEditingSchool(false); setNewSchool(schoolName || '') }
+                          }}
+                        />
+                        <button onClick={() => { handleSaveSchool(); setEditingSchool(false) }} className="profile-info-edit-btn save"><Save size={12} /></button>
+                        <button onClick={() => { setEditingSchool(false); setNewSchool(schoolName || '') }} className="profile-info-edit-btn cancel"><X size={12} /></button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1.5">
+                        <div className="profile-info-value">{schoolName || '—'}</div>
+                        <button onClick={() => setEditingSchool(true)} className="profile-info-edit-trigger"><Edit3 size={12} /></button>
+                      </div>
+                    )}
                   </div>
                 </div>
+                {/* Class */}
                 <div className="profile-info-item">
                   <div className="profile-info-icon"><ClipboardList size={14} /></div>
-                  <div>
+                  <div className="flex-1 min-w-0">
                     <div className="profile-info-label">Turma</div>
-                    <div className="profile-info-value">{className_ || '—'}</div>
+                    {editingClass ? (
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <input
+                          type="text"
+                          value={newClass}
+                          onChange={(e) => setNewClass(e.target.value)}
+                          className="profile-info-edit-input"
+                          autoFocus
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') { handleSaveClass(); setEditingClass(false) }
+                            if (e.key === 'Escape') { setEditingClass(false); setNewClass(className_ || '') }
+                          }}
+                        />
+                        <button onClick={() => { handleSaveClass(); setEditingClass(false) }} className="profile-info-edit-btn save"><Save size={12} /></button>
+                        <button onClick={() => { setEditingClass(false); setNewClass(className_ || '') }} className="profile-info-edit-btn cancel"><X size={12} /></button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1.5">
+                        <div className="profile-info-value">{className_ || '—'}</div>
+                        <button onClick={() => setEditingClass(true)} className="profile-info-edit-trigger"><Edit3 size={12} /></button>
+                      </div>
+                    )}
                   </div>
                 </div>
+                {/* Email (read-only) */}
                 <div className="profile-info-item">
                   <div className="profile-info-icon"><Mail size={14} /></div>
                   <div>

@@ -2863,6 +2863,8 @@ html.dark .bell-dropdown-link:hover {
 /* Content */
 .profile-content-v2 {
   padding: 32px 24px 48px;
+  background: var(--color-brand-bg-alt);
+  min-height: 60vh;
 }
 
 .profile-grid-v2 {
@@ -2878,6 +2880,13 @@ html.dark .bell-dropdown-link:hover {
   border-radius: 14px;
   border: 1px solid var(--color-brand-divider);
   padding: 24px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.profile-card-v2:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 42, 50, 0.08);
+  border-color: var(--color-brand-accent);
 }
 
 .profile-card-header {
@@ -2907,21 +2916,21 @@ html.dark .bell-dropdown-link:hover {
 
 .profile-tool-card {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 16px 10px;
-  border-radius: 12px;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 10px;
   border: 1px solid var(--color-brand-divider);
   text-decoration: none;
   color: inherit;
-  transition: border-color 0.15s, background 0.15s;
-  text-align: center;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s, box-shadow 0.2s;
 }
 
 .profile-tool-card:hover {
   border-color: var(--color-brand-accent);
   background: rgba(10, 132, 79, 0.04);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(10, 132, 79, 0.06);
 }
 
 .profile-tool-icon {
@@ -2933,6 +2942,13 @@ html.dark .bell-dropdown-link:hover {
   align-items: center;
   justify-content: center;
   color: var(--color-brand-accent);
+  flex-shrink: 0;
+  transition: background 0.2s, color 0.2s;
+}
+
+.profile-tool-card:hover .profile-tool-icon {
+  background: var(--color-brand-accent);
+  color: white;
 }
 
 .profile-tool-label {
@@ -2980,6 +2996,85 @@ html.dark .bell-dropdown-link:hover {
   font-size: 14px;
   font-weight: 600;
   color: var(--color-brand-deep);
+}
+
+.profile-info-edit-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  border: none;
+  background: none;
+  color: var(--color-brand-deep);
+  opacity: 0.3;
+  cursor: pointer;
+  transition: opacity 0.15s, color 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+
+.profile-info-edit-trigger:hover {
+  opacity: 1;
+  color: var(--color-brand-accent);
+  background: rgba(10, 132, 79, 0.08);
+}
+
+.profile-info-edit-input {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-brand-deep);
+  background: var(--color-brand-bg);
+  border: 1px solid var(--color-brand-accent);
+  border-radius: 6px;
+  padding: 3px 8px;
+  outline: none;
+  width: 100%;
+  min-width: 0;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.profile-info-edit-input:focus {
+  border-color: var(--color-brand-accent);
+  box-shadow: 0 0 0 3px rgba(10, 132, 79, 0.1);
+}
+
+.profile-info-edit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.profile-info-edit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.profile-info-edit-btn.save {
+  background: var(--color-brand-accent);
+  color: white;
+}
+
+.profile-info-edit-btn.save:hover:not(:disabled) {
+  background: #087040;
+}
+
+.profile-info-edit-btn.cancel {
+  background: var(--color-brand-bg);
+  color: var(--color-brand-deep);
+  opacity: 0.5;
+}
+
+.profile-info-edit-btn.cancel:hover {
+  opacity: 1;
+  background: var(--color-brand-divider);
 }
 
 /* Competition Items */
