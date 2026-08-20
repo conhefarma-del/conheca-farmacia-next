@@ -92,11 +92,11 @@ export default function FriendChallengeClient({ lang, code }) {
         if (comp.status === 'lobby') {
           setPhase('lobby')
         } else if (comp.status === 'active') {
-          // Quiz in progress — try to start
-          const quizData = await startFriendQuiz(comp.id)
-          if (quizData?.success) {
-            setQuestions(quizData.questions)
-            setTimeLeft(quizData.timePerQuestion || 30)
+          // Quiz in progress — get questions from session
+          const session = await getCompetitionSession(storedSession)
+          if (session?.questions && session.questions.length > 0) {
+            setQuestions(session.questions.map(({ correctIndex, ...q }) => q))
+            setTimeLeft(comp.time_per_question || 30)
             setPhase('quiz')
           } else {
             setError('Não foi possível entrar no desafio')
@@ -139,12 +139,12 @@ export default function FriendChallengeClient({ lang, code }) {
       if (compInfo) {
         const comp = await getCompetitionByCode(code)
         if (comp?.status === 'active') {
-          // Quiz started — try to get questions
+          // Quiz started — get questions from session
           if (me?.sessionId) {
-            const quizData = await startFriendQuiz(compInfo.id)
-            if (quizData?.success) {
-              setQuestions(quizData.questions)
-              setTimeLeft(quizData.timePerQuestion || 30)
+            const session = await getCompetitionSession(me.sessionId)
+            if (session?.questions && session.questions.length > 0) {
+              setQuestions(session.questions.map(({ correctIndex, ...q }) => q))
+              setTimeLeft(comp.time_per_question || 30)
               setPhase('quiz')
             }
           }
