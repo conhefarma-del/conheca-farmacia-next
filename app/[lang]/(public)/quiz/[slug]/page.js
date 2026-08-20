@@ -5,7 +5,7 @@ import QuizSessionClient from '@/components/pages/QuizSessionClient'
 
 export const revalidate = 0
 
-const VALID_SOURCES = ['flashcard', 'pharmacology', 'interaction', 'protocol']
+const VALID_SOURCES = ['flashcard', 'pharmacology', 'interaction', 'protocol', 'drug_class']
 const VALID_LEVELS = ['facil', 'medio', 'dificil']
 
 /**

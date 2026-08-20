@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bem-vindo ao Conheça Farmácia</title>
+</head>
+<body style="margin:0;padding:0;background-color:#fafafa;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#fafafa">
+    <tr>
+      <td align="center" style="padding:48px 20px">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:2px;overflow:hidden;border:1px solid #e8e8e8">
+
+          <!-- HEADER -->
+          <tr>
+            <td style="padding:48px 40px 40px 40px;text-align:center;border-bottom:1px solid #f0f0f0">
+              <img src="https://conhecafarmacia.com/logo/logo-principal-verde.png" alt="Conheça Farmácia" width="180" style="display:block;margin:0 auto 20px;height:auto" />
+              <h1 style="margin:0 0 8px 0;font-size:28px;color:#1a1a1a;font-weight:700;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;letter-spacing:-0.5px">
+                Bem-vindo, {{params.name}}!
+              </h1>
+              <p style="margin:0;font-size:15px;color:#888888;line-height:1.6;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">
+                A tua conta foi criada com sucesso.<br/>
+                Tens acesso a todas as ferramentas do Conheça Farmácia.
+              </p>
+            </td>
+          </tr>
+
+          <!-- BOAS-VINDAS -->
+          <tr>
+            <td style="padding:32px 40px">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f0f7f4;border-radius:8px;overflow:hidden">
+                <tr>
+                  <td style="padding:24px">
+                    <p style="margin:0 0 4px 0;font-size:11px;color:#0a844f;text-transform:uppercase;letter-spacing:2px;font-weight:600;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">
+                      A tua conta
+                    </p>
+                    <p style="margin:0 0 12px 0;font-size:16px;color:#1a1a1a;font-weight:600;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">
+                      Progresso guardado em qualquer dispositivo
+                    </p>
+                    <p style="margin:0;font-size:13px;color:#555555;line-height:1.6;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">
+                      O teu progresso nas competições, quiz e flashcards fica guardado na tua conta. Podes aceder de qualquer dispositivo, a qualquer momento.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- FERRAMENTAS -->
+          <tr>
+            <td style="padding:0 40px 32px 40px">
+              <p style="margin:0 0 24px 0;font-size:11px;color:#0a844f;text-transform:uppercase;letter-spacing:2.5px;font-weight:600;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">
+                As tuas ferramentas
+              </p>
+
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <!-- Interações -->
+                <tr>
+                  <td style="padding:0 0 20px 0">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td width="40" valign="top" style="padding-top:2px">
+                          <div style="width:32px;height:32px;background-color:#e8f5f0;border-radius:50%;text-align:center;line-height:32px">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00493a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+                          </div>
+                        </td>
+                        <td valign="top" style="padding-left:12px">
+                          <p style="margin:0 0 4px 0;font-size:14px;color:#1a1a1a;font-weight:600;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Calculadora de Interações</p>
+                          <p style="margin:0;font-size:13px;color:#888888;line-height:1.5;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Verifica interações medicamentosas entre dois fármacos em segundos</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Medicamentos -->
+                <tr>
+                  <td style="padding:0 0 20px 0">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td width="40" valign="top" style="padding-top:2px">
+                          <div style="width:32px;height:32px;background-color:#e8f5f0;border-radius:50%;text-align:center;line-height:32px">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00493a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
+                          </div>
+                        </td>
+                        <td valign="top" style="padding-left:12px">
+                          <p style="margin:0 0 4px 0;font-size:14px;color:#1a1a1a;font-weight:600;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Medicamentos</p>
+                          <p style="margin:0;font-size:13px;color:#888888;line-height:1.5;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Fichas completas com mecanismos, interações e fontes DailyMed/EMC</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Quiz Competição -->
+                <tr>
+                  <td style="padding:0 0 20px 0">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td width="40" valign="top" style="padding-top:2px">
+                          <div style="width:32px;height:32px;background-color:#e8f5f0;border-radius:50%;text-align:center;line-height:32px">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00493a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                          </div>
+                        </td>
+                        <td valign="top" style="padding-left:12px">
+                          <p style="margin:0 0 4px 0;font-size:14px;color:#1a1a1a;font-weight:600;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Quiz Competição</p>
+                          <p style="margin:0;font-size:13px;color:#888888;line-height:1.5;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Representa a tua escola em competições ao vivo com leaderboard</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Quiz -->
+                <tr>
+                  <td style="padding:0 0 20px 0">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td width="40" valign="top" style="padding-top:2px">
+                          <div style="width:32px;height:32px;background-color:#e8f5f0;border-radius:50%;text-align:center;line-height:32px">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00493a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/><path d="M12 8V4"/><path d="M8 12H4"/><path d="M16 12h4"/><path d="M12 16v4"/><path d="M9.5 4.5 8 3"/><path d="M14.5 4.5 16 3"/><path d="M9.5 19.5 8 21"/><path d="M14.5 19.5 16 21"/></svg>
+                          </div>
+                        </td>
+                        <td valign="top" style="padding-left:12px">
+                          <p style="margin:0 0 4px 0;font-size:14px;color:#1a1a1a;font-weight:600;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Quiz</p>
+                          <p style="margin:0;font-size:13px;color:#888888;line-height:1.5;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Testa os teus conhecimentos com perguntas de farmacologia, interações e protocolos</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Flashcards -->
+                <tr>
+                  <td style="padding:0 0 20px 0">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td width="40" valign="top" style="padding-top:2px">
+                          <div style="width:32px;height:32px;background-color:#e8f5f0;border-radius:50%;text-align:center;line-height:32px">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00493a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg>
+                          </div>
+                        </td>
+                        <td valign="top" style="padding-left:12px">
+                          <p style="margin:0 0 4px 0;font-size:14px;color:#1a1a1a;font-weight:600;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Flashcards</p>
+                          <p style="margin:0;font-size:13px;color:#888888;line-height:1.5;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Revisão espaçada inteligente com repetição por algoritmo SM-2</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Classes Terapêuticas -->
+                <tr>
+                  <td style="padding:0 0 20px 0">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td width="40" valign="top" style="padding-top:2px">
+                          <div style="width:32px;height:32px;background-color:#e8f5f0;border-radius:50%;text-align:center;line-height:32px">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00493a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
+                          </div>
+                        </td>
+                        <td valign="top" style="padding-left:12px">
+                          <p style="margin:0 0 4px 0;font-size:14px;color:#1a1a1a;font-weight:600;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Classes Terapêuticas</p>
+                          <p style="margin:0;font-size:13px;color:#888888;line-height:1.5;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Explora 30+ classes de fármacos com descrições detalhadas e códigos ATC</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Guias de Estudo -->
+                <tr>
+                  <td style="padding:0">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td width="40" valign="top" style="padding-top:2px">
+                          <div style="width:32px;height:32px;background-color:#e8f5f0;border-radius:50%;text-align:center;line-height:32px">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00493a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                          </div>
+                        </td>
+                        <td valign="top" style="padding-left:12px">
+                          <p style="margin:0 0 4px 0;font-size:14px;color:#1a1a1a;font-weight:600;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Guias de Estudo</p>
+                          <p style="margin:0;font-size:13px;color:#888888;line-height:1.5;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Material de estudo organizado por temas farmacêuticos</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- CTA -->
+          <tr>
+            <td style="padding:0 40px 40px 40px">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center">
+                    <a href="https://conhecafarmacia.com/pt/praticar" style="display:inline-block;background:linear-gradient(135deg,#00493a 0%,#0a844f 100%);color:#ffffff;padding:16px 40px;text-decoration:none;border-radius:8px;font-size:14px;font-weight:600;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;letter-spacing:0.3px">
+                      Explorar Ferramentas
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td align="center" style="padding-top:12px">
+                    <a href="https://conhecafarmacia.com/pt/competicao" style="display:inline-block;color:#0a844f;text-decoration:none;font-size:13px;font-weight:600;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">
+                      ou entra numa Competição &rarr;
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- FOOTER -->
+          <tr>
+            <td style="padding:32px 40px;border-top:1px solid #f0f0f0;text-align:center">
+              <p style="margin:0 0 8px 0;font-size:12px;color:#999999;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Conheça Farmácia &mdash; Conhecimento que conecta.</p>
+              <p style="margin:0 0 20px 0;font-size:12px;color:#bbbbbb;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">
+                <a href="https://www.facebook.com/conhecafarmacia" style="color:#0a844f;text-decoration:none;margin:0 10px">Facebook</a>
+                <span style="color:#e0e0e0">&bull;</span>
+                <a href="https://www.instagram.com/conhecafarmacia" style="color:#0a844f;text-decoration:none;margin:0 10px">Instagram</a>
+                <span style="color:#e0e0e0">&bull;</span>
+                <a href="https://www.linkedin.com/company/conhecafarmacia" style="color:#0a844f;text-decoration:none;margin:0 10px">LinkedIn</a>
+              </p>
+              <p style="margin:0;font-size:11px;color:#cccccc;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">&copy; 2026 Conheça Farmácia. Todos os direitos reservados.</p>
+              <p style="margin:12px 0 0 0;font-size:11px;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif"><a href="https://conhecafarmacia.com/pt/unsubscribe" style="color:#999999;text-decoration:underline;">Gerir preferências de email</a></p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

@@ -42,8 +42,126 @@
 ### Identidade híbrida (decisão 1)
 
 - **Sem conta (padrão):** aluno entra com nome + código de turma. Session ID gerado pelo servidor e guardado em `localStorage`. Progresso guardado em `competition_sessions` com `session_id` (não `user_id`).
-- **Com conta (opcional):** toggle "Guardar na minha conta" → Supabase anonymous sign-in → `user_id` preenchido em `competition_sessions`. Se o aluno já tiver conta, liga diretamente.
+- **Com conta (opcional):** toggle "Guardar na minha conta" → Google OAuth via Supabase Auth → `user_id` preenchido em `competition_sessions`. Brevo envia email de boas-vindas.
 - **Migração futura:** sessões anónimas podem ser "reivindicadas" por uma conta posteriormente (campos `session_id` + `user_id` na mesma tabela).
+
+### Autenticação Google + Brevo (configurado em 2026-08-19)
+
+**Infraestrutura já configurada:**
+- Google Cloud Console: projeto `conheca-farmacia`, OAuth 2.0 credentials (Web application)
+- Supabase Dashboard: Google provider ativado com Client ID + Secret
+- Redirect URIs: `https://<supabase>.supabase.co/auth/v1/callback`
+- Brevo: API key configurada, template de boas-vindas a criar
+
+**Fluxo de autenticação:**
+
+```
+1. Aluno clica "Guardar na minha conta" (no resultado do quiz)
+2. Componente chama supabase.auth.signInWithOAuth({ provider: 'google' })
+3. Supabase redireciona para Google → aluno autoriza
+4. Google redireciona para supabase.co/auth/v1/callback
+5. Supabase cria user em auth.users (email, nome, avatar)
+6. Client action liga session ao user_id:
+   UPDATE competition_sessions SET user_id = $1 WHERE session_id = $2
+7. Brevo envia email de boas-vindas via API v3
+```
+
+**Código cliente (simplificado):**
+
+```jsx
+// components/pages/CompetitionResultClient.jsx
+import { createClient } from '@/lib/supabase/client'
+
+async function handleClaimAccount(sessionId) {
+  const supabase = createClient()
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${window.location.origin}/pt/competicao/claim?session=${sessionId}`,
+    },
+  })
+}
+```
+
+**Server action (ligar sessão a conta):**
+
+```js
+// lib/actions/competition.js
+export async function claimSessionToAccount(sessionId) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { success: false, error: 'Não autenticado' }
+
+  const { error } = await supabase
+    .from('competition_sessions')
+    .update({ user_id: user.id })
+    .eq('session_id', sessionId)
+    .is('user_id', null)
+
+  if (error) return { success: false, error: error.message }
+
+  // Enviar email de boas-vindas via Brevo
+  await sendWelcomeEmail({
+    to: user.email,
+    name: user.raw_user_meta_data?.full_name || '',
+  })
+
+  return { success: true }
+}
+```
+
+**Edge Function — email de boas-vindas:**
+
+O email é enviado via Edge Function `send-newsletter-email` (Supabase), que já existe e suporta o novo tipo `welcome-account`. O template está hardcoded na Edge Function como `getWelcomeAccountTemplate()`.
+
+```js
+// lib/actions/competition.js (após criar conta via Google)
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+await fetch(`${SUPABASE_URL}/functions/v1/send-newsletter-email`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+    'x-client-info': 'next.js',
+  },
+  body: JSON.stringify({
+    type: 'welcome-account',
+    email: user.email,
+    nome: user.raw_user_meta_data?.full_name || '',
+  }),
+})
+```
+
+**Edge Function modificada:** `supabase/functions/send-newsletter-email/index.ts`
+- Novo tipo: `welcome-account`
+- Nova função: `getWelcomeAccountTemplate(nome)`
+- From: `info@conhecafarmacia.com`
+- Tags: `['account', 'welcome-account']`
+
+**Variáveis de ambiente necessárias (já configuradas):**
+
+```
+NEXT_PUBLIC_SUPABASE_URL=https://<projeto>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<chave>
+BREVO_API_KEY=<chave>  # já existe (usada pela Edge Function)
+EDGE_INTERNAL_KEY=<chave>  # já existe (usada pela Edge Function)
+```
+
+**Configuração Google Cloud (passos seguidos pelo utilizador):**
+
+1. ✅ Projeto criado em console.cloud.google.com
+2. ✅ Google People API ativada
+3. ✅ OAuth consent screen configurado (External, scopes: email/profile/openid)
+4. ✅ OAuth client ID criado (Web application)
+5. ✅ Authorized JS origins: conhecafarmacia.com + vercel.app
+6. ✅ Authorized redirect URI: supabase.co/auth/v1/callback
+7. ✅ Client ID + Secret copiados para Supabase Dashboard
+8. ✅ Google provider ativado no Supabase
+9. ⏳ Redirect URLs no Supabase: adicionar /pt/competicao/claim
+10. ✅ Template email criado: `email-templates/welcome-account.html` (preview) + `getWelcomeAccountTemplate()` na Edge Function
+11. ✅ Edge Function `send-newsletter-email` modificada: novo tipo `welcome-account`
 
 ### Leaderboard duplo (decisão 2)
 
@@ -326,7 +444,7 @@ export function buildDrugClassQuestion(drug, classesPool) {
 - `submitAnswer(sessionId, { questionIndex, selected, timeMs })` — valida resposta no servidor, calcula pontos + streak, atualiza sessão
 - `finishCompetition(sessionId)` — marca `finished_at`, devolve resultado final
 - `getCompetitionLeaderboard(competitionId)` — leaderboard público (top 50)
-- `claimSessionToAccount(sessionId)` — liga sessão anónima a conta Supabase (toggle "Guardar na minha conta")
+- `claimSessionToAccount(sessionId)` — liga sessão anónima a conta Google via Supabase Auth + envia email boas-vindas via Brevo
 
 **Gamificação (streak + bónus):**
 - Lógica de streak: `current_streak` incrementa se correto, reseta se errado
@@ -385,6 +503,21 @@ export async function pollLeaderboard(competitionId, lastUpdate) {
 - `CompetitionResultClient.jsx` — resultado final com pódio
 - `CompetitionLeaderboard.jsx` — leaderboard reutilizável (usado em lobby, quiz e resultado)
 
+### T3b — Autenticação Google + Edge Function email
+
+**Configuração Supabase (Dashboard):**
+1. Authentication → URL Configuration → Redirect URLs: adicionar `https://conhecafarmacia.com/pt/competicao/claim`
+2. Authentication → Providers → Google: confirmar Client ID + Secret
+
+**Edge Function (já modificada em T3b):**
+- `supabase/functions/send-newsletter-email/index.ts` — novo tipo `welcome-account` + `getWelcomeAccountTemplate()`
+- Não é necessário criar template no Brevo Dashboard — o HTML está hardcoded na Edge Function
+
+**Código:**
+- `lib/actions/competition.js` — função `claimSessionToAccount()` (liga sessão + chama Edge Function)
+- `components/pages/CompetitionResultClient.jsx` — botão "Guardar na minha conta" com `signInWithOAuth({ provider: 'google' })`
+- `app/[lang]/(public)/competicao/claim/page.js` — rota de callback que processa o claim
+
 ### T7 — i18n, CSS, SEO e navegação
 
 - Chaves `competition_page.*`, `competition_session.*`, `competition_leaderboard.*` em pt/en
@@ -416,14 +549,18 @@ export async function pollLeaderboard(competitionId, lastUpdate) {
 | `components/pages/CompetitionQuizClient.jsx` | Novo |
 | `components/pages/CompetitionResultClient.jsx` | Novo |
 | `components/ui/CompetitionLeaderboard.jsx` | Novo (reutilizável) |
-| `app/[lang]/(public)/competicao/` | Novos (page + [code] + loading) |
+| `app/[lang]/(public)/competicao/` | Novos (page + [code] + claim + loading) |
 | `app/[lang]/admin/(protected)/competicoes/` | Novos (page + new + [id] + escolas + turmas) |
 | `components/layout/AdminSidebar.jsx` | Modificar (item Competições) |
 | Menu principal público + Footer | Modificar (item Competição) |
 | `app/sitemap.js` | Modificar |
 | `app/api/revalidate/route.js` | Modificar (tag 'competitions') |
+| `lib/email/brevo.js` | Modificar (adicionar `sendWelcomeEmail`) |
 | `lib/i18n.js` + `public/i18n/*.json` | Modificar |
 | CSS do projeto | Modificar (classes `.comp-*`) |
+| `email-templates/welcome-account.html` | Novo (preview do template — boas-vindas com Lucide SVGs)
+| `email-templates/README-welcome-account.md` | Novo (documentação da Edge Function)
+| `supabase/functions/send-newsletter-email/index.ts` | Modificar (adicionar tipo `welcome-account` + `getWelcomeAccountTemplate()`)
 
 ## Fora de âmbito (consciente)
 
@@ -442,12 +579,13 @@ export async function pollLeaderboard(competitionId, lastUpdate) {
 1. **T1** — Migrações 233 + 234 (aplicar no Supabase)
 2. **T2** — Extensão do engine (`buildDrugClassQuestion` + testes)
 3. **T3** — Server actions de competição (join, submit, leaderboard, admin CRUD)
-4. **T5 parcial** — Admin: escolas e turmas (CRUD básico)
-5. **T5 restante** — Admin: competições (criar, iniciar, monitorizar)
-6. **T7 parcial** — i18n + CSS base + skeletons
-7. **T6** — Páginas públicas (entrada, lobby, quiz, resultado)
-8. **T4** — Polling do leaderboard
-9. **T7 restante** — sitemap + menu + revalidation + SEO
+4. **T3b** — Autenticação Google + Brevo (claim session, email boas-vindas)
+5. **T5 parcial** — Admin: escolas e turmas (CRUD básico)
+6. **T5 restante** — Admin: competições (criar, iniciar, monitorizar)
+7. **T7 parcial** — i18n + CSS base + skeletons
+8. **T6** — Páginas públicas (entrada, lobby, quiz, resultado + claim)
+9. **T4** — Polling do leaderboard
+10. **T7 restante** — sitemap + menu + revalidation + SEO
 
 ## Verificação
 
@@ -459,7 +597,7 @@ export async function pollLeaderboard(competitionId, lastUpdate) {
 - Polling: leaderboard atualiza a cada 5s sem refresh manual
 - Perguntas de classes: "A que classe pertence X?" com distratores reais
 - Sessão anónima: progresso guardado sem conta
-- Opção "Guardar na minha conta": liga sessão a Supabase Auth
+- Opção "Guardar na minha conta": Google OAuth → Supabase Auth → liga sessão ao user_id
 - Leaderboard histórico: agrega resultados de múltiplas competições
 - Dark mode correto nas classes novas
 - Skeletons visíveis durante carregamento
