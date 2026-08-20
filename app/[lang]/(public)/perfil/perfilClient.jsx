@@ -3,9 +3,9 @@
 import { useState, useEffect, useContext } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { LogOut, Mail, Bookmark, Pill, ShieldAlert, ClipboardList, Atom, Newspaper, Loader2, School, Target, BrainCircuit, Flame, Trophy, Edit3, Save, X, ChevronRight } from 'lucide-react'
+import { LogOut, Mail, Bookmark, Pill, ShieldAlert, ClipboardList, Atom, Newspaper, Loader2, School, Target, BrainCircuit, Flame, Trophy, Edit3, Save, X, ChevronRight, StickyNote } from 'lucide-react'
 import { getUserStats, getUserCompetitionHistory } from '@/lib/actions/profile'
-import { getSavedItems, getSavedCounts } from '@/lib/actions/saved'
+import { getSavedItems, getSavedCounts, getNotesCount } from '@/lib/actions/saved'
 import { LangContext } from '@/lib/contexts'
 
 export default function PerfilClient({ lang }) {
@@ -23,6 +23,8 @@ export default function PerfilClient({ lang }) {
   const [savedItems, setSavedItems] = useState([])
   const [savedCounts, setSavedCounts] = useState(null)
   const [savedLoading, setSavedLoading] = useState(true)
+  const [notesCounts, setNotesCounts] = useState(null)
+  const [notesLoading, setNotesLoading] = useState(true)
 
   useEffect(() => {
     async function loadUser() {
@@ -41,6 +43,7 @@ export default function PerfilClient({ lang }) {
         getUserCompetitionHistory().then(ch => setCompHistory(ch || [])),
         getSavedItems({ limit: 4 }).then(r => setSavedItems(r.items || [])),
         getSavedCounts().then(c => setSavedCounts(c)).finally(() => setSavedLoading(false)),
+        getNotesCount().then(c => setNotesCounts(c)).finally(() => setNotesLoading(false)),
       ]).finally(() => setStatsLoading(false))
     }
     loadUser()
@@ -327,6 +330,46 @@ export default function PerfilClient({ lang }) {
                 <div className="profile-saved-empty">
                   <Bookmark size={24} className="opacity-20 mb-2" />
                   <p className="text-sm opacity-50">{t('saved.empty')}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Notes Card */}
+            <div className="profile-card-v2 profile-saved-card">
+              <div className="profile-card-header">
+                <div className="profile-card-dot" /> {t('notes_page.title')}
+                {notesCounts && notesCounts.total > 0 && (
+                  <span className="profile-saved-count">{notesCounts.total}</span>
+                )}
+              </div>
+              {notesLoading ? (
+                <div className="profile-saved-loading">
+                  <Loader2 size={20} className="animate-spin" />
+                </div>
+              ) : notesCounts && notesCounts.total > 0 ? (
+                <>
+                  <div className="profile-saved-list">
+                    {Object.entries(notesCounts).filter(([key, val]) => key !== 'total' && val > 0).map(([key, count]) => (
+                      <Link key={key} href={`/${lang}/anotacoes`} className="profile-saved-item">
+                        <div className="profile-saved-item-icon">
+                          <StickyNote size={16} />
+                        </div>
+                        <div className="profile-saved-item-info">
+                          <div className="profile-saved-item-name">{key === 'standalone' ? 'Soltas' : key}</div>
+                          <div className="profile-saved-item-subtitle">{count} {count === 1 ? 'nota' : 'notas'}</div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                  <Link href={`/${lang}/anotacoes`} className="profile-saved-viewall">
+                    {t('notes_page.title')}
+                    <ChevronRight size={14} />
+                  </Link>
+                </>
+              ) : (
+                <div className="profile-saved-empty">
+                  <StickyNote size={24} className="opacity-20 mb-2" />
+                  <p className="text-sm opacity-50">Ainda não tens anotações</p>
                 </div>
               )}
             </div>
