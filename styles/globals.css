@@ -2819,8 +2819,8 @@ html.dark .bell-dropdown-link:hover {
 
 .profile-stat-card {
   background: var(--color-brand-card);
-  border-radius: 14px;
-  padding: 18px 16px;
+  border-radius: 16px;
+  padding: 24px;
   border: 1px solid var(--color-brand-divider);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -2833,14 +2833,14 @@ html.dark .bell-dropdown-link:hover {
 .profile-stat-top {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  justify-content: space-between;
+  margin-bottom: 16px;
 }
 
 .profile-stat-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
   background: rgba(10, 132, 79, 0.08);
   display: flex;
   align-items: center;
@@ -2850,7 +2850,7 @@ html.dark .bell-dropdown-link:hover {
 }
 
 .profile-stat-value {
-  font-size: 28px;
+  font-size: 36px;
   font-weight: 800;
   line-height: 1;
   color: var(--color-brand-deep);
@@ -2860,10 +2860,10 @@ html.dark .bell-dropdown-link:hover {
 .profile-stat-amber { color: #d97706 !important; }
 
 .profile-stat-label {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--color-brand-deep);
   opacity: 0.5;
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
 /* Content */
@@ -3158,11 +3158,16 @@ html.dark .bell-dropdown-link:hover {
   }
 
   .profile-stat-card {
-    padding: 14px 6px;
+    padding: 18px 16px;
+  }
+
+  .profile-stat-icon {
+    width: 36px;
+    height: 36px;
   }
 
   .profile-stat-value {
-    font-size: 20px;
+    font-size: 28px;
   }
 
   .profile-stat-label {

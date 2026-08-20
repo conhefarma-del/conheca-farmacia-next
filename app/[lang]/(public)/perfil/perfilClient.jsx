@@ -215,31 +215,31 @@ export default function PerfilClient({ lang }) {
           <div className="profile-stats-grid">
             <div className="profile-stat-card">
               <div className="profile-stat-top">
-                <div className="profile-stat-icon"><BrainCircuit size={16} /></div>
-                <div className="profile-stat-label">Quizzes</div>
+                <div className="profile-stat-icon"><BrainCircuit size={18} /></div>
               </div>
               <div className="profile-stat-value">{!statsLoading ? (stats?.quiz?.totalQuizzes || 0) : '—'}</div>
+              <div className="profile-stat-label">Quizzes realizados</div>
             </div>
             <div className="profile-stat-card">
               <div className="profile-stat-top">
-                <div className="profile-stat-icon"><Target size={16} /></div>
-                <div className="profile-stat-label">Precisão</div>
+                <div className="profile-stat-icon"><Target size={18} /></div>
               </div>
               <div className="profile-stat-value profile-stat-accent">{!statsLoading ? `${stats?.quiz?.quizAccuracy || 0}%` : '—'}</div>
+              <div className="profile-stat-label">Precisão média</div>
             </div>
             <div className="profile-stat-card">
               <div className="profile-stat-top">
-                <div className="profile-stat-icon"><Flame size={16} /></div>
-                <div className="profile-stat-label">Streak</div>
+                <div className="profile-stat-icon"><Flame size={18} /></div>
               </div>
               <div className="profile-stat-value profile-stat-amber">{!statsLoading ? (stats?.quiz?.bestQuizStreak || 0) : '—'}</div>
+              <div className="profile-stat-label">Melhor streak</div>
             </div>
             <div className="profile-stat-card">
               <div className="profile-stat-top">
-                <div className="profile-stat-icon"><BookOpen size={16} /></div>
-                <div className="profile-stat-label">Flashcards</div>
+                <div className="profile-stat-icon"><Trophy size={18} /></div>
               </div>
-              <div className="profile-stat-value">{!statsLoading ? (stats?.flashcards?.totalFlashcardsStudied || 0) : '—'}</div>
+              <div className="profile-stat-value">{!statsLoading ? (stats?.competitions?.totalSessions || 0) : '—'}</div>
+              <div className="profile-stat-label">Desafios ganhos</div>
             </div>
           </div>
         </div>
