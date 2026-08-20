@@ -4239,6 +4239,157 @@ html.dark .notes-drawer-footer {
   gap: 8px;
 }
 
+/* ============================================================
+   Grid Cards — /guardados and /anotacoes
+   ============================================================ */
+.saved-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 640px) {
+  .saved-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.saved-card {
+  background: var(--color-brand-card);
+  border: 1px solid var(--color-brand-divider);
+  border-radius: 12px;
+  padding: 16px;
+  position: relative;
+  transition: box-shadow 0.15s;
+  overflow: hidden;
+}
+
+.saved-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 42, 50, 0.06);
+}
+
+.saved-card-link {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.saved-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(10, 132, 79, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-brand-accent);
+  flex-shrink: 0;
+}
+
+.saved-card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.saved-card-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-brand-deep);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.saved-card-link:hover .saved-card-name {
+  color: var(--color-brand-accent);
+}
+
+.saved-card-subtitle {
+  font-size: 12px;
+  color: var(--color-brand-deep);
+  opacity: 0.5;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.saved-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.saved-card-date {
+  font-size: 11px;
+  color: var(--color-brand-deep);
+  opacity: 0.4;
+}
+
+.saved-card-note-preview {
+  font-size: 12px;
+  color: var(--color-brand-deep);
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-brand-divider);
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s, opacity 0.2s;
+  opacity: 0;
+}
+
+.saved-card:hover .saved-card-note-preview {
+  max-height: 60px;
+  opacity: 1;
+}
+
+.saved-card-notes-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: rgba(10, 132, 79, 0.08);
+  color: var(--color-brand-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  opacity: 0;
+}
+
+.saved-card:hover .saved-card-notes-btn {
+  opacity: 1;
+}
+
+.saved-card-notes-btn--has-note {
+  opacity: 1;
+  background: var(--color-brand-accent);
+  color: white;
+}
+
+.saved-card-notes-btn:hover {
+  background: var(--color-brand-accent);
+  color: white;
+}
+
+/* Create note button */
+.saved-tab--create {
+  background: var(--color-brand-accent);
+  color: white;
+  border: none;
+}
+
+.saved-tab--create:hover {
+  background: var(--color-brand-accent-dark, #0a844f);
+}
+
 .saved-item {
   background: var(--color-brand-card);
   border: 1px solid var(--color-brand-divider);

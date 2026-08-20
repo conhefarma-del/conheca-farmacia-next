@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useCallback, useContext } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import {
   Search, Loader2, Frown, ExternalLink, Pencil, Trash2, Check, X,
-  Pill, ShieldAlert, ClipboardList, Atom, Newspaper
+  Pill, ShieldAlert, ClipboardList, Atom, Newspaper, StickyNote, Plus
 } from 'lucide-react'
-import { getAllNotes, getNotesCount, updateNote, deleteNote } from '@/lib/actions/saved'
+import { getAllNotes, getNotesCount, updateNote, deleteNoteById, upsertStandaloneNote } from '@/lib/actions/saved'
+import NotesDrawer from '@/components/ui/NotesDrawer'
 import { LangContext } from '@/lib/contexts'
 
 const TAB_KEYS = {
@@ -17,6 +17,7 @@ const TAB_KEYS = {
   drug_class: 'notes_page.tab_drug_class',
   molecular_target: 'notes_page.tab_molecular_target',
   article: 'notes_page.tab_article',
+  standalone: 'notes_page.tab_standalone',
 }
 
 const TYPE_ICONS = {
@@ -25,6 +26,7 @@ const TYPE_ICONS = {
   drug_class: ClipboardList,
   molecular_target: Atom,
   article: Newspaper,
+  standalone: StickyNote,
 }
 
 const TYPE_LINKS = {
@@ -41,6 +43,7 @@ const TYPE_LABELS = {
   drug_class: 'Classe',
   molecular_target: 'Alvo',
   article: 'Artigo',
+  standalone: 'Nota solta',
 }
 
 function timeAgo(date, lang) {
@@ -60,7 +63,6 @@ function timeAgo(date, lang) {
 
 export default function NotasPageClient({ lang }) {
   const { t } = useContext(LangContext)
-  const router = useRouter()
 
   const [notes, setNotes] = useState([])
   const [counts, setCounts] = useState(null)
@@ -71,10 +73,11 @@ export default function NotasPageClient({ lang }) {
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
-  const [expandedId, setExpandedId] = useState(null)
-  const [editingId, setEditingId] = useState(null)
-  const [editContent, setEditContent] = useState('')
-  const [deletingId, setDeletingId] = useState(null)
+  
+  // NotesDrawer state
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [drawerNote, setDrawerNote] = useState(null)
+  const [drawerIsStandalone, setDrawerIsStandalone] = useState(false)
 
   // Load counts
   useEffect(() => {
@@ -124,47 +127,41 @@ export default function NotasPageClient({ lang }) {
 
   const handleTabChange = (key) => {
     setActiveTab(key)
-    setExpandedId(null)
-    setEditingId(null)
   }
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value)
   }
 
-  const toggleExpand = (noteId) => {
-    setExpandedId(expandedId === noteId ? null : noteId)
-    setEditingId(null)
-    setEditContent('')
+  const openDrawer = (note, isStandalone = false) => {
+    setDrawerNote(note)
+    setDrawerIsStandalone(isStandalone)
+    setDrawerOpen(true)
   }
 
-  const startEdit = (note) => {
-    setEditingId(note.id)
-    setEditContent(note.content)
+  const handleDrawerClose = () => {
+    setDrawerOpen(false)
+    setDrawerNote(null)
+    setDrawerIsStandalone(false)
+    // Reload notes to reflect changes
+    loadNotes(1)
   }
 
-  const saveEdit = async (noteId) => {
-    if (!editContent.trim()) return
-    const result = await updateNote(noteId, editContent.trim())
-    if (result.success) {
-      setNotes((prev) =>
-        prev.map((n) => (n.id === noteId ? { ...n, content: editContent.trim() } : n))
-      )
-      setEditingId(null)
-      setEditContent('')
+  const handleCreateStandalone = async () => {
+    const result = await upsertStandaloneNote(null, 'Nova nota...')
+    if (result.success && result.note) {
+      setDrawerNote(result.note)
+      setDrawerIsStandalone(true)
+      setDrawerOpen(true)
+      loadNotes(1)
     }
   }
 
   const handleDelete = async (noteId) => {
-    setDeletingId(noteId)
-    try {
-      const result = await deleteNote(noteId)
-      if (result.success) {
-        setNotes((prev) => prev.filter((n) => n.id !== noteId))
-        setTotal((prev) => prev - 1)
-      }
-    } finally {
-      setDeletingId(null)
+    const result = await deleteNoteById(noteId)
+    if (result.success) {
+      setNotes((prev) => prev.filter((n) => n.id !== noteId))
+      setTotal((prev) => prev - 1)
     }
   }
 
@@ -190,20 +187,9 @@ export default function NotasPageClient({ lang }) {
           <div className="max-w-md mx-auto mb-6">
             <div className="h-12 w-full rounded-lg" style={{ ...pulse, opacity: 0.2 }} />
           </div>
-          <div className="flex gap-2 justify-center flex-wrap">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-9 rounded-lg" style={{ ...pulse, opacity: 0.2, width: 70 + i * 12 }} />
-            ))}
-          </div>
-        </section>
-        <section className="max-w-7xl mx-auto px-4 pb-16">
-          <div className="space-y-3">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="p-4 rounded-xl" style={{ border: '1px solid var(--color-brand-divider)' }}>
-                <div className="h-4 w-36 rounded mb-2" style={{ ...pulse, opacity: 0.4 }} />
-                <div className="h-3 w-full rounded mb-1.5" style={{ ...pulse, opacity: 0.2 }} />
-                <div className="h-3 w-2/3 rounded" style={{ ...pulse, opacity: 0.15 }} />
-              </div>
+          <div className="saved-grid">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="saved-card" style={{ ...pulse, opacity: 0.1, minHeight: 120 }} />
             ))}
           </div>
         </section>
@@ -242,7 +228,7 @@ export default function NotasPageClient({ lang }) {
               />
             </div>
 
-            {/* Tabs */}
+            {/* Tabs + Botão Criar Nota */}
             <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
               {Object.entries(TAB_KEYS).map(([key, labelKey]) => {
                 const count = key === 'all' ? counts?.total : counts?.[key] || 0
@@ -260,6 +246,14 @@ export default function NotasPageClient({ lang }) {
                   </button>
                 )
               })}
+              <button
+                type="button"
+                onClick={handleCreateStandalone}
+                className="saved-tab saved-tab--create"
+              >
+                <Plus size={14} />
+                <span className="saved-tab-label">Criar nota</span>
+              </button>
             </div>
           </div>
         </div>
@@ -282,119 +276,65 @@ export default function NotasPageClient({ lang }) {
             </div>
           ) : (
             <>
-              <div className="space-y-3">
+              <div className="saved-grid">
                 {notes.map((note) => {
                   const item = note.saved_item
-                  if (!item) return null
-
-                  const isExpanded = expandedId === note.id
-                  const isEditing = editingId === note.id
-                  const TypeIcon = TYPE_ICONS[item.item_type] || Pencil
-                  const href = TYPE_LINKS[item.item_type]?.(lang, item.item_slug) || '#'
+                  const isStandalone = note.is_standalone
+                  
+                  const TypeIcon = isStandalone ? StickyNote : (TYPE_ICONS[item?.item_type] || Pencil)
+                  const href = isStandalone ? null : (TYPE_LINKS[item?.item_type]?.(lang, item?.item_slug) || '#')
+                  const itemName = isStandalone ? 'Nota solta' : (item?.item_name || 'Nota')
 
                   return (
-                    <div
-                      key={note.id}
-                      className={`nota-inline ${isExpanded ? 'nota-inline--expanded' : ''}`}
-                    >
-                      {/* Header */}
-                      <div className="flex items-center gap-3 cursor-pointer" onClick={() => toggleExpand(note.id)}>
-                        <div className="saved-item-icon">
-                          <TypeIcon size={16} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-semibold text-sm" style={{ color: 'var(--color-brand-deep)' }}>
-                            {item.item_name}
+                    <div key={note.id} className="saved-card">
+                      {href ? (
+                        <Link href={href} className="saved-card-link">
+                          <div className="saved-card-icon">
+                            <TypeIcon size={20} />
                           </div>
-                          {!isExpanded && (
-                            <div className="text-xs truncate" style={{ color: 'var(--color-brand-deep)', opacity: 0.5 }}>
-                              {note.content.substring(0, 80)}...
+                          <div className="saved-card-content">
+                            <div className="saved-card-name">{itemName}</div>
+                            {item?.item_subtitle && (
+                              <div className="saved-card-subtitle">{item.item_subtitle}</div>
+                            )}
+                            <div className="saved-card-meta">
+                              <span className="saved-card-date">
+                                {timeAgo(note.updated_at, lang)}
+                              </span>
                             </div>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-2 flex-shrink-0">
-                          <span className="text-xs" style={{ color: 'var(--color-brand-deep)', opacity: 0.4 }}>
-                            {timeAgo(note.updated_at, lang)}
-                          </span>
-                          <Pencil
-                            size={14}
-                            className="opacity-40 hover:opacity-100 cursor-pointer"
-                            onClick={(e) => { e.stopPropagation(); startEdit(note) }}
-                          />
-                          <Trash2
-                            size={14}
-                            className="opacity-40 hover:opacity-100 cursor-pointer hover:text-red-500"
-                            onClick={(e) => { e.stopPropagation(); handleDelete(note.id) }}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Expanded content */}
-                      {isExpanded && (
-                        <div className="mt-3 pt-3" style={{ borderTop: '1px solid var(--color-brand-divider)' }}>
-                          {isEditing ? (
-                            <div>
-                              <textarea
-                                value={editContent}
-                                onChange={(e) => setEditContent(e.target.value)}
-                                className="w-full p-3 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-accent)]"
-                                style={{
-                                  background: 'var(--color-brand-bg)',
-                                  color: 'var(--color-brand-deep)',
-                                  border: '1px solid var(--color-brand-divider)',
-                                }}
-                                rows={4}
-                                maxLength={5000}
-                                autoFocus
-                              />
-                              <div className="flex items-center justify-between mt-2">
-                                <span className="text-xs" style={{ opacity: 0.4 }}>{editContent.length}/5000</span>
-                                <div className="flex gap-2">
-                                  <button
-                                    type="button"
-                                    onClick={() => saveEdit(note.id)}
-                                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium"
-                                    style={{
-                                      background: 'var(--color-brand-accent)',
-                                      color: 'white',
-                                    }}
-                                  >
-                                    <Check size={12} /> {t('notes_page.save')}
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => { setEditingId(null); setEditContent('') }}
-                                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium"
-                                    style={{
-                                      background: 'var(--color-brand-card)',
-                                      border: '1px solid var(--color-brand-divider)',
-                                      color: 'var(--color-brand-deep)',
-                                    }}
-                                  >
-                                    <X size={12} /> {t('notes_page.cancel')}
-                                  </button>
-                                </div>
-                              </div>
+                          </div>
+                        </Link>
+                      ) : (
+                        <div className="saved-card-link">
+                          <div className="saved-card-icon">
+                            <TypeIcon size={20} />
+                          </div>
+                          <div className="saved-card-content">
+                            <div className="saved-card-name">{itemName}</div>
+                            <div className="saved-card-meta">
+                              <span className="saved-card-date">
+                                {timeAgo(note.updated_at, lang)}
+                              </span>
                             </div>
-                          ) : (
-                            <div className="nota-inline-content">
-                              {note.content}
-                            </div>
-                          )}
-
-                          {/* Link para o item */}
-                          <div className="mt-3 pt-3" style={{ borderTop: '1px solid var(--color-brand-divider)' }}>
-                            <Link
-                              href={href}
-                              className="inline-flex items-center gap-2 text-xs font-medium"
-                              style={{ color: 'var(--color-brand-accent)' }}
-                            >
-                              <ExternalLink size={12} />
-                              {t('notes_page.view_item', { page: TYPE_LABELS[item.item_type] })}
-                            </Link>
                           </div>
                         </div>
                       )}
+                      
+                      {/* Note preview */}
+                      <div className="saved-card-note-preview">
+                        <StickyNote size={12} className="inline mr-1 opacity-50" />
+                        {note.content.substring(0, 80)}...
+                      </div>
+                      
+                      {/* Notes button */}
+                      <button
+                        type="button"
+                        onClick={() => openDrawer(note, isStandalone)}
+                        className="saved-card-notes-btn saved-card-notes-btn--has-note"
+                        title={t('saved.notes_title')}
+                      >
+                        <Pencil size={14} />
+                      </button>
                     </div>
                   )
                 })}
@@ -426,6 +366,21 @@ export default function NotasPageClient({ lang }) {
           )}
         </div>
       </section>
+
+      {/* Notes Drawer */}
+      {drawerNote && (
+        <NotesDrawer
+          isOpen={drawerOpen}
+          onClose={handleDrawerClose}
+          itemId={drawerNote.saved_item?.item_id}
+          itemName={drawerNote.is_standalone ? 'Nota solta' : drawerNote.saved_item?.item_name}
+          itemSlug={drawerNote.saved_item?.item_slug}
+          itemType={drawerNote.is_standalone ? 'standalone' : drawerNote.saved_item?.item_type}
+          lang={lang}
+          noteId={drawerNote.id}
+          isStandalone={drawerNote.is_standalone}
+        />
+      )}
     </div>
   )
 }

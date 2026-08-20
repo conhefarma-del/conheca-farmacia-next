@@ -1123,6 +1123,7 @@
     "tab_drug_class": "Classes",
     "tab_molecular_target": "Alvos",
     "tab_article": "Artigos",
+    "tab_standalone": "Soltas",
     "empty": "Ainda não tens anotações",
     "empty_hint": "Cria anotações nos medicamentos, interações e mais",
     "no_results": "Nenhum resultado encontrado",

@@ -2,13 +2,12 @@
 
 import { useState, useEffect, useCallback, useContext } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import {
   Bookmark, Search, Pill, ShieldAlert, ClipboardList, Atom, Newspaper,
   ChevronLeft, ChevronRight, Loader2, Frown, StickyNote, Pencil
 } from 'lucide-react'
-import { getSavedItems, getSavedCounts, deleteNote, upsertNote, getNoteForItem } from '@/lib/actions/saved'
-import NotesPanel from './NotesPanel'
+import { getSavedItems, getSavedCounts, getNoteForItem } from '@/lib/actions/saved'
+import NotesDrawer from '@/components/ui/NotesDrawer'
 import { LangContext } from '@/lib/contexts'
 
 const ITEM_TYPES = [
@@ -32,7 +31,6 @@ const TAB_KEYS = {
 const TYPE_LINKS = {
   drug: (lang, slug) => `/${lang}/medicamentos/${slug}`,
   interaction: (lang, slug) => {
-    // slug format: "drugA-slug+drugB-slug" or just "interacoes"
     if (slug && slug.includes('+')) {
       const [a, b] = slug.split('+')
       return `/${lang}/interacoes?farmaco=${a}&par=${b}`
@@ -63,9 +61,11 @@ export default function SavedPageClient({ lang }) {
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
   const [loadingItems, setLoadingItems] = useState(false)
-  const [expandedNotes, setExpandedNotes] = useState(null) // savedItemId
   const [notesCache, setNotesCache] = useState({})
-  const router = useRouter()
+  
+  // NotesDrawer state
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [drawerItem, setDrawerItem] = useState(null)
 
   // Load counts
   useEffect(() => {
@@ -85,7 +85,7 @@ export default function SavedPageClient({ lang }) {
         itemType: activeTab === 'all' ? undefined : activeTab,
         search: search || undefined,
         page,
-        limit: 12,
+        limit: 20,
       })
       setItems(result.items)
       setTotalPages(result.pages)
@@ -108,53 +108,26 @@ export default function SavedPageClient({ lang }) {
 
   const handleTabChange = (key) => {
     setActiveTab(key)
-    setExpandedNotes(null)
   }
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value)
   }
 
-  const toggleNotes = async (savedItemId) => {
-    if (expandedNotes === savedItemId) {
-      setExpandedNotes(null)
-      return
-    }
-    setExpandedNotes(savedItemId)
-    if (notesCache[savedItemId] === undefined) {
-      // Find the item to get item_type and item_id
-      const item = items.find(i => i.id === savedItemId)
-      if (item) {
-        const note = await getNoteForItem(item.item_type, item.item_id)
-        setNotesCache((prev) => ({ ...prev, [savedItemId]: note }))
-      }
+  const openDrawer = async (item) => {
+    setDrawerItem(item)
+    setDrawerOpen(true)
+    
+    // Load note if not cached
+    if (notesCache[item.id] === undefined) {
+      const note = await getNoteForItem(item.item_type, item.item_id)
+      setNotesCache((prev) => ({ ...prev, [item.id]: note }))
     }
   }
 
-  const handleUpsertNote = async (savedItemId, content) => {
-    const item = items.find(i => i.id === savedItemId)
-    if (!item) return { success: false, error: 'not_found' }
-    const result = await upsertNote(item.item_type, item.item_id, content)
-    if (result.success) {
-      setNotesCache((prev) => ({
-        ...prev,
-        [savedItemId]: result.note,
-      }))
-    }
-    return result
-  }
-
-  const handleDeleteNote = async (savedItemId) => {
-    const note = notesCache[savedItemId]
-    if (!note) return { success: true }
-    const result = await deleteNote(note.id)
-    if (result.success) {
-      setNotesCache((prev) => ({
-        ...prev,
-        [savedItemId]: null,
-      }))
-    }
-    return result
+  const handleDrawerClose = () => {
+    setDrawerOpen(false)
+    setDrawerItem(null)
   }
 
   if (loading) {
@@ -173,23 +146,9 @@ export default function SavedPageClient({ lang }) {
           <div className="max-w-md mx-auto mb-6">
             <div className="h-12 w-full rounded-lg" style={{ ...pulse, opacity: 0.2 }} />
           </div>
-          <div className="flex gap-2 justify-center flex-wrap">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-9 rounded-lg" style={{ ...pulse, opacity: 0.2, width: 70 + i * 12 }} />
-            ))}
-          </div>
-        </section>
-        <section className="max-w-7xl mx-auto px-4 pb-16">
-          <div className="space-y-3">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="flex items-center gap-3 p-4 rounded-xl" style={{ border: '1px solid var(--color-brand-divider)' }}>
-                <div className="w-9 h-9 rounded-lg flex-shrink-0" style={{ ...pulse, opacity: 0.12 }} />
-                <div className="flex-1">
-                  <div className="h-4 w-36 rounded mb-1.5" style={{ ...pulse, opacity: 0.4 }} />
-                  <div className="h-3 w-24 rounded" style={{ ...pulse, opacity: 0.2 }} />
-                </div>
-                <div className="h-3 w-12 rounded" style={{ ...pulse, opacity: 0.15 }} />
-              </div>
+          <div className="saved-grid">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="saved-card" style={{ ...pulse, opacity: 0.1, minHeight: 120 }} />
             ))}
           </div>
         </section>
@@ -258,7 +217,7 @@ export default function SavedPageClient({ lang }) {
         </div>
       </section>
 
-      {/* Items List */}
+      {/* Items Grid */}
       <section className="saved-content">
         <div className="container-center">
           {loadingItems ? (
@@ -279,51 +238,49 @@ export default function SavedPageClient({ lang }) {
             </div>
           ) : (
             <>
-              <div className="saved-list">
+              <div className="saved-grid">
                 {items.map((item) => {
                   const TypeIcon = TYPE_ICONS[item.item_type] || Bookmark
                   const href = TYPE_LINKS[item.item_type]?.(lang, item.item_slug) || '#'
+                  const note = notesCache[item.id]
+                  const hasNote = note?.content?.trim().length > 0
 
                   return (
-                    <div key={item.id} className="saved-item">
-                      <div className="saved-item-main">
-                        <div className="saved-item-icon">
-                          <TypeIcon size={18} />
+                    <div key={item.id} className="saved-card">
+                      <Link href={href} className="saved-card-link">
+                        <div className="saved-card-icon">
+                          <TypeIcon size={20} />
                         </div>
-                        <Link href={href} className="saved-item-info">
-                          <div className="saved-item-name">{item.item_name}</div>
+                        <div className="saved-card-content">
+                          <div className="saved-card-name">{item.item_name}</div>
                           {item.item_subtitle && (
-                            <div className="saved-item-subtitle">{item.item_subtitle}</div>
+                            <div className="saved-card-subtitle">{item.item_subtitle}</div>
                           )}
-                        </Link>
-                        <div className="saved-item-meta">
-                          <button
-                            type="button"
-                            onClick={() => toggleNotes(item.id)}
-                            className={`saved-item-notes-btn ${expandedNotes === item.id ? 'saved-item-notes-btn--active' : ''}`}
-                            title={t('saved.notes_title')}
-                          >
-                            <Pencil size={14} />
-                            <span className="saved-item-notes-label">{t('saved.notes_title')}</span>
-                            {item.notesCount > 0 && (
-                              <span className="saved-item-notes-count">{item.notesCount}</span>
-                            )}
-                          </button>
-                          <span className="saved-item-date">
-                            {new Date(item.created_at).toLocaleDateString('pt-PT', { day: 'numeric', month: 'short' })}
-                          </span>
+                          <div className="saved-card-meta">
+                            <span className="saved-card-date">
+                              {new Date(item.created_at).toLocaleDateString('pt-PT', { day: 'numeric', month: 'short' })}
+                            </span>
+                          </div>
                         </div>
-                      </div>
-
-                      {/* Notes Panel */}
-                      {expandedNotes === item.id && (
-                        <NotesPanel
-                          savedItemId={item.id}
-                          note={notesCache[item.id]}
-                          onUpsert={(content) => handleUpsertNote(item.id, content)}
-                          onDelete={() => handleDeleteNote(item.id)}
-                        />
+                      </Link>
+                      
+                      {/* Note preview */}
+                      {hasNote && (
+                        <div className="saved-card-note-preview">
+                          <StickyNote size={12} className="inline mr-1 opacity-50" />
+                          {note.content.substring(0, 80)}...
+                        </div>
                       )}
+                      
+                      {/* Notes button */}
+                      <button
+                        type="button"
+                        onClick={() => openDrawer(item)}
+                        className={`saved-card-notes-btn ${hasNote ? 'saved-card-notes-btn--has-note' : ''}`}
+                        title={t('saved.notes_title')}
+                      >
+                        <Pencil size={14} />
+                      </button>
                     </div>
                   )
                 })}
@@ -357,6 +314,19 @@ export default function SavedPageClient({ lang }) {
           )}
         </div>
       </section>
+
+      {/* Notes Drawer */}
+      {drawerItem && (
+        <NotesDrawer
+          isOpen={drawerOpen}
+          onClose={handleDrawerClose}
+          itemId={drawerItem.item_id}
+          itemName={drawerItem.item_name}
+          itemSlug={drawerItem.item_slug}
+          itemType={drawerItem.item_type}
+          lang={lang}
+        />
+      )}
     </div>
   )
 }

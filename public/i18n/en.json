@@ -1123,6 +1123,7 @@
     "tab_drug_class": "Classes",
     "tab_molecular_target": "Targets",
     "tab_article": "Articles",
+    "tab_standalone": "Standalone",
     "empty": "You don't have any notes yet",
     "empty_hint": "Create notes on medications, interactions and more",
     "no_results": "No results found",

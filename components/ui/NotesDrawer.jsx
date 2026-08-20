@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import {
   ChevronUp, ChevronDown, X, ExternalLink, Loader2, Check, Pencil, Plus
 } from 'lucide-react'
-import { getNoteForItem, upsertNote } from '@/lib/actions/saved'
+import { getNoteForItem, upsertNote, upsertStandaloneNote, deleteNoteById } from '@/lib/actions/saved'
 import { LangContext } from '@/lib/contexts'
 
 const TYPE_LINKS = {
@@ -22,6 +22,7 @@ const TYPE_LABELS = {
   drug_class: 'Classe',
   molecular_target: 'Alvo',
   article: 'Artigo',
+  standalone: 'Nota solta',
 }
 
 export default function NotesDrawer({
@@ -32,6 +33,8 @@ export default function NotesDrawer({
   itemSlug,
   itemType,
   lang = 'pt',
+  noteId = null,
+  isStandalone = false,
 }) {
   const { t } = useContext(LangContext)
   const router = useRouter()
@@ -98,7 +101,16 @@ export default function NotesDrawer({
 
   // Carregar nota existente
   useEffect(() => {
-    if (!isOpen || !itemId || !itemType) {
+    if (!isOpen) {
+      setLoading(false)
+      return
+    }
+    // Nota solta: já temos o conteúdo via props
+    if (isStandalone && content !== undefined) {
+      setLoading(false)
+      return
+    }
+    if (!itemId || !itemType) {
       setLoading(false)
       return
     }
@@ -106,9 +118,7 @@ export default function NotesDrawer({
     async function load() {
       setLoading(true)
       try {
-        console.log('Loading note for:', itemType, itemId)
         const note = await getNoteForItem(itemType, itemId)
-        console.log('Note loaded:', note)
         if (!cancelled) {
           setContent(note?.content || '')
           setOriginalContent(note?.content || '')
@@ -117,14 +127,13 @@ export default function NotesDrawer({
         console.error('Error loading note:', err)
       } finally {
         if (!cancelled) {
-          console.log('Setting loading to false')
           setLoading(false)
         }
       }
     }
     load()
     return () => { cancelled = true }
-  }, [isOpen, itemId, itemType])
+  }, [isOpen, itemId, itemType, isStandalone])
 
   // Focus textarea when editing starts on desktop
   useEffect(() => {
@@ -154,7 +163,12 @@ export default function NotesDrawer({
     if (content.trim() === originalContent) return
     setSaving(true)
     try {
-      const result = await upsertNote(itemType, itemId, content.trim())
+      let result
+      if (isStandalone) {
+        result = await upsertStandaloneNote(noteId, content.trim())
+      } else {
+        result = await upsertNote(itemType, itemId, content.trim())
+      }
       if (result.success) {
         setOriginalContent(content.trim())
         setSaved(true)
@@ -220,7 +234,7 @@ export default function NotesDrawer({
 
   if (!isOpen) return null
 
-  const typeLabel = TYPE_LABELS[itemType] || ''
+  const typeLabel = isStandalone ? 'Nota solta' : (TYPE_LABELS[itemType] || '')
   const hasNote = originalContent.trim().length > 0
 
   return (
@@ -262,7 +276,7 @@ export default function NotesDrawer({
                 <ChevronDown size={18} />
               )}
               <span className="notes-drawer-title">
-                {t('notes_drawer.title', { name: itemName })}
+                {isStandalone ? 'Nota solta' : t('notes_drawer.title', { name: itemName })}
               </span>
             </button>
           ) : (
@@ -277,7 +291,7 @@ export default function NotesDrawer({
                 <ChevronDown size={16} />
               )}
               <span className="notes-drawer-title notes-drawer-title--desktop">
-                {t('notes_drawer.title', { name: itemName })}
+                {isStandalone ? 'Nota solta' : t('notes_drawer.title', { name: itemName })}
               </span>
             </button>
           )}
