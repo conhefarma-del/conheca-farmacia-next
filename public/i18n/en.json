@@ -1105,6 +1105,7 @@
     "empty": "Write your note here...",
     "create": "Create Note",
     "save_first": "Save the item first to add notes",
+    "save_first_tooltip": "Save the item first to add and edit notes",
     "saved": "Saved automatically",
     "saving": "Saving...",
     "error": "Error saving",

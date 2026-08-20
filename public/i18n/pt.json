@@ -1105,6 +1105,7 @@
     "empty": "Escreve a tua nota aqui...",
     "create": "Criar Nota",
     "save_first": "Guarda o item primeiro para adicionar notas",
+    "save_first_tooltip": "Guarda o item primeiro para poder adicionar e editar notas",
     "saved": "Guardado automaticamente",
     "saving": "A guardar...",
     "error": "Erro ao guardar",
