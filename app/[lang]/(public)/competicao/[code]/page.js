@@ -1,5 +1,5 @@
 import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
-import CompeticaoLobbyClient from './competicaoLobbyClient'
+import CompetitionSessionClient from '@/components/pages/CompetitionSessionClient'
 
 export const dynamic = 'force-dynamic'
 
@@ -19,5 +19,5 @@ export async function generateMetadata({ params }) {
 export default async function CompeticaoLobbyRoute({ params }) {
   const { lang, code } = await params
   const safeLang = SUPPORTED_LANGS.includes(lang) ? lang : DEFAULT_LANG
-  return <CompeticaoLobbyClient lang={safeLang} code={code} />
+  return <CompetitionSessionClient lang={safeLang} code={code} />
 }

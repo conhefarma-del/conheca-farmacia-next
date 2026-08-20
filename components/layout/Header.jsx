@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Atom, BookOpen, BrainCircuit, ChevronDown, ClipboardList, Pill, Tablets } from 'lucide-react'
+import { Atom, BookOpen, BrainCircuit, ChevronDown, ClipboardList, Pill, Tablets, Trophy } from 'lucide-react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import { getSectionHref } from '@/lib/i18n-routes'
 import { featureEnabled } from '@/lib/features'
@@ -93,6 +93,13 @@ export default function Header({ lang, t, onToggleDrawer }) {
       desc: t('nav.alvos_desc'),
       path: 'alvos',
       icon: <Atom size={18} aria-hidden="true" />,
+    },
+    {
+      href: `/${lang}/competicao`,
+      label: t('competition.nav') || 'Competição',
+      desc: t('competition.page_description') || 'Quiz competitivo entre escolas',
+      path: 'competicao',
+      icon: <Trophy size={18} aria-hidden="true" />,
     },
   ]
 

@@ -69,14 +69,10 @@ export default function CompeticaoJoinClient({ lang }) {
 
   return (
     <>
-      {/* Hero Section */}
+      {/* Hero Section — padrão /artigos */}
       <section className="articles-hero">
         <div className="container-center">
           <div className="text-center py-20 md:py-32">
-            <div className="inline-flex items-center gap-2 bg-brand-accent/10 text-brand-accent px-4 py-2 rounded-full mb-6">
-              <Trophy size={18} />
-              <span className="text-sm font-medium">{t('competition.nav') || 'Competição'}</span>
-            </div>
             <h1 className="text-5xl md:text-7xl font-bold text-brand-deep mb-6">
               {t('competition.join.title') || 'Entrar numa Competição'}
             </h1>

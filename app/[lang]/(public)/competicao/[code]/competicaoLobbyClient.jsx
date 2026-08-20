@@ -152,7 +152,6 @@ export default function CompeticaoLobbyClient({ lang, code }) {
         <section className="articles-hero">
           <div className="container-center">
             <div className="text-center py-20 md:py-32">
-              <Trophy size={48} className="mx-auto mb-4 text-brand-accent" />
               <h1 className="text-5xl md:text-7xl font-bold text-brand-deep mb-6">
                 {competition.name}
               </h1>
@@ -247,18 +246,16 @@ export default function CompeticaoLobbyClient({ lang, code }) {
   }
 
   // RESULT PHASE
-  return (
-    <>
-      <section className="articles-hero">
-        <div className="container-center">
-          <div className="text-center py-20 md:py-32">
-            <Trophy size={48} className="mx-auto mb-4 text-brand-accent" />
-            <h1 className="text-5xl md:text-7xl font-bold text-brand-deep mb-6">
-              Competição Terminada!
-            </h1>
+  return (      <>
+        <section className="articles-hero">
+          <div className="container-center">
+            <div className="text-center py-20 md:py-32">
+              <h1 className="text-5xl md:text-7xl font-bold text-brand-deep mb-6">
+                Competição Terminada!
+              </h1>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
       <section className="py-16 bg-background">
         <div className="container-center max-w-2xl mx-auto px-4 space-y-8">
