@@ -3713,6 +3713,13 @@ html.dark .save-button--saved:hover {
   gap: 6px;
 }
 
+@media (max-width: 640px) {
+  .save-button-group {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
 .save-notes-button {
   display: inline-flex;
   align-items: center;
