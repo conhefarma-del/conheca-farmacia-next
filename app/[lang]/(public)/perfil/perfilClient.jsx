@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { LogOut, Mail, Trophy, BookOpen, Pill, ShieldAlert, ClipboardList, Atom, Loader2, School, Target, BrainCircuit, Flame } from 'lucide-react'
+import { LogOut, Mail, Trophy, BookOpen, Pill, ShieldAlert, ClipboardList, Atom, Loader2, School, Target, BrainCircuit, Flame, Edit3, Save, X } from 'lucide-react'
 import { getUserStats, getUserCompetitionHistory } from '@/lib/actions/profile'
 
 export default function PerfilClient({ lang }) {
@@ -119,7 +119,34 @@ export default function PerfilClient({ lang }) {
               </div>
             )}
             <div className="profile-hero-info">
-              <h1 className="profile-hero-name">{displayName}</h1>
+              {editingName ? (
+                <div className="profile-hero-edit-row">
+                  <input
+                    type="text"
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    className="profile-hero-edit-input"
+                    autoFocus
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleSaveName()
+                      if (e.key === 'Escape') { setEditingName(false); setNewName(user.user_metadata?.full_name || '') }
+                    }}
+                  />
+                  <button onClick={handleSaveName} disabled={saving} className="profile-hero-edit-btn profile-hero-edit-save">
+                    <Save size={14} />
+                  </button>
+                  <button onClick={() => { setEditingName(false); setNewName(user.user_metadata?.full_name || '') }} className="profile-hero-edit-btn profile-hero-edit-cancel">
+                    <X size={14} />
+                  </button>
+                </div>
+              ) : (
+                <div className="profile-hero-name-row">
+                  <h1 className="profile-hero-name">{displayName}</h1>
+                  <button onClick={() => setEditingName(true)} className="profile-hero-edit-trigger" title="Editar nome">
+                    <Edit3 size={14} />
+                  </button>
+                </div>
+              )}
               <p className="profile-hero-email">{user.email}</p>
               <div className="profile-hero-tags">
                 {schoolName && <span className="profile-hero-tag">{schoolName}</span>}

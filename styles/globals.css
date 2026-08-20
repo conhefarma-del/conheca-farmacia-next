@@ -2701,6 +2701,98 @@ html.dark .bell-dropdown-link:hover {
   flex-wrap: wrap;
 }
 
+.profile-hero-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-hero-edit-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.7);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.profile-hero-edit-trigger:hover {
+  background: rgba(255,255,255,0.25);
+  color: white;
+}
+
+.profile-hero-edit-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.profile-hero-edit-input {
+  font-family: 'Fraunces', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+  padding: 4px 10px;
+  outline: none;
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-hero-edit-input::placeholder {
+  color: rgba(255,255,255,0.4);
+}
+
+.profile-hero-edit-input:focus {
+  border-color: rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.15);
+}
+
+.profile-hero-edit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.profile-hero-edit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.profile-hero-edit-save {
+  background: white;
+  color: var(--color-brand-primary);
+}
+
+.profile-hero-edit-save:hover:not(:disabled) {
+  background: #f0f0f0;
+}
+
+.profile-hero-edit-cancel {
+  background: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.7);
+}
+
+.profile-hero-edit-cancel:hover {
+  background: rgba(255,255,255,0.25);
+  color: white;
+}
+
 .profile-hero-tag {
   font-size: 12px;
   padding: 3px 10px;
