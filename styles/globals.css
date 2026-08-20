@@ -3280,6 +3280,27 @@ html.dark .bell-dropdown-link:hover {
   .profile-hero-edit-input:focus {
     min-width: 160px;
   }
+
+  /* Stat cards entrance animation */
+  @keyframes profileStatUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .profile-stat-card {
+    animation: profileStatUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .profile-stat-card:nth-child(1) { animation-delay: 0ms; }
+  .profile-stat-card:nth-child(2) { animation-delay: 80ms; }
+  .profile-stat-card:nth-child(3) { animation-delay: 160ms; }
+  .profile-stat-card:nth-child(4) { animation-delay: 240ms; }
 }
 
 /* ===== DARK MODE — PROFILE V2 ===== */
