@@ -3936,6 +3936,76 @@ html.dark .notes-drawer-close:hover {
   opacity: 0.35;
 }
 
+/* View mode (has note) */
+.notes-drawer-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.notes-drawer-content-display {
+  flex: 1;
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-brand-deep);
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-y: auto;
+}
+
+.notes-drawer-view-actions {
+  padding: 12px 16px;
+  border-top: 1px solid var(--color-brand-divider);
+}
+
+/* Create mode (no note) */
+.notes-drawer-create {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+}
+
+.notes-drawer-create-hint {
+  font-size: 14px;
+  color: var(--color-brand-deep);
+  opacity: 0.5;
+  margin-bottom: 16px;
+}
+
+.notes-btn-create {
+  background: var(--color-brand-accent);
+  color: white;
+  padding: 0 16px;
+  height: 36px;
+  min-width: auto;
+  border-radius: 8px;
+}
+
+.notes-btn-create:hover {
+  background: var(--color-brand-primary);
+}
+
+/* Edit actions */
+.notes-drawer-edit-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-top: 1px solid var(--color-brand-divider);
+}
+
+.notes-drawer-edit-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 /* Footer */
 .notes-drawer-footer {
   display: flex;
@@ -4463,12 +4533,17 @@ html.dark .notes-single-input {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
+  gap: 4px;
+  min-width: 24px;
   height: 24px;
+  padding: 0 8px;
   border-radius: 5px;
   border: none;
+  font-size: 11px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.15s;
+  white-space: nowrap;
 }
 
 .notes-btn-edit {
@@ -4498,6 +4573,9 @@ html.dark .notes-single-input {
 .notes-btn-save {
   background: var(--color-brand-accent);
   color: white;
+  padding: 0 12px;
+  height: 28px;
+  min-width: auto;
 }
 
 .notes-btn-save:hover {

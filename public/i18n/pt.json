@@ -1103,6 +1103,7 @@
   "notes_drawer": {
     "title": "Notas de {name}",
     "empty": "Escreve a tua nota aqui...",
+    "create": "Criar Nota",
     "saved": "Guardado automaticamente",
     "saving": "A guardar...",
     "error": "Erro ao guardar",
@@ -1131,6 +1132,8 @@
     "login_required": "Precisas de conta para ver as tuas anotações",
     "load_more": "Carregar mais...",
     "save": "Guardar",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Eliminar"
   }
 }

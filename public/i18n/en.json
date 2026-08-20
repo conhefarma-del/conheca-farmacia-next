@@ -1103,6 +1103,7 @@
   "notes_drawer": {
     "title": "Notes for {name}",
     "empty": "Write your note here...",
+    "create": "Create Note",
     "saved": "Saved automatically",
     "saving": "Saving...",
     "error": "Error saving",
@@ -1131,6 +1132,8 @@
     "login_required": "You need an account to view your notes",
     "load_more": "Load more...",
     "save": "Save",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete"
   }
 }

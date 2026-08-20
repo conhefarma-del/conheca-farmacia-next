@@ -3,12 +3,10 @@
 import { useState, useEffect, useCallback, useRef, useContext } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-  ChevronUp, ChevronDown, X, ExternalLink, Loader2, Check
+  ChevronUp, ChevronDown, X, ExternalLink, Loader2, Check, Pencil, Plus
 } from 'lucide-react'
 import { getNoteForItem, upsertNote } from '@/lib/actions/saved'
 import { LangContext } from '@/lib/contexts'
-
-const AUTO_SAVE_DELAY = 1500 // 1.5s debounce
 
 const TYPE_LINKS = {
   drug: (lang, slug) => `/${lang}/medicamentos/${slug}`,
@@ -51,6 +49,7 @@ export default function NotesDrawer({
   const router = useRouter()
 
   const [collapsed, setCollapsed] = useState(true)
+  const [editing, setEditing] = useState(false) // Modo edição
   const [content, setContent] = useState('')
   const [originalContent, setOriginalContent] = useState('')
   const [saving, setSaving] = useState(false)
@@ -60,10 +59,9 @@ export default function NotesDrawer({
 
   const textareaRef = useRef(null)
   const drawerRef = useRef(null)
-  const saveTimerRef = useRef(null)
+  const scrollYRef = useRef(0)
   const dragStartY = useRef(0)
   const dragCurrentY = useRef(0)
-  const scrollYRef = useRef(0)
 
   // Detectar mobile
   useEffect(() => {
@@ -93,7 +91,7 @@ export default function NotesDrawer({
     return () => clearInterval(interval)
   }, [isMobile])
 
-  // Block scroll when drawer is open
+  // Block scroll when drawer is open and expanded
   useEffect(() => {
     if (isOpen && !collapsed) {
       scrollYRef.current = window.scrollY
@@ -140,42 +138,47 @@ export default function NotesDrawer({
     return () => { cancelled = true }
   }, [isOpen, savedItemId])
 
-  // Auto-save com debounce
-  const scheduleSave = useCallback((newContent) => {
-    if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
-    setSaved(false)
-    saveTimerRef.current = setTimeout(async () => {
-      setSaving(true)
-      try {
-        await upsertNote(savedItemId, newContent)
-        setOriginalContent(newContent)
-        setSaved(true)
-        setTimeout(() => setSaved(false), 2000)
-      } catch {
-        // silently fail
-      } finally {
-        setSaving(false)
-      }
-    }, AUTO_SAVE_DELAY)
-  }, [savedItemId])
-
-  // Cleanup timer
-  useEffect(() => {
-    return () => {
-      if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
-    }
-  }, [])
-
   // Handle content change
   const handleContentChange = (e) => {
-    const newContent = e.target.value
-    setContent(newContent)
-    scheduleSave(newContent)
+    setContent(e.target.value)
   }
 
   // Toggle collapsed
   const toggleCollapsed = () => {
     setCollapsed((prev) => !prev)
+  }
+
+  // Start editing
+  const startEditing = () => {
+    setEditing(true)
+    setCollapsed(false)
+    setTimeout(() => textareaRef.current?.focus(), 100)
+  }
+
+  // Save note
+  const handleSave = async () => {
+    if (content.trim() === originalContent) return
+    setSaving(true)
+    try {
+      const result = await upsertNote(savedItemId, content.trim())
+      if (result.success) {
+        setOriginalContent(content.trim())
+        setSaved(true)
+        setEditing(false)
+        setTimeout(() => setSaved(false), 2000)
+      }
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  // Cancel editing
+  const handleCancel = () => {
+    setContent(originalContent)
+    setEditing(false)
+    if (!originalContent) {
+      setCollapsed(true)
+    }
   }
 
   // Drag handlers (mobile)
@@ -193,19 +196,18 @@ export default function NotesDrawer({
     if (!isMobile) return
     const delta = dragStartY.current - dragCurrentY.current
     if (delta > 50) {
-      setCollapsed(false) // Arrastou para cima → expandir
+      setCollapsed(false)
     } else if (delta < -50) {
-      setCollapsed(true) // Arrastou para baixo → colapsar
+      setCollapsed(true)
     }
     dragStartY.current = 0
     dragCurrentY.current = 0
   }
 
-  // Navegar para a página do item
+  // Navigate to item page
   const goToItem = () => {
     const href = TYPE_LINKS[itemType]?.(lang, itemSlug)
     if (href) {
-      // Fechar drawer antes de navegar
       document.body.style.position = ''
       document.body.style.top = ''
       document.body.style.width = ''
@@ -215,11 +217,13 @@ export default function NotesDrawer({
     }
   }
 
-  // Fechar e guardar se pendente
+  // Close drawer
   const handleClose = () => {
-    if (content !== originalContent && content.trim()) {
+    if (editing && content !== originalContent) {
+      // Auto-save on close if there are changes
       upsertNote(savedItemId, content)
     }
+    setEditing(false)
     setCollapsed(true)
     onClose()
   }
@@ -228,6 +232,7 @@ export default function NotesDrawer({
 
   const href = TYPE_LINKS[itemType]?.(lang, itemSlug) || '#'
   const typeLabel = TYPE_LABELS[itemType] || ''
+  const hasNote = originalContent.trim().length > 0
 
   return (
     <>
@@ -289,11 +294,6 @@ export default function NotesDrawer({
                 {t('notes_drawer.saved')}
               </span>
             )}
-            {!collapsed && (
-              <span className="notes-drawer-chars">
-                {content.length}
-              </span>
-            )}
             <button
               type="button"
               onClick={handleClose}
@@ -312,15 +312,77 @@ export default function NotesDrawer({
               <div className="notes-drawer-loading">
                 <Loader2 size={24} className="animate-spin opacity-30" />
               </div>
+            ) : editing ? (
+              // Edit mode
+              <>
+                <textarea
+                  ref={textareaRef}
+                  value={content}
+                  onChange={handleContentChange}
+                  placeholder={t('notes_drawer.empty')}
+                  className="notes-drawer-textarea"
+                  maxLength={5000}
+                />
+                <div className="notes-drawer-edit-actions">
+                  <span className="notes-drawer-chars">
+                    {content.length}/5000
+                  </span>
+                  <div className="notes-drawer-edit-buttons">
+                    <button
+                      type="button"
+                      onClick={handleCancel}
+                      className="notes-btn notes-btn-cancel"
+                    >
+                      {t('notes_page.cancel')}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSave}
+                      disabled={saving || content.trim() === originalContent}
+                      className="notes-btn notes-btn-save"
+                    >
+                      {saving ? (
+                        <Loader2 size={12} className="animate-spin" />
+                      ) : (
+                        <Check size={12} />
+                      )}
+                      {t('notes_page.save')}
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : hasNote ? (
+              // View mode (has note)
+              <div className="notes-drawer-view">
+                <div className="notes-drawer-content-display">
+                  {originalContent}
+                </div>
+                <div className="notes-drawer-view-actions">
+                  <button
+                    type="button"
+                    onClick={startEditing}
+                    className="notes-btn notes-btn-edit"
+                  >
+                    <Pencil size={12} />
+                    {t('notes_page.edit')}
+                  </button>
+                </div>
+              </div>
             ) : (
-              <textarea
-                ref={textareaRef}
-                value={content}
-                onChange={handleContentChange}
-                placeholder={t('notes_drawer.empty')}
-                className="notes-drawer-textarea"
-                maxLength={5000}
-              />
+              // Create mode (no note)
+              <div className="notes-drawer-create">
+                <p className="notes-drawer-create-hint">
+                  {t('notes_drawer.empty')}
+                </p>
+                <button
+                  type="button"
+                  onClick={startEditing}
+                  className="notes-btn notes-btn-create"
+                >
+                  <Plus size={14} />
+                  {t('notes_drawer.create')}
+                </button>
+              </div>
             )}
 
             {/* Footer */}
