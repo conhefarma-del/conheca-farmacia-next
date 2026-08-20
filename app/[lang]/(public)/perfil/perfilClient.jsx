@@ -3,7 +3,7 @@
 import { useState, useEffect, useContext } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { LogOut, Mail, Bookmark, Pill, ShieldAlert, ClipboardList, Atom, Newspaper, Loader2, School, Target, BrainCircuit, Flame, Edit3, Save, X, ChevronRight } from 'lucide-react'
+import { LogOut, Mail, Bookmark, Pill, ShieldAlert, ClipboardList, Atom, Newspaper, Loader2, School, Target, BrainCircuit, Flame, Trophy, Edit3, Save, X, ChevronRight } from 'lucide-react'
 import { getUserStats, getUserCompetitionHistory } from '@/lib/actions/profile'
 import { getSavedItems, getSavedCounts } from '@/lib/actions/saved'
 import { LangContext } from '@/lib/contexts'
