@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { LogOut, User, Mail, Calendar, Trophy, BookOpen, Pill, ShieldAlert, ClipboardList, Atom, Loader2, Settings, School, Target, ChevronRight, Edit3, Save, X, BrainCircuit, BarChart3, Zap, Clock, Award, Flame } from 'lucide-react'
-import { getUserStats } from '@/lib/actions/profile'
+import { getUserStats, getUserCompetitionHistory } from '@/lib/actions/profile'
 
 export default function PerfilClient({ lang }) {
   const [user, setUser] = useState(null)
@@ -16,6 +16,7 @@ export default function PerfilClient({ lang }) {
   const [saveMsg, setSaveMsg] = useState('')
   const [stats, setStats] = useState(null)
   const [statsLoading, setStatsLoading] = useState(true)
+  const [compHistory, setCompHistory] = useState([])
 
   useEffect(() => {
     async function loadUser() {
@@ -30,8 +31,9 @@ export default function PerfilClient({ lang }) {
       setLoading(false)
       // Load stats after user is loaded
       try {
-        const s = await getUserStats()
+        const [s, ch] = await Promise.all([getUserStats(), getUserCompetitionHistory()])
         setStats(s)
+        setCompHistory(ch || [])
       } catch {
         // Stats load failed silently
       } finally {
@@ -300,6 +302,58 @@ export default function PerfilClient({ lang }) {
                     )}
                   </>
                 )}
+              </div>
+            </div>
+          )}
+
+          {/* Competition History */}
+          {!statsLoading && compHistory.length > 0 && (
+            <div className="bg-card rounded-2xl border border-brand-divider p-6">
+              <h3 className="text-lg font-bold text-brand-deep mb-4 flex items-center gap-2">
+                <Trophy size={20} className="text-brand-accent" />
+                Histórico de Competições
+              </h3>
+              <div className="space-y-3">
+                {compHistory.map((comp) => (
+                  <div key={comp.id} className="bg-background rounded-xl p-4">
+                    <div className="flex items-start justify-between gap-3 mb-2">
+                      <div className="min-w-0">
+                        <div className="font-semibold text-brand-deep text-sm truncate">
+                          {comp.competitionName}
+                        </div>
+                        <div className="text-xs text-brand-deep/50 mt-0.5">
+                          Código: {comp.accessCode}
+                        </div>
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <div className={`text-lg font-bold ${comp.isFinished ? 'text-brand-accent' : 'text-brand-deep/40'}`}>
+                          {comp.totalScore}
+                        </div>
+                        <div className="text-xs text-brand-deep/50">pontos</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 text-xs text-brand-deep/60">
+                      <span className="flex items-center gap-1">
+                        <Target size={12} />
+                        {comp.accuracy}% precisão
+                      </span>
+                      <span>{comp.correctCount}/{comp.totalAnswered} corretas</span>
+                      {comp.maxStreak > 0 && (
+                        <span className="flex items-center gap-1">
+                          <Flame size={12} className="text-amber-500" />
+                          {comp.maxStreak} streak
+                        </span>
+                      )}
+                      <span className="ml-auto">
+                        {comp.isFinished ? (
+                          new Date(comp.finishedAt).toLocaleDateString('pt-PT', { day: 'numeric', month: 'short' })
+                        ) : (
+                          <span className="text-amber-500">Em curso</span>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}
