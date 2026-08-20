@@ -24,18 +24,6 @@ const TYPE_LABELS = {
   article: 'Artigo',
 }
 
-/**
- * NotesDrawer — bottom sheet (mobile) + sidebar (desktop) para notas contínuas.
- *
- * Props:
- *   isOpen      — boolean
- *   onClose     — () => void
- *   savedItemId — UUID do item guardado
- *   itemName    — nome do item
- *   itemSlug    — slug do item
- *   itemType    — tipo do item
- *   lang        — idioma atual
- */
 export default function NotesDrawer({
   isOpen,
   onClose,
@@ -49,7 +37,7 @@ export default function NotesDrawer({
   const router = useRouter()
 
   const [collapsed, setCollapsed] = useState(true)
-  const [editing, setEditing] = useState(false) // Modo edição
+  const [editing, setEditing] = useState(false)
   const [content, setContent] = useState('')
   const [originalContent, setOriginalContent] = useState('')
   const [saving, setSaving] = useState(false)
@@ -58,7 +46,6 @@ export default function NotesDrawer({
   const [isMobile, setIsMobile] = useState(false)
 
   const textareaRef = useRef(null)
-  const drawerRef = useRef(null)
   const scrollYRef = useRef(0)
   const dragStartY = useRef(0)
   const dragCurrentY = useRef(0)
@@ -71,25 +58,16 @@ export default function NotesDrawer({
     return () => window.removeEventListener('resize', check)
   }, [])
 
-  // Detect header position for desktop drawer
-  const [headerTop, setHeaderTop] = useState(140)
+  // Desktop: always open expanded + editing mode
   useEffect(() => {
-    if (isMobile) return
-    const updateHeaderTop = () => {
-      const headerWrapper = document.querySelector('.header-wrapper')
-      if (headerWrapper) {
-        const transform = window.getComputedStyle(headerWrapper).transform
-        if (transform && transform !== 'none') {
-          const matrix = new DOMMatrix(transform)
-          const translateY = matrix.m42
-          setHeaderTop(translateY > 100 ? 140 : 80)
-        }
-      }
+    if (isOpen && !isMobile) {
+      setCollapsed(false)
+      setEditing(true)
+    } else if (isOpen && isMobile) {
+      setCollapsed(true)
+      setEditing(false)
     }
-    updateHeaderTop()
-    const interval = setInterval(updateHeaderTop, 100)
-    return () => clearInterval(interval)
-  }, [isMobile])
+  }, [isOpen, isMobile])
 
   // Block scroll when drawer is open and expanded
   useEffect(() => {
@@ -138,24 +116,30 @@ export default function NotesDrawer({
     return () => { cancelled = true }
   }, [isOpen, savedItemId])
 
-  // Handle content change
+  // Focus textarea when editing starts on desktop
+  useEffect(() => {
+    if (editing && !isMobile && !loading) {
+      setTimeout(() => textareaRef.current?.focus(), 300)
+    }
+  }, [editing, isMobile, loading])
+
   const handleContentChange = (e) => {
     setContent(e.target.value)
   }
 
-  // Toggle collapsed
   const toggleCollapsed = () => {
     setCollapsed((prev) => !prev)
+    if (!collapsed) {
+      setEditing(false)
+    }
   }
 
-  // Start editing
   const startEditing = () => {
     setEditing(true)
     setCollapsed(false)
     setTimeout(() => textareaRef.current?.focus(), 100)
   }
 
-  // Save note
   const handleSave = async () => {
     if (content.trim() === originalContent) return
     setSaving(true)
@@ -164,7 +148,7 @@ export default function NotesDrawer({
       if (result.success) {
         setOriginalContent(content.trim())
         setSaved(true)
-        setEditing(false)
+        if (isMobile) setEditing(false)
         setTimeout(() => setSaved(false), 2000)
       }
     } finally {
@@ -172,16 +156,15 @@ export default function NotesDrawer({
     }
   }
 
-  // Cancel editing
   const handleCancel = () => {
     setContent(originalContent)
-    setEditing(false)
-    if (!originalContent) {
-      setCollapsed(true)
+    if (isMobile) {
+      setEditing(false)
+      if (!originalContent) setCollapsed(true)
     }
   }
 
-  // Drag handlers (mobile)
+  // Drag handlers (mobile only)
   const handleDragStart = (e) => {
     dragStartY.current = e.touches ? e.touches[0].clientY : e.clientY
     dragCurrentY.current = dragStartY.current
@@ -204,7 +187,6 @@ export default function NotesDrawer({
     dragCurrentY.current = 0
   }
 
-  // Navigate to item page
   const goToItem = () => {
     const href = TYPE_LINKS[itemType]?.(lang, itemSlug)
     if (href) {
@@ -217,10 +199,8 @@ export default function NotesDrawer({
     }
   }
 
-  // Close drawer
   const handleClose = () => {
     if (editing && content !== originalContent) {
-      // Auto-save on close if there are changes
       upsertNote(savedItemId, content)
     }
     setEditing(false)
@@ -230,7 +210,6 @@ export default function NotesDrawer({
 
   if (!isOpen) return null
 
-  const href = TYPE_LINKS[itemType]?.(lang, itemSlug) || '#'
   const typeLabel = TYPE_LABELS[itemType] || ''
   const hasNote = originalContent.trim().length > 0
 
@@ -244,12 +223,7 @@ export default function NotesDrawer({
 
       {/* Drawer */}
       <div
-        ref={drawerRef}
         className={`notes-drawer ${isMobile ? 'notes-drawer-mobile' : 'notes-drawer-desktop'} ${collapsed ? 'is-collapsed' : 'is-expanded'} ${isOpen ? 'is-open' : ''}`}
-        style={!isMobile ? {
-          top: `${headerTop}px`,
-          height: `calc(100vh - ${headerTop}px)`,
-        } : undefined}
         onTouchStart={handleDragStart}
         onTouchMove={handleDragMove}
         onTouchEnd={handleDragEnd}
@@ -266,20 +240,26 @@ export default function NotesDrawer({
 
         {/* Header */}
         <div className="notes-drawer-header">
-          <button
-            type="button"
-            onClick={toggleCollapsed}
-            className="notes-drawer-toggle"
-          >
-            {collapsed ? (
-              <ChevronUp size={18} />
-            ) : (
-              <ChevronDown size={18} />
-            )}
-            <span className="notes-drawer-title">
+          {isMobile ? (
+            <button
+              type="button"
+              onClick={toggleCollapsed}
+              className="notes-drawer-toggle"
+            >
+              {collapsed ? (
+                <ChevronUp size={18} />
+              ) : (
+                <ChevronDown size={18} />
+              )}
+              <span className="notes-drawer-title">
+                {t('notes_drawer.title', { name: itemName })}
+              </span>
+            </button>
+          ) : (
+            <span className="notes-drawer-title notes-drawer-title--desktop">
               {t('notes_drawer.title', { name: itemName })}
             </span>
-          </button>
+          )}
 
           <div className="notes-drawer-header-meta">
             {saving && (
@@ -313,7 +293,6 @@ export default function NotesDrawer({
                 <Loader2 size={24} className="animate-spin opacity-30" />
               </div>
             ) : editing ? (
-              // Edit mode
               <>
                 <textarea
                   ref={textareaRef}
@@ -328,13 +307,15 @@ export default function NotesDrawer({
                     {content.length}/5000
                   </span>
                   <div className="notes-drawer-edit-buttons">
-                    <button
-                      type="button"
-                      onClick={handleCancel}
-                      className="notes-btn notes-btn-cancel"
-                    >
-                      {t('notes_page.cancel')}
-                    </button>
+                    {isMobile && (
+                      <button
+                        type="button"
+                        onClick={handleCancel}
+                        className="notes-btn notes-btn-cancel"
+                      >
+                        {t('notes_page.cancel')}
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={handleSave}
@@ -352,7 +333,6 @@ export default function NotesDrawer({
                 </div>
               </>
             ) : hasNote ? (
-              // View mode (has note)
               <div className="notes-drawer-view">
                 <div className="notes-drawer-content-display">
                   {originalContent}
@@ -369,7 +349,6 @@ export default function NotesDrawer({
                 </div>
               </div>
             ) : (
-              // Create mode (no note)
               <div className="notes-drawer-create">
                 <p className="notes-drawer-create-hint">
                   {t('notes_drawer.empty')}
