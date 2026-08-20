@@ -3511,6 +3511,86 @@ html.dark .profile-logout-btn:hover {
 }
 
 /* =============================================
+   SAVE BUTTON (bookmark toggle)
+   ============================================= */
+.save-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--color-brand-divider);
+  background: var(--color-brand-card);
+  color: var(--color-brand-deep);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.save-button:hover {
+  border-color: var(--color-brand-accent);
+  color: var(--color-brand-accent);
+  background: rgba(10, 132, 79, 0.05);
+}
+
+.save-button--saved {
+  background: rgba(10, 132, 79, 0.08);
+  border-color: var(--color-brand-accent);
+  color: var(--color-brand-accent);
+}
+
+.save-button--saved:hover {
+  background: rgba(220, 38, 38, 0.06);
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+.save-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Save button in hero (inline with title) */
+.save-button-hero {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+}
+
+/* Save button in card (small, inline) */
+.save-button-card {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+/* Dark mode */
+html.dark .save-button {
+  background: var(--color-brand-card);
+  border-color: var(--color-brand-divider);
+  color: var(--color-brand-deep);
+}
+
+html.dark .save-button:hover {
+  border-color: var(--color-brand-accent);
+  color: var(--color-brand-accent);
+  background: rgba(13, 153, 95, 0.1);
+}
+
+html.dark .save-button--saved {
+  background: rgba(13, 153, 95, 0.12);
+  border-color: var(--color-brand-accent);
+  color: var(--color-brand-accent);
+}
+
+html.dark .save-button--saved:hover {
+  background: rgba(220, 38, 38, 0.1);
+  border-color: #f87171;
+  color: #f87171;
+}
+
+/* =============================================
    FOOTER ADMIN ACCESS BUTTON (discreet)
    ============================================= */
 .footer-admin-access {

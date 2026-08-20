@@ -13,6 +13,7 @@ import ReadingTimeTracker from '@/components/content/ReadingTimeTracker'
 import ViewCountTracker from '@/components/content/ViewCountTracker'
 import { slugify } from '@/lib/utils/slugify'
 import TranslationFallbackBanner from '@/components/i18n/TranslationFallbackBanner'
+import SaveButton from '@/components/ui/SaveButton'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -199,7 +200,20 @@ export default async function ArticleDetailPage({ params }) {
           </div>
 
           {/* Title */}
-          <h1 className="article-hero-title mb-10">{article.title}</h1>
+          <div className="flex items-start justify-between gap-4 mb-10">
+            <h1 className="article-hero-title flex-1">{article.title}</h1>
+            <SaveButton
+              itemType="article"
+              itemId={article.id}
+              itemSlug={article.slug}
+              itemName={article.title}
+              itemSubtitle={article.categoryLabel || null}
+              itemImageUrl={article.image || null}
+              lang={safeLang}
+              size="lg"
+              className="save-button-hero mt-1"
+            />
+          </div>
 
           {/* Featured Image */}
           {article.image && (
