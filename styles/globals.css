@@ -3813,7 +3813,9 @@ html.dark .save-notes-button--has-note {
 }
 
 .notes-drawer-mobile.is-expanded {
-  height: 100vh;
+  top: 0;
+  bottom: 0;
+  height: auto;
   border-radius: 0;
 }
 

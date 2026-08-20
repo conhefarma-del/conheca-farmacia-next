@@ -98,7 +98,7 @@ export default function NotesDrawer({
 
   // Carregar nota existente
   useEffect(() => {
-    if (!isOpen || !itemId) return
+    if (!isOpen || !itemId || !itemType) return
     let cancelled = false
     async function load() {
       setLoading(true)
@@ -108,15 +108,15 @@ export default function NotesDrawer({
           setContent(note?.content || '')
           setOriginalContent(note?.content || '')
         }
-      } catch {
-        // silently fail
+      } catch (err) {
+        console.error('Error loading note:', err)
       } finally {
         if (!cancelled) setLoading(false)
       }
     }
     load()
     return () => { cancelled = true }
-  }, [isOpen, itemId])
+  }, [isOpen, itemId, itemType])
 
   // Focus textarea when editing starts on desktop
   useEffect(() => {
