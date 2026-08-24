@@ -665,3 +665,38 @@ Server Action → throwCode(code, detail) → Error(JSON.stringify({code,detail}
 **PII safety**: `hashEmail()` retorna 8-char hex djb2 truncated. **Nunca** passar `form.nome` ou `form.email` raw para logs — só `emailHash`. Mesmo com hashes, considerar se o slug do evento + emailHash é correlacionável (pode revelar inscrição de pessoa específica num evento raro) — manter logs agregados quando possível.
 
 **Status 409 com semântica dupla**: a Edge Function `validate-inscription` devolve 409 para **dois** cenários distintos — `event_full` (vagas esgotadas) e `duplicate` (email já registado). Distinguir no Server Action por inspecção da string `validation.error` (procura "já está registado" / "already"). Não confiar no status code sozinho.
+
+### 62. RLS: UPDATE de Sessão de Outrem é Silenciosamente Filtrado (competition_sessions)
+
+**Problema (bug real, 2026-08-24)**: no fluxo `/competicao/amigos`, apenas o criador entrava no jogo — o **convidado ficava preso no lobby** para sempre. O criador iniciava o quiz, a competição ia para `active`, mas o convidado nunca lia as perguntas.
+
+**Causa raiz**: `startFriendQuiz()` (server action, corre no **contexto auth do criador**) grava `questions` + `started_at` na linha `competition_sessions` de **todos** os jogadores e depois muda a competição para `active`. As únicas policies de UPDATE em `competition_sessions` eram:
+- `own_session_update` (`user_id = auth.uid()`) — migração 234
+- `anon_session_update` (anon) — migração 234
+- `admin_all_sessions` (admin) — migração 234
+
+O criador **não é** o `user_id` da linha do convidado, logo o UPDATE na sessão do convidado era **silenciosamente filtrado pelo RLS** (0 linhas afetadas, sem erro lançado). Resultado:
+- sessão do criador: `questions` preenchidos → criador entra no quiz
+- sessão do convidado: `questions` continua `'[]'` → o polling do lobby do convidado nunca encontra `session.questions` → fica preso no lobby
+
+**Lição 1 — RLS filtra silenciosamente**: um `UPDATE` (ou `DELETE`) bloqueado por RLS **não dá erro** no supabase-js — devolve 0 linhas afetadas. O código que não verifica `error` nem o número de linhas afetadas assume falsamente sucesso. Sempre verificar `error` **e** o resultado em operações de escrita por outro user.
+
+**Lição 2 — Server action que atualiza dados de outro user precisa de policy própria**: se uma ação roda no contexto do user A mas escreve na linha pertencente ao user B, há de existir uma policy que o autoriza (ex.: o criador da competição). Fix (migração `246_fix_friend_session_update_by_creator.sql`):
+
+```sql
+CREATE POLICY friend_update_sessions_by_creator ON public.competition_sessions
+  FOR UPDATE TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.competitions comp
+      WHERE comp.id = competition_sessions.competition_id
+        AND comp.is_friend_challenge = true
+        AND comp.created_by_user_id = auth.uid()
+    )
+  )
+  WITH CHECK ( /* idêntico ao USING */ );
+```
+
+**Lição 3 — evitar recursão RLS**: policies de `competition_sessions` que consultam `competitions`, e policies de `competitions` que consultam `competition_sessions`, saturam (recursão infinita, migração 242). A policy acima consulta `competitions` de forma unilateral (sem loop) — sem problema. Manter a dependência num só sentido.
+
+**Pré-existente (não alterado)**: a policy `anon_read_sessions` (234) tem `USING (true)` para `authenticated`, o que na prática permite a qualquer user autenticado ler todas as sessões (lobby/leaderboard da mesma competição funcionam). Não foi o bloqueio do fluxo, mas é uma leitura ampla que num futuro hardening deve ser restringida.
