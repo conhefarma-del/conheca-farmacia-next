@@ -121,13 +121,15 @@ export default function Header({ lang, t, onToggleDrawer }) {
       path: 'alvos',
       icon: <Atom size={18} aria-hidden="true" />,
     },
-    {
-      href: `/${lang}/competicao`,
-      label: t('competition.nav') || 'Competição',
-      desc: t('competition.page_description') || 'Quiz competitivo entre escolas',
-      path: 'competicao',
-      icon: <Trophy size={18} aria-hidden="true" />,
-    },
+    ...(featureEnabled('competicao')
+      ? [{
+          href: `/${lang}/competicao`,
+          label: t('competition.nav') || 'Competição',
+          desc: t('competition.page_description') || 'Quiz competitivo entre escolas',
+          path: 'competicao',
+          icon: <Trophy size={18} aria-hidden="true" />,
+        }]
+      : []),
   ]
 
   const toolsActive = toolsLinks.some((l) => isActive(l.path))
@@ -188,7 +190,7 @@ export default function Header({ lang, t, onToggleDrawer }) {
 
         <div className="header-right">
           <ThemeToggle />
-          {user && <InviteNotifications lang={lang} />}
+          {user && featureEnabled('competicao') && <InviteNotifications lang={lang} />}
 
           {/* Profile dropdown / Entrar link */}
           <div className="profile-wrapper" ref={profileRef}>
