@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState, useCallback } from 'react'
 import { useTheme } from '@/components/providers/ThemeProvider'
+import { featureEnabled } from '@/lib/features'
 import {
   Home,
   FileText,
@@ -266,6 +267,9 @@ export default function AdminSidebar({ lang, user, onLogout }) {
             )
           })()}
 
+          {/* Competições / Escolas (admin do módulo de competições — oculto com a secção) */}
+          {featureEnabled('competicao') && (
+            <>
           {/* Competições */}
           {(() => {
             const href = `/${lang}/admin/competicoes`
@@ -285,6 +289,8 @@ export default function AdminSidebar({ lang, user, onLogout }) {
               </Link>
             )
           })()}
+            </>
+          )}
 
           {/* Interações → submenu: Dimensões */}
           {(() => {

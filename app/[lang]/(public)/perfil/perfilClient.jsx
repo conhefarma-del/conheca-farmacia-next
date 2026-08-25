@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { LogOut, Mail, Bookmark, Pill, ShieldAlert, ClipboardList, Atom, Newspaper, Loader2, School, Target, BrainCircuit, Flame, Trophy, Edit3, Save, X, ChevronRight, StickyNote } from 'lucide-react'
 import { getUserStats, getUserCompetitionHistory } from '@/lib/actions/profile'
 import { getSavedItems, getSavedCounts, getNotesCount } from '@/lib/actions/saved'
+import { featureEnabled } from '@/lib/features'
 import { LangContext } from '@/lib/contexts'
 
 export default function PerfilClient({ lang }) {
@@ -267,13 +268,15 @@ export default function PerfilClient({ lang }) {
               <div className="profile-stat-value profile-stat-amber">{!statsLoading ? (stats?.quiz?.bestQuizStreak || 0) : '—'}</div>
               <div className="profile-stat-label">Melhor streak</div>
             </div>
-            <div className="profile-stat-card">
-              <div className="profile-stat-top">
-                <div className="profile-stat-icon"><Trophy size={18} /></div>
+            {featureEnabled('competicao') && (
+              <div className="profile-stat-card">
+                <div className="profile-stat-top">
+                  <div className="profile-stat-icon"><Trophy size={18} /></div>
+                </div>
+                <div className="profile-stat-value">{!statsLoading ? (stats?.competitions?.totalSessions || 0) : '—'}</div>
+                <div className="profile-stat-label">Desafios ganhos</div>
               </div>
-              <div className="profile-stat-value">{!statsLoading ? (stats?.competitions?.totalSessions || 0) : '—'}</div>
-              <div className="profile-stat-label">Desafios ganhos</div>
-            </div>
+            )}
           </div>
         </div>
       </section>
@@ -409,7 +412,7 @@ export default function PerfilClient({ lang }) {
           </div>
 
           {/* Competition History */}
-          {!statsLoading && compHistory.length > 0 && (
+          {featureEnabled('competicao') && !statsLoading && compHistory.length > 0 && (
             <div className="profile-card-v2" style={{ marginTop: 20 }}>
               <div className="profile-card-header">
                 <div className="profile-card-dot" /> Competições Recentes

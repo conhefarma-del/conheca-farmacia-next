@@ -71,7 +71,9 @@ export default function MobileDrawer({ lang, t, open, onClose }) {
     { href: getSectionHref(lang, 'interacoes'), label: t('nav.interacoes'), path: 'interacoes' },
     { href: getSectionHref(lang, 'medicamentos'), label: t('nav.medicamentos'), path: 'medicamentos' },
     { href: getSectionHref(lang, 'alvos'), label: t('nav.alvos'), path: 'alvos' },
-    { href: `/${lang}/competicao`, label: t('competition.nav') || 'Competição', path: 'competicao' },
+    ...(featureEnabled('competicao')
+      ? [{ href: `/${lang}/competicao`, label: t('competition.nav') || 'Competição', path: 'competicao' }]
+      : []),
   ]
 
   const toolsActive = toolsLinks.some((l) => isActive(l.path))
