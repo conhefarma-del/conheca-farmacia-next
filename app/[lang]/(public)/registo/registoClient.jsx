@@ -35,7 +35,7 @@ export default function RegistoClient({ lang }) {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/${lang}/perfil`,
+          emailRedirectTo: `${window.location.origin}/${lang}/conta-criada`,
           data: {
             display_name: email.split('@')[0],
           },
