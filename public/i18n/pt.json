@@ -1176,5 +1176,9 @@
     "class_label": "Nome da turma",
     "class_placeholder": "Ex: 10ª Classe A",
     "save_class": "Guardar turma"
+  },
+  "auth": {
+    "forgot_password": "Esqueci a palavra-passe",
+    "reset_password": "Repor palavra-passe"
   }
 }

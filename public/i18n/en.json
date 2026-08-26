@@ -1176,5 +1176,9 @@
     "class_label": "Class name",
     "class_placeholder": "Ex: 10th Grade A",
     "save_class": "Save class"
+  },
+  "auth": {
+    "forgot_password": "Forgot password",
+    "reset_password": "Reset password"
   }
 }

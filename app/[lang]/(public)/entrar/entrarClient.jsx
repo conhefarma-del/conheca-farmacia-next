@@ -125,7 +125,12 @@ export default function EntrarClient({ lang }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-brand-deep mb-2">Password</label>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-sm font-medium text-brand-deep">Password</label>
+              <Link href={`/${lang}/esqueci-palavra-passe`} className="text-xs text-brand-accent hover:underline">
+                Esqueci a palavra-passe
+              </Link>
+            </div>
             <div className="relative">
               <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-deep/40" />
               <input
