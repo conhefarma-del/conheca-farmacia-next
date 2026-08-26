@@ -5,7 +5,7 @@ import { featureEnabled } from '@/lib/features'
 
 export const revalidate = 43200 // 12 horas
 
-const SITE_URL = 'https://conhecafarmacia.com'
+const SITE_URL = 'https://www.conhecafarmacia.com'
 const LOCALES = ['pt', 'en']
 
 /**
@@ -48,6 +48,7 @@ export default async function sitemap() {
     medicamentos:  { pt: '/medicamentos', en: '/medicines' },
     faq:           { pt: '/faq',        en: '/faq' },
     'politica-privacidade': { pt: '/politica-privacidade', en: '/privacy-policy' },
+    termos:         { pt: '/termos',       en: '/terms' },
     inscricao:     { pt: '/inscricao',  en: '/register' },
   }
 

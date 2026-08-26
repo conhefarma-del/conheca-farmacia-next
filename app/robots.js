@@ -7,6 +7,6 @@ export default function robots() {
         disallow: ['/admin/', '/api/'],
       },
     ],
-    sitemap: 'https://conhecafarmacia.com/sitemap.xml',
+    sitemap: 'https://www.conhecafarmacia.com/sitemap.xml',
   }
 }
