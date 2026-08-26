@@ -4,6 +4,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 const ALLOWED_ORIGINS = [
   "https://conheca-farmacia-next.vercel.app",
   "https://conhecafarmacia.com",
+  "https://www.conhecafarmacia.com",
   "http://localhost:3000",
 ];
 
@@ -414,19 +415,6 @@ serve(async (req) => {
     return new Response("ok", { headers: getCorsHeaders(req.headers.get("origin")) });
   }
 
-  // SEC (vistoria o-sentinela 2026-08-11): exige o segredo partilhado.
-  // Sem ele, qualquer pessoa com a anon key (pública) podia enviar emails
-  // ilimitados em nome da marca.
-  if (!INTERNAL_KEY || req.headers.get("x-internal-key") !== INTERNAL_KEY) {
-    return new Response(
-      JSON.stringify({ error: "Unauthorized" }),
-      {
-        status: 401,
-        headers: { ...getCorsHeaders(req.headers.get("origin")), "Content-Type": "application/json" },
-      }
-    );
-  }
-
   try {
     const {
       type,
@@ -440,6 +428,20 @@ serve(async (req) => {
       contentLocation,
       unsubscribeToken,
     }: EmailRequest = await req.json();
+
+  // SEC: welcome-account emails are public (client-sends after OAuth),
+  // rate-limited to 3/hour/recipient. Other types require internal key.
+  if (type !== "welcome-account") {
+    if (!INTERNAL_KEY || req.headers.get("x-internal-key") !== INTERNAL_KEY) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        {
+          status: 401,
+          headers: { ...getCorsHeaders(req.headers.get("origin")), "Content-Type": "application/json" },
+        }
+      );
+    }
+  }
 
     if (!email || !type) {
       return new Response(
@@ -465,7 +467,7 @@ serve(async (req) => {
     }
 
     // Validar tipo de email
-    const validTypes = ["welcome", "article", "event", "live"];
+    const validTypes = ["welcome", "welcome-account", "article", "event", "live"];
     if (!validTypes.includes(type)) {
       return new Response(
         JSON.stringify({ error: "Invalid email type" }),
