@@ -130,7 +130,8 @@
     "redes_sociais": "Redes Sociais",
     "direitos": "© 2026 Conheça Farmácia. Todos os direitos reservados.",
     "faq": "Perguntas Frequentes",
-    "privacidade": "Termos, Privacidade e Cookies"
+    "privacidade": "Política de Privacidade",
+    "termos": "Termos de Utilização"
   },
   "common": {
     "voltar": "Voltar",
@@ -458,6 +459,15 @@
   "privacy_page": {
     "hero_title": "Política de Privacidade e Cookies",
     "hero_subtitle": "Saiba como tratamos os seus dados pessoais e como utilizamos cookies no nosso website.",
+    "toc_label": "Índice",
+    "toc_toggle": "Índice",
+    "pending_badge": "Pendente",
+    "last_updated": "Última atualização",
+    "pending_section_note": "Esta secção contém conteúdo pendente de aprovação."
+  },
+  "termos_page": {
+    "hero_title": "Termos de Utilização",
+    "hero_subtitle": "Condições de utilização do website e serviços da Conheça Farmácia.",
     "toc_label": "Índice",
     "toc_toggle": "Índice",
     "pending_badge": "Pendente",

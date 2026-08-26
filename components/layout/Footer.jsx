@@ -32,6 +32,7 @@ export default function Footer({ lang }) {
               <li><Link href={getSectionHref(lang, 'sobre')}>{t('nav.sobre')}</Link></li>
               <li><Link href={getSectionHref(lang, 'faq')}>{t('footer.faq')}</Link></li>
               <li><Link href={getSectionHref(lang, 'politica-privacidade')}>{t('footer.privacidade')}</Link></li>
+              <li><Link href={`/${lang}/termos`}>{t('footer.termos')}</Link></li>
             </ul>
           </div>
 

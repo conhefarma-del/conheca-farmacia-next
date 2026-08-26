@@ -130,7 +130,8 @@
     "redes_sociais": "Social Media",
     "direitos": "© 2026 Conheça Farmácia. All rights reserved.",
     "faq": "Frequently Asked Questions",
-    "privacidade": "Terms, Privacy and Cookies"
+    "privacidade": "Privacy Policy",
+    "termos": "Terms of Use"
   },
   "common": {
     "voltar": "Back",
@@ -458,6 +459,15 @@
   "privacy_page": {
     "hero_title": "Privacy and Cookie Policy",
     "hero_subtitle": "Learn how we handle your personal data and how we use cookies on our website.",
+    "toc_label": "Table of Contents",
+    "toc_toggle": "Contents",
+    "pending_badge": "Pending",
+    "last_updated": "Last updated",
+    "pending_section_note": "This section contains content pending approval."
+  },
+  "termos_page": {
+    "hero_title": "Terms of Use",
+    "hero_subtitle": "Terms and conditions for using the Conheça Farmácia website and services.",
     "toc_label": "Table of Contents",
     "toc_toggle": "Contents",
     "pending_badge": "Pending",
