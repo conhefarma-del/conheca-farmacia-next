@@ -1,0 +1,512 @@
+-- =====================================================================
+-- 217 — Expansão Antiepilépticos: interações + dimensões
+--
+-- Ordem canónica: novos (a0...0020+) = drug_b quando > existentes
+-- Fenitoina/ec48058f, carbamazepina/fbdfffb2, valproato/d6bb1b5f,
+-- lamotrigina/cf2976f8 > novos (a0...) → novos PRIMEIRO (drug_a)
+-- Fenobarbital/7198424c, clonazepam/a0...001d < novos → existentes primeiro
+-- =====================================================================
+
+-- =====================================================================
+-- 1. Interações fármaco-fármaco (drug_interactions) — 16 colunas
+-- =====================================================================
+INSERT INTO public.drug_interactions
+  (drug_a_id, drug_b_id, severity, summary_pt, summary_en,
+   mechanism_pt, mechanism_en, management_pt, management_en,
+   monitoring_pt, monitoring_en, red_flags_pt, red_flags_en,
+   source_pt, source_en, source_url, status)
+SELECT a.id, b.id, v.severity, v.summary_pt, v.summary_en,
+  v.mechanism_pt, v.mechanism_en, v.management_pt, v.management_en,
+  v.monitoring_pt, v.monitoring_en, v.red_flags_pt, v.red_flags_en,
+  v.source_pt, v.source_en, v.source_url, 'published'
+FROM (VALUES
+  -- ═══════════════════════════════════════════════════════════════
+  -- CRITICAL
+  -- ═══════════════════════════════════════════════════════════════
+
+  -- Valproato × Lamotrigina (CRITICAL: valproato duplica níveis de lamotrigina, risco SJS)
+  ('lamotrigina', 'valproato', 'critical',
+   'Antiepiléptico + inibidor de glucuronidação: valproato duplica níveis de lamotrigina. Risco de síndrome de Stevens-Johnson.',
+   'Antiepileptic + glucuronidation inhibitor: valproate doubles lamotrigine levels. Risk of Stevens-Johnson syndrome.',
+   'O valproato inibe a UGT2B7, a principal enzima de metabolismo da lamotrigina. A coadministração aumenta a meia-vida de lamotrigina de 25 h para 60 h, duplicando os níveis. Risco aumentado de erupções cutâneas graves (SJS/TEN) especialmente em dose inicial alta.',
+   'Valproate inhibits UGT2B7, the main metabolic enzyme for lamotrigine. Co-administration increases lamotrigine half-life from 25 h to 60 h, doubling levels. Increased risk of serious skin rashes (SJS/TEN) especially at high initial doses.',
+   'Iniciar lamotrigina a 12,5 mg/dia (em vez de 25 mg). Aumentar muito gradualmente (25 mg/2 semanas). Suspender se erupção cutânea.',
+   'Start lamotrigine at 12.5 mg/day (instead of 25 mg). Increase very slowly (25 mg/2 weeks). Discontinue if rash.',
+   'Erupção cutânea (SJS/TEN), febre, adenopatias.',
+   'Skin rash (SJS/TEN), fever, lymphadenopathy.',
+   'SJS/TEN (bolhas, descamação, mucosas afectadas).',
+   'SJS/TEN (blisters, desquamation, affected mucous membranes).',
+   'DailyMed/FDA; EMC-UK',
+   'DailyMed/FDA; EMC-UK',
+   'https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=cf624b88'),
+
+  -- Fenobarbital × Primidona (CRITICAL: primidona = pro-fármaco de fenobarbital, sedação aditiva)
+  ('fenobarbital', 'primidona', 'critical',
+   'Barbitúrico + pro-fármaco: primidona é convertida a fenobarbital. Efeito aditivo depressor SNC.',
+   'Barbiturate + prodrug: primidone is converted to phenobarbital. Additive CNS depressant effect.',
+   'A primidona é metabolizada a fenobarbital (50-60%) e feniletilmalonamida (25-30%). A coadministração com fenobarbital resulta em níveis aditivos de fenobarbital, aumentando significativamente a depressão do SNC.',
+   'Primidone is metabolised to phenobarbital (50-60%) and phenylethylmalonamide (25-30%). Co-administration with phenobarbital results in additive phenobarbital levels, significantly increasing CNS depression.',
+   'Evitar combinação. Se primidona é essencial, reduzir fenobarbital 50% e monitorizar níveis.',
+   'Avoid combination. If primidone is essential, reduce phenobarbital by 50% and monitor levels.',
+   'Níveis de fenobarbital, sedação, função respiratória.',
+   'Phenobarbital levels, sedation, respiratory function.',
+   'Depressão respiratória grave, coma.',
+   'Severe respiratory depression, coma.',
+   'DailyMed/FDA; EMC-UK',
+   'DailyMed/FDA; EMC-UK',
+   'https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=ae0fa704'),
+
+  -- ═══════════════════════════════════════════════════════════════
+  -- MODERATE
+  -- ═══════════════════════════════════════════════════════════════
+
+  -- Valproato × Topiramato (MODERATE: ambos inibem anidrase carbonica)
+  ('topiramato', 'valproato', 'moderate',
+   'Antiepiléptico + antiepiléptico: ambos inibem anidrase carbonica. Risco de pedras renais e acidose metabólica.',
+   'Antiepileptic + antiepileptic: both inhibit carbonic anhydrase. Risk of renal stones and metabolic acidosis.',
+   'O topiramato e o valproato ambos inibem a anidrase carbonica. A combinação aumenta o risco de acidose metabólica hiperclorémica e pedras renais. O valproato pode aumentar ligeiramente os níveis de topiramato.',
+   'Topiramate and valproate both inhibit carbonic anhydrase. The combination increases the risk of hyperchloraemic metabolic acidosis and renal stones. Valproate may slightly increase topiramate levels.',
+   'Monitorizar bicarbonato sérico e TFG. Manter hidratação adequada. Considerar suplementação de bicarbonato.',
+   'Monitor serum bicarbonate and GFR. Maintain adequate hydration. Consider bicarbonate supplementation.',
+   'Bicarbonato, TFG, ecografia renal.',
+   'Bicarbonate, GFR, renal ultrasound.',
+   'Acidose metabólica sintomática, nefrolitíase.',
+   'Symptomatic metabolic acidosis, nephrolithiasis.',
+   'DailyMed/FDA; EMC-UK',
+   'DailyMed/FDA; EMC-UK',
+   'https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=876bd763'),
+
+  -- Carbamazepina × Topiramato (MODERATE: carbamazepina reduz topiramate 40%)
+  ('topiramato', 'carbamazepina', 'moderate',
+   'Indutor CYP + antiepiléptico: carbamazepina reduz níveis de topiramato ~40%.',
+   'CYP inducer + antiepileptic: carbamazepine reduces topiramate levels ~40%.',
+   'A carbamazepina induz CYP3A4 e UGT, acelerando o metabolismo do topiramato. Os níveis podem reduzir ~40%. Pode ser necessário aumentar a dose de topiramato.',
+   'Carbamazepine induces CYP3A4 and UGT, accelerating topiramate metabolism. Levels may decrease ~40%. It may be necessary to increase the topiramate dose.',
+   'Ajustar dose de topiramato conforme resposta clínica. Monitorizar níveis se possível.',
+   'Adjust topiramate dose based on clinical response. Monitor levels if possible.',
+   'Controlo de crises, bicarbonato sérico.',
+   'Seizure control, serum bicarbonate.',
+   'Perda de controlo de crises.',
+   'Loss of seizure control.',
+   'DailyMed/FDA; EMC-UK',
+   'DailyMed/FDA; EMC-UK',
+   'https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=876bd763'),
+
+  -- Fenitoina × Topiramato (MODERATE: fenitoína reduz topiramate)
+  ('topiramato', 'fenitoina', 'moderate',
+   'Indutor CYP + antiepiléptico: fenitoína pode reduzir níveis de topiramato 30-40%.',
+   'CYP inducer + antiepileptic: phenytoin may reduce topiramate levels 30-40%.',
+   'A fenitoína induz CYP3A4 e CYP2C9, acelerando o metabolismo do topiramato. O efeito é dose-dependente.',
+   'Phenytoin induces CYP3A4 and CYP2C9, accelerating topiramate metabolism. The effect is dose-dependent.',
+   'Ajustar dose de topiramato. Monitorizar níveis.',
+   'Adjust topiramate dose. Monitor levels.',
+   'Controlo de crises.',
+   'Seizure control.',
+   'Perda de controlo de crises.',
+   'Loss of seizure control.',
+   'DailyMed/FDA; EMC-UK',
+   'DailyMed/FDA; EMC-UK',
+   'https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=876bd763'),
+
+  -- Fenitoina × Oxcarbazepina (MODERATE: oxcarbazepina reduz fenitoína 20-30%)
+  ('oxcarbazepina', 'fenitoina', 'moderate',
+   'Antiepiléptico + antiepiléptico: oxcarbazepina reduz níveis de fenitoína 20-30%.',
+   'Antiepileptic + antiepileptic: oxcarbazepine reduces phenytoin levels 20-30%.',
+   'A oxcarbazepina (MHD) pode competir pela ligação a proteínas plasmáticas e induzir CYP, reduzindo os níveis de fenitoína. O efeito é mais pronunciado em doses elevadas de oxcarbazepina.',
+   'Oxcarbazepine (MHD) may compete for plasma protein binding and induce CYP, reducing phenytoin levels. The effect is more pronounced at higher oxcarbazepine doses.',
+   'Monitorizar níveis de fenitoína. Ajustar dose conforme necessário.',
+   'Monitor phenytoin levels. Adjust dose as needed.',
+   'Níveis de fenitoína, sinais de toxicidade.',
+   'Phenytoin levels, signs of toxicity.',
+   'Ataxia, nistagmo, toxicidade.',
+   'Ataxia, nystagmus, toxicity.',
+   'DailyMed/FDA; EMC-UK',
+   'DailyMed/FDA; EMC-UK',
+   'https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=962098cc'),
+
+  -- Carbamazepina × Levetiracetam (MINOR → não incluir, sem interação clinicamente significativa)
+
+  -- Valproato × Gabapentina (MODERATE: ambos causam tremor/sedação aditiva)
+  ('gabapentina', 'valproato', 'moderate',
+   'Antiepiléptico + antiepiléptico: efeito aditivo sobre tremor e sedação.',
+   'Antiepileptic + antiepileptic: additive effect on tremor and sedation.',
+   'Ambos podem causar tremor e sedação. O efeito é aditivo mas não há interação farmacocinética significativa.',
+   'Both can cause tremor and sedation. The effect is additive but there is no significant pharmacokinetic interaction.',
+   'Monitorizar sedação e tremor. Ajustar doses se necessário.',
+   'Monitor sedation and tremor. Adjust doses if necessary.',
+   'Sedação, tremor.',
+   'Sedation, tremor.',
+   'Sedação excessiva.',
+   'Excessive sedation.',
+   'DailyMed/FDA; EMC-UK',
+   'DailyMed/FDA; EMC-UK',
+   'https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=35dc3f7b'),
+
+  -- Topiramato × Zonisamida (MODERATE: ambos inibem anidrase carbonica)
+  ('topiramato', 'zonisamida', 'moderate',
+   'Dois inibidores de anidrase carbonica: risco aumentado de pedras renais e acidose metabólica.',
+   'Two carbonic anhydrase inhibitors: increased risk of renal stones and metabolic acidosis.',
+   'Ambos inibem a anidrase carbonica. A combinação aumenta significativamente o risco de acidose metabólica, hipocalemia e nefrolitíase.',
+   'Both inhibit carbonic anhydrase. The combination significantly increases the risk of metabolic acidosis, hypokalaemia, and nephrolithiasis.',
+   'Evitar combinação se possível. Se necessário, monitorizar bicarbonato, electrolitos e TFG quinzenalmente.',
+   'Avoid combination if possible. If necessary, monitor bicarbonate, electrolytes, and GFR fortnightly.',
+   'Bicarbonato, electrolitos, TFG, ecografia renal.',
+   'Bicarbonate, electrolytes, GFR, renal ultrasound.',
+   'Acidose metabólica grave, nefrolitíase.',
+   'Severe metabolic acidosis, nephrolithiasis.',
+   'DailyMed/FDA; EMC-UK',
+   'DailyMed/FDA; EMC-UK',
+   'https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=ab0631ca'),
+
+  -- Carbamazepina × Primidona (MODERATE: ambos induzem CYP, efeitos aditivos)
+  ('primidona', 'carbamazepina', 'moderate',
+   'Dois indutores CYP: efeito aditivo sobre metabolismo de outros fármacos. Risco de toxicidade.',
+   'Two CYP inducers: additive effect on metabolism of other drugs. Risk of toxicity.',
+   'Ambos são potentes indutores de CYP3A4, CYP2C9, CYP2C19 e UGT. A combinação pode reduzir drasticamente os níveis de outros fármacos (anticoagulantes, contracetivos).',
+   'Both are potent inducers of CYP3A4, CYP2C9, CYP2C19, and UGT. The combination may drastically reduce levels of other drugs (anticoagulants, contraceptives).',
+   'Evitar combinação se possível. Se necessário, ajustar doses de todos os fármacos concomitantes.',
+   'Avoid combination if possible. If necessary, adjust doses of all concomitant drugs.',
+   'Níveis de todos os fármacos concomitantes.',
+   'Levels of all concomitant drugs.',
+   'Falha terapêutica de outros fármacos.',
+   'Therapeutic failure of other drugs.',
+   'DailyMed/FDA; EMC-UK',
+   'DailyMed/FDA; EMC-UK',
+   'https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=fbdfffb2'),
+
+  -- Oxcarbazepina × Ritonavir (MODERATE: oxcarbazepina induz CYP3A4)
+  ('ritonavir', 'oxcarbazepina', 'moderate',
+   'Indutor CYP3A4 + inibidor CYP3A4: efeitos opostos — resultante imprevisível.',
+   'CYP3A4 inducer + CYP3A4 inhibitor: opposing effects — unpredictable outcome.',
+   'A oxcarbazepina (MHD) induz CYP3A4 moderadamente. O ritonavir inibe CYP3A4 potentemente. O resultado depende da dose e timing. Geralmente, o efeito inibidor do ritonavir domina.',
+   'Oxcarbazepine (MHD) moderately induces CYP3A4. Ritonavir potently inhibits CYP3A4. The outcome depends on dose and timing. Generally, ritonavir\'s inhibitory effect predominates.',
+   'Monitorizar níveis de ritonavir e ARV. Considerar trocar oxcarbazepina por levetiracetam (não induz CYP).',
+   'Monitor ritonavir and ARV levels. Consider switching oxcarbazepine to levetiracetam (does not induce CYP).',
+   'Níveis de ARV, sinais de falha terapêutica.',
+   'ARV levels, signs of therapeutic failure.',
+   'Falha terapêutica ARV.',
+   'ARV therapeutic failure.',
+   'DailyMed/FDA; EMC-UK',
+   'DailyMed/FDA; EMC-UK',
+   'https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=962098cc'),
+
+  -- Warfarina × Oxcarbazepina (MODERATE: oxcarbazepina induz CYP, reduz warfarina)
+  ('warfarina', 'oxcarbazepina', 'moderate',
+   'Indutor CYP + anticoagulante: oxcarbazepina pode reduzir efeito da warfarina.',
+   'CYP inducer + anticoagulant: oxcarbazepine may reduce warfarin effect.',
+   'A oxcarbazepina induz CYP3A4 e CYP2C9, as vias metabolizadoras da warfarina (S e R enantiómeros). A coadministração pode reduzir o INR significativamente.',
+   'Oxcarbazepine induces CYP3A4 and CYP2C9, metabolic pathways for warfarin (S and R enantiomers). Co-administration may significantly reduce INR.',
+   'Monitorizar INR semanalmente durante as primeiras 4 semanas. Ajustar dose de warfarina conforme necessário.',
+   'Monitor INR weekly during the first 4 weeks. Adjust warfarin dose as needed.',
+   'INR, sinais de tromboembolismo.',
+   'INR, signs of thromboembolism.',
+   'Tromboembolismo, INR subterapêutico.',
+   'Thromboembolism, subtherapeutic INR.',
+   'DailyMed/FDA; EMC-UK',
+   'DailyMed/FDA; EMC-UK',
+   'https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=962098cc'),
+
+  -- Fenitoina × Levetiracetam (MINOR: sem interação significativa)
+  ('levetiracetam', 'fenitoina', 'minor',
+   'Antiepiléptico + antiepiléptico: sem interação farmacocinética clinicamente significativa.',
+   'Antiepileptic + antiepileptic: no clinically significant pharmacokinetic interaction.',
+   'O levetiracetam não é metabolizado por CYP e não se liga significativamente a proteínas plasmáticas. Não há interação farmacocinética com fenitoína.',
+   'Levetiracetam is not metabolised by CYP and does not significantly bind to plasma proteins. There is no pharmacokinetic interaction with phenytoin.',
+   'Não requer ajuste de dose.',
+   'No dose adjustment required.',
+   'Não requer monitorização específica.',
+   'No specific monitoring required.',
+   '',
+   '',
+   'DailyMed/FDA; EMC-UK',
+   'DailyMed/FDA; EMC-UK',
+   'https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=c508a392'),
+
+  -- Gabapentina × Pregabalina (MODERATE: ambos gabapentinoides, depressão SNC aditiva)
+  ('gabapentina', 'pregabalina', 'moderate',
+   'Dois gabapentinoides: depressão SNC aditiva. Não combinar sem justificação.',
+   'Two gabapentinoids: additive CNS depression. Do not combine without justification.',
+   'Ambos actuam sobre a subunidade α2δ dos canais de cálcio. A combinação não oferece benefício terapêutico adicional e aumenta risco de sedação, tonturas e dificuldade respiratória.',
+   'Both act on the α2δ subunit of calcium channels. The combination offers no additional therapeutic benefit and increases risk of sedation, dizziness, and respiratory difficulty.',
+   'Não combinar dois gabapentinoides. Escolher um.',
+   'Do not combine two gabapentinoids. Choose one.',
+   'Sedação, função respiratória.',
+   'Sedation, respiratory function.',
+   'Depressão respiratória.',
+   'Respiratory depression.',
+   'DailyMed/FDA; EMC-UK',
+   'DailyMed/FDA; EMC-UK',
+   'https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=35dc3f7b'),
+
+  -- Topiramato × Metformina (MODERATE: topiramato pode causar acidose láctica)
+  ('metformina', 'topiramato', 'moderate',
+   'Biguanida + inibidor anidrase carbonica: risco aditivo de acidose metabólica.',
+   'Biguanide + carbonic anhydrase inhibitor: additive risk of metabolic acidosis.',
+   'O topiramato inibe a anidrase carbonica, causando acidose metabólica hiperclorémica. A metformina pode causar acidose láctica (raro). A combinação aumenta o risco de acidose.',
+   'Topiramate inhibits carbonic anhydrase, causing hyperchloraemic metabolic acidosis. Metformine may cause lactic acidosis (rare). The combination increases the risk of acidosis.',
+   'Monitorizar bicarbonato sérico e TFG. Evitar em TFG <45.',
+   'Monitor serum bicarbonate and GFR. Avoid if eGFR <45.',
+   'Bicarbonato, TFG, sinais de acidose.',
+   'Bicarbonate, GFR, signs of acidosis.',
+   'Acidose metabólica/láctica.',
+   'Metabolic/lactic acidosis.',
+   'DailyMed/FDA; EMC-UK',
+   'DailyMed/FDA; EMC-UK',
+   'https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=876bd763'),
+
+  -- Fluconazol × Carbamazepina (MODERATE: fluconazol inibe CYP3A4, aumenta carbamazepina)
+  ('fluconazol', 'carbamazepina', 'moderate',
+   'Inibidor CYP3A4 + indutor CYP3A4: fluconazol pode aumentar níveis de carbamazepina.',
+   'CYP3A4 inhibitor + CYP3A4 inducer: fluconazole may increase carbamazepine levels.',
+   'O fluconazol inibe CYP3A4, a principal via metabolizadora da carbamazepina. A coadministração pode aumentar os níveis de carbamazepina 20-40%, aumentando risco de toxicidade.',
+   'Fluconazole inhibits CYP3A4, the main metabolic pathway for carbamazepine. Co-administration may increase carbamazepine levels 20-40%, increasing toxicity risk.',
+   'Monitorizar níveis de carbamazepina e sinais de toxicidade (náusea, diplopia, ataxia).',
+   'Monitor carbamazepine levels and signs of toxicity (nausea, diplopia, ataxia).',
+   'Níveis de carbamazepina, sinais de toxicidade.',
+   'Carbamazepine levels, signs of toxicity.',
+   'Toxicidade carbamazepina (náusea, diplopia, ataxia).',
+   'Carbamazepine toxicity (nausea, diplopia, ataxia).',
+   'DailyMed/FDA; EMC-UK',
+   'DailyMed/FDA; EMC-UK',
+   'https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=fbdfffb2'),
+
+  -- Valproato × Fenitoína (MODERATE: valproato desloca fenitoína de proteínas)
+  ('valproato', 'fenitoina', 'moderate',
+   'Antiepiléptico + antiepiléptico: valproato pode deslocar fenitoína de proteínas plasmáticas.',
+   'Antiepileptic + antiepileptic: valproate may displace phenytoin from plasma proteins.',
+   'O valproato pode deslocar a fenitoína da albumina, aumentando a fração livre. O efeito é complexo — os níveis totais podem diminuir mas os níveis livres podem aumentar.',
+   'Valproate may displace phenytoin from albumin, increasing the free fraction. The effect is complex — total levels may decrease but free levels may increase.',
+   'Monitorizar níveis livres de fenitoína (não apenas totais). Ajustar dose conforme.',
+   'Monitor free phenytoin levels (not just total). Adjust dose accordingly.',
+   'Níveis livres de fenitoína, sinais de toxicidade.',
+   'Free phenytoin levels, signs of toxicity.',
+   'Toxicidade fenitoína (nistagmo, ataxia).',
+   'Phenytoin toxicity (nystagmus, ataxia).',
+   'DailyMed/FDA; EMC-UK',
+   'DailyMed/FDA; EMC-UK',
+   'https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=ec48058f')
+
+) AS v(slug_a, slug_b, severity, summary_pt, summary_en,
+       mechanism_pt, mechanism_en, management_pt, management_en,
+       monitoring_pt, monitoring_en, red_flags_pt, red_flags_en,
+       source_pt, source_en, source_url)
+JOIN public.drugs a ON a.slug = v.slug_a
+JOIN public.drugs b ON b.slug = v.slug_b
+ON CONFLICT (drug_a_id, drug_b_id) DO NOTHING;
+
+-- =====================================================================
+-- 2. Interações alimento (drug_food_interactions) — 8 colunas
+-- =====================================================================
+INSERT INTO public.drug_food_interactions
+  (drug_id, entity_slug, entity_pt, entity_en,
+   mechanism_pt, mechanism_en, advice_pt, advice_en, status)
+SELECT d.id, v.entity_slug, v.entity_pt, v.entity_en,
+  v.mechanism_pt, v.mechanism_en, v.advice_pt, v.advice_en, 'published'
+FROM public.drugs d
+JOIN (VALUES
+  ('topiramato', 'alcool', 'Álcool', 'Alcohol',
+   'O álcool potencia a depressão SNC do topiramato. Risco aumentado de sedação e comprometimento cognitivo.',
+   'Alcohol potentiates topiramate CNS depression. Increased risk of sedation and cognitive impairment.',
+   'Evitar álcool ou limitar severamente.',
+   'Avoid alcohol or severely limit.'),
+  ('gabapentina', 'alcool', 'Álcool', 'Alcohol',
+   'O álcool potencia a depressão SNC da gabapentina. Risco aumentado de sedação e dificuldade respiratória.',
+   'Alcohol potentiates gabapentin CNS depression. Increased risk of sedation and respiratory difficulty.',
+   'Evitar álcool.',
+   'Avoid alcohol.'),
+  ('oxcarbazepina', 'sumo_toranja', 'Sumo de toranja', 'Grapefruit juice',
+   'O sumo de toranja inibe CYP3A4 intestinal, podendo aumentar ligeiramente a absorção de oxcarbazepina. Efeito geralmente mínimo.',
+   'Grapefruit juice inhibits intestinal CYP3A4, potentially slightly increasing oxcarbazepine absorption. Effect generally minimal.',
+   'Não há restrição significativa. Tomar com ou sem sumo de toranja.',
+   'No significant restriction. Take with or without grapefruit juice.')
+) AS v(slug, entity_slug, entity_pt, entity_en,
+       mechanism_pt, mechanism_en, advice_pt, advice_en)
+ON d.slug = v.slug
+ON CONFLICT (drug_id, entity_slug) DO NOTHING;
+
+-- =====================================================================
+-- 3. Interações doença (drug_disease_interactions) — 11 colunas
+-- =====================================================================
+INSERT INTO public.drug_disease_interactions
+  (drug_id, condition_slug, condition_pt, condition_en,
+   interaction_type, severity, reason_pt, reason_en,
+   advice_pt, advice_en, source_pt, source_en, status)
+SELECT d.id, v.condition_slug, v.condition_pt, v.condition_en,
+  v.interaction_type, v.severity, v.reason_pt, v.reason_en,
+  v.advice_pt, v.advice_en, v.source_pt, v.source_en, 'published'
+FROM public.drugs d
+JOIN (VALUES
+  ('topiramato', 'insuficiencia_renal', 'Insuficiência renal', 'Renal impairment',
+   'precaution', 'moderate',
+   '30-50% excretado inalterado renalmente. Acumulação em insuficiência renal.',
+   '30-50% excreted unchanged renally. Accumulation in renal impairment.',
+   'TFG 30-50: reduzir dose 50%. TFG <30: evitar.',
+   'eGFR 30-50: reduce dose by 50%. eGFR <30: avoid.', 'DailyMed/FDA; EMC-UK', 'DailyMed/FDA; EMC-UK'),
+  ('topiramato', 'insuficiencia_hepatica', 'Insuficiência hepática', 'Hepatic impairment',
+   'precaution', 'moderate',
+   'Metabolismo hepático parcial (CYP3A4). Clearance reduzido em insuficiência hepática.',
+   'Partial hepatic metabolism (CYP3A4). Reduced clearance in hepatic impairment.',
+   'Reduzir dose. Monitorizar função hepática.',
+   'Reduce dose. Monitor liver function.', 'DailyMed/FDA; EMC-UK', 'DailyMed/FDA; EMC-UK'),
+  ('topiramato', 'pedras_renais', 'Pedras renais / Nefrolitíase', 'Kidney stones / Nephrolithiasis',
+   'contraindication', 'critical',
+   'CONTRAINDICADO em doentes com histórico de pedras renais. Topiramato inibe anidrase carbonica, aumentando risco de pedras.',
+   'CONTRAINDICATED in patients with history of kidney stones. Topiramate inhibits carbonic anhydrase, increasing stone risk.',
+   'Não administrar. Considerar alternativa (levetiracetam, lamotrigina).',
+   'Do not administer. Consider alternative (levetiracetam, lamotrigine).', 'DailyMed/FDA; EMC-UK', 'DailyMed/FDA; EMC-UK'),
+  ('levetiracetam', 'insuficiencia_renal', 'Insuficiência renal', 'Renal impairment',
+   'precaution', 'moderate',
+   '50% excretado inalterado renalmente. Acumulação em insuficiência renal.',
+   '50% excreted unchanged renally. Accumulation in renal impairment.',
+   'TFG 30-50: reduzir dose 50%. TFG <30: reduzir 75%. Hemodiálise: dose suplementar.',
+   'eGFR 30-50: reduce dose by 50%. eGFR <30: reduce by 75%. Haemodialysis: supplemental dose.', 'DailyMed/FDA; EMC-UK', 'DailyMed/FDA; EMC-UK'),
+  ('gabapentina', 'insuficiencia_renal', 'Insuficiência renal', 'Renal impairment',
+   'precaution', 'critical',
+   'Excretada 100% renalmente. Acumulação significativa em insuficiência renal.',
+   '100% renally excreted. Significant accumulation in renal impairment.',
+   'TFG 30-59: reduzir dose a 200-700 mg 2x/dia. TFG 15-29: 200-700 mg 1x/dia. TFG <15: 100-300 mg/dia.',
+   'eGFR 30-59: reduce to 200-700 mg 2x/day. eGFR 15-29: 200-700 mg 1x/day. eGFR <15: 100-300 mg/day.', 'DailyMed/FDA; EMC-UK', 'DailyMed/FDA; EMC-UK'),
+  ('pregabalina', 'insuficiencia_renal', 'Insuficiência renal', 'Renal impairment',
+   'precaution', 'critical',
+   '90% excretada inalterada renalmente. Acumulação significativa em insuficiência renal.',
+   '90% excreted unchanged renally. Significant accumulation in renal impairment.',
+   'TFG 30-59: reduzir dose a 75-300 mg/dia. TFG 15-29: 25-150 mg/dia. TFG <15: 25-75 mg/dia.',
+   'eGFR 30-59: reduce to 75-300 mg/day. eGFR 15-29: 25-150 mg/day. eGFR <15: 25-75 mg/day.', 'DailyMed/FDA; EMC-UK', 'DailyMed/FDA; EMC-UK'),
+  ('carbamazepina', 'insuficiencia_hepatica', 'Insuficiência hepática', 'Hepatic impairment',
+   'contraindication', 'critical',
+   'CONTRAINDICADO em insuficiência hepática grave. Risco de hepatite colestática e idiossincrásica.',
+   'CONTRAINDICATED in severe hepatic impairment. Risk of cholestatic and idiosyncratic hepatitis.',
+   'Não administrar em insuficiência hepática grave.',
+   'Do not administer in severe hepatic impairment.', 'DailyMed/FDA; EMC-UK', 'DailyMed/FDA; EMC-UK'),
+  ('valproato', 'insuficiencia_hepatica', 'Insuficiência hepática', 'Hepatic impairment',
+   'contraindication', 'critical',
+   'CONTRAINDICADO em insuficiência hepática. Risco de hepatite fulminante, especialmente em crianças <2 anos.',
+   'CONTRAINDICATED in hepatic impairment. Risk of fulminant hepatitis, especially in children <2 years.',
+   'Não administrar. Monitorizar AST/ALT se uso prolongado.',
+   'Do not administer. Monitor AST/ALT if prolonged use.', 'DailyMed/FDA; EMC-UK', 'DailyMed/FDA; EMC-UK'),
+  ('valproato', 'gravidez', 'Gravidez', 'Pregnancy',
+   'precaution', 'critical',
+   'Risco de defeitos do tubo neural (1-2%), síndrome valproato fetal, comprometimento cognitivo. Dose >1500 mg/dia = maior risco.',
+   'Risk of neural tube defects (1-2%), fetal valproate syndrome, cognitive impairment. Dose >1500 mg/day = higher risk.',
+   'Usar dose mínima eficaz. Suplementar ácido fólico 5 mg/dia. Ecografia morfológica às 16-20 sem.',
+   'Use minimum effective dose. Supplement folic acid 5 mg/day. Morphological ultrasound at 16-20 weeks.', 'DailyMed/FDA; EMC-UK', 'DailyMed/FDA; EMC-UK'),
+  ('fenitoina', 'gravidez', 'Gravidez', 'Pregnancy',
+   'precaution', 'critical',
+   'Risco de síndrome fetal da fenitoína (disrafia vertebral, hipoplasia digital/facial, crescimento intra-uterino). Níveis podem diminuir durante a gravidez.',
+   'Risk of fetal hydantoin syndrome (vertebral dysraphia, digital/facial hypoplasia, intrauterine growth restriction). Levels may decrease during pregnancy.',
+   'Suplementar ácido fólico. Monitorizar níveis trimestralmente. Ajustar dose conforme necessário.',
+   'Supplement folic acid. Monitor levels trimestrally. Adjust dose as needed.', 'DailyMed/FDA; EMC-UK', 'DailyMed/FDA; EMC-UK')
+) AS v(slug, condition_slug, condition_pt, condition_en,
+       interaction_type, severity, reason_pt, reason_en,
+       advice_pt, advice_en, source_pt, source_en)
+ON d.slug = v.slug
+ON CONFLICT (drug_id, condition_slug) DO NOTHING;
+
+-- =====================================================================
+-- 4. Perfil gravidez (drug_pregnancy_info) — 11 colunas + 'published'
+-- =====================================================================
+INSERT INTO public.drug_pregnancy_info
+  (drug_id, pregnancy_category, risk_pt, risk_en,
+   trimester_pt, trimester_en, lactation_pt, lactation_en,
+   contraception_pt, contraception_en,
+   source_pt, source_en, status)
+SELECT d.id,
+  v.pregnancy_category, v.risk_pt, v.risk_en,
+  v.trimester_pt, v.trimester_en, v.lactation_pt, v.lactation_en,
+  v.contraception_pt, v.contraception_en,
+  v.source_pt, v.source_en, 'published'
+FROM public.drugs d
+JOIN (VALUES
+  ('levetiracetam', 'caution',
+   'Dados limitados. Estudos observacionais não mostram aumento significativo de malformações. Usar com precaução.',
+   'Limited data. Observational studies do not show significant increase in malformations. Use with caution.',
+   'Dados insuficientes. Usar apenas se benefício justifica risco.',
+   'Insufficient data. Use only if benefit justifies risk.',
+   'Excretado no leite materno em baixas concentrações. Pode ser usado durante aleitamento com precaução.',
+   'Excreted in breast milk in low concentrations. May be used during breastfeeding with caution.',
+   'Dados insuficientes sobre efeitos na fertilidade.',
+   'Insufficient data on effects on fertility.',
+   'DailyMed/FDA — Keppra; EMC-UK',
+   'DailyMed/FDA — Keppra; EMC-UK'),
+  ('gabapentina', 'caution',
+   'Estudos em animais mostram efeitos no esqueleto. Dados humanos limitados. Usar apenas se benefício justifica risco.',
+   'Animal studies show skeletal effects. Limited human data. Use only if benefit justifies risk.',
+   'Dados insuficientes. Usar apenas se benefício justifica risco.',
+   'Insufficient data. Use only if benefit justifies risk.',
+   'Excretada no leite materno. Decisão entre suspender aleitamento ou fármaco.',
+   'Excreted in breast milk. Decision between discontinuing breastfeeding or drug.',
+   'Efeitos na fertilidade desconhecidos em humanos.',
+   'Effects on fertility unknown in humans.',
+   'DailyMed/FDA — Neurontin; EMC-UK',
+   'DailyMed/FDA — Neurontin; EMC-UK'),
+  ('pregabalina', 'caution',
+   'Estudos em animais mostram toxicidade reprodutiva. Dados humanos limitados. Usar dose mínima eficaz.',
+   'Animal studies show reproductive toxicity. Limited human data. Use minimum effective dose.',
+   'Dados insuficientes. Usar dose mínima e duração curta.',
+   'Insufficient data. Use minimum dose and short duration.',
+   'Excretada no leite materno. Decisão entre suspender aleitamento ou fármaco.',
+   'Excreted in breast milk. Decision between discontinuing breastfeeding or drug.',
+   'Efeitos na fertilidade em animais. Dados humanos insuficientes.',
+   'Effects on fertility in animals. Insufficient human data.',
+   'DailyMed/FDA — Lyrica; EMC-UK',
+   'DailyMed/FDA — Lyrica; EMC-UK'),
+  ('topiramato', 'caution',
+   'Risco de acidose metabólica e crescimento intra-uterino reduzido. Dados limitados.',
+   'Risk of metabolic acidosis and reduced intrauterine growth. Limited data.',
+   'Dados insuficientes. Usar dose mínima. Acidose metabólica pode afectar feto.',
+   'Insufficient data. Use minimum dose. Metabolic acidosis may affect fetus.',
+   'Excretado no leite materno em baixas concentrações.',
+   'Excreted in breast milk in low concentrations.',
+   'Efeitos na fertilidade desconhecidos.',
+   'Effects on fertility unknown.',
+   'DailyMed/FDA — Topamax; EMC-UK',
+   'DailyMed/FDA — Topamax; EMC-UK'),
+  ('oxcarbazepina', 'caution',
+   'Estudos em animais mostram efeitos no desenvolvimento. Dados humanos limitados.',
+   'Animal studies show developmental effects. Limited human data.',
+   'Dados insuficientes. Usar dose mínima eficaz.',
+   'Insufficient data. Use minimum effective dose.',
+   'Excretada no leite materno. Pode causar sonolência no neonato.',
+   'Excreted in breast milk. May cause neonatal somnolence.',
+   'Efeitos na fertilidade desconhecidos.',
+   'Effects on fertility unknown.',
+   'DailyMed/FDA — Trileptal; EMC-UK',
+   'DailyMed/FDA — Trileptal; EMC-UK'),
+  ('zonisamida', 'contraindicated',
+   'CONTRAINDICADO na gravidez. Estudos em animais mostram malformações e toxicidade reprodutiva.',
+   'CONTRAINDICATED in pregnancy. Animal studies show malformations and reproductive toxicity.',
+   'CONTRAINDICADO em todos os trimestres.',
+   'CONTRAINDICATED in all trimesters.',
+   'Evitar durante aleitamento.',
+   'Avoid during breastfeeding.',
+   'Contracepção fiável é obrigatória.',
+   'Reliable contraception is mandatory.',
+   'DailyMed/FDA — Zonegran; EMC-UK',
+   'DailyMed/FDA — Zonegran; EMC-UK'),
+  ('lacosamida', 'caution',
+   'Dados limitados em gravidez. Estudos em animais não mostram teratogenicidade significativa.',
+   'Limited pregnancy data. Animal studies do not show significant teratogenicity.',
+   'Dados insuficientes. Usar apenas se benefício justifica risco.',
+   'Insufficient data. Use only if benefit justifies risk.',
+   'Dados insuficientes sobre excreção no leite materno.',
+   'Insufficient data on excretion in breast milk.',
+   'Dados insuficientes.',
+   'Insufficient data.',
+   'DailyMed/FDA — Vimpat; EMC-UK',
+   'DailyMed/FDA — Vimpat; EMC-UK'),
+  ('primidona', 'caution',
+   'Risco de defeitos do tubo neural e síndrome fetal barbitúrica. Dados históricos.',
+   'Risk of neural tube defects and fetal barbiturate syndrome. Historical data.',
+   'Risco aumentado no 1º trimestre. Suplementar ácido fólico.',
+   'Increased risk in 1st trimester. Supplement folic acid.',
+   'Excretada no leite materno. Risco de sedação no neonato.',
+   'Excreted in breast milk. Risk of neonatal sedation.',
+   'Contracepção fiável. Suplementar ácido fólico.',
+   'Reliable contraception. Supplement folic acid.',
+   'DailyMed/FDA — Mysoline; EMC-UK',
+   'DailyMed/FDA — Mysoline; EMC-UK')
+) AS v(slug, pregnancy_category, risk_pt, risk_en,
+       trimester_pt, trimester_en, lactation_pt, lactation_en,
+       contraception_pt, contraception_en, source_pt, source_en)
+ON d.slug = v.slug
+ON CONFLICT (drug_id) DO NOTHING;
