@@ -1149,6 +1149,15 @@
     "edit": "Edit",
     "delete": "Delete"
   },
+  "account_created": {
+    "title": "Account Created",
+    "heading": "Account Created!",
+    "subtitle": "Welcome, {name}! Your account has been created successfully. Save, take notes and study pharmacology in one place.",
+    "welcome_email": "We sent a welcome email to {email}",
+    "features_title": "What's new in your account",
+    "ferramentas_title": "Tools to explore",
+    "go_to_profile": "Go to Profile"
+  },
   "settings": {
     "page_title": "Settings",
     "page_description": "Update your password, school and class",

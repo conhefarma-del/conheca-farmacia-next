@@ -1149,6 +1149,15 @@
     "edit": "Editar",
     "delete": "Eliminar"
   },
+  "account_created": {
+    "title": "Conta Criada",
+    "heading": "Conta Criada!",
+    "subtitle": "Bem-vindo, {name}! A tua conta foi criada com sucesso. Guarda, anota e estuda farmacologia num só sítio.",
+    "welcome_email": "Enviámos um email de boas-vindas para {email}",
+    "features_title": "Novo na tua conta",
+    "ferramentas_title": "Ferramentas para explorar",
+    "go_to_profile": "Ir para o Perfil"
+  },
   "settings": {
     "page_title": "Definições",
     "page_description": "Atualiza a tua palavra-passe, escola e turma",

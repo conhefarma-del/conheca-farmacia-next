@@ -52,7 +52,7 @@ export default function EntrarClient({ lang }) {
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/${lang}/perfil`,
+          redirectTo: `${window.location.origin}/${lang}/conta-criada`,
         },
       })
       if (oauthError) {

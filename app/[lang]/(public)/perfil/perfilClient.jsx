@@ -39,34 +39,6 @@ export default function PerfilClient({ lang }) {
       setNewName(user.user_metadata?.full_name || user.user_metadata?.display_name || '')
       setLoading(false)
 
-      // Send welcome email for new Google OAuth accounts (created within last 5 min)
-      const sentKey = `cf_welcome_sent_${user.id}`
-      if (!sessionStorage.getItem(sentKey)) {
-        const createdAt = new Date(user.created_at)
-        const ageMinutes = (Date.now() - createdAt.getTime()) / 60000
-        if (ageMinutes < 5) {
-          sessionStorage.setItem(sentKey, '1')
-          const name = user.user_metadata?.full_name || user.user_metadata?.display_name || user.email?.split('@')[0] || ''
-          try {
-            const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-            await fetch(`${supabaseUrl}/functions/v1/send-newsletter-email`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-              },
-              body: JSON.stringify({
-                type: 'welcome-account',
-                email: user.email,
-                nome: name,
-              }),
-            })
-          } catch {
-            // Silently fail — welcome email is non-critical
-          }
-        }
-      }
-
       // Load stats + saved in parallel (non-blocking)
       Promise.allSettled([
         getUserStats().then(s => setStats(s)),
