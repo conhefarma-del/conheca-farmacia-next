@@ -3,7 +3,7 @@
 import { useState, useEffect, useContext } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { LogOut, Mail, Bookmark, Pill, ShieldAlert, ClipboardList, Atom, Newspaper, Loader2, School, Target, BrainCircuit, Flame, Trophy, Edit3, Save, X, ChevronRight, StickyNote } from 'lucide-react'
+import { LogOut, Mail, Bookmark, Pill, ShieldAlert, ClipboardList, Atom, Newspaper, Loader2, School, Target, BrainCircuit, Flame, Trophy, Edit3, Save, X, ChevronRight, StickyNote, Camera } from 'lucide-react'
 import { getUserStats, getUserCompetitionHistory } from '@/lib/actions/profile'
 import { getSavedItems, getSavedCounts, getNotesCount } from '@/lib/actions/saved'
 import { featureEnabled } from '@/lib/features'
@@ -18,6 +18,7 @@ export default function PerfilClient({ lang }) {
   const [newName, setNewName] = useState('')
   const [saving, setSaving] = useState(false)
   const [saveMsg, setSaveMsg] = useState('')
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [stats, setStats] = useState(null)
   const [statsLoading, setStatsLoading] = useState(true)
   const [compHistory, setCompHistory] = useState([])
@@ -163,6 +164,48 @@ export default function PerfilClient({ lang }) {
 
   const displayName = user.user_metadata?.full_name || user.user_metadata?.display_name || user.email?.split('@')[0] || 'Utilizador'
   const avatarUrl = user.user_metadata?.avatar_url
+
+  // Gravatar fallback for email/password users
+  const gravatarUrl = !avatarUrl && user.email
+    ? `https://www.gravatar.com/avatar/${encodeURIComponent(user.email.trim().toLowerCase())}?d=identicon&s=200`
+    : null
+  const displayAvatar = avatarUrl || gravatarUrl
+
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > 2 * 1024 * 1024) {
+      setSaveMsg('A imagem deve ter menos de 2MB')
+      return
+    }
+    setUploadingAvatar(true)
+    try {
+      const supabase = createClient()
+      const fileExt = file.name.split('.').pop()
+      const filePath = `${user.id}/avatar.${fileExt}`
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, { upsert: true })
+      if (uploadError) throw uploadError
+      const { data: urlData } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath)
+      const publicUrl = urlData.publicUrl + '?t=' + Date.now()
+      const { error: updateError } = await supabase.auth.updateUser({
+        data: { avatar_url: publicUrl },
+      })
+      if (updateError) throw updateError
+      setUser((prev) => ({
+        ...prev,
+        user_metadata: { ...prev.user_metadata, avatar_url: publicUrl },
+      }))
+      setSaveMsg('Foto atualizada!')
+    } catch (err) {
+      setSaveMsg('Erro ao enviar foto: ' + (err.message || 'Tenta novamente'))
+    } finally {
+      setUploadingAvatar(false)
+    }
+  }
   const createdAt = new Date(user.created_at).toLocaleDateString('pt-PT', { year: 'numeric', month: 'long', day: 'numeric' })
 
   const savedTypeIcons = {
@@ -198,13 +241,30 @@ export default function PerfilClient({ lang }) {
       <section className="profile-hero-v2">
         <div className="container-center">
           <div className="profile-hero-inner">
-            {avatarUrl ? (
-              <img src={avatarUrl} alt={displayName} className="profile-hero-avatar" />
-            ) : (
-              <div className="profile-hero-avatar profile-hero-avatar-fallback">
-                {displayName.charAt(0).toUpperCase()}
-              </div>
-            )}
+            <div className="relative group">
+              {displayAvatar ? (
+                <img src={displayAvatar} alt={displayName} className="profile-hero-avatar" />
+              ) : (
+                <div className="profile-hero-avatar profile-hero-avatar-fallback">
+                  {displayName.charAt(0).toUpperCase()}
+                </div>
+              )}
+              <label className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                <Camera size={20} className="text-white" />
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleAvatarUpload}
+                  disabled={uploadingAvatar}
+                />
+              </label>
+              {uploadingAvatar && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full">
+                  <Loader2 size={20} className="text-white animate-spin" />
+                </div>
+              )}
+            </div>
             <div className="profile-hero-info">
               {editingName ? (
                 <div className="profile-hero-edit-row">

@@ -25,13 +25,27 @@ export default function Header({ lang, t, onToggleDrawer }) {
     supabase.auth.getUser().then(({ data }) => {
       if (data.user) {
         setUser(data.user)
-        setAvatarUrl(data.user.user_metadata?.avatar_url || null)
+        const av = data.user.user_metadata?.avatar_url
+        if (av) {
+          setAvatarUrl(av)
+        } else if (data.user.email) {
+          setAvatarUrl(`https://www.gravatar.com/avatar/${encodeURIComponent(data.user.email.trim().toLowerCase())}?d=identicon&s=64`)
+        } else {
+          setAvatarUrl(null)
+        }
       }
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         setUser(session.user)
-        setAvatarUrl(session.user.user_metadata?.avatar_url || null)
+        const av = session.user.user_metadata?.avatar_url
+        if (av) {
+          setAvatarUrl(av)
+        } else if (session.user.email) {
+          setAvatarUrl(`https://www.gravatar.com/avatar/${encodeURIComponent(session.user.email.trim().toLowerCase())}?d=identicon&s=64`)
+        } else {
+          setAvatarUrl(null)
+        }
       } else {
         setUser(null)
         setAvatarUrl(null)
