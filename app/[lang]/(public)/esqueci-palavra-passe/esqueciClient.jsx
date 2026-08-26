@@ -46,11 +46,13 @@ export default function EsqueciClient({ lang }) {
           </div>
           <h1 className="text-2xl font-bold text-brand-deep mb-3">Email enviado!</h1>
           <p className="text-brand-deep/60 mb-2">
-            Enviámos um link para repor a palavra-passe para:
+            Se o email estiver registado, enviámos um link para repor a palavra-passe para:
           </p>
           <p className="font-medium text-brand-deep mb-6">{email}</p>
           <p className="text-sm text-brand-deep/50 mb-8">
-            Verifica a tua caixa de entrada e clica no link. Se não encontrares o email, verifica a pasta de spam.
+            Verifica a tua caixa de entrada e clica no link. Se o email estiver registado, receberás um link de reposição em breve.
+            <br /><br />
+            Se não encontrares o email, verifica a pasta de spam ou Junta-te à comunidade criando uma conta.
           </p>
           <Link
             href={`/${lang}/entrar`}
