@@ -89,6 +89,15 @@ export default function EntrarClient({ lang }) {
           Continuar com Google
         </button>
 
+        <p className="text-xs text-brand-deep/50 text-center mb-6 leading-relaxed">
+          Ao continuar com Google, autorizas o acesso ao teu nome, email e fotografia de perfil.{' '}
+          Esses dados são utilizados apenas para autenticação e não são partilhados com terceiros.{' '}
+          Consulta a nossa{' '}
+          <a href={`/${lang}/politica-privacidade`} className="underline hover:text-brand-accent transition-colors">
+            Política de Privacidade
+          </a>.
+        </p>
+
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-brand-divider" />
