@@ -155,10 +155,7 @@ export default function MobileDrawer({ lang, t, open, onClose }) {
               </button>
             </div>
           ) : (
-            <Link href={`/${lang}/entrar`} className="drawer-auth-link" onClick={handleClose}>
-              <LogIn size={18} />
-              Entrar
-            </Link>
+            <>{/* Login/register hidden */}</>
           )}
           <ThemeToggle className="drawer-theme-toggle" />
         </div>
