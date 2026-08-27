@@ -3,8 +3,6 @@
 import { useContext, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import SaveButton from "@/components/ui/SaveButton";
-import NotesDrawer from "@/components/ui/NotesDrawer";
 import {
   AlertTriangle,
   Apple,
@@ -170,7 +168,7 @@ export default function MedicamentoDetailClient({
   const [severityFilter, setSeverityFilter] = useState("all");
   // Interação reportada pelo botão "reportar" de cada cartão.
   const [report, setReport] = useState(null); // { type, id, label }
-  const [notesOpen, setNotesOpen] = useState(false);
+
 
   const setReportFrom = (interactionType, interactionId, label) => {
     setReport({ interactionType, interactionId, label });
@@ -283,18 +281,6 @@ export default function MedicamentoDetailClient({
               <h1 className="text-5xl md:text-7xl font-bold text-brand-deep break-words">
                 {drug.name}
               </h1>
-              <SaveButton
-                itemType="drug"
-                itemId={drug.id}
-                itemSlug={drug.slug}
-                itemName={drug.name}
-                itemSubtitle={drug.className || null}
-                lang={lang}
-                size="lg"
-                className="save-button-hero"
-                showNotesBtn={true}
-                onNotesClick={() => setNotesOpen(true)}
-              />
             </div>
             {drug.className && (
               <p className="hero-subtitle text-center">
@@ -754,17 +740,6 @@ export default function MedicamentoDetailClient({
           {t("medicamento_detalhe.disclaimer")}
         </p>
       </div>
-
-      {/* Notes Drawer */}
-      <NotesDrawer
-        isOpen={notesOpen}
-        onClose={() => setNotesOpen(false)}
-        itemId={drug.id}
-        itemName={drug.name}
-        itemSlug={drug.slug}
-        itemType="drug"
-        lang={lang}
-      />
     </div>
   );
 }

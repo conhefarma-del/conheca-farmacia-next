@@ -260,9 +260,7 @@ export default function Header({ lang, t, onToggleDrawer }) {
                 </div>
               </>
             ) : (
-              <Link href={`/${lang}/entrar`} className="profile-login-link">
-                <span>Entrar</span>
-              </Link>
+              <>{/* Login/register hidden */}</>
             )}
           </div>
 

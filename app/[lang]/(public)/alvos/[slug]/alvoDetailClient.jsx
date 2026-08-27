@@ -1,9 +1,7 @@
 "use client";
 
-import { useContext, useMemo, useState } from "react";
+import { useContext, useMemo } from "react";
 import Link from "next/link";
-import SaveButton from "@/components/ui/SaveButton";
-import NotesDrawer from "@/components/ui/NotesDrawer";
 import { ArrowLeft, BookOpen, Info, Lightbulb } from "lucide-react";
 import { LangContext } from "@/lib/contexts";
 
@@ -86,7 +84,6 @@ function DrugLinks({ text, drugs = [], lang }) {
 }
 
 export default function AlvoDetailClient({ lang, target, drugs = [] }) {
-  const [notesOpen, setNotesOpen] = useState(false);
   const { t } = useContext(LangContext);
 
   const typeLabel = t(`alvos_page.tipo_${target.targetType}`);
@@ -105,18 +102,6 @@ export default function AlvoDetailClient({ lang, target, drugs = [] }) {
           </span>
           <div className="flex items-center gap-3">
             <h1 className="alvo-detail-title">{target.name}</h1>
-            <SaveButton
-              itemType="molecular_target"
-              itemId={target.id}
-              itemSlug={target.slug}
-              itemName={target.name}
-              itemSubtitle={target.fullName || target.targetType || null}
-              lang={lang}
-              size="lg"
-              className="save-button-hero"
-              showNotesBtn={true}
-              onNotesClick={() => setNotesOpen(true)}
-            />
           </div>
           {target.fullName && (
             <p className="alvo-detail-fullname">{target.fullName}</p>
@@ -177,17 +162,6 @@ export default function AlvoDetailClient({ lang, target, drugs = [] }) {
           </Section>
         )}
       </div>
-
-      {/* Notes Drawer */}
-      <NotesDrawer
-        isOpen={notesOpen}
-        onClose={() => setNotesOpen(false)}
-        itemId={target.id}
-        itemName={target.name}
-        itemSlug={target.slug}
-        itemType="molecular_target"
-        lang={lang}
-      />
     </div>
   );
 }
