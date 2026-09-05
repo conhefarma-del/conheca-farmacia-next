@@ -23,6 +23,7 @@ export default function NewsletterForm({ keys = 'artigos_page', variant = 'dark'
   const [status, setStatus] = useState(null)
   const [honeypot, setHoneypot] = useState('')
   const feedbackRef = useRef(null)
+  const submittingRef = useRef(false)
 
   // Auto-hide feedback after 5 seconds (matches MPA behavior)
   useEffect(() => {
@@ -41,6 +42,10 @@ export default function NewsletterForm({ keys = 'artigos_page', variant = 'dark'
       setStatus('error')
       return
     }
+    // Guard contra double-submit (ex.: duplo clique rápido) — o disabled
+    // só bloqueia depois do primeiro re-render.
+    if (submittingRef.current) return
+    submittingRef.current = true
     setStatus('loading')
     try {
       // SEC (vistoria 2026-08-11): a subscrição passou a usar a Server
@@ -59,6 +64,8 @@ export default function NewsletterForm({ keys = 'artigos_page', variant = 'dark'
       }
     } catch {
       setStatus('error')
+    } finally {
+      submittingRef.current = false
     }
   }
 
@@ -97,11 +104,16 @@ export default function NewsletterForm({ keys = 'artigos_page', variant = 'dark'
           required
           className={inputClasses}
         />
+        {/* NOTA (2026-09-05): NUNCA adicionar onMouseDown que faz
+            setStatus('loading') aqui. Com disabled={status === 'loading'},
+            o botão fica disabled entre mousedown e mouseup e o browser
+            suprime o evento click → o form nunca submete e fica preso em
+            "A subscrever..." (bug em produção 24/06→05/09). O estado de
+            loading já é setado no início do handleSubmit. */}
         <button
           type="submit"
           disabled={status === 'loading'}
           className="btn btn-primary whitespace-nowrap"
-          onMouseDown={() => setStatus('loading')}
         >
           {status === 'loading' ? t(`${keys}.newsletter_submitting`) : t(`${keys}.newsletter_submit`)}
         </button>
