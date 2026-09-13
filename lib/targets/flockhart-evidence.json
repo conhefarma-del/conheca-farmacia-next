@@ -1,0 +1,209 @@
+{
+  "cyp1a2": {
+    "substrate": {
+      "alosetron": "strong",
+      "caffeine": "strong",
+      "clozapine": "strong",
+      "duloxetine": "strong",
+      "fezolinetant": "strong",
+      "fluvoxamine": "moderate",
+      "haloperidol": "moderate",
+      "lidocaine": "moderate",
+      "melatonin": "strong",
+      "mexiletine": "moderate",
+      "olanzapine": "moderate",
+      "pirfenidone": "strong",
+      "pomalidomide": "moderate",
+      "tacrine": "strong",
+      "tasimelteon": "strong",
+      "theophylline": "moderate",
+      "tizanidine": "strong"
+    },
+    "inhibitor": {
+      "ciprofloxacin": "strong",
+      "fluvoxamine": "strong",
+      "mexiletine": "moderate",
+      "rucaparib": "moderate",
+      "vemurafenib": "moderate",
+      "viloxazine": "strong"
+    }
+  },
+  "cyp3a4": {
+    "substrate": {
+      "boceprevir": "strong",
+      "bosentan": "strong",
+      "cafergot": "strong",
+      "carbamazepine": "strong",
+      "codeine": "moderate",
+      "colchicine": "moderate",
+      "conivaptant": "strong"
+    },
+    "inhibitor": {
+      "amlodipine (3a5)": "moderate",
+      "aprepitant": "moderate",
+      "ceritinib": "strong",
+      "ciprofloxacin": "moderate",
+      "clarithromycin": "strong",
+      "cobicistat": "strong",
+      "conivaptant": "moderate",
+      "crizotinib": "moderate",
+      "delaviridine": "strong",
+      "diltiazem": "moderate",
+      "dronedarone": "moderate",
+      "erythromycin": "moderate",
+      "fluconazole": "moderate",
+      "idelalisib": "strong",
+      "imatinib": "moderate",
+      "indinavir": "strong",
+      "itraconazole": "strong",
+      "ketoconazole": "strong",
+      "letermovir": "moderate",
+      "lopinavir/ritonavir": "strong",
+      "mibefradil": "strong"
+    }
+  },
+  "cyp2d6": {
+    "substrate": {
+      "amitriptyline": "moderate",
+      "amphetamine": "moderate",
+      "atomoxetine": "strong",
+      "carvedilol": "strong",
+      "chlorpheniramine": "moderate",
+      "clomipramine": "moderate",
+      "codeine": "strong",
+      "debrisoquine": "strong",
+      "desipramine": "strong",
+      "deutetrabenazine": "strong",
+      "dextromethorphan": "strong",
+      "doxepin": "strong",
+      "duloxetine": "moderate",
+      "eliglustat": "strong",
+      "encainide": "strong",
+      "escitalopram": "moderate",
+      "fluoxetine": "strong",
+      "fluvoxamine": "moderate",
+      "haloperidol": "moderate",
+      "mephedrone": "moderate",
+      "methoxyamphetamine": "moderate",
+      "metoclopramide": "moderate",
+      "metoprolol": "strong",
+      "mexiletine": "moderate",
+      "nebivolol": "strong",
+      "nortriptyline": "strong",
+      "oxycodone": "moderate",
+      "paroxetine": "strong",
+      "perhexiline": "strong",
+      "perphenazine": "moderate",
+      "propafenone": "strong"
+    },
+    "inhibitor": {
+      "abiraterone": "moderate",
+      "bupropion": "strong",
+      "cinacalcet": "moderate",
+      "doxepin": "moderate",
+      "dronedarone": "moderate",
+      "duloxetine": "moderate",
+      "fluoxetine": "strong",
+      "halofantrine": "moderate",
+      "mirabegron": "moderate",
+      "moclobemide": "moderate",
+      "paroxetine": "strong",
+      "perhexiline": "strong",
+      "quinidine": "strong",
+      "terbinafine (oral)": "moderate"
+    }
+  },
+  "cyp2c19": {
+    "substrate": {
+      "carisoprodol": "strong",
+      "citalopram": "strong",
+      "clobazam": "strong",
+      "clopidogrel": "strong",
+      "cyclophosphamide": "moderate",
+      "diazepam": "moderate",
+      "doxepin": "moderate",
+      "escitalopram": "strong",
+      "esomeprazole": "strong",
+      "labetalol": "moderate",
+      "lansoprazole": "strong",
+      "mavacamten": "moderate",
+      "moclobemide": "moderate",
+      "omeprazole": "strong",
+      "pantoprazole": "strong",
+      "r-mephobarbital": "strong",
+      "s-mephenytoin": "strong",
+      "venlafaxine": "moderate",
+      "voriconazole": "moderate"
+    },
+    "inhibitor": {
+      "cenobamate": "moderate",
+      "esomeprazole": "moderate",
+      "fluconazole": "strong",
+      "fluoxetine": "strong",
+      "fluvoxamine": "strong",
+      "ketoconazole": "moderate",
+      "ticlopidine": "strong",
+      "voriconazole": "moderate"
+    }
+  },
+  "cyp2c9": {
+    "substrate": {
+      "celecoxib": "moderate",
+      "doxepin": "moderate",
+      "flurbiprofen": "moderate",
+      "glimepiride": "moderate",
+      "glyburide/glibenclamide": "moderate",
+      "meloxicam": "strong",
+      "phenytoin": "moderate",
+      "piroxicam": "strong",
+      "ruxolitinib": "moderate",
+      "s-warfarin": "moderate",
+      "siponimod": "moderate",
+      "tolbutamide": "strong"
+    },
+    "inhibitor": {
+      "amiodarone": "moderate",
+      "fluconazole": "moderate",
+      "metronidazole": "moderate",
+      "phenylbutazone": "moderate",
+      "sulfaphenazole": "strong"
+    }
+  },
+  "cyp2c8": {
+    "substrate": {
+      "cerivastatin": "strong",
+      "enzalutamide": "moderate",
+      "repaglinide": "strong",
+      "rosiglitazone": "moderate",
+      "selexipag": "moderate",
+      "tucatinib": "moderate"
+    },
+    "inhibitor": {
+      "clopidogrel": "strong",
+      "deferasirox": "moderate",
+      "gemfibrozil": "strong",
+      "pirtobrutinib": "moderate",
+      "selpercatinib": "moderate",
+      "teriflunomide": "moderate"
+    }
+  },
+  "cyp2b6": {
+    "substrate": {
+      "bupropion": "strong",
+      "efavirenz": "strong"
+    },
+    "inhibitor": {
+      "ticlopidine": "strong"
+    }
+  },
+  "cyp2e1": {
+    "substrate": {
+      "halothane": "strong",
+      "isoflurane": "strong"
+    },
+    "inhibitor": {
+      "diethyl-dithiocarbamate": "strong",
+      "disulfiram": "strong"
+    }
+  }
+}

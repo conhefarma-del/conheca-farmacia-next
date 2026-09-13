@@ -4,13 +4,17 @@ import { useContext, useMemo } from "react";
 import Link from "next/link";
 import { ArrowLeft, BookOpen, Info, Lightbulb } from "lucide-react";
 import { LangContext } from "@/lib/contexts";
+import { getFlockhartEvidence } from "@/lib/targets/flockhart-evidence";
 
-function Section({ icon, title, children }) {
+function Section({ icon, title, count, children }) {
   return (
     <section className="alvo-detail-section">
       <h2 className="alvo-detail-section-title">
         {icon}
         {title}
+        {typeof count === "number" && count > 0 && (
+          <span className="alvo-list-count">{count}</span>
+        )}
       </h2>
       <div className="alvo-detail-section-body">{children}</div>
     </section>
@@ -18,68 +22,132 @@ function Section({ icon, title, children }) {
 }
 
 /**
- * DrugLinks — liga os nomes de fármacos mencionados nos textos de
- * substratos/inibidores/indutores ao perfil do medicamento, mas APENAS para
- * fármacos que existem na base do Conheça Farmácia (match por nome + aliases,
- * case-insensitive, fronteiras de palavra). O resto do texto fica intacto.
+ * splitListCount — conta os itens de uma lista editorial do alvo
+ * (substrates_pt/inhibitors_pt/inducers_pt) com a mesma normalização de
+ * lib/targets/derive.js, para o contador do título da secção bater certo
+ * com os cards da listagem /alvos (getTargetDrugCounts).
  */
-function DrugLinks({ text, drugs = [], lang }) {
-  const pattern = useMemo(() => {
-    const names = (drugs || []).flatMap((d) => [
-      d.name,
-      ...(d.aliases || []),
-    ]);
-    if (names.length === 0) return null;
-    const escaped = [...new Set(names)]
-      .filter(Boolean)
-      .map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
-      // ordena do mais longo para o mais curto
-      .sort((a, b) => b.length - a.length);
-    return new RegExp(`\\b(${escaped.join("|")})\\b`, "gi");
-  }, [drugs]);
+const COUNT_RESERVED = new Set([
+  "substratos", "substrates", "inibidores", "inhibitors", "indutores", "inducers",
+  "lista", "em", "revisão", "revisao", "não", "nao", "aplicável", "aplicavel",
+  "aplicável", "nenhum", "nenhuma", "não aplicável", "nao aplicavel",
+]);
 
-  const segments = useMemo(() => {
-    if (!text) return [{ text: "", drug: null }];
-    if (!pattern) return [{ text, drug: null }];
-    const parts = [];
-    let lastIndex = 0;
-    let match;
-    pattern.lastIndex = 0;
-    while ((match = pattern.exec(text)) !== null) {
-      if (match.index > lastIndex) {
-        parts.push({ text: text.slice(lastIndex, match.index), drug: null });
-      }
-      const mention = match[0];
-      const drug = (drugs || []).find((d) =>
-        [d.name, ...(d.aliases || [])].some(
-          (n) => n && n.toLowerCase() === mention.toLowerCase()
-        )
-      );
-      parts.push({ text: mention, drug: drug || null });
-      lastIndex = match.index + mention.length;
-    }
-    if (lastIndex < text.length) {
-      parts.push({ text: text.slice(lastIndex), drug: null });
-    }
-    return parts;
-  }, [text, pattern, drugs]);
+function splitListCount(text) {
+  if (!text) return 0;
+  return String(text)
+    .replace(/^[^:]*:/, "")
+    .split(/[,;]/)
+    .map((item) =>
+      item
+        .replace(/\([^)]*\)/g, " ")
+        .replace(/[^a-z0-9\s]/gi, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+    )
+    .filter((item) => item && !COUNT_RESERVED.has(item.toLowerCase())).length;
+}
+
+/**
+ * PillList — lista editorial do alvo como "pill cloud": um chip por fármaco.
+ *  - Fármaco existente na BD (match por nome/alias) → chip clicável que
+ *    navega para /medicamento/[slug] (match por nome + aliases)
+ *  - Restantes nomes → chip não-clicável
+ *  - Evidência Flockhart: pontinho colorido por chip — forte (#ff6c23) e
+ *    moderada (#006171) — com legenda por secção.
+ */
+function PillList({ text, drugs = [], lang, targetSlug, role }) {
+  const { t } = useContext(LangContext);
+
+  // 1. Dividir a lista em itens (mesma normalização de derive.splitList)
+  const items = useMemo(() => {
+    if (!text) return [];
+    return String(text)
+      .replace(/^[^:]*:/, "")
+      .split(/[,;]/)
+      .map((item) => item.replace(/\s+/g, " ").trim().replace(/\.$/, ""))
+      .filter(Boolean);
+  }, [text]);
+
+  // 2. Classificar cada item: é fármaco da BD? Tem nota de evidência?
+  const classified = useMemo(() => {
+    const byLower = new Map();
+    (drugs || []).forEach((d) => {
+      [d.name, ...(d.aliases || [])].forEach((n) => {
+        if (n && !byLower.has(n.toLowerCase())) byLower.set(n.toLowerCase(), d);
+      });
+    });
+    return items.map((raw) => {
+      // Notas entre parênteses não impedem o match ("amlodipina (3A5)")
+      const core = raw.replace(/\([^)]*\)/g, " ").replace(/\s+/g, " ").trim();
+      const drug =
+        byLower.get(core.toLowerCase()) ||
+        byLower.get(raw.toLowerCase()) ||
+        null;
+      // Evidência Flockhart (só alvos CYP, papéis substrate/inhibitor):
+      // 'strong' | 'moderate' | null — colore o pontinho do chip
+      const evidence = getFlockhartEvidence(targetSlug, role, core);
+      return { raw, core, drug, evidence };
+    });
+  }, [items, drugs]);
+
+  if (classified.length === 0) return null;
+
+  const hasEvidence = classified.some((it) => it.evidence);
 
   return (
-    <>
-      {segments.map((seg, i) =>
-        seg.drug ? (
-          <Link
-            key={i}
-            href={`/${lang}/${lang === "pt" ? "medicamento" : "medicine"}/${seg.drug.slug}`}
-            className="alvo-drug-link"
-          >
-            {seg.text}
-          </Link>
-        ) : (
-          <span key={i}>{seg.text}</span>
-        )
+    <div>
+      <div className="alvo-pill-cloud">
+        {classified.map((it, i) => {
+          const evClass =
+            it.evidence === "strong"
+              ? " ev-strong"
+              : it.evidence === "moderate"
+                ? " ev-moderate"
+                : "";
+          const dot =
+            it.evidence ? (
+              <span className={`alvo-ev-dot${evClass}`} aria-hidden="true" />
+            ) : null;
+          return it.drug ? (
+            <Link
+              key={i}
+              href={`/${lang}/${lang === "pt" ? "medicamento" : "medicine"}/${it.drug.slug}`}
+              className={`alvo-pill alvo-pill-link${evClass}`}
+              title={
+                it.evidence
+                  ? t(`alvos_page.evidencia_${it.evidence === "strong" ? "forte" : "moderada"}`)
+                  : undefined
+              }
+            >
+              {dot}
+              {it.raw}
+            </Link>
+          ) : (
+            <span key={i} className={`alvo-pill${evClass}`} title={
+              it.evidence
+                ? t(`alvos_page.evidencia_${it.evidence === "strong" ? "forte" : "moderada"}`)
+                : undefined
+            }>
+              {dot}
+              {it.raw}
+            </span>
+          );
+        })}
+      </div>
+      {hasEvidence && (
+        <div className="alvo-pill-legend">
+          <span>
+            <span className="alvo-ev-dot ev-strong" aria-hidden="true" />
+            {t("alvos_page.evidencia_forte")}
+          </span>
+          <span>
+            <span className="alvo-ev-dot ev-moderate" aria-hidden="true" />
+            {t("alvos_page.evidencia_moderada")}
+          </span>
+        </div>
       )}
-    </>
+    </div>
   );
 }
 
@@ -127,26 +195,32 @@ export default function AlvoDetailClient({ lang, target, drugs = [] }) {
 
         <div className="alvo-detail-cols">
           {target.substrates && (
-            <Section icon={<Lightbulb size={17} aria-hidden="true" />} title={t("alvos_page.substratos")}>
-              <p>
-                <DrugLinks text={target.substrates} drugs={drugs} lang={lang} />
-              </p>
+            <Section
+              icon={<Lightbulb size={17} aria-hidden="true" />}
+              title={t("alvos_page.substratos")}
+              count={splitListCount(target.substrates)}
+            >
+              <PillList text={target.substrates} drugs={drugs} lang={lang} targetSlug={target.slug} role="substrate" />
             </Section>
           )}
           {target.inhibitors && (
-            <Section icon={<Lightbulb size={17} aria-hidden="true" />} title={t("alvos_page.inibidores")}>
-              <p>
-                <DrugLinks text={target.inhibitors} drugs={drugs} lang={lang} />
-              </p>
+            <Section
+              icon={<Lightbulb size={17} aria-hidden="true" />}
+              title={t("alvos_page.inibidores")}
+              count={splitListCount(target.inhibitors)}
+            >
+              <PillList text={target.inhibitors} drugs={drugs} lang={lang} targetSlug={target.slug} role="inhibitor" />
             </Section>
           )}
         </div>
 
         {target.inducers && (
-          <Section icon={<Lightbulb size={17} aria-hidden="true" />} title={t("alvos_page.indutores")}>
-            <p>
-              <DrugLinks text={target.inducers} drugs={drugs} lang={lang} />
-            </p>
+          <Section
+            icon={<Lightbulb size={17} aria-hidden="true" />}
+            title={t("alvos_page.indutores")}
+            count={splitListCount(target.inducers)}
+          >
+            <PillList text={target.inducers} drugs={drugs} lang={lang} targetSlug={target.slug} role="inducer" />
           </Section>
         )}
 
@@ -157,9 +231,13 @@ export default function AlvoDetailClient({ lang, target, drugs = [] }) {
         )}
 
         {target.source && (
-          <Section icon={<BookOpen size={17} aria-hidden="true" />} title={t("alvos_page.fonte")}>
+          <aside className="alvo-source-card">
+            <h3>
+              <BookOpen size={14} aria-hidden="true" />
+              {t("alvos_page.fonte")}
+            </h3>
             <p className="alvo-detail-source">{target.source}</p>
-          </Section>
+          </aside>
         )}
       </div>
     </div>

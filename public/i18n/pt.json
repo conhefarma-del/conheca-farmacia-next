@@ -98,6 +98,8 @@
     "papel_plural_inducer": "indutores",
     "sem_papeis": "sem papéis derivados ainda",
     "papel_tip_substrate": "Substrato: fármaco metabolizado (ou transportado) por este alvo — o alvo atua sobre ele.",
+    "evidencia_forte": "Evidência forte",
+    "evidencia_moderada": "Evidência moderada",
     "papel_tip_inhibitor": "Inibidor: fármaco que bloqueia ou reduz a atividade deste alvo, aumentando a exposição dos substratos.",
     "papel_tip_inducer": "Indutor: fármaco que aumenta a atividade deste alvo, acelerando o metabolismo (e reduzindo o efeito) dos substratos.",
     "ordenar": "Ordenar por",
