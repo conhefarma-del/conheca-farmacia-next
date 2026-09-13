@@ -1,0 +1,2231 @@
+{
+  "extractedAt": "2026-09-13T19:11:02.265Z",
+  "source": {
+    "citation": "Flockhart DA, Thacker D, McDonald C, Desta Z. The Flockhart Cytochrome P450 Drug-Drug Interaction Table. Division of Clinical Pharmacology, Indiana University School of Medicine (Updated 2021). https://drug-interactions.medicine.iu.edu/ (acessado 2026-09-13)",
+    "site": "https://drug-interactions.medicine.iu.edu/"
+  },
+  "isoforms": {
+    "1A2": {
+      "substrates": [
+        {
+          "name": "alosetron",
+          "evidence": "strong"
+        },
+        {
+          "name": "caffeine",
+          "evidence": "strong"
+        },
+        {
+          "name": "clomipramine",
+          "evidence": "weak"
+        },
+        {
+          "name": "clozapine",
+          "evidence": "strong"
+        },
+        {
+          "name": "cyclobenzaprine",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "Diazoxide",
+          "evidence": "weak"
+        },
+        {
+          "name": "duloxetine",
+          "evidence": "strong"
+        },
+        {
+          "name": "estradiol",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "Fezolinetant",
+          "evidence": "strong"
+        },
+        {
+          "name": "fluvoxamine",
+          "evidence": "moderate"
+        },
+        {
+          "name": "haloperidol",
+          "evidence": "moderate"
+        },
+        {
+          "name": "imipramine",
+          "evidence": "weak"
+        },
+        {
+          "name": "lidocaine",
+          "evidence": "moderate"
+        },
+        {
+          "name": "melatonin",
+          "evidence": "strong"
+        },
+        {
+          "name": "mexiletine",
+          "evidence": "moderate"
+        },
+        {
+          "name": "nabumetone",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "naproxen",
+          "evidence": "weak"
+        },
+        {
+          "name": "olanzapine",
+          "evidence": "moderate"
+        },
+        {
+          "name": "phenacetin",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "pirfenidone",
+          "evidence": "strong"
+        },
+        {
+          "name": "pomalidomide",
+          "evidence": "moderate"
+        },
+        {
+          "name": "propranolol",
+          "evidence": "weak"
+        },
+        {
+          "name": "riluzole",
+          "evidence": "weak"
+        },
+        {
+          "name": "roflumilast",
+          "evidence": "weak"
+        },
+        {
+          "name": "ropivacaine",
+          "evidence": "weak"
+        },
+        {
+          "name": "tacrine",
+          "evidence": "strong"
+        },
+        {
+          "name": "tasimelteon",
+          "evidence": "strong"
+        },
+        {
+          "name": "theophylline",
+          "evidence": "moderate"
+        },
+        {
+          "name": "tizanidine",
+          "evidence": "strong"
+        },
+        {
+          "name": "triamterene",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "warfarin",
+          "evidence": "weak"
+        },
+        {
+          "name": "zileuton",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "zolmitriptan",
+          "evidence": "weak"
+        }
+      ],
+      "inhibitors": [
+        {
+          "name": "amiodarone",
+          "evidence": "weak"
+        },
+        {
+          "name": "cimetidine",
+          "evidence": "weak"
+        },
+        {
+          "name": "ciprofloxacin",
+          "evidence": "strong"
+        },
+        {
+          "name": "efavirenz",
+          "evidence": "weak"
+        },
+        {
+          "name": "fluvoxamine",
+          "evidence": "strong"
+        },
+        {
+          "name": "furafylline",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "methoxsalen",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "mexiletine",
+          "evidence": "moderate"
+        },
+        {
+          "name": "PEGASYS(peginterferon alfa-2a)",
+          "evidence": "weak"
+        },
+        {
+          "name": "quercetin",
+          "evidence": "weak"
+        },
+        {
+          "name": "ribociclib",
+          "evidence": "weak"
+        },
+        {
+          "name": "rucaparib",
+          "evidence": "moderate"
+        },
+        {
+          "name": "simeprevir",
+          "evidence": "weak"
+        },
+        {
+          "name": "vemurafenib",
+          "evidence": "moderate"
+        },
+        {
+          "name": "viloxazine",
+          "evidence": "strong"
+        },
+        {
+          "name": "zileuton",
+          "evidence": "weak"
+        }
+      ],
+      "inducers": [
+        "beta-naphthoflavone",
+        "broccoli",
+        "brussel sprouts",
+        "carbamazepine",
+        "omeprazole",
+        "rifampin",
+        "teriflunomide",
+        "tipranavir and ritonavir",
+        "tobacco"
+      ]
+    },
+    "3A4/5": {
+      "substrates": [
+        {
+          "name": "abemaciclib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "abiraterone",
+          "evidence": "tbd"
+        },
+        {
+          "name": "acalabrutinib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "alectinib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "alfentanil",
+          "evidence": "tbd"
+        },
+        {
+          "name": "alprazolam",
+          "evidence": "tbd"
+        },
+        {
+          "name": "amlodipine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "apixaban",
+          "evidence": "tbd"
+        },
+        {
+          "name": "aprepitant",
+          "evidence": "tbd"
+        },
+        {
+          "name": "aripiprazole",
+          "evidence": "tbd"
+        },
+        {
+          "name": "astemizole",
+          "evidence": "tbd"
+        },
+        {
+          "name": "atorvastatin",
+          "evidence": "tbd"
+        },
+        {
+          "name": "avanafil",
+          "evidence": "weak"
+        },
+        {
+          "name": "avatrombopag",
+          "evidence": "weak"
+        },
+        {
+          "name": "axitinib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "boceprevir",
+          "evidence": "strong"
+        },
+        {
+          "name": "bosentan",
+          "evidence": "strong"
+        },
+        {
+          "name": "bosutinib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "brexpiprazole",
+          "evidence": "tbd"
+        },
+        {
+          "name": "brigatinib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "buspirone",
+          "evidence": "tbd"
+        },
+        {
+          "name": "cafergot",
+          "evidence": "strong"
+        },
+        {
+          "name": "carbamazepine",
+          "evidence": "strong"
+        },
+        {
+          "name": "cariprazine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "ceritinib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "cerivastatin",
+          "evidence": "tbd"
+        },
+        {
+          "name": "cilostazol",
+          "evidence": "tbd"
+        },
+        {
+          "name": "cisapride",
+          "evidence": "tbd"
+        },
+        {
+          "name": "clarithromycin",
+          "evidence": "tbd"
+        },
+        {
+          "name": "clobazam",
+          "evidence": "weak"
+        },
+        {
+          "name": "clopidogrel",
+          "evidence": "weak"
+        },
+        {
+          "name": "cobimetinib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "codeine",
+          "evidence": "moderate"
+        },
+        {
+          "name": "colchicine",
+          "evidence": "moderate"
+        },
+        {
+          "name": "conivaptant",
+          "evidence": "strong"
+        },
+        {
+          "name": "copanlisib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "crizotinib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "cyclosporine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "dabrafenib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "daclatasvir",
+          "evidence": "tbd"
+        },
+        {
+          "name": "dapsone",
+          "evidence": "tbd"
+        },
+        {
+          "name": "dasatinib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "deflazacort",
+          "evidence": "tbd"
+        },
+        {
+          "name": "dexamethasone",
+          "evidence": "tbd"
+        },
+        {
+          "name": "dextromethorphan",
+          "evidence": "tbd"
+        },
+        {
+          "name": "diazepam",
+          "evidence": "tbd"
+        },
+        {
+          "name": "diltiazem",
+          "evidence": "tbd"
+        },
+        {
+          "name": "docetaxel",
+          "evidence": "tbd"
+        },
+        {
+          "name": "dolutegravir",
+          "evidence": "tbd"
+        },
+        {
+          "name": "domperidone",
+          "evidence": "tbd"
+        },
+        {
+          "name": "elagolix",
+          "evidence": "tbd"
+        },
+        {
+          "name": "elbasvir/grazoprevir",
+          "evidence": "tbd"
+        },
+        {
+          "name": "eliglustat",
+          "evidence": "tbd"
+        },
+        {
+          "name": "enzalutamide",
+          "evidence": "tbd"
+        },
+        {
+          "name": "eplerenone",
+          "evidence": "tbd"
+        },
+        {
+          "name": "erythromycin",
+          "evidence": "tbd"
+        },
+        {
+          "name": "esomeprazole",
+          "evidence": "tbd"
+        },
+        {
+          "name": "estradiol",
+          "evidence": "tbd"
+        },
+        {
+          "name": "everolimus",
+          "evidence": "tbd"
+        },
+        {
+          "name": "felodipine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "fentanyl",
+          "evidence": "tbd"
+        },
+        {
+          "name": "finasteride",
+          "evidence": "tbd"
+        },
+        {
+          "name": "flibanserin",
+          "evidence": "tbd"
+        },
+        {
+          "name": "gleevec",
+          "evidence": "tbd"
+        },
+        {
+          "name": "haloperidol",
+          "evidence": "tbd"
+        },
+        {
+          "name": "hydrocortisone",
+          "evidence": "tbd"
+        },
+        {
+          "name": "ibrutinib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "idelalisib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "Imatinib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "indacaterol",
+          "evidence": "tbd"
+        },
+        {
+          "name": "indinavir",
+          "evidence": "tbd"
+        },
+        {
+          "name": "irinotecan",
+          "evidence": "tbd"
+        },
+        {
+          "name": "isavuconazonium",
+          "evidence": "tbd"
+        },
+        {
+          "name": "istradefylline",
+          "evidence": "tbd"
+        },
+        {
+          "name": "ivabradine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "ivacaftor",
+          "evidence": "tbd"
+        },
+        {
+          "name": "lansoprazole",
+          "evidence": "tbd"
+        },
+        {
+          "name": "lemborexant",
+          "evidence": "tbd"
+        },
+        {
+          "name": "lenvatinib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "lercanidipine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "letermovir",
+          "evidence": "tbd"
+        },
+        {
+          "name": "Levoacetylamethadol",
+          "evidence": "tbd"
+        },
+        {
+          "name": "lidocaine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "linagliptin",
+          "evidence": "tbd"
+        },
+        {
+          "name": "lomipatide",
+          "evidence": "tbd"
+        },
+        {
+          "name": "lovastatin",
+          "evidence": "tbd"
+        },
+        {
+          "name": "macitentan",
+          "evidence": "tbd"
+        },
+        {
+          "name": "mavacamten",
+          "evidence": "tbd"
+        },
+        {
+          "name": "methadone",
+          "evidence": "tbd"
+        },
+        {
+          "name": "midazolam",
+          "evidence": "tbd"
+        },
+        {
+          "name": "naldemedine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "naloxegol",
+          "evidence": "tbd"
+        },
+        {
+          "name": "nelfinavir",
+          "evidence": "tbd"
+        },
+        {
+          "name": "neratinib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "netupitant",
+          "evidence": "tbd"
+        },
+        {
+          "name": "nevirapine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "nifedipine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "nirmatrelvir",
+          "evidence": "tbd"
+        },
+        {
+          "name": "nisoldipine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "olaparib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "omeprazole",
+          "evidence": "tbd"
+        },
+        {
+          "name": "ondansetron",
+          "evidence": "tbd"
+        },
+        {
+          "name": "osimertinib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "ospemifene",
+          "evidence": "tbd"
+        },
+        {
+          "name": "oxycodone",
+          "evidence": "tbd"
+        },
+        {
+          "name": "palbociclib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "panobinostat",
+          "evidence": "tbd"
+        },
+        {
+          "name": "pantoprazole",
+          "evidence": "tbd"
+        },
+        {
+          "name": "pimavanserin",
+          "evidence": "tbd"
+        },
+        {
+          "name": "pimozide",
+          "evidence": "tbd"
+        },
+        {
+          "name": "pomalidomide",
+          "evidence": "tbd"
+        },
+        {
+          "name": "ponatinib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "progesterone",
+          "evidence": "tbd"
+        },
+        {
+          "name": "propranolol",
+          "evidence": "tbd"
+        },
+        {
+          "name": "quetiapine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "quinidine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "quinine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "R-Ondansetron",
+          "evidence": "tbd"
+        },
+        {
+          "name": "regorafenib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "ribociclib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "rilpivirine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "risperidone",
+          "evidence": "tbd"
+        },
+        {
+          "name": "ritonavir",
+          "evidence": "tbd"
+        },
+        {
+          "name": "rivaroxaban",
+          "evidence": "tbd"
+        },
+        {
+          "name": "roflumilast",
+          "evidence": "tbd"
+        },
+        {
+          "name": "rolapitant",
+          "evidence": "tbd"
+        },
+        {
+          "name": "ruxolitinib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "salmeterol",
+          "evidence": "tbd"
+        },
+        {
+          "name": "saquinavir",
+          "evidence": "tbd"
+        },
+        {
+          "name": "selexipag",
+          "evidence": "tbd"
+        },
+        {
+          "name": "sildenafil",
+          "evidence": "tbd"
+        },
+        {
+          "name": "simeprevir",
+          "evidence": "tbd"
+        },
+        {
+          "name": "simvastatin",
+          "evidence": "tbd"
+        },
+        {
+          "name": "sirolimus",
+          "evidence": "tbd"
+        },
+        {
+          "name": "sonidegib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "sorafenib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "sotorasib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "sunitinib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "suvorexant",
+          "evidence": "tbd"
+        },
+        {
+          "name": "suzetrigine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "tacrolimus(fk506)",
+          "evidence": "tbd"
+        },
+        {
+          "name": "tadalafil",
+          "evidence": "tbd"
+        },
+        {
+          "name": "tamoxifen",
+          "evidence": "tbd"
+        },
+        {
+          "name": "tasimelteon",
+          "evidence": "tbd"
+        },
+        {
+          "name": "taxol",
+          "evidence": "tbd"
+        },
+        {
+          "name": "telaprevir",
+          "evidence": "tbd"
+        },
+        {
+          "name": "telithromycin",
+          "evidence": "tbd"
+        },
+        {
+          "name": "temsirolimus (torisel)",
+          "evidence": "tbd"
+        },
+        {
+          "name": "terfenadine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "testosterone",
+          "evidence": "tbd"
+        },
+        {
+          "name": "ticagrelor",
+          "evidence": "tbd"
+        },
+        {
+          "name": "tofacitinib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "tolvaptan",
+          "evidence": "tbd"
+        },
+        {
+          "name": "tramadol",
+          "evidence": "tbd"
+        },
+        {
+          "name": "trazodone",
+          "evidence": "tbd"
+        },
+        {
+          "name": "triazolam",
+          "evidence": "tbd"
+        },
+        {
+          "name": "valbenazine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "vandetanib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "vardenafil",
+          "evidence": "tbd"
+        },
+        {
+          "name": "velpatasvir",
+          "evidence": "tbd"
+        },
+        {
+          "name": "vemurafenib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "venetoclax",
+          "evidence": "tbd"
+        },
+        {
+          "name": "venlafaxine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "verapamil",
+          "evidence": "tbd"
+        },
+        {
+          "name": "vilazodone",
+          "evidence": "tbd"
+        },
+        {
+          "name": "vincristine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "vorapaxar",
+          "evidence": "tbd"
+        },
+        {
+          "name": "voriconazole",
+          "evidence": "tbd"
+        },
+        {
+          "name": "zaleplon",
+          "evidence": "tbd"
+        },
+        {
+          "name": "ziprasidone",
+          "evidence": "tbd"
+        },
+        {
+          "name": "zolpidem",
+          "evidence": "tbd"
+        }
+      ],
+      "inhibitors": [
+        {
+          "name": "adagrasib",
+          "evidence": "tbd"
+        },
+        {
+          "name": "amiodarone",
+          "evidence": "weak"
+        },
+        {
+          "name": "amlodipine (3A5)",
+          "evidence": "moderate"
+        },
+        {
+          "name": "aprepitant",
+          "evidence": "moderate"
+        },
+        {
+          "name": "atomoxetine",
+          "evidence": "weak"
+        },
+        {
+          "name": "boceprevir",
+          "evidence": "tbd"
+        },
+        {
+          "name": "ceritinib",
+          "evidence": "strong"
+        },
+        {
+          "name": "chloramphenicol",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "chlorzoxazone",
+          "evidence": "weak"
+        },
+        {
+          "name": "cilostazol",
+          "evidence": "weak"
+        },
+        {
+          "name": "cimetidine",
+          "evidence": "weak"
+        },
+        {
+          "name": "ciprofloxacin",
+          "evidence": "moderate"
+        },
+        {
+          "name": "clarithromycin",
+          "evidence": "strong"
+        },
+        {
+          "name": "clotrimazole",
+          "evidence": "weak"
+        },
+        {
+          "name": "cobicistat",
+          "evidence": "strong"
+        },
+        {
+          "name": "conivaptant",
+          "evidence": "moderate"
+        },
+        {
+          "name": "crizotinib",
+          "evidence": "moderate"
+        },
+        {
+          "name": "cyclosporine",
+          "evidence": "weak"
+        },
+        {
+          "name": "delaviridine",
+          "evidence": "strong"
+        },
+        {
+          "name": "diltiazem",
+          "evidence": "moderate"
+        },
+        {
+          "name": "dronedarone",
+          "evidence": "moderate"
+        },
+        {
+          "name": "entrectinib",
+          "evidence": "weak"
+        },
+        {
+          "name": "erythromycin",
+          "evidence": "moderate"
+        },
+        {
+          "name": "esomeprazole",
+          "evidence": "weak"
+        },
+        {
+          "name": "fluconazole",
+          "evidence": "moderate"
+        },
+        {
+          "name": "fluvoxamine",
+          "evidence": "weak"
+        },
+        {
+          "name": "fosaprepitant",
+          "evidence": "weak"
+        },
+        {
+          "name": "grapefruit juice",
+          "evidence": "weak"
+        },
+        {
+          "name": "idelalisib",
+          "evidence": "strong"
+        },
+        {
+          "name": "imatinib",
+          "evidence": "moderate"
+        },
+        {
+          "name": "indinavir",
+          "evidence": "strong"
+        },
+        {
+          "name": "isavuconazole",
+          "evidence": "weak"
+        },
+        {
+          "name": "istradefylline",
+          "evidence": "weak"
+        },
+        {
+          "name": "itraconazole",
+          "evidence": "strong"
+        },
+        {
+          "name": "ivacaftor",
+          "evidence": "weak"
+        },
+        {
+          "name": "ketoconazole",
+          "evidence": "strong"
+        },
+        {
+          "name": "lesinurad",
+          "evidence": "weak"
+        },
+        {
+          "name": "letermovir",
+          "evidence": "moderate"
+        },
+        {
+          "name": "lomipatide",
+          "evidence": "weak"
+        },
+        {
+          "name": "lopinavir/ritonavir",
+          "evidence": "strong"
+        },
+        {
+          "name": "mibefradil",
+          "evidence": "strong"
+        }
+      ],
+      "inducers": [
+        "betamethasone",
+        "brigatinib",
+        "carbamazepine",
+        "cenobamate",
+        "clobazam",
+        "dabrafenib",
+        "dexamethasone",
+        "efavirenz",
+        "elagolix",
+        "enzalutamide",
+        "eslicarbazepine",
+        "Ivosidenib",
+        "lorlatinib",
+        "methylprednisolone",
+        "modafinil",
+        "nevirapine",
+        "oxcarbazepine",
+        "phenobarbital",
+        "phenytoin",
+        "pioglitazone",
+        "prednisolone",
+        "prednisone",
+        "rifabutin",
+        "rifampin",
+        "sotorasib",
+        "St. John's Wort",
+        "suzetrigine",
+        "telotristat",
+        "troglitazone",
+        "vemurafenib"
+      ]
+    },
+    "2D6": {
+      "substrates": [
+        {
+          "name": "amitriptyline",
+          "evidence": "moderate"
+        },
+        {
+          "name": "amphetamine",
+          "evidence": "moderate"
+        },
+        {
+          "name": "aripiprazole",
+          "evidence": "weak"
+        },
+        {
+          "name": "atomoxetine",
+          "evidence": "strong"
+        },
+        {
+          "name": "brexpiprazole",
+          "evidence": "weak"
+        },
+        {
+          "name": "bufuralol",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "carvedilol",
+          "evidence": "strong"
+        },
+        {
+          "name": "chlorpheniramine",
+          "evidence": "moderate"
+        },
+        {
+          "name": "chlorpromazine",
+          "evidence": "weak"
+        },
+        {
+          "name": "clomipramine",
+          "evidence": "moderate"
+        },
+        {
+          "name": "clonidine",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "codeine",
+          "evidence": "strong"
+        },
+        {
+          "name": "debrisoquine",
+          "evidence": "strong"
+        },
+        {
+          "name": "desipramine",
+          "evidence": "strong"
+        },
+        {
+          "name": "deutetrabenazine",
+          "evidence": "strong"
+        },
+        {
+          "name": "dexfenfluramine",
+          "evidence": "weak"
+        },
+        {
+          "name": "dextromethorphan",
+          "evidence": "strong"
+        },
+        {
+          "name": "donepezil",
+          "evidence": "weak"
+        },
+        {
+          "name": "doxepin",
+          "evidence": "strong"
+        },
+        {
+          "name": "duloxetine",
+          "evidence": "moderate"
+        },
+        {
+          "name": "eliglustat",
+          "evidence": "strong"
+        },
+        {
+          "name": "encainide",
+          "evidence": "strong"
+        },
+        {
+          "name": "escitalopram",
+          "evidence": "moderate"
+        },
+        {
+          "name": "flecainide",
+          "evidence": "weak"
+        },
+        {
+          "name": "fluoxetine",
+          "evidence": "strong"
+        },
+        {
+          "name": "fluvoxamine",
+          "evidence": "moderate"
+        },
+        {
+          "name": "haloperidol",
+          "evidence": "moderate"
+        },
+        {
+          "name": "imipramine",
+          "evidence": "weak"
+        },
+        {
+          "name": "Mephedrone",
+          "evidence": "moderate"
+        },
+        {
+          "name": "methoxyamphetamine",
+          "evidence": "moderate"
+        },
+        {
+          "name": "metoclopramide",
+          "evidence": "moderate"
+        },
+        {
+          "name": "metoprolol",
+          "evidence": "strong"
+        },
+        {
+          "name": "mexiletine",
+          "evidence": "moderate"
+        },
+        {
+          "name": "nebivolol",
+          "evidence": "strong"
+        },
+        {
+          "name": "nortriptyline",
+          "evidence": "strong"
+        },
+        {
+          "name": "oxycodone",
+          "evidence": "moderate"
+        },
+        {
+          "name": "paroxetine",
+          "evidence": "strong"
+        },
+        {
+          "name": "perhexiline",
+          "evidence": "strong"
+        },
+        {
+          "name": "perphenazine",
+          "evidence": "moderate"
+        },
+        {
+          "name": "promethazine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "propafenone",
+          "evidence": "strong"
+        },
+        {
+          "name": "propranolol",
+          "evidence": "tbd"
+        },
+        {
+          "name": "risperidone",
+          "evidence": "tbd"
+        },
+        {
+          "name": "S-ondansetron",
+          "evidence": "tbd"
+        },
+        {
+          "name": "sparteine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "tamoxifen",
+          "evidence": "tbd"
+        },
+        {
+          "name": "tetrabenzine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "thioridazine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "timolol",
+          "evidence": "tbd"
+        },
+        {
+          "name": "tramadol",
+          "evidence": "tbd"
+        },
+        {
+          "name": "umeclidinium",
+          "evidence": "tbd"
+        },
+        {
+          "name": "valbenazine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "venlafaxine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "vilazodone",
+          "evidence": "tbd"
+        },
+        {
+          "name": "zuclopenthixol",
+          "evidence": "tbd"
+        }
+      ],
+      "inhibitors": [
+        {
+          "name": "abiraterone",
+          "evidence": "moderate"
+        },
+        {
+          "name": "amiodarone",
+          "evidence": "weak"
+        },
+        {
+          "name": "bupropion",
+          "evidence": "strong"
+        },
+        {
+          "name": "celecoxib",
+          "evidence": "weak"
+        },
+        {
+          "name": "chlorpromazine",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "cimetidine",
+          "evidence": "weak"
+        },
+        {
+          "name": "cinacalcet",
+          "evidence": "moderate"
+        },
+        {
+          "name": "citalopram",
+          "evidence": "weak"
+        },
+        {
+          "name": "clemastine",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "clobazam",
+          "evidence": "weak"
+        },
+        {
+          "name": "clomipramine",
+          "evidence": "weak"
+        },
+        {
+          "name": "cocaine",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "diphenhydramine",
+          "evidence": "weak"
+        },
+        {
+          "name": "doxepin",
+          "evidence": "moderate"
+        },
+        {
+          "name": "dronedarone",
+          "evidence": "moderate"
+        },
+        {
+          "name": "duloxetine",
+          "evidence": "moderate"
+        },
+        {
+          "name": "escitalopram",
+          "evidence": "weak"
+        },
+        {
+          "name": "fluoxetine",
+          "evidence": "strong"
+        },
+        {
+          "name": "Fluvoxamine",
+          "evidence": "weak"
+        },
+        {
+          "name": "halofantrine",
+          "evidence": "moderate"
+        },
+        {
+          "name": "haloperidol",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "hydroxychloroquine",
+          "evidence": "weak"
+        },
+        {
+          "name": "hydroxyzine",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "labetalol",
+          "evidence": "weak"
+        },
+        {
+          "name": "levomepromazine",
+          "evidence": "weak"
+        },
+        {
+          "name": "lorcaserin",
+          "evidence": "weak"
+        },
+        {
+          "name": "methadone",
+          "evidence": "tbd"
+        },
+        {
+          "name": "metoclopramide",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "midodrine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "mirabegron",
+          "evidence": "moderate"
+        },
+        {
+          "name": "moclobemide",
+          "evidence": "moderate"
+        },
+        {
+          "name": "panobinostat",
+          "evidence": "tbd"
+        },
+        {
+          "name": "paroxetine",
+          "evidence": "strong"
+        },
+        {
+          "name": "perhexiline",
+          "evidence": "strong"
+        },
+        {
+          "name": "perphenazine",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "promethazine",
+          "evidence": "tbd"
+        },
+        {
+          "name": "quinidine",
+          "evidence": "strong"
+        },
+        {
+          "name": "ritonavir",
+          "evidence": "weak"
+        },
+        {
+          "name": "rolapitant",
+          "evidence": "weak"
+        },
+        {
+          "name": "sertraline",
+          "evidence": "weak"
+        },
+        {
+          "name": "terbinafine (oral)",
+          "evidence": "moderate"
+        }
+      ],
+      "inducers": []
+    },
+    "2C19": {
+      "substrates": [
+        {
+          "name": "amitriptyline",
+          "evidence": "weak"
+        },
+        {
+          "name": "atomoxetine",
+          "evidence": "weak"
+        },
+        {
+          "name": "brivaracetam",
+          "evidence": "weak"
+        },
+        {
+          "name": "carisoprodol",
+          "evidence": "strong"
+        },
+        {
+          "name": "citalopram",
+          "evidence": "strong"
+        },
+        {
+          "name": "clobazam",
+          "evidence": "strong"
+        },
+        {
+          "name": "clomipramine",
+          "evidence": "weak"
+        },
+        {
+          "name": "clopidogrel",
+          "evidence": "strong"
+        },
+        {
+          "name": "cyclophosphamide",
+          "evidence": "moderate"
+        },
+        {
+          "name": "diazepam",
+          "evidence": "moderate"
+        },
+        {
+          "name": "doxepin",
+          "evidence": "moderate"
+        },
+        {
+          "name": "escitalopram",
+          "evidence": "strong"
+        },
+        {
+          "name": "esomeprazole",
+          "evidence": "strong"
+        },
+        {
+          "name": "flibanserin",
+          "evidence": "weak"
+        },
+        {
+          "name": "hexobarbital",
+          "evidence": "weak"
+        },
+        {
+          "name": "imipramine",
+          "evidence": "weak"
+        },
+        {
+          "name": "labetalol",
+          "evidence": "moderate"
+        },
+        {
+          "name": "lansoprazole",
+          "evidence": "strong"
+        },
+        {
+          "name": "mavacamten",
+          "evidence": "moderate"
+        },
+        {
+          "name": "moclobemide",
+          "evidence": "moderate"
+        },
+        {
+          "name": "nelfinavir",
+          "evidence": "weak"
+        },
+        {
+          "name": "omeprazole",
+          "evidence": "strong"
+        },
+        {
+          "name": "pantoprazole",
+          "evidence": "strong"
+        },
+        {
+          "name": "phenobarbitone",
+          "evidence": "weak"
+        },
+        {
+          "name": "phenytoin",
+          "evidence": "weak"
+        },
+        {
+          "name": "progesterone",
+          "evidence": "weak"
+        },
+        {
+          "name": "proguanil",
+          "evidence": "weak"
+        },
+        {
+          "name": "propranolol",
+          "evidence": "weak"
+        },
+        {
+          "name": "r-mephobarbital",
+          "evidence": "strong"
+        },
+        {
+          "name": "r-warfarin",
+          "evidence": "weak"
+        },
+        {
+          "name": "s-mephenytoin",
+          "evidence": "strong"
+        },
+        {
+          "name": "valproic acid",
+          "evidence": "weak"
+        },
+        {
+          "name": "venlafaxine",
+          "evidence": "moderate"
+        },
+        {
+          "name": "voriconazole",
+          "evidence": "moderate"
+        }
+      ],
+      "inhibitors": [
+        {
+          "name": "armodafinil",
+          "evidence": "weak"
+        },
+        {
+          "name": "cenobamate",
+          "evidence": "moderate"
+        },
+        {
+          "name": "chloramphenicol",
+          "evidence": "weak"
+        },
+        {
+          "name": "cimetidine",
+          "evidence": "weak"
+        },
+        {
+          "name": "esomeprazole",
+          "evidence": "moderate"
+        },
+        {
+          "name": "felbamate",
+          "evidence": "weak"
+        },
+        {
+          "name": "fluconazole",
+          "evidence": "strong"
+        },
+        {
+          "name": "fluoxetine",
+          "evidence": "strong"
+        },
+        {
+          "name": "fluvoxamine",
+          "evidence": "strong"
+        },
+        {
+          "name": "isoniazid",
+          "evidence": "weak"
+        },
+        {
+          "name": "ketoconazole",
+          "evidence": "moderate"
+        },
+        {
+          "name": "luliconazole",
+          "evidence": "weak"
+        },
+        {
+          "name": "modafinil",
+          "evidence": "weak"
+        },
+        {
+          "name": "omeprazole",
+          "evidence": "weak"
+        },
+        {
+          "name": "oral contraceptives",
+          "evidence": "weak"
+        },
+        {
+          "name": "oritavancin",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "Pirtobrutinib",
+          "evidence": "weak"
+        },
+        {
+          "name": "quercetin",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "rucaparib",
+          "evidence": "weak"
+        },
+        {
+          "name": "ticlopidine",
+          "evidence": "strong"
+        },
+        {
+          "name": "topiramate",
+          "evidence": "tbd"
+        },
+        {
+          "name": "voriconazole",
+          "evidence": "moderate"
+        }
+      ],
+      "inducers": [
+        "efavirenz",
+        "enzalutamide",
+        "letermovir",
+        "prednisone",
+        "rifampin",
+        "ritonavir",
+        "St. John's Wort",
+        "tipranavir and ritonavir"
+      ]
+    },
+    "2C9": {
+      "substrates": [
+        {
+          "name": "amitriptyline",
+          "evidence": "weak"
+        },
+        {
+          "name": "atomoxetine",
+          "evidence": "weak"
+        },
+        {
+          "name": "avatrombopag",
+          "evidence": "weak"
+        },
+        {
+          "name": "azilsartan",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "celecoxib",
+          "evidence": "moderate"
+        },
+        {
+          "name": "diclofenac",
+          "evidence": "weak"
+        },
+        {
+          "name": "doxepin",
+          "evidence": "moderate"
+        },
+        {
+          "name": "estrasimod",
+          "evidence": "weak"
+        },
+        {
+          "name": "fluoxetine",
+          "evidence": "weak"
+        },
+        {
+          "name": "flurbiprofen",
+          "evidence": "moderate"
+        },
+        {
+          "name": "fluvastatin",
+          "evidence": "weak"
+        },
+        {
+          "name": "glimepiride",
+          "evidence": "moderate"
+        },
+        {
+          "name": "glipizide",
+          "evidence": "weak"
+        },
+        {
+          "name": "glyburide/glibenclamide",
+          "evidence": "moderate"
+        },
+        {
+          "name": "ibuprofen",
+          "evidence": "weak"
+        },
+        {
+          "name": "indomethacin",
+          "evidence": "weak"
+        },
+        {
+          "name": "irbesartan",
+          "evidence": "weak"
+        },
+        {
+          "name": "lesinurad",
+          "evidence": "weak"
+        },
+        {
+          "name": "lornoxicam",
+          "evidence": "weak"
+        },
+        {
+          "name": "losartan",
+          "evidence": "weak"
+        },
+        {
+          "name": "meloxicam",
+          "evidence": "strong"
+        },
+        {
+          "name": "nateglinide",
+          "evidence": "weak"
+        },
+        {
+          "name": "ospemifene",
+          "evidence": "weak"
+        },
+        {
+          "name": "phenytoin",
+          "evidence": "moderate"
+        },
+        {
+          "name": "piroxicam",
+          "evidence": "strong"
+        },
+        {
+          "name": "ruxolitinib",
+          "evidence": "moderate"
+        },
+        {
+          "name": "s-naproxen",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "s-warfarin",
+          "evidence": "moderate"
+        },
+        {
+          "name": "siponimod",
+          "evidence": "moderate"
+        },
+        {
+          "name": "tenoxicam",
+          "evidence": "weak"
+        },
+        {
+          "name": "tolbutamide",
+          "evidence": "strong"
+        },
+        {
+          "name": "torsemide",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "valproic acid",
+          "evidence": "weak"
+        },
+        {
+          "name": "zafirlukast",
+          "evidence": "weak"
+        }
+      ],
+      "inhibitors": [
+        {
+          "name": "amiodarone",
+          "evidence": "moderate"
+        },
+        {
+          "name": "capecitabine",
+          "evidence": "weak"
+        },
+        {
+          "name": "ceritinib",
+          "evidence": "weak"
+        },
+        {
+          "name": "efavirenz",
+          "evidence": "weak"
+        },
+        {
+          "name": "fenofibrate",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "fluconazole",
+          "evidence": "moderate"
+        },
+        {
+          "name": "fluvastatin",
+          "evidence": "weak"
+        },
+        {
+          "name": "isoniazid",
+          "evidence": "weak"
+        },
+        {
+          "name": "lomipatide",
+          "evidence": "weak"
+        },
+        {
+          "name": "metronidazole",
+          "evidence": "moderate"
+        },
+        {
+          "name": "phenylbutazone",
+          "evidence": "moderate"
+        },
+        {
+          "name": "quercetin",
+          "evidence": "weak"
+        },
+        {
+          "name": "rucaparib",
+          "evidence": "weak"
+        },
+        {
+          "name": "sulfamethoxazole",
+          "evidence": "weak"
+        },
+        {
+          "name": "sulfaphenazole",
+          "evidence": "strong"
+        },
+        {
+          "name": "voriconazole",
+          "evidence": "weak"
+        },
+        {
+          "name": "zafirlukast",
+          "evidence": "weak"
+        }
+      ],
+      "inducers": [
+        "carbamazepine",
+        "dabrafenib",
+        "enzalutamide",
+        "nevirapine",
+        "phenobarbital",
+        "rifampin",
+        "secobarbital",
+        "St. John's Wort"
+      ]
+    },
+    "2C8": {
+      "substrates": [
+        {
+          "name": "amodiaquine",
+          "evidence": "weak"
+        },
+        {
+          "name": "cerivastatin",
+          "evidence": "strong"
+        },
+        {
+          "name": "dabrafenib",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "enzalutamide",
+          "evidence": "moderate"
+        },
+        {
+          "name": "iptacopan",
+          "evidence": "weak"
+        },
+        {
+          "name": "paclitaxel",
+          "evidence": "weak"
+        },
+        {
+          "name": "repaglinide",
+          "evidence": "strong"
+        },
+        {
+          "name": "rosiglitazone",
+          "evidence": "moderate"
+        },
+        {
+          "name": "selexipag",
+          "evidence": "moderate"
+        },
+        {
+          "name": "tucatinib",
+          "evidence": "moderate"
+        }
+      ],
+      "inhibitors": [
+        {
+          "name": "abiraterone",
+          "evidence": "weak"
+        },
+        {
+          "name": "clopidogrel",
+          "evidence": "strong"
+        },
+        {
+          "name": "deferasirox",
+          "evidence": "moderate"
+        },
+        {
+          "name": "efavirenz",
+          "evidence": "weak"
+        },
+        {
+          "name": "gemfibrozil",
+          "evidence": "strong"
+        },
+        {
+          "name": "glitazones",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "lapatinib",
+          "evidence": "weak"
+        },
+        {
+          "name": "letermovir",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "montelukast",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "Pirtobrutinib",
+          "evidence": "moderate"
+        },
+        {
+          "name": "quercetin",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "resmetirom",
+          "evidence": "tbd"
+        },
+        {
+          "name": "Selpercatinib",
+          "evidence": "moderate"
+        },
+        {
+          "name": "Tazemetostat",
+          "evidence": "weak"
+        },
+        {
+          "name": "teriflunomide",
+          "evidence": "moderate"
+        },
+        {
+          "name": "trimethoprim",
+          "evidence": "weak"
+        },
+        {
+          "name": "tucatinib",
+          "evidence": "weak"
+        }
+      ],
+      "inducers": [
+        "rifampin"
+      ]
+    },
+    "2B6": {
+      "substrates": [
+        {
+          "name": "artemether",
+          "evidence": "weak"
+        },
+        {
+          "name": "artemisinin",
+          "evidence": "weak"
+        },
+        {
+          "name": "bupropion",
+          "evidence": "strong"
+        },
+        {
+          "name": "cyclophosphamide",
+          "evidence": "weak"
+        },
+        {
+          "name": "efavirenz",
+          "evidence": "strong"
+        },
+        {
+          "name": "ifosphamide",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "ketamine",
+          "evidence": "weak"
+        },
+        {
+          "name": "meperidine",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "methadone",
+          "evidence": "weak"
+        },
+        {
+          "name": "nevirapine",
+          "evidence": "weak"
+        },
+        {
+          "name": "propofol",
+          "evidence": "weak"
+        },
+        {
+          "name": "selegiline",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "tramadol",
+          "evidence": "weak"
+        },
+        {
+          "name": "velpatasvir",
+          "evidence": "in-vitro"
+        }
+      ],
+      "inhibitors": [
+        {
+          "name": "clopidogrel",
+          "evidence": "weak"
+        },
+        {
+          "name": "thiotepa",
+          "evidence": "weak"
+        },
+        {
+          "name": "ticlopidine",
+          "evidence": "strong"
+        },
+        {
+          "name": "voriconazole",
+          "evidence": "weak"
+        }
+      ],
+      "inducers": [
+        "artemisinin",
+        "carbamazepine",
+        "dabrafenib",
+        "efavirenz",
+        "lemborexant",
+        "nevirapine",
+        "phenobarbital",
+        "phenytoin",
+        "rifampin"
+      ]
+    },
+    "2E1": {
+      "substrates": [
+        {
+          "name": "aniline",
+          "evidence": "tbd"
+        },
+        {
+          "name": "benzene",
+          "evidence": "tbd"
+        },
+        {
+          "name": "chlorzoxazone",
+          "evidence": "tbd"
+        },
+        {
+          "name": "enflurane",
+          "evidence": "tbd"
+        },
+        {
+          "name": "halothane",
+          "evidence": "strong"
+        },
+        {
+          "name": "isoflurane",
+          "evidence": "strong"
+        },
+        {
+          "name": "methoxyflurane",
+          "evidence": "in-vitro"
+        },
+        {
+          "name": "n,n-dimethylformamide",
+          "evidence": "weak"
+        },
+        {
+          "name": "sevoflurane",
+          "evidence": "weak"
+        },
+        {
+          "name": "theophylline",
+          "evidence": "tbd"
+        }
+      ],
+      "inhibitors": [
+        {
+          "name": "diethyl-dithiocarbamate",
+          "evidence": "strong"
+        },
+        {
+          "name": "disulfiram",
+          "evidence": "strong"
+        },
+        {
+          "name": "quercetin",
+          "evidence": "weak"
+        },
+        {
+          "name": "ribociclib",
+          "evidence": "in-vitro"
+        }
+      ],
+      "inducers": [
+        "ethanol",
+        "isoniazid"
+      ]
+    }
+  }
+}
