@@ -231,13 +231,22 @@ export default async function InterviewDetailPage({ params }) {
             </div>
           )}
 
-          {/* Pull quotes */}
-          {Array.isArray(interview.pullQuotes) && interview.pullQuotes.filter(Boolean).map((quote, i) => (
-            <blockquote key={i} className="interview-pull-quote">
-              <p>“{quote}”</p>
-              {interviewee.name && <cite>— {interviewee.name}</cite>}
-            </blockquote>
-          ))}
+          {/* Pull quotes — atribuição: quote.person (nome do entrevistado,
+              JSONB migração 252) ou fallback ao 1.º entrevistado (strings
+              legacy anteriores à 252 e quotes sem atribuição). */}
+          {Array.isArray(interview.pullQuotes) && interview.pullQuotes
+            .map((q) => (typeof q === 'string' ? { text: q, person: null } : { text: q?.text || '', person: q?.person || null }))
+            .filter((q) => q.text)
+            .map((quote, i) => {
+              const person =
+                interviewees.find((p) => p.name === quote.person) || interviewee
+              return (
+                <blockquote key={i} className="interview-pull-quote">
+                  <p>“{quote.text}”</p>
+                  {person?.name && <cite>— {person.name}</cite>}
+                </blockquote>
+              )
+            })}
 
           {/* Conteúdo */}
           {interview.content && (

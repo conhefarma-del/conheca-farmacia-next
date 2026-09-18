@@ -148,11 +148,16 @@ export default function InterviewForm({ mode = 'create', initialData = null, lan
     avatarBg: initialData?.interviewer?.avatarBg || '#0a844f',
   })
 
-  const [pullQuotes, setPullQuotes] = useState(
-    Array.isArray(initialData?.pull_quotes) && initialData.pull_quotes.length > 0
-      ? initialData.pull_quotes
-      : ['']
-  )
+  // Pull quotes: [{ text, person }] — person = nome do entrevistado (JSONB,
+  // migração 252) ou '' = atribuição automática (1.º entrevistado).
+  // Aceita strings legacy (antes da 252) convertendo para { text, person: '' }.
+  const [pullQuotes, setPullQuotes] = useState(() => {
+    const raw = Array.isArray(initialData?.pull_quotes) ? initialData.pull_quotes : []
+    const objs = raw
+      .map((q) => (typeof q === 'string' ? { text: q, person: '' } : { text: q?.text || '', person: q?.person || '' }))
+      .filter((q) => q.text)
+    return objs.length > 0 ? objs : [{ text: '', person: '' }]
+  })
   const [qa, setQa] = useState(
     Array.isArray(initialData?.qa) && initialData.qa.length > 0
       ? initialData.qa
@@ -303,7 +308,9 @@ export default function InterviewForm({ mode = 'create', initialData = null, lan
       video_id: videoId, thumbnail_url: thumbnailUrl, audio_url: audioUrl,
       executive_summary: executiveSummary, content,
       interviewees, interviewer,
-      pull_quotes: pullQuotes.filter(q => q.trim()),
+      pull_quotes: pullQuotes
+        .map((q) => ({ text: (q.text || '').trim(), person: q.person || '' }))
+        .filter((q) => q.text),
       qa: qa.filter(item => item.question.trim() || item.answer.trim()),
       references_arr: references.filter(r => r.trim()),
       related: related.filter(r => r.trim()),
@@ -581,13 +588,22 @@ export default function InterviewForm({ mode = 'create', initialData = null, lan
       <div className="admin-form-group">
         <label>Pull quotes</label>
         {pullQuotes.map((q, i) => (
-          <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-            <input type="text" value={q} onChange={(e) => updateList(setPullQuotes)(i, e.target.value)}
-              className="admin-input" placeholder="Citação em destaque" />
-            <button type="button" className="admin-btn admin-btn-sm admin-btn-danger"
-              onClick={() => setPullQuotes(pullQuotes.filter((_, idx) => idx !== i))}>
-              <Trash2 size={14} />
-            </button>
+          <div key={i} style={{ border: '1px solid var(--admin-border)', borderRadius: 8, padding: 12, marginBottom: 10 }}>
+            <input type="text" value={q.text || ''} onChange={(e) => updateList(setPullQuotes)(i, { ...q, text: e.target.value })}
+              className="admin-input" placeholder="Citação em destaque" style={{ marginBottom: 8 }} />
+            <div style={{ display: 'flex', gap: 8 }}>
+              <select value={q.person || ''} onChange={(e) => updateList(setPullQuotes)(i, { ...q, person: e.target.value })}
+                className="admin-input" style={{ flex: 1 }}>
+                <option value="">Automático — 1.º entrevistado</option>
+                {interviewees.filter((p) => p.name?.trim()).map((p, idx) => (
+                  <option key={idx} value={p.name}>{p.name}</option>
+                ))}
+              </select>
+              <button type="button" className="admin-btn admin-btn-sm admin-btn-danger"
+                onClick={() => setPullQuotes(pullQuotes.filter((_, idx) => idx !== i))}>
+                <Trash2 size={14} />
+              </button>
+            </div>
           </div>
         ))}
         <button type="button" className="admin-btn admin-btn-sm" onClick={() => setPullQuotes([...pullQuotes, ''])}>
