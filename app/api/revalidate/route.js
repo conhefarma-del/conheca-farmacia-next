@@ -127,7 +127,7 @@ async function handle(request) {
         { status: 400 }
       )
     }
-    revalidateTag(tag)
+    revalidateTag(tag, 'max')
     revalidated.tags.push(tag)
   }
 

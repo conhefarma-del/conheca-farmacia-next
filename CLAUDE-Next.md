@@ -337,7 +337,7 @@ Os 500 voltaram a `/eventos/[slug]` em produção (digest `DYNAMIC_SERVER_USAGE`
 **Regras duradouras:**
 1. Página pública com ISR **não pode** tocar `createClient()`/`cookies()`/`headers()` em NENHUMA função (page, generateMetadata, layouts acima) — usar `createAnonClient()` para hreflang/leituras públicas.
 2. `force-dynamic` + `generateStaticParams` juntos é um cheiro: remover o `generateStaticParams`.
-3. O aviso admin "revalidateTag sem 2º argumento" (Next 16) é mera deprecação, NÃO causa este 500 — não o confundir com a causa.
+3. O aviso admin "revalidateTag sem 2º argumento" (Next 16) é mera deprecação, NÃO causa este 500 — não o confundir com a causa. **Migrado em 2026-09-18**: as 117 chamadas em `lib/actions/` (ficheiros alvos, classes, competition, content, flashcards, guides, interacoes, medicamentos, protocolos, scientific) passaram para `updateTag(tag)` — em Server Actions é o substituto correcto (invalidação imediata, read-your-own-writes, exigido no Next 16 quando há re-render da action). O route handler `app/api/revalidate` passou para `revalidateTag(tag, 'max')` (Route Handlers usam `revalidateTag` com perfil de cache; `updateTag` aí lança erro). Nenhuma chamada estava dentro de `unstable_cache` (verificado por inventário linha-a-linha antes da migração).
 4. As listagens (`/artigos`, `/eventos`) podem ficar ISR porque não tocam APIs dinâmicas.
 
 **Guard automático (scripts/check-isr-dynamic-usage.mjs, 2026-09-18):**
