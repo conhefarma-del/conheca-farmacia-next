@@ -340,6 +340,18 @@ Os 500 voltaram a `/eventos/[slug]` em produção (digest `DYNAMIC_SERVER_USAGE`
 3. O aviso admin "revalidateTag sem 2º argumento" (Next 16) é mera deprecação, NÃO causa este 500 — não o confundir com a causa.
 4. As listagens (`/artigos`, `/eventos`) podem ficar ISR porque não tocam APIs dinâmicas.
 
+**Guard automático (scripts/check-isr-dynamic-usage.mjs, 2026-09-18):**
+
+Corre no `build` (`node scripts/check-isr-dynamic-usage.mjs && next build`) — a Vercel falha o deploy em regressão. Análise estática função-a-função (call graph local + funções exportadas dos módulos importados, brace matching com strings ignoradas):
+
+- ✗ **Bloqueia**: uso dinâmico dentro de `generateMetadata` de página ISR — é o caminho do relançamento → 500.
+- ⚠ **Avisa (não bloqueia)**: uso dinâmico no corpo do page component — o Next captura e serve a rota dinâmica (perde ISR silenciosamente, mas não dá 500). Estado actual: as 3 páginas legais (`faq`, `politica-privacidade`, `termos`) via `getPublic*Data()` do `lib/actions/legalContent.js` que usam `createClient()` no corpo — corrigir oportunisticamente para `createAnonClient()`.
+- Poda: módulos `'use client'` (o que importam só corre via RPC) e bare imports. Layouts não verificados (o root layout usa `headers()` e convive com ISR sem 500s).
+- Escape hatch: comentário `isr-guard: allow <motivo>` nas primeiras 10 linhas da página.
+- Auto-teste: criar `app/_guard-selftest/page.js` com `revalidate = 3600` + `createClient()` no `generateMetadata` → deve dar exit 1; remover depois.
+
+**Porquê granularidade por função e não por import:** importar um módulo que *contém* funções com cookies() não faz throw durante render — só *invocar* essas funções. Quase todos os módulos `lib/api/*` e `lib/actions/*` misturam helpers seguros com helpers dinâmicos (ex.: `getEvents()` é seguro, `getPublicFAQData()` usa cookies).
+
 ### 46. OpenGraph: Tipos Válidos
 
 O Next.js não aceita `type: 'event'` no metadata OpenGraph. Os tipos válidos são: `website`, `article`, `profile`, `book`, `music.song`, `music.album`, `music.playlist`, `music.radio_station`, `video.movie`, `video.episode`, `video.tv_show`, `video.other`.
