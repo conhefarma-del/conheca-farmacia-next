@@ -17,7 +17,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-export const revalidate = 3600
+// Detalhe de artigo é renderizado dinamicamente (NÃO ISR):
+// o generateMetadata usa o client Supabase com cookies (createClient) para
+// hreflang, e cookies() durante a regeneração ISR lança DYNAMIC_SERVER_USAGE
+// → 500 em produção. Ver Lição 45 do CLAUDE-Next.md (rev. 2026-09-18).
+export const dynamic = 'force-dynamic'
 
 function formatDate(dateStr, lang = 'pt') {
   try {
@@ -26,15 +30,6 @@ function formatDate(dateStr, lang = 'pt') {
     return date.toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })
   } catch {
     return dateStr
-  }
-}
-
-export async function generateStaticParams() {
-  try {
-    const articles = await getArticles()
-    return articles.map((article) => ({ slug: article.slug }))
-  } catch {
-    return []
   }
 }
 
@@ -62,6 +57,8 @@ export async function generateMetadata({ params }) {
   } else {
     // We came in via PT (or PT fallback). Look up the EN slug.
     try {
+      // Client com cookies: só seguro fora de render estático/ISR —
+      // esta página é force-dynamic (ver topo do ficheiro).
       const supabase = await createClient()
       const enTr = await findTranslationByEntityId(supabase, 'article', article.id, 'en')
       if (enTr) langs['en'] = `/en/artigos/${enTr.slug}`

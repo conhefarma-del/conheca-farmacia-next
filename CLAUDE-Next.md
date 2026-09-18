@@ -309,7 +309,7 @@ Migração de Netlify para Vercel concluída (2026-05-28):
 - Turbopack funciona nativamente (path ASCII)
 - `proxy.js` substitui `middleware.js` (Next.js 16)
 
-### 45. force-dynamic: cookies() Impede Static Generation
+### 45. force-dynamic: cookies() Impede Static Generation (rev. 2026-09-18)
 
 Páginas que usam `cookies()` (via `createClient()` do Supabase) não podem ser pré-renderizadas estaticamente. O Next.js lança o erro `DYNAMIC_SERVER_USAGE` durante o build/prerendering, que resulta num 500 em produção.
 
@@ -321,6 +321,24 @@ Páginas que usam `cookies()` (via `createClient()` do Supabase) não podem ser 
 - `app/[lang]/(public)/lives/[slug]/page.js`
 
 **Diagnóstico:** `npx vercel logs --level=error --expand` mostra a mensagem completa do erro.
+
+**Recaída 2026-09-18 — o mecanismo completo (importante):**
+
+Os 500 voltaram a `/eventos/[slug]` em produção (digest `DYNAMIC_SERVER_USAGE`, "Server Components render") porque a linha `force-dynamic` já não estava no ficheiro (provavelmente perdida num refactor para `server-anon`), e o gatilho é subtil:
+
+1. As páginas `[slug]` tinham `export const revalidate = 3600` (ISR) + `generateStaticParams`.
+2. O `generateMetadata` usa `createClient()` (client **com** cookies) para construir o hreflang EN — este é o ÚNICO acesso dinâmico na árvore de render (os fetchers de dados usam `createAnonClient()` e os componentes são `'use client'`).
+3. Na primeira render (build), o Next.js captura o `DynamicServerError` e opta a página para dinâmica — o site parecia saudável. Mas na **regeneração ISR em background** (revalidate 3600) o mesmo erro é capturado, registado e **relançado** → 500 no request que serviu a regeneração.
+4. O `try/catch` em volta do `createClient()` NÃO protege: o Next.js registra o uso dinâmico e relança o erro no fim de `generateMetadata`.
+5. Porque só os eventos? A listagem `/artigos` tinha `force-dynamic` (usa `searchParams` para filtro de autor) mas `/eventos` não; e o timing da regeneração ISR determina que páginas 500 primeiro — artigos/[slug] tinha o MESMO bug latente.
+
+**Correcção (2026-09-18):** `export const dynamic = 'force-dynamic'` nas 4 páginas de detalhe (eventos, events, artigos, articles — PT + espelho EN), remover `generateStaticParams` (inócuo em render dinâmico), e comentário no bloco hreflang a explicar porque o client com cookies só é seguro em force-dynamic.
+
+**Regras duradouras:**
+1. Página pública com ISR **não pode** tocar `createClient()`/`cookies()`/`headers()` em NENHUMA função (page, generateMetadata, layouts acima) — usar `createAnonClient()` para hreflang/leituras públicas.
+2. `force-dynamic` + `generateStaticParams` juntos é um cheiro: remover o `generateStaticParams`.
+3. O aviso admin "revalidateTag sem 2º argumento" (Next 16) é mera deprecação, NÃO causa este 500 — não o confundir com a causa.
+4. As listagens (`/artigos`, `/eventos`) podem ficar ISR porque não tocam APIs dinâmicas.
 
 ### 46. OpenGraph: Tipos Válidos
 

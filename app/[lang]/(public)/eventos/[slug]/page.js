@@ -17,16 +17,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-export const revalidate = 3600
-
-export async function generateStaticParams() {
-  try {
-    const events = await getEvents()
-    return events.map((event) => ({ slug: event.slug }))
-  } catch {
-    return []
-  }
-}
+// Detalhe de evento é renderizado dinamicamente (NÃO ISR):
+// o generateMetadata usa o client Supabase com cookies (createClient) para
+// hreflang, e cookies() durante a regeneração ISR lança DYNAMIC_SERVER_USAGE
+// → 500 em produção. Ver Lição 45 do CLAUDE-Next.md (rev. 2026-09-18).
+export const dynamic = 'force-dynamic'
 
 export async function generateMetadata({ params }) {
   const { lang, slug } = await params
@@ -52,6 +47,8 @@ export async function generateMetadata({ params }) {
   } else {
     // We came in via PT (or PT fallback). Look up the EN slug.
     try {
+      // Client com cookies: só seguro fora de render estático/ISR —
+      // esta página é force-dynamic (ver topo do ficheiro).
       const supabase = await createClient()
       const enTr = await findTranslationByEntityId(supabase, 'event', event.id, 'en')
       if (enTr) langs['en'] = `/en/eventos/${enTr.slug}`
