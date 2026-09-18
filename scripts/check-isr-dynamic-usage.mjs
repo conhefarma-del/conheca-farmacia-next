@@ -77,6 +77,50 @@ function readText(file) {
   }
 }
 
+/**
+ * Remove comentários // e /* *\//* de um texto, respeitando strings
+ * (URLs tipo https:// não são tocadas). Sem isto, um comentário que mencione
+ * cookies() ou createClient() no corpo de uma função é um falso positivo.
+ */
+function stripComments(text) {
+  let out = ''
+  let i = 0
+  let inStr = null
+  let esc = false
+  while (i < text.length) {
+    const ch = text[i]
+    const next = text[i + 1]
+    if (inStr) {
+      out += ch
+      if (esc) esc = false
+      else if (ch === '\\') esc = true
+      else if (ch === inStr) inStr = null
+      i++
+      continue
+    }
+    if (ch === '"' || ch === "'" || ch === '`') {
+      inStr = ch
+      out += ch
+      i++
+      continue
+    }
+    if (ch === '/' && next === '/') {
+      while (i < text.length && text[i] !== '\n') i++
+      continue
+    }
+    if (ch === '/' && next === '*') {
+      i += 2
+      while (i < text.length && !(text[i] === '*' && text[i + 1] === '/')) i++
+      i += 2
+      out += ' '
+      continue
+    }
+    out += ch
+    i++
+  }
+  return out
+}
+
 /** Corpo de bloco { ... } começando em braceIdx (ignora strings/template). */
 function extractBlock(text, braceIdx) {
   let depth = 0
@@ -159,10 +203,14 @@ const moduleCache = new Map()
 function getModule(file) {
   const cached = moduleCache.get(file)
   if (cached) return cached
-  const mod = { decls: new Map(), imports: new Map() }
+  const mod = { decls: new Map(), imports: new Map(), content: '' }
   moduleCache.set(file, mod)
-  const content = readText(file)
-  if (content === null) return mod
+  const raw = readText(file)
+  if (raw === null) return mod
+  // Texto sem comentários: offsets consistentes para decls, imports e slicing
+  // em analyzePage (comentários não podem gerar falsos positivos de chamada).
+  const content = stripComments(raw)
+  mod.content = content
 
   // Declarações top-level: funções (corpo exacto) + consts (slice até à
   // próxima declaração top-level — cobre `export const X = unstable_cache(...)`)
@@ -210,7 +258,7 @@ function getModule(file) {
   }
   // Imports → ficheiro resolvido
   for (const { spec, stmt } of extractImportStatements(content)) {
-    const resolved = resolveSpecifier(spec, content ? file : file)
+    const resolved = resolveSpecifier(spec, file)
     if (!resolved) continue
     const named = stmt.match(/\{([^}]*)\}/)
     if (named) {
@@ -299,9 +347,9 @@ function hasAllowMarker(content) {
 }
 
 function analyzePage(file) {
-  const content = readText(file)
-  if (content === null) return null
   const mod = getModule(file)
+  const content = mod.content
+  if (!content) return null
   const gmDecl = mod.decls.get('generateMetadata')
   const gmText = gmDecl ? content.slice(gmDecl.start, gmDecl.end) : ''
   const restText = gmDecl
