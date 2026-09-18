@@ -203,28 +203,58 @@ export default function ComprovativoModal({ inscricao, evento, onClose }) {
             type="button"
             onClick={() => window.print()}
             style={{
-              padding: '10px 24px',
+              padding: '10px 20px',
               borderRadius: 8,
-              border: 'none',
-              background: '#00493a',
-              color: '#fff',
+              border: '2px solid #00493a',
+              background: 'transparent',
+              color: '#00493a',
               fontSize: 14,
-              fontWeight: 600,
+              fontWeight: 500,
               fontFamily: 'Inter, sans-serif',
               cursor: 'pointer',
               transition: 'all 0.15s ease',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = '#005c4a'
-              e.currentTarget.style.transform = 'scale(1.02)'
+              e.currentTarget.style.background = 'rgba(0, 73, 58, 0.06)'
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = '#00493a'
-              e.currentTarget.style.transform = 'scale(1)'
+              e.currentTarget.style.background = 'transparent'
             }}
           >
             Imprimir / Guardar PDF
           </button>
+          {inscricao.share_code && (
+            <a
+              href={`/api/comprovativo/${inscricao.id}/pdf?code=${inscricao.share_code}&lang=pt`}
+              download
+              style={{
+                padding: '10px 24px',
+                borderRadius: 8,
+                border: 'none',
+                background: '#00493a',
+                color: '#fff',
+                fontSize: 14,
+                fontWeight: 600,
+                fontFamily: 'Inter, sans-serif',
+                cursor: 'pointer',
+                textDecoration: 'none',
+                transition: 'all 0.15s ease',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#005c4a'
+                e.currentTarget.style.transform = 'scale(1.02)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#00493a'
+                e.currentTarget.style.transform = 'scale(1)'
+              }}
+            >
+              Baixar PDF
+            </a>
+          )}
         </div>
       </div>
 

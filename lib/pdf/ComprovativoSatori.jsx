@@ -40,7 +40,7 @@ export default function ComprovativoSatori({
         display: 'flex',
         flexDirection: 'row',
         backgroundColor: '#ffffff',
-        fontFamily: 'sans-serif',
+        fontFamily: 'Inter',
         color: '#002a32',
       }}
     >
@@ -84,7 +84,7 @@ export default function ComprovativoSatori({
           </div>
           <div
             style={{
-              fontFamily: 'monospace',
+              fontFamily: 'Inter',
               fontSize: 56,
               fontWeight: 700,
               letterSpacing: '0.04em',
@@ -192,7 +192,7 @@ export default function ComprovativoSatori({
         {/* Title */}
         <div
           style={{
-            fontFamily: 'serif',
+            fontFamily: 'Fraunces',
             fontSize: 72,
             fontWeight: 700,
             lineHeight: 1.05,
@@ -236,7 +236,7 @@ export default function ComprovativoSatori({
           </div>
           <div
             style={{
-              fontFamily: 'serif',
+              fontFamily: 'Fraunces',
               fontSize: 44,
               fontWeight: 600,
               lineHeight: 1.15,
@@ -254,8 +254,8 @@ export default function ComprovativoSatori({
               marginTop: 8,
             }}
           >
-            {eventDate && <div>📅 {eventDate}</div>}
-            {eventLocation && <div>📍 {eventLocation}</div>}
+            {eventDate && <div>{eventDate}</div>}
+            {eventLocation && <div>{eventLocation}</div>}
             {modalityLabel && <div>• {modalityLabel}</div>}
           </div>
         </div>

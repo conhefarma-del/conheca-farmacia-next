@@ -1,25 +1,39 @@
-// GET /api/comprovativo/[id]/pdf
+// GET /api/comprovativo/[id]/pdf?code=<share_code>&lang=pt|en
 //
-// The server-side PDF generation pipeline (Satori + resvg-js + pdf-lib)
-// has been retired. Direct download is replaced by a print-friendly
-// page that the user can save as PDF via the browser's Print dialog.
+// Gera o PDF do comprovativo de inscrição (A4 landscape, design
+// boarding-pass igual ao do ecrã) via satori → resvg-js → pdf-lib.
 //
-// This route is kept so old links, QR codes, and bookmarked URLs do not
-// break — they now redirect to the success page where the receipt can be
-// printed.
+// Acesso: o PDF contém PII (nome, email). O id é sequencial/previsível,
+// pelo que o endpoint exige `code` = share_code (secreto, aleatório,
+// migração 253). Sem código, código inválido ou id inexistente → 404
+// idêntico (sem enumeração). O link completo vive na página de sucesso
+// e no modal admin (Inscritos).
 //
-// Security:
-//   - id and lang are sanitised before being interpolated into the HTML
-//     response (defence in depth — even though the regex below already
-//     restricts id to UUID/INT shapes and lang to 'en'/'pt').
-//   - Rate-limit 30 req/min/IP per process instance (in-memory; same
-//     trade-off as inscription.js — sufficient for casual scraping, not
-//     a substitute for edge-level WAF).
+// História: um pipeline anterior foi desactivado porque produzia PDF
+// vazio/mal formatado — causa raiz: satori.loadFont() deixou de existir
+// no satori 0.26 (fonts passam agora na opção `fonts`) e os pacotes
+// @fontsource/noto-* nunca estavam instalados. O pipeline reanimado usa
+// Inter/Fraunces (já no projecto) e está corrigido em lib/pdf/buildPdf.js.
 
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+import React from 'react'
+import { createAdminClient } from '@/lib/supabase/admin'
+import { loadTranslations, t } from '@/lib/i18n'
+import { buildComprovativoPdf } from '@/lib/pdf/buildPdf'
+import ComprovativoSatori from '@/lib/pdf/ComprovativoSatori'
+import { readFile } from 'fs/promises'
+import path from 'path'
+import qrcode from 'qrcode'
+import { timingSafeEqual } from 'crypto'
+import { getTranslationByEntityId } from '@/lib/api/translations'
+
+// inscricoes.id é int8 (ex.: 97) — confirmado na BD (alguma migração
+// posterior converteu o UUID do RPC 029 em bigint). Aceito também UUID
+// por robustez futura.
 const INT_RE = /^\d{1,18}$/
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+const CODE_RE = /^[0-9a-f]{32}$/i // share_code = hex de 16 bytes (migração 253)
 
-const COMP_LIMIT = { max: 30, windowMs: 60_000 }
+const COMP_LIMIT = { max: 10, windowMs: 60_000 }
 const _rateMap = new Map()
 
 function getClientIp(headersList) {
@@ -40,95 +54,206 @@ function checkRate(ip) {
   return true
 }
 
+// Constant-time comparison (ambos hex de 32 chars validados antes)
+function codeMatches(a, b) {
+  try {
+    return timingSafeEqual(Buffer.from(a, 'hex'), Buffer.from(b, 'hex'))
+  } catch {
+    return false
+  }
+}
+
+const notFound = () =>
+  new Response('Not found', {
+    status: 404,
+    headers: { 'cache-control': 'no-store' },
+  })
+
+function fmtDate(value, locale) {
+  if (!value) return null
+  const d = new Date(value)
+  if (isNaN(d.getTime())) return null
+  try {
+    return new Intl.DateTimeFormat(locale, {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    }).format(d)
+  } catch {
+    return d.toISOString().slice(0, 10)
+  }
+}
+
+function fmtDateTime(value, locale, hour12) {
+  if (!value) return null
+  const d = new Date(value)
+  if (isNaN(d.getTime())) return null
+  try {
+    const dateStr = new Intl.DateTimeFormat(locale, {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    }).format(d)
+    const timeStr = new Intl.DateTimeFormat(locale, {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12,
+    }).format(d)
+    return `${dateStr} · ${timeStr}`
+  } catch {
+    return d.toISOString().slice(0, 16).replace('T', ' ')
+  }
+}
+
+// Mesma normalização de profissão que InscricaoPageClient (profKey)
+function profKey(profissao) {
+  switch (profissao) {
+    case 'estudante-saude': return 'estudante'
+    case 'tecnico-medio-saude': return 'tecnico_medio'
+    case 'tecnico-radiologia': return 'tecnico_radio'
+    case 'tecnico-analises-clinicas': return 'tecnico_analises'
+    case 'medico-dentista': return 'dentista'
+    case 'biologo-analista': return 'biologo'
+    default: return profissao
+  }
+}
+
+async function logoDataUrl() {
+  const buf = await readFile(
+    path.join(process.cwd(), 'public', 'logo', 'logo-principal-branco.png')
+  )
+  return `data:image/png;base64,${buf.toString('base64')}`
+}
+
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic' // never cache
 
-// Strip everything outside [a-zA-Z0-9-] from a string. Used as the last
-// line of defence before interpolating user-controlled values into HTML.
-function safeForHtml(s) {
-  return String(s || '').replace(/[^a-zA-Z0-9-]/g, '')
-}
-
-const html = ({ id, lang }) => {
-  const pt = lang === 'en'
-  return `<!DOCTYPE html>
-<html lang="${pt ? 'en' : 'pt-PT'}">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>${pt ? 'Registration receipt' : 'Comprovativo de inscrição'}</title>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-           max-width: 560px; margin: 60px auto; padding: 0 20px; color: #002a32;
-           line-height: 1.6; }
-    h1 { color: #00493a; font-size: 28px; margin-bottom: 8px; }
-    p { margin: 12px 0; }
-    ol { padding-left: 24px; }
-    li { margin: 8px 0; }
-    .cta { display: inline-block; background: #00493a; color: white;
-           padding: 14px 24px; border-radius: 8px; text-decoration: none;
-           font-weight: 600; margin-top: 24px; }
-    .cta:hover { background: #003a30; }
-    .ref { background: #f4efe6; padding: 12px 16px; border-radius: 6px;
-           font-family: ui-monospace, 'Courier New', monospace;
-           font-size: 18px; margin: 16px 0; }
-  </style>
-</head>
-<body>
-  <h1>${pt ? 'How to save your receipt' : 'Como guardar o seu comprovativo'}</h1>
-  <p>${pt
-    ? 'Direct PDF download is no longer available. To save your registration receipt:'
-    : 'O download directo do PDF já não está disponível. Para guardar o seu comprovativo de inscrição:'}</p>
-  <ol>
-    <li>${pt
-      ? 'Open the registration success page (use the button below).'
-      : 'Abra a página de sucesso da inscrição (use o botão abaixo).'}</li>
-    <li>${pt
-      ? 'Click "Print / Save as PDF".'
-      : 'Clique em "Imprimir / Guardar como PDF".'}</li>
-    <li>${pt
-      ? 'In the print dialog, choose "Save as PDF" as the destination.'
-      : 'Na janela de impressão, escolha "Guardar como PDF" como destino.'}</li>
-    <li>${pt
-      ? 'Save the file. The receipt will look exactly like what you saw on screen.'
-      : 'Guarde o ficheiro. O comprovativo fica exactamente como viu no ecrã.'}</li>
-  </ol>
-  <p>${pt ? 'Registration reference' : 'Referência da inscrição'}:</p>
-  <div class="ref">${id}</div>
-  <a class="cta" href="/${pt ? 'en' : 'pt'}/inscricao/sucesso?id=${encodeURIComponent(id)}">
-    ${pt ? 'Open receipt →' : 'Abrir comprovativo →'}
-  </a>
-</body>
-</html>`
-}
-
 export async function GET(request, { params }) {
   const { id } = await params
-  if (!id || (!UUID_RE.test(id) && !INT_RE.test(id))) {
-    return new Response('Invalid id', { status: 400 })
-  }
 
-  // Rate limit (after validation, before any other work)
-  const ip = getClientIp(request.headers)
-  if (!checkRate(ip)) {
+  // Validação de formato ANTES de qualquer I/O (rejeição barata)
+  if (!id || (!INT_RE.test(id) && !UUID_RE.test(id))) return notFound()
+  if (!checkRate(getClientIp(request.headers))) {
     return new Response('Too many requests', { status: 429 })
   }
 
   const url = new URL(request.url)
-  const rawLang = url.searchParams.get('lang') === 'en' ? 'en' : 'pt'
-  // Sanitise values that go into HTML. id is already constrained by the
-  // regex above; lang is constrained to a 2-char allowlist. Both passes
-  // are belt-and-braces — if a future change broadens either, this still
-  // refuses to emit HTML-breaking characters.
-  const safeId = safeForHtml(id)
-  const safeLang = rawLang === 'en' ? 'en' : 'pt'
+  const lang = url.searchParams.get('lang') === 'en' ? 'en' : 'pt'
+  const code = String(url.searchParams.get('code') || '')
+  if (!CODE_RE.test(code)) return notFound()
 
-  return new Response(html({ id: safeId, lang: safeLang }), {
-    status: 200,
-    headers: {
-      'content-type': 'text/html; charset=utf-8',
-      'cache-control': 'no-store',
-      'x-content-type-options': 'nosniff',
-    },
-  })
+  try {
+    const supabase = createAdminClient()
+
+    // 1. Inscrição por id (Service Role — RLS não filtra; o gate é o code)
+    const { data: ins, error: insErr } = await supabase
+      .from('inscricoes')
+      .select('id, nome, email, telefone, profissao, created_at, share_code, evento_id')
+      .eq('id', id)
+      .maybeSingle()
+
+    if (insErr || !ins || !ins.share_code || !codeMatches(ins.share_code, code)) {
+      return notFound()
+    }
+
+    // 2. Evento (título/data/local/modalidade)
+    let event = null
+    if (ins.evento_id) {
+      const { data } = await supabase
+        .from('events')
+        .select('title, date, time, location, type')
+        .eq('id', ins.evento_id)
+        .maybeSingle()
+      event = data
+    }
+
+    // 3. Título traduzido para EN (mesma estratégia da página de inscrição)
+    let eventTitle = event?.title || null
+    if (event && lang === 'en') {
+      try {
+        const tr = await getTranslationByEntityId('event', ins.evento_id, 'en')
+        eventTitle = tr?.title || eventTitle
+      } catch {}
+    }
+
+    // 4. Strings i18n
+    const translations = loadTranslations(lang)
+    const tFn = (key) => t(translations, key)
+    const locale = lang === 'en' ? 'en-US' : 'pt-PT'
+    const hour12 = lang === 'en'
+
+    // Referência curta: mesma derivação do InscricaoBilhete/ComprovativoModal
+    // (int8 zero-padded a 6 dígitos, ex.: 97 → "000097") — consistente entre
+    // ecrã, admin e PDF.
+    const ref6 = String(ins.id).padStart(6, '0')
+
+    // 5. QR (mesmo formato de URL de validação do bilhete do ecrã)
+    const validationUrl = `https://conhecafarmacia.com/validar?ref=${ref6}`
+    const qrDataUrl = await qrcode.toDataURL(validationUrl, {
+      errorCorrectionLevel: 'M',
+      margin: 1,
+      width: 400,
+    })
+
+    // 6. Logo (PNG → data URL)
+    const logo = await logoDataUrl()
+
+    // 7. Campos formatados
+    const eventDate = event?.date
+      ? event.time
+        ? `${fmtDate(event.date, locale)} · ${String(event.time).slice(0, 5)}`
+        : fmtDate(event.date, locale)
+      : null
+
+    const modalityLabel = event?.type
+      ? (() => {
+          const key = `inscricao_success.comprovativo_modalidade_${event.type}`
+          const val = tFn(key)
+          return val && val !== key ? val : event.type
+        })()
+      : null
+
+    const profLabel = ins.profissao
+      ? (() => {
+          const key = `inscricao.prof_${profKey(ins.profissao)}`
+          const val = tFn(key)
+          return val && val !== key ? val : ins.profissao
+        })()
+      : null
+
+    // 8. JSX → SVG → PNG → PDF
+    const element = React.createElement(ComprovativoSatori, {
+      logoDataUrl: logo,
+      qrDataUrl,
+      shortRef: ref6,
+      eventTitle,
+      eventDate,
+      eventLocation: event?.location || null,
+      modality: event?.type || null,
+      modalityLabel,
+      attendeeName: ins.nome,
+      attendeeEmail: ins.email,
+      attestationCode: tFn('inscricao_success.referencia') + ' ' + ref6,
+      inscriptionDate: fmtDateTime(ins.created_at, locale, hour12),
+      eventBadge: tFn('inscricao_success.comprovativo_badge'),
+      docSubtitle: tFn('inscricao_success.comprovativo_doc_sub'),
+      stubTagline: tFn('inscricao_success.comprovativo_stub_tagline'),
+      lang,
+    })
+
+    const pdfBytes = await buildComprovativoPdf(element)
+
+    return new Response(Buffer.from(pdfBytes), {
+      status: 200,
+      headers: {
+        'content-type': 'application/pdf',
+        'content-disposition': `attachment; filename="comprovativo-${ref6}.pdf"`,
+        'cache-control': 'no-store',
+      },
+    })
+  } catch (err) {
+    // Log sem PII; resposta idêntica a "não encontrado" para não vazar estado
+    console.error('[comprovativo-pdf] generation failed:', err?.message)
+    return notFound()
+  }
 }

@@ -7,7 +7,7 @@ import { validateField, submitInscription, checkDuplicate } from '@/lib/api/insc
 import { useCapacityPolling } from '@/hooks/useCapacityPolling'
 import Breadcrumb from '@/components/ui/Breadcrumb'
 import InscricaoBilhete from '@/components/pages/InscricaoBilhete'
-import { AlertCircle, Printer, CheckCircle2 } from 'lucide-react'
+import { AlertCircle, Printer, CheckCircle2, Download } from 'lucide-react'
 
 const RATE_LIMIT_MS = 5000
 
@@ -39,6 +39,7 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
   const [countdown, setCountdown] = useState(3)
   const [emailSent, setEmailSent] = useState(true)
   const [inscriptionId, setInscriptionId] = useState(null)
+  const [shareCode, setShareCode] = useState(null)
   // shortRef: zero-padded inscription int8 id, e.g. 85 -> "000085".
   // inscricoes.id is int8 (not UUID), so slice(-8) of "85" = "85" not useful.
   // Use the int8 directly, padded to 6 digits for consistent display.
@@ -141,6 +142,7 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
       if (result?.success) {
         setEmailSent(!!result.emailSent)
         setInscriptionId(result.inscriptionId)
+        setShareCode(result.shareCode || null)
         setStatus('success')
         return
       }
@@ -253,10 +255,20 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
 
                   {/* Actions */}
                   <div className="comprovativo-actions" data-pdf-hide style={{ display: 'flex', gap: 12, marginTop: 24, justifyContent: 'center', flexWrap: 'wrap' }}>
+                    {shareCode && inscriptionId && (
+                      <a
+                        href={`/api/comprovativo/${inscriptionId}/pdf?code=${shareCode}&lang=${lang}`}
+                        className="btn btn-primary"
+                        download
+                      >
+                        <Download size={18} style={{ marginRight: 8, verticalAlign: 'middle' }} />
+                        {t('inscricao_success.download_pdf')}
+                      </a>
+                    )}
                     {countdown === 0 && (
                       <a
                         href={backUrl}
-                        className="btn btn-primary"
+                        className="btn btn-secondary"
                       >
                         {t('inscricao_success.voltar_evento')}
                       </a>
