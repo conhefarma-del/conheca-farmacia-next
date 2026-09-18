@@ -35,7 +35,8 @@ function getInscriptionEmailTemplate(
   nomeEvento: string,
   dataInscricao: string,
   eventoSlug: string,
-  unsubscribeUrl: string
+  unsubscribeUrl: string,
+  pdfUrl?: string,
 ): string {
   const dataObj = new Date(dataInscricao);
   const dataFormatada = dataObj.toLocaleDateString("pt-PT", {
@@ -112,7 +113,10 @@ function getInscriptionEmailTemplate(
                         <table width="100%" cellpadding="0" cellspacing="0" style="margin: 32px 0;">
                             <tr>
                                 <td align="center">
-                                    <a href="${eventoUrl}" style="display: inline-block; background-color: #00493a; color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: 600;">Ver Evento</a>
+                                    ${pdfUrl
+                                      ? `<a href="${pdfUrl}" download style="display: inline-block; background-color: #0a844f; color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: 600; margin-right: 12px;">Baixar Comprovativo (PDF)</a>
+                                         <a href="${eventoUrl}" style="display: inline-block; background-color: transparent; color: #00493a; border: 2px solid #00493a; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: 600;">Ver Evento</a>`
+                                      : `<a href="${eventoUrl}" style="display: inline-block; background-color: #00493a; color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: 600;">Ver Evento</a>`}
                                 </td>
                             </tr>
                         </table>
@@ -159,6 +163,7 @@ function getInscriptionEmailTemplateEN(
   dataInscricao: string,
   eventoSlug: string,
   unsubscribeUrl: string,
+  pdfUrl?: string,
 ): string {
   const dataObj = new Date(dataInscricao);
   const dataFormatada = dataObj.toLocaleDateString("en-GB", {
@@ -202,7 +207,10 @@ function getInscriptionEmailTemplateEN(
                         <table width="100%" cellpadding="0" cellspacing="0" style="margin: 24px 0;">
                             <tr>
                                 <td align="center">
-                                    <a href="${eventoUrl}" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #00493a 0%, #0a844f 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">View Event</a>
+                                    ${pdfUrl
+                                      ? `<a href="${pdfUrl}" download style="display: inline-block; padding: 14px 32px; background-color: #0a844f; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; margin-right: 12px;">Download Receipt (PDF)</a>
+                                         <a href="${eventoUrl}" style="display: inline-block; padding: 12px 30px; background: transparent; border: 2px solid #00493a; color: #00493a; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">View Event</a>`
+                                      : `<a href="${eventoUrl}" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #00493a 0%, #0a844f 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">View Event</a>`}
                                 </td>
                             </tr>
                         </table>
@@ -272,7 +280,7 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { email, nome, evento_slug, lang: rawLang } = await req.json();
+    const { email, nome, evento_slug, inscription_id, share_code, lang: rawLang } = await req.json();
     const lang: Lang = isLang(rawLang) ? rawLang : 'pt';
 
     if (!email || !nome || !evento_slug) {
@@ -294,6 +302,20 @@ serve(async (req: Request) => {
     }
     if (typeof evento_slug !== "string" || !SLUG_REGEX.test(evento_slug)) {
       return new Response(JSON.stringify({ error: "Slug inválido" }), { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } });
+    }
+
+    // Link opcional de download do comprovativo PDF (id + share_code).
+    // Ambos têm de vir juntos e com formato válido — senão o link é
+    // simplesmente omitido do email (o PDF continua acessível pela página
+    // de sucesso e pelo admin). SHARE_CODE_RE = hex 32 (16 bytes, migração 253).
+    const SHARE_CODE_RE = /^[0-9a-f]{32}$/i;
+    const ID_RE = /^\d{1,18}$/;
+    let pdfUrl: string | undefined;
+    if (
+      typeof inscription_id === "string" && ID_RE.test(inscription_id) &&
+      typeof share_code === "string" && SHARE_CODE_RE.test(share_code)
+    ) {
+      pdfUrl = `${SITE_URL}/api/comprovativo/${inscription_id}/pdf?code=${share_code}&lang=${lang}`;
     }
 
     // Defesa em profundidade: limite por destinatário (3/hora)
@@ -334,6 +356,7 @@ serve(async (req: Request) => {
           new Date().toISOString(),
           evento_slug,
           unsubscribeUrl,
+          pdfUrl,
         )
       : getInscriptionEmailTemplate(
           nome,
@@ -341,6 +364,7 @@ serve(async (req: Request) => {
           new Date().toISOString(),
           evento_slug,
           unsubscribeUrl,
+          pdfUrl,
         );
 
     // Subject com acentos: Brevo trata UTF-8 nos headers sem os codificar
