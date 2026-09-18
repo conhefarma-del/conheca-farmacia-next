@@ -20,7 +20,9 @@ export async function generateMetadata({ params }) {
 export default async function PrivacyPage({ params }) {
   const { lang } = await params
   const safeLang = SUPPORTED_LANGS.includes(lang) ? lang : DEFAULT_LANG
-  const sections = await getPublicPrivacyData()
+  const { sections, lastUpdated } = await getPublicPrivacyData()
 
-  return <PrivacyPageClient lang={safeLang} sections={sections} />
+  return (
+    <PrivacyPageClient lang={safeLang} sections={sections} lastUpdated={lastUpdated} />
+  )
 }

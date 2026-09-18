@@ -350,15 +350,17 @@ export default function AdminSidebar({ lang, user, onLogout }) {
             )
           })}
 
-          {/* Conteúdo Legal → submenu: FAQ, Política de Privacidade */}
+          {/* Conteúdo Legal → submenu: FAQ, Política de Privacidade, Termos */}
           {(() => {
             const faqHref = `/${lang}/admin/conteudo-legal/faq`
             const politicaHref = `/${lang}/admin/conteudo-legal/politica-privacidade`
+            const termosHref = `/${lang}/admin/conteudo-legal/termos`
             const faqActive = isActive(faqHref)
             const politicaActive = isActive(politicaHref)
+            const termosActive = isActive(termosHref)
             return (
               <div
-                className={`admin-nav-group${conteudoLegalOpen ? ' is-open' : ''}${faqActive || politicaActive ? ' has-active' : ''}`}
+                className={`admin-nav-group${conteudoLegalOpen ? ' is-open' : ''}${faqActive || politicaActive || termosActive ? ' has-active' : ''}`}
                 onMouseEnter={canHover ? () => setConteudoLegalOpen(true) : undefined}
                 onMouseLeave={canHover ? () => setConteudoLegalOpen(false) : undefined}
               >
@@ -384,6 +386,9 @@ export default function AdminSidebar({ lang, user, onLogout }) {
                     </Link>
                     <Link href={politicaHref} className={politicaActive ? 'active' : ''}>
                       <Shield size={16} /> Política de Privacidade
+                    </Link>
+                    <Link href={termosHref} className={termosActive ? 'active' : ''}>
+                      <FileText size={16} /> Termos de Utilização
                     </Link>
                   </div>
                 )}

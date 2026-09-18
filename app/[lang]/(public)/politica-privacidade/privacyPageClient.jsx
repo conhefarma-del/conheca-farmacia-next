@@ -5,7 +5,7 @@ import { LangContext } from '@/lib/contexts'
 import PrivacyTOC from '@/components/privacy/PrivacyTOC'
 import PrivacyContent from '@/components/privacy/PrivacyContent'
 
-export default function PrivacyPageClient({ lang, sections }) {
+export default function PrivacyPageClient({ lang, sections, lastUpdated }) {
   const { t } = useContext(LangContext)
 
   return (
@@ -32,7 +32,7 @@ export default function PrivacyPageClient({ lang, sections }) {
               <PrivacyTOC sections={sections} lang={lang} t={t} />
             </aside>
             <div className="privacy-layout-content">
-              <PrivacyContent sections={sections} lang={lang} t={t} />
+              <PrivacyContent sections={sections} lang={lang} t={t} lastUpdated={lastUpdated} />
             </div>
           </div>
         </div>

@@ -2,11 +2,29 @@
 
 import PendingBadge from '@/components/ui/PendingBadge'
 
-export default function PrivacyContent({ sections, lang, t }) {
+/**
+ * Formata ISO string como dd/mm/aaaa (fuso de Lisboa/Angola, UTC+0/+1).
+ * Server-safe: sem Intl por defeito no bundle client — split directo.
+ */
+function formatDatePT(iso) {
+  if (!iso) return null
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return null
+  const dd = String(d.getUTCDate()).padStart(2, '0')
+  const mm = String(d.getUTCMonth() + 1).padStart(2, '0')
+  const yyyy = d.getUTCFullYear()
+  return `${dd}/${mm}/${yyyy}`
+}
+
+export default function PrivacyContent({ sections, lang, t, lastUpdated }) {
+  const formattedDate = formatDatePT(lastUpdated)
   return (
     <div className="privacy-content prose prose-lg prose-muted dark:prose-invert max-w-3xl">
       <p className="text-sm text-muted-foreground mb-8">
-        <em>{t('privacy_page.last_updated')}: [DD/MM/AAAA]</em>
+        <em>
+          {t('privacy_page.last_updated')}
+          {formattedDate ? `: ${formattedDate}` : ''}
+        </em>
       </p>
 
       {sections.map((section) => (

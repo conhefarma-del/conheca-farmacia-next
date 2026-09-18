@@ -20,7 +20,9 @@ export async function generateMetadata({ params }) {
 export default async function TermosPage({ params }) {
   const { lang } = await params
   const safeLang = SUPPORTED_LANGS.includes(lang) ? lang : DEFAULT_LANG
-  const sections = await getPublicTermsData()
+  const { sections, lastUpdated } = await getPublicTermsData()
 
-  return <TermosPageClient lang={safeLang} sections={sections} />
+  return (
+    <TermosPageClient lang={safeLang} sections={sections} lastUpdated={lastUpdated} />
+  )
 }
