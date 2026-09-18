@@ -240,6 +240,9 @@ export default function PrivacyAdminPage({ lang, initialSections, currentUserRol
           </button>
         </div>
         <div className="admin-card-body">
+          {/* Wrapper com scroll horizontal: em mobile a tabela é mais larga que
+              o container e sem overflow-x transbordaria a página (overflow). */}
+          <div className="admin-table-wrapper">
           <table className="admin-table">
             <thead>
               <tr>
@@ -268,6 +271,7 @@ export default function PrivacyAdminPage({ lang, initialSections, currentUserRol
               )}
             </tbody>
           </table>
+          </div>
         </div>
       </div>
 
@@ -888,6 +892,26 @@ export default function PrivacyAdminPage({ lang, initialSections, currentUserRol
         }
         .admin-privacy .admin-table-row-child td {
           font-size: 13px;
+        }
+        /* Mobile: ações sem wrap (crescem em coluna) e células com quebra
+           controlada — a tabela inteira rola horizontalmente no wrapper. */
+        @media (max-width: 768px) {
+          .admin-privacy .admin-table-wrapper {
+            border: none;
+            border-radius: 12px;
+          }
+          .admin-privacy .admin-table-actions {
+            flex-wrap: nowrap;
+            flex-direction: column;
+            align-items: stretch;
+          }
+          .admin-privacy .admin-table-actions .admin-btn-sm {
+            justify-content: center;
+          }
+          .admin-privacy .admin-table td {
+            white-space: normal;
+            word-break: break-word;
+          }
         }
       `}</style>
     </div>
