@@ -256,7 +256,7 @@ export default function ComprovativoSatori({
           >
             {eventDate && <div>{eventDate}</div>}
             {eventLocation && <div>{eventLocation}</div>}
-            {modalityLabel && <div>• {modalityLabel}</div>}
+            {modalityLabel && <div>{`• ${modalityLabel}`}</div>}
           </div>
         </div>
 
@@ -307,7 +307,7 @@ export default function ComprovativoSatori({
           }}
         >
           <div>
-            {lang === 'pt' ? 'Emitido em' : 'Issued on'} {inscriptionDate}
+            {`${lang === 'pt' ? 'Emitido em' : 'Issued on'} ${inscriptionDate || ''}`}
           </div>
           <div>conhecafarmacia.com</div>
         </div>
