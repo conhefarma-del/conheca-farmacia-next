@@ -97,7 +97,7 @@ export default function MobileDrawer({ lang, t, open, onClose }) {
         </button>
 
         <div className="drawer-logo">
-          <Image src="/logo/3.png" alt="Conheça Farmácia" width={120} height={40} />
+          <Image src="/logo/logo-principal-branco.svg" alt="Conheça Farmácia" width={120} height={40} />
         </div>
 
         <ul className="drawer-links">
@@ -157,7 +157,10 @@ export default function MobileDrawer({ lang, t, open, onClose }) {
           ) : (
             <>{/* Login/register hidden */}</>
           )}
-          <ThemeToggle className="drawer-theme-toggle" />
+          <div className="drawer-footer-row">
+            <span className="drawer-brand-mini">Conheça Farmácia</span>
+            <ThemeToggle className="drawer-theme-toggle" />
+          </div>
         </div>
       </div>
     </>
