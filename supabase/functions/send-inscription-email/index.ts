@@ -308,14 +308,18 @@ serve(async (req: Request) => {
     // Ambos têm de vir juntos e com formato válido — senão o link é
     // simplesmente omitido do email (o PDF continua acessível pela página
     // de sucesso e pelo admin). SHARE_CODE_RE = hex 32 (16 bytes, migração 253).
+    // inscription_id aceita string OU número (normalizado) — callers antigos
+    // podem enviar int8 como número; em qualquer falha de formato o link é
+    // omitido, nunca quebra o envio do email.
     const SHARE_CODE_RE = /^[0-9a-f]{32}$/i;
     const ID_RE = /^\d{1,18}$/;
+    const idStr = typeof inscription_id === "number" ? String(inscription_id) : inscription_id;
     let pdfUrl: string | undefined;
     if (
-      typeof inscription_id === "string" && ID_RE.test(inscription_id) &&
+      typeof idStr === "string" && ID_RE.test(idStr) &&
       typeof share_code === "string" && SHARE_CODE_RE.test(share_code)
     ) {
-      pdfUrl = `${SITE_URL}/api/comprovativo/${inscription_id}/pdf?code=${share_code}&lang=${lang}`;
+      pdfUrl = `${SITE_URL}/api/comprovativo/${idStr}/pdf?code=${share_code}&lang=${lang}`;
     }
 
     // Defesa em profundidade: limite por destinatário (3/hora)
