@@ -177,3 +177,35 @@ WHERE (di.drug_a_id = i.duplicado_id OR di.drug_b_id = i.duplicado_id)
 
 **Regra:** condição derivada da linha-alvo → inline no `SET`/`WHERE`; só metadados
 independentes (temp tables, CTEs) na cláusula `FROM`.
+
+---
+
+## ERRO 7: REMAPEAMENTO QUE VIOLA O UNIQUE ANTES DE RESOLVER COLISÕES (2026-09-29)
+
+**O que acontece:** `ERROR: 23505 duplicate key value violates unique constraint
+"drug_interactions_pair_unique"` ao aplicar o UPDATE de remapeamento.
+
+**Causa:** na migração 254, o passo de remapear `drug_a_id/drug_b_id` do duplicado
+para o sobrevivente corria ANTES do passo que arquivava as linhas em conflito.
+O `UNIQUE (drug_a_id, drug_b_id)` dispara **durante o próprio UPDATE** —
+quando a primeira linha remapeada colide com uma linha pré-existente do
+sobrevivente, a migração falha (e a transação revierte).
+
+**Correção (ordem certa de operações):**
+```sql
+-- 4A: snapshot das linhas a mover (temp table com par normalizado LEAST/GREATEST)
+CREATE TEMP TABLE _move AS SELECT di.id AS linha_id, ... FROM ... WHERE is_archived = false;
+
+-- 4B: resolver colisões ARQUIVANDO perdedoras (sem tocar em drug_a_id/drug_b_id)
+--     4B.1 arquiva a linha do duplicado se a do sobrevivente for >= severidade
+--     4B.2 arquiva a do sobrevivente se a do duplicado for >
+
+-- 4C: só agora remapear, com guarda NOT EXISTS contra colisões remanescentes
+UPDATE ... SET drug_a_id = CASE ... WHERE ... AND NOT EXISTS (SELECT 1 ... mesmo par ...);
+```
+
+**Regras:**
+- Numa tabela com UNIQUE natural (par, slug, etc.), **nunca** remapear a chave
+  antes de remover/arquivar os conflitos — o constraint avalia-se linha a linha.
+- Usar `LEAST/GREATEST` para comparar pares independentemente da orientação.
+- A guarda `NOT EXISTS` no UPDATE final dá idempotência (reaplicar = 0 mudanças).

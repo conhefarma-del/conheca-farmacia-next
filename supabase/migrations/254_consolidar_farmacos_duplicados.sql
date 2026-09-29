@@ -37,13 +37,16 @@ UPDATE _m254_t SET t2 = t1 + interval '1 second';
 
 -- ---------------------------------------------------------------------
 -- 1. IDs dos duplicados e sobreviventes (por slug, estável entre BDs)
+--    Formato longo: uma linha por par duplicado → sobrevivente
 -- ---------------------------------------------------------------------
 CREATE TEMP TABLE _m254_ids AS
-SELECT
-  (SELECT id FROM public.drugs WHERE slug = 'losartano')                    AS losartano_id,
-  (SELECT id FROM public.drugs WHERE slug = 'losartana')                    AS losartana_id,
-  (SELECT id FROM public.drugs WHERE slug = 'sulfametoxazol-trimetoprima')  AS sulfametoxazol_id,
-  (SELECT id FROM public.drugs WHERE slug = 'cotrimoxazol')                 AS cotrimoxazol_id;
+SELECT d.id AS duplicado_id, s.id AS sobrevivente_id
+FROM (VALUES
+  ('losartano',                   'losartana'),
+  ('sulfametoxazol-trimetoprima', 'cotrimoxazol')
+) AS v(slug_dup, slug_sob)
+JOIN public.drugs d ON d.slug = v.slug_dup
+JOIN public.drugs s ON s.slug = v.slug_sob;
 
 -- ---------------------------------------------------------------------
 -- 2. Arquivar perfis e farmacologia dos duplicados
@@ -54,7 +57,7 @@ SET is_archived = true,
     archived_at = (SELECT t1 FROM _m254_t),
     updated_at  = now()
 FROM _m254_ids i
-WHERE (dp.drug_id = i.losartano_id OR dp.drug_id = i.sulfametoxazol_id)
+WHERE dp.drug_id = i.duplicado_id
   AND dp.is_archived = false;
 
 UPDATE public.drug_pharmacology ph
@@ -62,135 +65,104 @@ SET is_archived = true,
     archived_at = (SELECT t1 FROM _m254_t),
     updated_at  = now()
 FROM _m254_ids i
-WHERE (ph.drug_id = i.losartano_id OR ph.drug_id = i.sulfametoxazol_id)
+WHERE ph.drug_id = i.duplicado_id
   AND ph.is_archived = false;
 
 -- ---------------------------------------------------------------------
 -- 3. Remapear drug_target_roles dos duplicados → sobreviventes
 -- ---------------------------------------------------------------------
 INSERT INTO public.drug_target_roles (drug_id, target_id, role, is_archived, created_at)
-SELECT i.losartana_id, dtr.target_id, dtr.role, false, now()
+SELECT i.sobrevivente_id, dtr.target_id, dtr.role, false, now()
 FROM public.drug_target_roles dtr
 CROSS JOIN _m254_ids i
-WHERE dtr.drug_id = i.losartano_id
-ON CONFLICT (drug_id, target_id, role) DO NOTHING;
-
-INSERT INTO public.drug_target_roles (drug_id, target_id, role, is_archived, created_at)
-SELECT i.cotrimoxazol_id, dtr.target_id, dtr.role, false, now()
-FROM public.drug_target_roles dtr
-CROSS JOIN _m254_ids i
-WHERE dtr.drug_id = i.sulfametoxazol_id
+WHERE dtr.drug_id = i.duplicado_id
 ON CONFLICT (drug_id, target_id, role) DO NOTHING;
 
 -- Arquivar as roles antigas (depois do INSERT, para o SELECT apanhar tudo)
 UPDATE public.drug_target_roles dtr
 SET is_archived = true
 FROM _m254_ids i
-WHERE (dtr.drug_id = i.losartano_id OR dtr.drug_id = i.sulfametoxazol_id)
+WHERE dtr.drug_id = i.duplicado_id
   AND dtr.is_archived = false;
 
 -- ---------------------------------------------------------------------
 -- 4. Remapear drug_interactions dos duplicados → sobreviventes
---    Passo A: normalizar a orientação (drug_a_id < drug_b_id)
---    Passo B: inserir no sobrevivente; colisões de par resolvidas pela
---             severidade maior; linhas perdedoras → is_archived.
+--    ORDEM CORRETA (ERRO 7 do docs/ERROS_RECORRENTES_MIGRACOES.md):
+--    o UNIQUE (drug_a_id, drug_b_id) dispara DURANTE o UPDATE de
+--    remapeamento, logo as colisões têm de ser resolvidas ANTES:
+--      4A: snapshot das linhas do duplicado com o seu par normalizado
+--      4B: resolver colisões (severidade maior ganha, desempate =
+--          sobrevivente) ARQUIVANDO perdedoras — sem tocar nos pares
+--      4C: só então remapear as restantes, com guarda NOT EXISTS
 -- ---------------------------------------------------------------------
-
--- 4A. Losartano → Losartana
--- (CASE inline no SET: a tabela-alvo do UPDATE não pode ser referenciada
---  num JOIN LATERAL da cláusula FROM — ver docs/ERROS_RECORRENTES_MIGRACOES.md,
---  ERRO 6)
-UPDATE public.drug_interactions di
-SET drug_a_id = i.losartana_id,
-    drug_b_id = CASE WHEN di.drug_a_id = i.losartano_id THEN di.drug_b_id ELSE di.drug_a_id END,
-    updated_at = now()
-FROM _m254_ids i
-WHERE (di.drug_a_id = i.losartano_id OR di.drug_b_id = i.losartano_id)
-  AND di.drug_a_id > di.drug_b_id;
-
-UPDATE public.drug_interactions di
-SET drug_a_id = i.losartana_id,
-    drug_b_id = CASE WHEN di.drug_a_id = i.losartano_id THEN di.drug_b_id ELSE di.drug_a_id END,
-    updated_at = now()
-FROM _m254_ids i
-WHERE (di.drug_a_id = i.losartano_id OR di.drug_b_id = i.losartano_id)
-  AND CASE WHEN di.drug_a_id = i.losartano_id THEN di.drug_b_id ELSE di.drug_a_id END > i.losartana_id;
-
--- 4A. Sulfametoxazol → Cotrimoxazol (mesmo padrão CASE inline)
-UPDATE public.drug_interactions di
-SET drug_a_id = i.cotrimoxazol_id,
-    drug_b_id = CASE WHEN di.drug_a_id = i.sulfametoxazol_id THEN di.drug_b_id ELSE di.drug_a_id END,
-    updated_at = now()
-FROM _m254_ids i
-WHERE (di.drug_a_id = i.sulfametoxazol_id OR di.drug_b_id = i.sulfametoxazol_id)
-  AND di.drug_a_id > di.drug_b_id;
-
-UPDATE public.drug_interactions di
-SET drug_a_id = i.cotrimoxazol_id,
-    drug_b_id = CASE WHEN di.drug_a_id = i.sulfametoxazol_id THEN di.drug_b_id ELSE di.drug_a_id END,
-    updated_at = now()
-FROM _m254_ids i
-WHERE (di.drug_a_id = i.sulfametoxazol_id OR di.drug_b_id = i.sulfametoxazol_id)
-  AND CASE WHEN di.drug_a_id = i.sulfametoxazol_id THEN di.drug_b_id ELSE di.drug_a_id END > i.cotrimoxazol_id;
-
--- 4B. Colisões de par no sobrevivente: severidade maior ganha
---     ranking: critical=4 > moderate=3 > minor=2 > none=1
 CREATE TEMP TABLE _m254_rank AS
 SELECT v.sev, v.rk FROM (VALUES
   ('critical', 4), ('moderate', 3), ('minor', 2), ('none', 1)
 ) AS v(sev, rk);
 
--- 4B.1 Losartana: arquiva as linhas remapeadas que perderem
+-- Pares a processar (duplicado → sobrevivente), com severidade e par normalizado
+CREATE TEMP TABLE _m254_move AS
+SELECT di.id AS linha_id,
+       i.sobrevivente_id,
+       i.duplicado_id,
+       LEAST(di.drug_a_id, di.drug_b_id)  AS par_a,
+       GREATEST(di.drug_a_id, di.drug_b_id) AS par_b,
+       di.severity
+FROM public.drug_interactions di
+JOIN _m254_ids i
+  ON di.drug_a_id = i.duplicado_id OR di.drug_b_id = i.duplicado_id
+WHERE di.is_archived = false;
+
+-- 4B. Colisões: para cada par destino que já existe no sobrevivente,
+--     decide por severidade qual linha sobrevive (desempate: sobrevivente)
+--     4B.1 arquiva a linha DO DUPLICADO quando a do sobrevivente é >=
 UPDATE public.drug_interactions di
 SET is_archived = true, updated_at = now()
-FROM _m254_ids i
+FROM _m254_move t
 JOIN public.drug_interactions keep
-  ON keep.drug_a_id = i.losartana_id AND keep.drug_b_id = di.drug_b_id
-WHERE di.drug_a_id = i.losartana_id
-  AND di.is_archived = false
-  AND keep.is_archived = false
-  AND keep.id <> di.id
+  ON keep.id <> t.linha_id
+ AND keep.is_archived = false
+ AND LEAST(keep.drug_a_id, keep.drug_b_id)  = t.par_a
+ AND GREATEST(keep.drug_a_id, keep.drug_b_id) = t.par_b
+WHERE di.id = t.linha_id
   AND (SELECT rk FROM _m254_rank WHERE sev = keep.severity)
-    >= (SELECT rk FROM _m254_rank WHERE sev = di.severity);
+    >= (SELECT rk FROM _m254_rank WHERE sev = t.severity);
 
--- 4B.2 Cotrimoxazol: idem
+--     4B.2 arquiva a linha DO SOBREVIVENTE quando a do duplicado é >
+--     (só corre se a 4B.1 não arquivou já esta linha do duplicado)
+UPDATE public.drug_interactions keep
+SET is_archived = true, updated_at = now()
+FROM _m254_move t
+JOIN public.drug_interactions dup
+  ON dup.id = t.linha_id
+WHERE keep.id <> t.linha_id
+  AND keep.is_archived = false
+  AND dup.is_archived = false
+  AND LEAST(keep.drug_a_id, keep.drug_b_id)  = t.par_a
+  AND GREATEST(keep.drug_a_id, keep.drug_b_id) = t.par_b
+  AND (SELECT rk FROM _m254_rank WHERE sev = t.severity)
+    > (SELECT rk FROM _m254_rank WHERE sev = keep.severity);
+
+-- 4C. Remapear as linhas remanescentes do duplicado (não arquivadas, sem
+--     colisão viva no sobrevivente) — a guarda NOT EXISTS dá idempotência
 UPDATE public.drug_interactions di
-SET is_archived = true, updated_at = now()
-FROM _m254_ids i
-JOIN public.drug_interactions keep
-  ON keep.drug_a_id = i.cotrimoxazol_id AND keep.drug_b_id = di.drug_b_id
-WHERE di.drug_a_id = i.cotrimoxazol_id
+SET drug_a_id = CASE WHEN di.drug_a_id = m.duplicado_id THEN m.sobrevivente_id ELSE di.drug_a_id END,
+    drug_b_id = CASE WHEN di.drug_b_id = m.duplicado_id THEN m.sobrevivente_id ELSE di.drug_b_id END,
+    updated_at = now()
+FROM _m254_ids m
+WHERE (di.drug_a_id = m.duplicado_id OR di.drug_b_id = m.duplicado_id)
   AND di.is_archived = false
-  AND keep.is_archived = false
-  AND keep.id <> di.id
-  AND (SELECT rk FROM _m254_rank WHERE sev = keep.severity)
-    >= (SELECT rk FROM _m254_rank WHERE sev = di.severity);
-
--- 4B.3 Se a linha remapeada GANHOU (severidade maior), é ela que fica:
---     arquiva a linha pré-existente do sobrevivente
-UPDATE public.drug_interactions keep
-SET is_archived = true, updated_at = now()
-FROM _m254_ids i
-JOIN public.drug_interactions di
-  ON di.drug_a_id = i.losartana_id AND di.drug_b_id = keep.drug_b_id
-WHERE keep.drug_a_id = i.losartana_id
-  AND keep.is_archived = false
-  AND di.is_archived = false
-  AND keep.id <> di.id
-  AND (SELECT rk FROM _m254_rank WHERE sev = di.severity)
-    > (SELECT rk FROM _m254_rank WHERE sev = keep.severity);
-
-UPDATE public.drug_interactions keep
-SET is_archived = true, updated_at = now()
-FROM _m254_ids i
-JOIN public.drug_interactions di
-  ON di.drug_a_id = i.cotrimoxazol_id AND di.drug_b_id = keep.drug_b_id
-WHERE keep.drug_a_id = i.cotrimoxazol_id
-  AND keep.is_archived = false
-  AND di.is_archived = false
-  AND keep.id <> di.id
-  AND (SELECT rk FROM _m254_rank WHERE sev = di.severity)
-    > (SELECT rk FROM _m254_rank WHERE sev = keep.severity);
+  AND NOT EXISTS (
+    SELECT 1 FROM public.drug_interactions x
+    WHERE x.id <> di.id
+      AND x.is_archived = false
+      AND LEAST(x.drug_a_id, x.drug_b_id) = LEAST(
+            CASE WHEN di.drug_a_id = m.duplicado_id THEN m.sobrevivente_id ELSE di.drug_a_id END,
+            CASE WHEN di.drug_b_id = m.duplicado_id THEN m.sobrevivente_id ELSE di.drug_b_id END)
+      AND GREATEST(x.drug_a_id, x.drug_b_id) = GREATEST(
+            CASE WHEN di.drug_a_id = m.duplicado_id THEN m.sobrevivente_id ELSE di.drug_a_id END,
+            CASE WHEN di.drug_b_id = m.duplicado_id THEN m.sobrevivente_id ELSE di.drug_b_id END)
+  );
 
 -- ---------------------------------------------------------------------
 -- 5. Arquivar os fármacos duplicados (soft-delete, padrão do projeto)
@@ -201,7 +173,7 @@ SET is_archived = true,
     archived_by = NULL,            -- migração sistema
     updated_at  = now()
 FROM _m254_ids i
-WHERE (d.id = i.losartano_id OR d.id = i.sulfametoxazol_id)
+WHERE d.id = i.duplicado_id
   AND d.is_archived = false;
 
 -- ---------------------------------------------------------------------
