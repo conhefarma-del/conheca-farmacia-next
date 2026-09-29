@@ -97,42 +97,41 @@ WHERE (dtr.drug_id = i.losartano_id OR dtr.drug_id = i.sulfametoxazol_id)
 -- ---------------------------------------------------------------------
 
 -- 4A. Losartano → Losartana
+-- (CASE inline no SET: a tabela-alvo do UPDATE não pode ser referenciada
+--  num JOIN LATERAL da cláusula FROM — ver docs/ERROS_RECORRENTES_MIGRACOES.md,
+--  ERRO 6)
 UPDATE public.drug_interactions di
-SET drug_a_id = i.losartana_id, drug_b_id = d.other_id, updated_at = now()
+SET drug_a_id = i.losartana_id,
+    drug_b_id = CASE WHEN di.drug_a_id = i.losartano_id THEN di.drug_b_id ELSE di.drug_a_id END,
+    updated_at = now()
 FROM _m254_ids i
-JOIN LATERAL (
-  SELECT CASE WHEN di.drug_a_id = i.losartano_id THEN di.drug_b_id ELSE di.drug_a_id END AS other_id
-) d ON true
 WHERE (di.drug_a_id = i.losartano_id OR di.drug_b_id = i.losartano_id)
   AND di.drug_a_id > di.drug_b_id;
 
 UPDATE public.drug_interactions di
-SET drug_a_id = i.losartana_id, drug_b_id = d.other_id, updated_at = now()
+SET drug_a_id = i.losartana_id,
+    drug_b_id = CASE WHEN di.drug_a_id = i.losartano_id THEN di.drug_b_id ELSE di.drug_a_id END,
+    updated_at = now()
 FROM _m254_ids i
-JOIN LATERAL (
-  SELECT CASE WHEN di.drug_a_id = i.losartano_id THEN di.drug_b_id ELSE di.drug_a_id END AS other_id
-) d ON true
 WHERE (di.drug_a_id = i.losartano_id OR di.drug_b_id = i.losartano_id)
-  AND d.other_id > i.losartana_id;
+  AND CASE WHEN di.drug_a_id = i.losartano_id THEN di.drug_b_id ELSE di.drug_a_id END > i.losartana_id;
 
--- 4A. Sulfametoxazol → Cotrimoxazol
+-- 4A. Sulfametoxazol → Cotrimoxazol (mesmo padrão CASE inline)
 UPDATE public.drug_interactions di
-SET drug_a_id = i.cotrimoxazol_id, drug_b_id = d.other_id, updated_at = now()
+SET drug_a_id = i.cotrimoxazol_id,
+    drug_b_id = CASE WHEN di.drug_a_id = i.sulfametoxazol_id THEN di.drug_b_id ELSE di.drug_a_id END,
+    updated_at = now()
 FROM _m254_ids i
-JOIN LATERAL (
-  SELECT CASE WHEN di.drug_a_id = i.sulfametoxazol_id THEN di.drug_b_id ELSE di.drug_a_id END AS other_id
-) d ON true
 WHERE (di.drug_a_id = i.sulfametoxazol_id OR di.drug_b_id = i.sulfametoxazol_id)
   AND di.drug_a_id > di.drug_b_id;
 
 UPDATE public.drug_interactions di
-SET drug_a_id = i.cotrimoxazol_id, drug_b_id = d.other_id, updated_at = now()
+SET drug_a_id = i.cotrimoxazol_id,
+    drug_b_id = CASE WHEN di.drug_a_id = i.sulfametoxazol_id THEN di.drug_b_id ELSE di.drug_a_id END,
+    updated_at = now()
 FROM _m254_ids i
-JOIN LATERAL (
-  SELECT CASE WHEN di.drug_a_id = i.sulfametoxazol_id THEN di.drug_b_id ELSE di.drug_a_id END AS other_id
-) d ON true
 WHERE (di.drug_a_id = i.sulfametoxazol_id OR di.drug_b_id = i.sulfametoxazol_id)
-  AND d.other_id > i.cotrimoxazol_id;
+  AND CASE WHEN di.drug_a_id = i.sulfametoxazol_id THEN di.drug_b_id ELSE di.drug_a_id END > i.cotrimoxazol_id;
 
 -- 4B. Colisões de par no sobrevivente: severidade maior ganha
 --     ranking: critical=4 > moderate=3 > minor=2 > none=1

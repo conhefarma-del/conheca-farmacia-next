@@ -143,3 +143,37 @@ Antes de escrever QUALQUER INSERT:
 - [ ] Verificar `pregnancy_category` = `'contraindicated'`, `'caution'`, `'compatible'`, `'no_data'`
 - [ ] **DEPOIS de escrever**: correr script de validação de ordem canónica contra UUIDs reais na BD (não apenas fixos)
 - [ ] **Incluir red_flags_pt e red_flags_en** em TODOS os tuples drug_interactions (mesmo que vazios '')
+- [ ] Em `UPDATE ... FROM`, a tabela-alvo não pode aparecer num JOIN LATERAL da cláusula FROM (ver ERRO 6)
+
+---
+
+## ERRO 6: REFERÊNCIA À TABELA-ALVO DENTRO DE JOIN LATERAL DO UPDATE (2026-09-29)
+
+**O que acontece:** `ERROR: 42P10 invalid reference to FROM-clause entry for table "di"` ao aplicar o UPDATE.
+
+**Causa:** Numa migração de merge (254) usei:
+```sql
+UPDATE public.drug_interactions di
+SET drug_a_id = ..., drug_b_id = d.other_id
+FROM _m254_ids i
+JOIN LATERAL (
+  SELECT CASE WHEN di.drug_a_id = ... THEN ... END AS other_id  -- ❌ "di" aqui
+) d ON true
+WHERE ...
+```
+O Postgres **não permite referenciar a tabela-alvo do UPDATE** (`di`) dentro de
+subqueries/JOINs da cláusula `FROM` — só nas cláusulas `SET` e `WHERE`.
+
+**Correção (padrão CASE inline):**
+```sql
+UPDATE public.drug_interactions di
+SET drug_a_id = i.sobrevivente_id,
+    drug_b_id = CASE WHEN di.drug_a_id = i.duplicado_id THEN di.drug_b_id ELSE di.drug_a_id END,
+    updated_at = now()
+FROM _ids i
+WHERE (di.drug_a_id = i.duplicado_id OR di.drug_b_id = i.duplicado_id)
+  AND CASE WHEN di.drug_a_id = i.duplicado_id THEN di.drug_b_id ELSE di.drug_a_id END > i.sobrevivente_id;
+```
+
+**Regra:** condição derivada da linha-alvo → inline no `SET`/`WHERE`; só metadados
+independentes (temp tables, CTEs) na cláusula `FROM`.
