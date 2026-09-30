@@ -1295,12 +1295,14 @@ pendente em todos.**
    metilergometrina, warfarina-adjacentes (heparina), antiepilépticos do
    Lote 1/2 (carbamazepina, fenitoína), retinol (teratogénico em dose alta),
    griseofulvina, testosterona (virilização fetal), ciproterona.
-4. **Fármaco-alimento dos fármacos antigos** — lítio × cafeína (l. 7186 do
-   Prontuário), levodopa × proteínas, sinvastatina × sumo de toranja
-   (Prontuário l. 45417, citação textual "aumento da biodisponibilidade da
-   sinvastatina pelo sumo de toranja, uma interacção que envolve a
-   glicoproteína-P") — a cobertura da secção 18.6 dizia 226/226 mas os
-   fármacos antigos merecem revisão de pares críticos em falta.
+4. **Fármaco-alimento dos fármacos antigos** — ✅ FECHADO pela migração
+   281 (42 entradas para 46 fármacos antigos sem cobertura: 23 pares
+   clínicos — álcool × BDZ/antidepressivos/antipsicóticos/antiepilépticos,
+   zolpidem critical, IECA/ARA × potássio alimentar, acarbose, cefpodoxima,
+   rosuvastatina — mais 19 `sem_interacao_alimentar`). Os exemplos
+   solicitados (lítio × cafeína, levodopa × proteínas, sinvastatina ×
+   toranja) já constavam da cobertura 18.6 — verificado antes de escrever.
+   Naloxona excluída por via IM/IN/IV.
 
 ### 19.4 Método de auditoria (reprodutível)
 
