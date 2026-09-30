@@ -21,13 +21,15 @@
 -- =====================================================================
 
 -- ---------------------------------------------------------------------
--- 1. Formato do ATC (nível 5 ou 7: A07DA03, C01CA04, …)
+-- 1. Formato do ATC
+--    Níveis reais do ATC: letra anatómica + 2 dígitos + (1–2 LETRAS de
+--    subgrupo) + 2 DÍGITOS da substância → "J01", "C01CA04", "J01XX09".
 -- ---------------------------------------------------------------------
 ALTER TABLE public.drugs
   DROP CONSTRAINT IF EXISTS drugs_atc_code_format_chk;
 ALTER TABLE public.drugs
   ADD CONSTRAINT drugs_atc_code_format_chk
-  CHECK (atc_code IS NULL OR atc_code ~ '^[A-Z][0-9]{2}([A-Z][0-9]{2}([A-Z][0-9]{2})?)?$');
+  CHECK (atc_code IS NULL OR atc_code ~ '^[A-Z][0-9]{2}([A-Z]{1,2}[0-9]{2})?$');
 
 -- ---------------------------------------------------------------------
 -- 2. Tabela de referência: letras ATC permitidas por classe do site
