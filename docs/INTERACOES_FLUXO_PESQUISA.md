@@ -1229,6 +1229,90 @@ secção 18.3. As migrações 184/185/186 usam todas `ON CONFLICT ... DO NOTHING
 
 ---
 
+## 19. Estado de cobertura das 3 dimensões do Fluxo 2 por lote LNME (2026-10-01)
+
+Auditoria à cobertura das dimensões **doença** (`drug_disease_interactions`),
+**alimento** (`drug_food_interactions`) e **gravidez** (`drug_pregnancy_info`)
+para os 71 fármacos novos da expansão LNME (Lotes 1–4). As contagens abaixo
+foram verificadas programaticamente contra a BD de produção (service key) e
+**já incluem as migrações 275–279 aplicadas**.
+
+### 19.1 Tabela de cobertura por lote
+
+| Lote | Fármacos | Migrações de origem | Doença | Alimento | Gravidez |
+|---|---|---|---|---|---|
+| Lote 1 | 23 | 255–258 (+259 interações FF, 277 doença) | 21/23 ✅ | 0/23 ❌ | 0/23 ❌ |
+| Lote 2 | 29 | 260–263 (+267 interações FF, 278 doença) | 29/29 ✅ | 1/29 ❌ (aminofilina, via 279) | 0/29 ❌ |
+| Lote 3 | 13 | 264–266 (+271/272 FF, 275 doença, 279 alimento) | 11/13 ✅ | 11/13 ✅ | 0/13 ❌ |
+| Lote 4 | 6 | 268–270 (+272 FF, 275 doença, 279 alimento) | 6/6 ✅ | 4/6 ✅ | 0/6 ❌ |
+
+Registos totais na BD (2026-10-01): doença **697** · alimento **410** ·
+gravidez **281** (a gravidez mantém a cobertura da secção 18.6 — fármacos
+antigos pré-LNME; nenhum dos 71 novos tem registo 1:1).
+
+Nota sobre o Lote 2 na tabela: o `aminofilina` (Lote 2, migração 260) recebeu
+os seus 2 pares de alimento na 279 — migração rotulada "Lotes 3/4" mas que na
+prática cobre 15 fármacos dos Lotes 3/4 + aminofilina. A cobertura efectiva
+da dimensão alimento nos lotes novos é: Lote 1 = 0/23, Lote 2 = 1/29,
+Lote 3 = 11/13, Lote 4 = 4/6.
+
+### 19.2 Lacunas justificadas (não são pendências)
+
+Estes fármacos ficaram **intencionalmente sem pares** na dimensão indicada,
+com justificação no cabeçalho da migração correspondente (regra 9 "Lacunas
+honestas" e 13.1 do Fluxo 2):
+
+| Fármaco | Dimensão | Justificação | Migração |
+|---|---|---|---|
+| clotrimazol | doença | uso tópico/vaginal sem absorção sistémica relevante | 277 |
+| tiamina | doença | alcoolismo é a INDICAÇÃO (profilaxia de Wernicke), não interação | 277 |
+| piridoxina | doença | sem contraindicação por doença do doente (a neuropatia é efeito de dose) | 275 |
+| clomifeno | alimento | sem interação alimentar documentada no SmPC/Prontuário | 279 |
+| protamina | alimento | via IV em ambiente hospitalar — sem aplicação | 279 |
+| espectinomicina | alimento | via IM — sem aplicação | 279 |
+| permanganato-potassio | alimento | uso externo exclusivo — sem aplicação | 279 |
+
+**Cobertura efectiva (excluindo justificadas): doença 67/67 ✅ · alimento
+Lotes 3–4 15/15 ✅ · Lotes 1–2 pendentes · gravidez pendente em todos.**
+
+### 19.3 Pendências reais (próximas migrações)
+
+1. **Doença Lote 1 × tiamina?** — verificada na 277; sem pares adicionais a
+   registar. ✅ fechado.
+2. **Alimento Lotes 1–2** — cobertura real 1/52 (só aminofilina, cujos pares
+   × cafeína e × toma_em_jejum entraram na 279 apesar de o seu lote ser o 2 —
+   a migração 279 foi rotulada "Lotes 3/4" mas inclui este fármaco do Lote 2).
+   Candidatos claros: sulfato-ferroso/cálcio/vitamina-d × leite, chá e café
+   (Prontuário 8.3 — "Espaçar do chá, café, leite…"), metilprednisolona ×
+   álcool, heparina-adjacentes (sem via oral — sem aplicação), desmopressina
+   × restrição de líquidos (DailyMed DDAVP — regra dos 1.º h sem água).
+3. **Gravidez (todos os Lotes 1–4, 0/71)** — a maior lacuna. A tabela
+   `drug_pregnancy_info` é 1:1 (`pregnancy_category`, `risk_pt/en`,
+   `trimester_pt/en`, `lactation_pt/en`, `contraception_pt/en`), o que exige
+   trabalho autoral completo por fármaco (não pares). Fontes: Prontuário
+   Anexo 1 (gravidez), EMC-UK SmPC 4.6, DailyMed. Priorizar: misoprostol,
+   metilergometrina, warfarina-adjacentes (heparina), antiepilépticos do
+   Lote 1/2 (carbamazepina, fenitoína), retinol (teratogénico em dose alta),
+   griseofulvina, testosterona (virilização fetal), ciproterona.
+4. **Fármaco-alimento dos fármacos antigos** — lítio × cafeína (l. 7186 do
+   Prontuário), levodopa × proteínas, sinvastatina × sumo de toranja
+   (Prontuário l. 45417, citação textual "aumento da biodisponibilidade da
+   sinvastatina pelo sumo de toranja, uma interacção que envolve a
+   glicoproteína-P") — a cobertura da secção 18.6 dizia 226/226 mas os
+   fármacos antigos merecem revisão de pares críticos em falta.
+
+### 19.4 Método de auditoria (reprodutível)
+
+O script de verificação (adaptável): carrega os slugs de cada lote, resolve os
+IDs via `drugs`, e testa a existência de registos por dimensão em
+`drug_disease_interactions` / `drug_food_interactions` / `drug_pregnancy_info`.
+O mesmo padrão foi usado para validar pares novos contra a BD antes de cada
+commit (267/271/272/275/277/278/279) — ver secção de validação em
+`docs/ERROS_RECORRENTES_MIGRACOES.md` (FLUXO DE VALIDAÇÃO ESTRUTURAL + ERRO 9
+para DDL).
+
+---
+
 ## Referências
 
 - Metodologia clínica + padrões SQL: este documento (secções 1–17).
