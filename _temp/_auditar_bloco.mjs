@@ -52,11 +52,17 @@ for (const b of blocks) {
 
 function countTopFields(chunk) {
   // chunk começa no '(' do tuple: vírgulas de topo são as de depth interna 1
+  // 2026-09-30: ignora comentários '--' (podem conter vírgulas/parênteses)
+  // e trata aspas escapadas com '' (padrão SQL), não apenas \'
+  const lines = chunk.split('\n').filter(l => !/^\s*--/.test(l)).join('\n');
   let n = 0, depth = 0, inStr = false;
-  for (let i = 0; i < chunk.length; i++) {
-    const c = chunk[i];
+  for (let i = 0; i < lines.length; i++) {
+    const c = lines[i];
     if (inStr) {
-      if (c === "'" && chunk[i - 1] !== '\\') inStr = false;
+      if (c === "'") {
+        if (lines[i + 1] === "'") { i++; continue; } // '' escapado
+        inStr = false;
+      }
       continue;
     }
     if (c === "'") { inStr = true; continue; }
