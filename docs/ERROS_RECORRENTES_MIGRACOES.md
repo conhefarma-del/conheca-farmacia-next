@@ -152,6 +152,8 @@ Antes de escrever QUALQUER INSERT:
   node _temp/_validar_267.mjs   # se for migração de interações
   ```
 - [ ] Verificar contra a BD real que os pares drug_interactions novos não existem já (ON CONFLICT protege, mas o par duplicado é ruído)
+- [ ] DDL com CHECK/trigger sobre dados existentes: testar o padrão (regex/enum/limite) contra TODAS as linhas antes de escrever (ver ERRO 9) e simular a lógica em Node contra a BD real
+- [ ] Regexes e padrões nunca se testam inline no bash — gravar script em `_temp/` e correr como ficheiro (ver ERRO 9)
 
 ---
 
@@ -297,6 +299,52 @@ node _temp/_validar_sql_basico.mjs supabase/migrations/NNN_ficheiro.sql
   precauções pertencem **exclusivamente** a `drug_profiles`.
 - Em strings `E'...'`, usar `\n` para newlines reais (não `\\n`, que grava
   barra-n literal no site) e evitar apóstrofos não-escapados dentro da string.
+
+---
+
+## ERRO 9: CONSTRAINT CHECK CRIADA SEM TESTAR O PADRÃO CONTRA OS DADOS EXISTENTES (2026-10-01)
+
+**O que acontece:** `ERROR: 23514 check constraint "drugs_atc_code_format_chk" of
+relation "drugs" is violated by some row` ao aplicar a migração — e, como o SQL
+editor corre tudo numa transação, **a migração inteira faz rollback** (nem as
+tabelas de referência nem o trigger ficam criados).
+
+**Causa (migração 276, guardas ATC):** a regex do CHECK foi escrita de cabeça,
+sem testar contra os 375 ATC reais da BD:
+
+```sql
+-- ❌ ERRADO — exige DÍGITOS nos subgrupos 3/4:
+CHECK (atc_code ~ '^[A-Z][0-9]{2}([A-Z][0-9]{2}([A-Z][0-9]{2})?)?$')
+-- viola TODOS os códigos reais: C01CA04, J01XX09, …
+
+-- ✅ CORRECTO — no ATC real, os níveis 3/4 são LETRAS e o nível 5 são 2 dígitos:
+CHECK (atc_code ~ '^[A-Z][0-9]{2}([A-Z]{1,2}[0-9]{2})?$')
+-- cobre J01 (nível 3), C01CA04 (nível 5) e J01XX09 (nível 7)
+```
+
+**Porquê é insidioso:** o teste de validação em Node correu **inline** no bash
+(`node --input-type=module -e "…"`) e o escaping do bash corrompeu a regex — o
+`\$` da âncora de fim virou literal `$`, o teste marcou "violações" falsas e
+depois, ao "corrigir", pareceu confirmar a regex errada. Só um teste em
+**ficheiro** (`_temp/_teste_atc_regex.mjs`) produziu resultados fiáveis e
+revelou o bug real (375/375 violações com a regex original; 0 com a correta).
+
+**Regras:**
+- **Nunca criar um CHECK contra uma tabela populada sem antes correr o padrão
+  (regex, tamanho, enum) contra TODAS as linhas existentes** — via service key
+  ou `SELECT count(*) FROM t WHERE NOT (condição)` num SQL editor.
+- Alternativa para tabelas grandes/arriscadas: `ADD CONSTRAINT … NOT VALID`
+  (aplica só a novas linhas) seguido de `VALIDATE CONSTRAINT` num momento
+  controlado — mas a validação prévia continua obrigatória.
+- **Regexes NUNCA se testam inline no bash** — o escaping (`\$`, `!`, aspas)
+  corrompe padrões silenciosamente. Gravar sempre um script em ficheiro:
+  ```bash
+  node _temp/_teste_atc_regex.mjs   # valida a regex EXACTA da migração vs a BD
+  ```
+- Validadores existentes (ERRO 8, secção seguinte) não cobrem CHECKs/triggers —
+  para DDL com validação de dados, criar script de simulação dedicado que
+  replique a lógica da constraint em Node contra a BD real (o padrão usado na
+  276 para simular o trigger de coerência classe↔letra antes de aplicar).
 
 ---
 
