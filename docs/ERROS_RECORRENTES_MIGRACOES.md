@@ -144,6 +144,14 @@ Antes de escrever QUALQUER INSERT:
 - [ ] **DEPOIS de escrever**: correr script de validação de ordem canónica contra UUIDs reais na BD (não apenas fixos)
 - [ ] **Incluir red_flags_pt e red_flags_en** em TODOS os tuples drug_interactions (mesmo que vazios '')
 - [ ] Em `UPDATE ... FROM`, a tabela-alvo não pode aparecer num JOIN LATERAL da cláusula FROM (ver ERRO 6)
+- [ ] Em blocos VALUES, cada tuple tem o MESMO nº de valores que os aliases do `AS v(...)` — perfis e farmacologia em migrações separadas (ver ERRO 8)
+- [ ] **VALIDAÇÃO OBRIGATÓRIA antes de commit** (ver secção "FLUXO DE VALIDAÇÃO ESTRUTURAL"):
+  ```bash
+  node _temp/_validar_sql_basico.mjs <ficheiro.sql>
+  node _temp/_auditar_bloco.mjs <ficheiro.sql>
+  node _temp/_validar_267.mjs   # se for migração de interações
+  ```
+- [ ] Verificar contra a BD real que os pares drug_interactions novos não existem já (ON CONFLICT protege, mas o par duplicado é ruído)
 
 ---
 
@@ -209,3 +217,157 @@ UPDATE ... SET drug_a_id = CASE ... WHERE ... AND NOT EXISTS (SELECT 1 ... mesmo
   antes de remover/arquivar os conflitos — o constraint avalia-se linha a linha.
 - Usar `LEAST/GREATEST` para comparar pares independentemente da orientação.
 - A guarda `NOT EXISTS` no UPDATE final dá idempotência (reaplicar = 0 mudanças).
+
+---
+
+## ERRO 8: MISTURA DE COLUNAS DE PERFIS E FARMACOLOGIA NO MESMO VALUES (2026-09-30)
+
+**O que acontece:** `ERROR: INSERT has more expressions than target columns` ao
+aplicar a migração. Numa migração com `INSERT INTO drug_profiles ... 13 colunas`,
+12 de 13 tuples tinham **17 valores** — falha latente que só aparece ao aplicar.
+
+**Causa (migração 265, Lote 3):** ao gerar os tuples, os 4 campos de
+farmacocinética (metabolismo/absorção PT-EN) que pertencem à migração de
+farmacologia (`drug_pharmacology`, colunas 266/270) ficaram intercalados nos
+tuples de perfis (`drug_profiles`, 13 colunas). O tuple ficou assim:
+
+```sql
+-- ❌ ERRADO — 17 valores para 13 colunas de drug_profiles:
+('testosterona',
+ E'Overview público PT',        -- overview_public_pt
+ E'Public overview EN',         -- overview_public_en
+ E'Overview pro PT',            -- overview_pro_pt
+ E'Overview pro EN',            -- overview_pro_en
+ E'Metabolismo PT',             -- ❌ NÃO É COLUNA de drug_profiles!
+ E'Metabolism EN',              -- ❌
+ E'Absorção PT',                -- ❌
+ E'Absorption EN',              -- ❌
+ E'Meia-vida PT',               -- ❌
+ E'Half-life EN',               -- ❌
+ E'• Indicação 1\n• Indicação 2',  -- indicações_pt
+ E'• Indication 1\n• Indication 2', -- indications_en
+ E'• Efeito 1\n• Efeito 2',        -- side_effects_pt
+ ...
+ E'Fonte PT', E'Fonte EN'),
+-- (e as colunas do AS v() continuam a declarar 13 aliases → desalinhamento total)
+
+-- ✅ CORRECTO — 13 valores: slug + 12 colunas de perfil (sem status, que
+--    entra no SELECT via literal 'published'):
+('testosterona',
+ E'Overview público PT',        -- overview_public_pt
+ E'Public overview EN',         -- overview_public_en
+ E'Overview pro PT',            -- overview_pro_pt
+ E'Overview pro EN',            -- overview_pro_en
+ E'• Indicação 1\n• Indicação 2',  -- indications_pt
+ E'• Indication 1\n• Indication 2', -- indications_en
+ E'• Efeito 1\n• Efeito 2',        -- side_effects_pt
+ E'• Side effect 1\n• Side effect 2', -- side_effects_en
+ E'• Precaução 1\n• Precaução 2',  -- precautions_pt
+ E'• Precaution 1\n• Precaution 2', -- precautions_en
+ E'Fonte PT', E'Fonte EN'),
+```
+
+**Contagem de referência (ver docs/SCHEMA_TABELAS_INTERACOES.md):**
+
+| INSERT | Colunas de tabela | + slug no VALUES | + status no SELECT |
+|--------|-------------------|------------------|--------------------|
+| `drug_profiles` | 12 (drug_id + 11) | 13 (slug + 12) | `'published'` no SELECT |
+| `drug_pharmacology` | 13 (drug_id + 12) | 14 (slug + 13) | `'published'` no SELECT |
+
+**Porquê é perigoso:** o padrão `JOIN (VALUES ...) AS v(...)` só falha no
+Postgres se o **número de valores ≠ número de aliases do `AS v(...)`**. Como o
+SELECT mapeia alias a alias, um tuple com campos extra desalinha tudo — e se o
+desalinhamento for consistente (mesmo nº de campos em todos os tuples), o
+INSERT até pode passar e gravar dados nas colunas erradas.
+
+**Prevenção (validadores, ver secção seguinte):**
+```bash
+# 1. Contar campos de topo por tuple vs aliases do AS v(...)
+node _temp/_auditar_bloco.mjs supabase/migrations/NNN_ficheiro.sql
+
+# 2. Aspas pares por linha + parênteses equilibrados fora de strings
+node _temp/_validar_sql_basico.mjs supabase/migrations/NNN_ficheiro.sql
+```
+
+**Regras:**
+- Cada migração escreve SÓ PARA A SUA TABELA: perfis → `drug_profiles`;
+  farmacologia → `drug_pharmacology`. Nunca misturar campos das duas num tuple.
+- Os campos de farmacocinética (metabolismo, absorção, meia-vida) pertencem
+  **exclusivamente** a `drug_pharmacology`; indicações, efeitos adversos e
+  precauções pertencem **exclusivamente** a `drug_profiles`.
+- Em strings `E'...'`, usar `\n` para newlines reais (não `\\n`, que grava
+  barra-n literal no site) e evitar apóstrofos não-escapados dentro da string.
+
+---
+
+## FLUXO DE VALIDAÇÃO ESTRUTURAL (OBRIGATÓRIO ANTES DE COMMIT)
+
+Dois validadores Node em `_temp/` correm sobre o ficheiro SQL **antes** do
+commit. Ambos saem com `exit 1` se falharem (integrável em CI/hook).
+
+### 1. `_temp/_validar_sql_basico.mjs` — integridade lexical
+
+Verifica por cada ficheiro SQL passado como argumento:
+- **aspas pares por linha** — cada linha tem nº par de `'` (apanha apóstrofos
+  não-escapados como o `warfarin's` que rompeu a string na 267);
+- **parênteses equilibrados fora de strings** — depth final 0 e nunca negativo
+  (apanha tuples sem `)` de fecho, como aconteceu na 270).
+
+```bash
+# um ficheiro ou vários
+node _temp/_validar_sql_basico.mjs supabase/migrations/267_interacoes_lote23_lnme.sql
+node _temp/_validar_sql_basico.mjs supabase/migrations/26[89]*.sql supabase/migrations/27*.sql
+```
+
+Saída por ficheiro: `OK   <ficheiro>` ou `FAIL <ficheiro> <detalhe>`, seguido de
+`=== TODOS OK ===` / `=== FALHOU ===`.
+
+### 2. `_temp/_auditar_bloco.mjs` — nº de campos por tuple nos blocos VALUES
+
+Valida que **cada tuple de cada bloco `FROM/JOIN (VALUES ... ) AS v(...)` tem
+exactamente o mesmo nº de valores de topo que o nº de aliases do `AS v(...)`** —
+ou seja, apanha o ERRO 8 e o ERRO 4 automaticamente. Suporta múltiplos blocos
+por ficheiro (ex.: 268 tem o bloco de INSERT + o bloco do UPDATE de class_id)
+e ignora linhas de comentário `--`.
+
+```bash
+node _temp/_auditar_bloco.mjs supabase/migrations/265_lote3_lnme_perfis.sql
+# saída:
+# --- bloco (VALUES na linha 24, 13 colunas, 13 tuples)
+# OK  clomifeno valores: 13 | esperado: 13
+# *** MISMATCH *** testosterona valores: 15 | esperado: 13   ← ERRO 8 apanhado
+# === TODOS OS BLOCOS OK === / === FALHOU ===
+```
+
+### 3. `_temp/_validar_267.mjs` — validador dedicado de interações (LEAST/GREATEST)
+
+Para migrações de pares `drug_interactions` no padrão 259/267/271/272:
+conta tuples `(LEAST(`, fechos `'published', now()`, severidades válidas,
+refs de slug (= tuples × 4), pares únicos (sem duplicados) e idempotência.
+
+```bash
+node _temp/_validar_267.mjs
+```
+
+### Sequência recomendada antes de commit de qualquer migração
+
+```bash
+# 1. lexical (aspas + parênteses)
+node _temp/_validar_sql_basico.mjs supabase/migrations/<ficheiro>.sql
+
+# 2. blocos VALUES vs colunas (apanha ERRO 4 e ERRO 8)
+node _temp/_auditar_bloco.mjs supabase/migrations/<ficheiro>.sql
+
+# 3. se for migração de interações (padrão LEAST/GREATEST):
+node _temp/_validar_267.mjs   # editar o caminho para o ficheiro novo
+
+# 4. contra a BD real (service key em .env.local): pares já existentes?
+node --input-type=module -e "... query drug_interactions ..."   # ver 267/271/272
+
+# 5. só depois: git add + commit + push
+```
+
+**Histórico:** os validadores 1 e 2 foram criados a 2026-09-30 depois de
+apanharem, em ficheiros já comitados, um apóstrofo não-escapado (267), tuples
+sem `)` de fecho (270) e o ERRO 8 na 265 — corrigidos nos commits `b34c2ec`,
+`cbbae09` e seguintes.
