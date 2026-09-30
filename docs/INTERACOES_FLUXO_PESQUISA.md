@@ -1229,7 +1229,7 @@ secção 18.3. As migrações 184/185/186 usam todas `ON CONFLICT ... DO NOTHING
 
 ---
 
-## 19. Estado de cobertura das 3 dimensões do Fluxo 2 por lote LNME (2026-10-01)
+## 19. Estado de cobertura das 3 dimensões do Fluxo 2 por lote LNME (2026-10-01, actualizado pós-280)
 
 Auditoria à cobertura das dimensões **doença** (`drug_disease_interactions`),
 **alimento** (`drug_food_interactions`) e **gravidez** (`drug_pregnancy_info`)
@@ -1241,14 +1241,14 @@ foram verificadas programaticamente contra a BD de produção (service key) e
 
 | Lote | Fármacos | Migrações de origem | Doença | Alimento | Gravidez |
 |---|---|---|---|---|---|
-| Lote 1 | 23 | 255–258 (+259 interações FF, 277 doença) | 21/23 ✅ | 0/23 ❌ | 0/23 ❌ |
-| Lote 2 | 29 | 260–263 (+267 interações FF, 278 doença) | 29/29 ✅ | 1/29 ❌ (aminofilina, via 279) | 0/29 ❌ |
+| Lote 1 | 23 | 255–258 (+259 interações FF, 277 doença, 280 alimento) | 21/23 ✅ | 21/23 ✅ | 0/23 ❌ |
+| Lote 2 | 29 | 260–263 (+267 interações FF, 278 doença, 280 alimento) | 29/29 ✅ | 24/29 ✅ (4 excluídos por via IV/IM) | 0/29 ❌ |
 | Lote 3 | 13 | 264–266 (+271/272 FF, 275 doença, 279 alimento) | 11/13 ✅ | 11/13 ✅ | 0/13 ❌ |
 | Lote 4 | 6 | 268–270 (+272 FF, 275 doença, 279 alimento) | 6/6 ✅ | 4/6 ✅ | 0/6 ❌ |
 
-Registos totais na BD (2026-10-01): doença **697** · alimento **410** ·
-gravidez **281** (a gravidez mantém a cobertura da secção 18.6 — fármacos
-antigos pré-LNME; nenhum dos 71 novos tem registo 1:1).
+Registos totais na BD (2026-10-01, pós-280): doença **697** · alimento
+**444** · gravidez **281** (a gravidez mantém a cobertura da secção 18.6 —
+fármacos antigos pré-LNME; nenhum dos 71 novos tem registo 1:1).
 
 Nota sobre o Lote 2 na tabela: o `aminofilina` (Lote 2, migração 260) recebeu
 os seus 2 pares de alimento na 279 — migração rotulada "Lotes 3/4" mas que na
@@ -1273,19 +1273,20 @@ honestas" e 13.1 do Fluxo 2):
 | permanganato-potassio | alimento | uso externo exclusivo — sem aplicação | 279 |
 
 **Cobertura efectiva (excluindo justificadas): doença 67/67 ✅ · alimento
-Lotes 3–4 15/15 ✅ · Lotes 1–2 pendentes · gravidez pendente em todos.**
+35/35 ✅ (pós-280, em todos os fármacos com via aplicável) · gravidez
+pendente em todos.**
 
 ### 19.3 Pendências reais (próximas migrações)
 
 1. **Doença Lote 1 × tiamina?** — verificada na 277; sem pares adicionais a
    registar. ✅ fechado.
-2. **Alimento Lotes 1–2** — cobertura real 1/52 (só aminofilina, cujos pares
-   × cafeína e × toma_em_jejum entraram na 279 apesar de o seu lote ser o 2 —
-   a migração 279 foi rotulada "Lotes 3/4" mas inclui este fármaco do Lote 2).
-   Candidatos claros: sulfato-ferroso/cálcio/vitamina-d × leite, chá e café
-   (Prontuário 8.3 — "Espaçar do chá, café, leite…"), metilprednisolona ×
-   álcool, heparina-adjacentes (sem via oral — sem aplicação), desmopressina
-   × restrição de líquidos (DailyMed DDAVP — regra dos 1.º h sem água).
+2. **Alimento Lotes 1–2** — ✅ FECHADO pela migração 280 (34 pares para
+   35 fármacos; 16 excluídos por via IV/IM/tópica com justificação).
+   Cobertura pós-280: Lote 1 = 21/23 (clotrimazol e oxitocina tópicos/IV
+   sem aplicação), Lote 2 = 24/29 (tetracaina, clorexidina, iodopovidona,
+   heparina e vasopressores IV sem aplicação). A dimensão alimento está
+   agora coberta em todos os fármacos dos 4 lotes a que se aplica por via
+   de administração.
 3. **Gravidez (todos os Lotes 1–4, 0/71)** — a maior lacuna. A tabela
    `drug_pregnancy_info` é 1:1 (`pregnancy_category`, `risk_pt/en`,
    `trimester_pt/en`, `lactation_pt/en`, `contraception_pt/en`), o que exige
