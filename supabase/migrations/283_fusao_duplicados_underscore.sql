@@ -193,9 +193,9 @@ FROM _m283_ids i
 JOIN public.drug_disease_interactions keep
   ON keep.drug_id = i.sobrevivente_id
  AND keep.is_archived = false
- AND keep.condition_slug = ddi.condition_slug
 WHERE ddi.drug_id = i.duplicado_id
-  AND ddi.is_archived = false;
+  AND ddi.is_archived = false
+  AND keep.condition_slug = ddi.condition_slug;
 
 UPDATE public.drug_disease_interactions ddi
 SET drug_id = i.sobrevivente_id, updated_at = now()
@@ -215,9 +215,9 @@ FROM _m283_ids i
 JOIN public.drug_food_interactions keep
   ON keep.drug_id = i.sobrevivente_id
  AND keep.is_archived = false
- AND keep.entity_slug = dfi.entity_slug
 WHERE dfi.drug_id = i.duplicado_id
-  AND dfi.is_archived = false;
+  AND dfi.is_archived = false
+  AND keep.entity_slug = dfi.entity_slug;
 
 UPDATE public.drug_food_interactions dfi
 SET drug_id = i.sobrevivente_id, updated_at = now()
