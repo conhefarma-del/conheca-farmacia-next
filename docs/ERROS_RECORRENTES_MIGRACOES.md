@@ -155,6 +155,7 @@ Antes de escrever QUALQUER INSERT:
 - [ ] DDL com CHECK/trigger sobre dados existentes: testar o padrão (regex/enum/limite) contra TODAS as linhas antes de escrever (ver ERRO 9) e simular a lógica em Node contra a BD real
 - [ ] Regexes e padrões nunca se testam inline no bash — gravar script em `_temp/` e correr como ficheiro (ver ERRO 9)
 - [ ] UPDATE que remapeia os dois lados de um par com ordem obrigatória: produzir JÁ a ordem canónica no SET (LEAST/GREATEST) — CHECKs avaliam-se por linha, não no COMMIT (ver ERRO 10)
+- [ ] UPDATE ... FROM ... JOIN: o alias do target (e a tabela target sem alias) só aparece no SET e no WHERE — nunca no ON do JOIN (ver ERROS 6 e 11); correr `_temp/_detetar_alias_on.mjs` antes de commit
 
 ---
 
@@ -407,6 +408,70 @@ WHERE di.drug_a_id = m.duplicado_id OR di.drug_b_id = m.duplicado_id;
 - "A transação absorve o estado intermédio" aplica-se a **deferred constraints**
   (declaradas `DEFERRABLE INITIALLY DEFERRED`) — não é o comportamento por omissão
   de um CHECK.
+
+---
+
+## ERRO 11: ALIAS DO TARGET DE UPDATE REFERENCIADO NO ON DE UM JOIN (42P01) (2026-10-01)
+
+**Generalização do ERRO 6** (que documenta o caso `JOIN LATERAL`, 42P10): o
+mesmo problema de scope surge em qualquer JOIN do `FROM` de um UPDATE —
+JOIN directo incluído.
+
+**O que acontece:** `ERROR: 42P01: invalid reference to FROM-clause entry for
+table "ddi"` apontando para a linha do `ON` — num UPDATE que compila
+semanticamente à primeira vista (a tabela e o alias existem!).
+
+**Causa (migração 283, passo 5 — remapeamento de doença/alimento):** num
+`UPDATE tabela alias SET ... FROM ... JOIN outra ON ...`, o alias do **target**
+(`ddi`/`dfi`) só pode aparecer no `SET` e no `WHERE` — **nunca no `ON`** do
+JOIN. O parser do PostgreSQL resolve o `FROM` primeiro (como um SELECT
+independente) e, nessa fase, o alias do target ainda não está no scope:
+
+```sql
+-- ❌ ERRADO — keep.condition_slug = ddi.condition_slug dentro do ON:
+UPDATE public.drug_disease_interactions ddi
+SET is_archived = true
+FROM _m283_ids i
+JOIN public.drug_disease_interactions keep
+  ON keep.drug_id = i.sobrevivente_id
+ AND keep.is_archived = false
+ AND keep.condition_slug = ddi.condition_slug     -- 42P01 aqui
+WHERE ddi.drug_id = i.duplicado_id;
+
+-- ✅ CORRECTO — a condição com o alias do target vai para o WHERE:
+UPDATE public.drug_disease_interactions ddi
+SET is_archived = true
+FROM _m283_ids i
+JOIN public.drug_disease_interactions keep
+  ON keep.drug_id = i.sobrevivente_id
+ AND keep.is_archived = false
+WHERE ddi.drug_id = i.duplicado_id
+  AND keep.condition_slug = ddi.condition_slug;   -- OK: target no WHERE
+```
+
+**Porquê é insidioso:** o mesmo UPDATE funciona quando a condição usa os aliases
+do próprio FROM (`keep.id <> t.linha_id` — o `keep` é alias do JOIN, válido no
+ON). O erro só explode nas linhas que cruzam o target com o FROM, e a mensagem
+("There is an entry for table..., but it cannot be referenced from this part of
+the query") não diz onde está a fronteira do scope. Um inner join é
+semanticamente equivalente nos dois sítios, pelo que a correcção é sempre
+segura: mover para o WHERE.
+
+**Regras:**
+- Num `UPDATE t alias SET ... FROM ... JOIN x ON ...`, o `alias` do target
+  **aparece exclusivamente no SET e no WHERE**. No FROM/JOIN/ON referem-se
+  apenas as tabelas/aliases do próprio FROM.
+- Referências à tabela target **sem alias** (ex.: `keep.condition_slug =
+  drug_disease_interactions.condition_slug`) sofrem do mesmo problema — o
+  nome da tabela target também não pode ser referenciado dentro do ON do FROM.
+- Para UPDATE self-join (a target aparece também no FROM), usar aliases
+  distintos e manter a condição cruzada no WHERE; se for inevitável no ON,
+  reescrever como subquery `WHERE id IN (SELECT ...)`.
+- Detector: `_temp/_detetar_alias_on.mjs <ficheiro.sql>` varre todos os
+  statements UPDATE de um ficheiro e sinaliza referências ao alias do target
+  dentro da secção FROM/JOIN/ON (sai com `exit 1` se houver).
+- Ver também ERRO 6 (JOIN LATERAL, 42P10) — a regra é a mesma: o target só
+  vive no SET/WHERE; a diferença é só a fase em que o Postgres o detecta.
 
 ---
 
