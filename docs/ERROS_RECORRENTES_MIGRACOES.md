@@ -154,6 +154,7 @@ Antes de escrever QUALQUER INSERT:
 - [ ] Verificar contra a BD real que os pares drug_interactions novos não existem já (ON CONFLICT protege, mas o par duplicado é ruído)
 - [ ] DDL com CHECK/trigger sobre dados existentes: testar o padrão (regex/enum/limite) contra TODAS as linhas antes de escrever (ver ERRO 9) e simular a lógica em Node contra a BD real
 - [ ] Regexes e padrões nunca se testam inline no bash — gravar script em `_temp/` e correr como ficheiro (ver ERRO 9)
+- [ ] UPDATE que remapeia os dois lados de um par com ordem obrigatória: produzir JÁ a ordem canónica no SET (LEAST/GREATEST) — CHECKs avaliam-se por linha, não no COMMIT (ver ERRO 10)
 
 ---
 
@@ -345,6 +346,67 @@ revelou o bug real (375/375 violações com a regex original; 0 com a correta).
   para DDL com validação de dados, criar script de simulação dedicado que
   replique a lógica da constraint em Node contra a BD real (o padrão usado na
   276 para simular o trigger de coerência classe↔letra antes de aplicar).
+
+---
+
+## ERRO 10: ASSUMIR QUE O CHECK SÓ AVALIA NO COMMIT — UPDATE QUE DEIXA LINHAS INVERTIDAS (2026-10-01)
+
+**O que acontece:** `ERROR: 23514 ... violates check constraint
+"drug_interactions_canonical_order"` ao correr um UPDATE de remapeamento, mesmo
+que um statement posterior corrija o estado — **e volto a falhar depois de
+adicionar o passo correctivo**.
+
+**Causa (migração 283, fusão de duplicados):** o passo 4C remapeava o UUID do
+duplicado para o do sobrevivente com `CASE WHEN … THEN sobrevivente_id` em cada
+campo. Como os UUIDs dos duplicados underscore eram "baixos" e os dos
+sobreviventes "altos", 4 pares ficavam com `drug_a_id > drug_b_id` — a violar o
+CHECK de ordem canónica (ERRO 2). A primeira "correção" acrescentou um passo 4D
+com swap posterior, baseado na suposição de que **o CHECK só se avalia no
+COMMIT**. É falso:
+
+```text
+❌ SUPSIÇÃO ERRADA: "a transação absorve o estado intermédio (o CHECK
+   avalia-se por statement)" — não é por statement de fim de transação:
+   é POR LINHA, IMEDIATAMENTE, dentro de cada UPDATE.
+```
+
+O PostgreSQL valida CHECK constraints **row-by-row, no momento do UPDATE** — o
+statement seguinte (4D) nunca chega a correr porque o 4C já falhou. O rollback
+total (ERRO 9) repetiu-se com o mesmo erro detentor.
+
+**Correção (definitiva):** o remapeamento tem de produzir linhas canónicas DE
+IMEDIATO — ordenar os UUIDs no próprio SET:
+
+```sql
+-- ✅ CORRECTO — LEAST/GREATEST sobre os valores PÓS-substituição:
+UPDATE public.drug_interactions di
+SET drug_a_id = LEAST(
+      CASE WHEN di.drug_a_id = m.duplicado_id THEN m.sobrevivente_id ELSE di.drug_a_id END,
+      CASE WHEN di.drug_b_id = m.duplicado_id THEN m.sobrevivente_id ELSE di.drug_b_id END),
+    drug_b_id = GREATEST(
+      CASE WHEN di.drug_a_id = m.duplicado_id THEN m.sobrevivente_id ELSE di.drug_a_id END,
+      CASE WHEN di.drug_b_id = m.duplicado_id THEN m.sobrevivente_id ELSE di.drug_b_id END)
+FROM _m283_ids m
+WHERE di.drug_a_id = m.duplicado_id OR di.drug_b_id = m.duplicado_id;
+
+-- ❌ ERRADO — estado intermédio invertido espera por um "passo 4D" posterior
+--    que nunca corre (o 4C falha primeiro, linha a linha).
+```
+
+**Regras:**
+- **CHECK constraints avaliam-se POR LINHA e IMEDIATAMENTE** em INSERT/UPDATE —
+  nunca confiar em "um statement mais à frente corrige o estado".
+- Um UPDATE de remapeamento que possa trocar/alterar os dois lados de um par com
+  ordem obrigatória (canónica, cronológica, hierárquica) deve **produzir já a
+  ordem certa** (LEAST/GREATEST, CASE ordenado, ou ORDER BY em query wrapper) —
+  não depender de um passo correctivo subsequente.
+- Para correções que exigem estado intermédio inválido de verdade (raro), a
+  única via segura é **abater a constraint, correr o UPDATE, recriar a
+  constraint** dentro da mesma transação — documentado aqui como último recurso;
+  preferir sempre o desenho que nunca passa por estado inválido.
+- "A transação absorve o estado intermédio" aplica-se a **deferred constraints**
+  (declaradas `DEFERRABLE INITIALLY DEFERRED`) — não é o comportamento por omissão
+  de um CHECK.
 
 ---
 

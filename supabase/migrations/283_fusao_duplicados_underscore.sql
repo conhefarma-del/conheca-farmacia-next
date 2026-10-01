@@ -152,15 +152,20 @@ WHERE keep.id <> t.linha_id
     > (SELECT rk FROM _m283_rank WHERE sev = keep.severity);
 
 -- 4C: remapear as restantes com guarda NOT EXISTS.
---     O remapeamento pode deixar pares INVERTIDOS: os UUIDs dos duplicados
---     underscore eram "baixos" e os dos sobreviventes são "altos", pelo que
---     drug_a_id (antigo duplicado) pode ficar MAIOR que drug_b_id
---     (sobrevivente) e violar drug_interactions_canonical_order (ERRO 2).
---     A transação absorve o estado intermédio (o CHECK avalia-se por
---     statement); o passo 4D re-canonicaliza antes do COMMIT.
+--     ATENÇÃO (ERRO 10): o PostgreSQL avalia CHECK constraints POR LINHA,
+--     imediatamente no UPDATE — não no COMMIT. Um remapeamento que deixe
+--     drug_a_id > drug_b_id (os UUIDs dos duplicados underscore eram
+--     "baixos" e os dos sobreviventes são "altos") falha ANTES de qualquer
+--     passo de re-canonicalização posterior. A correção é remapear JÁ em
+--     ordem canónica: o novo drug_a_id é o MENOR dos dois UUIDs e o novo
+--     drug_b_id o MAIOR (LEAST/GREATEST sobre os valores pós-substituição).
 UPDATE public.drug_interactions di
-SET drug_a_id = CASE WHEN di.drug_a_id = m.duplicado_id THEN m.sobrevivente_id ELSE di.drug_a_id END,
-    drug_b_id = CASE WHEN di.drug_b_id = m.duplicado_id THEN m.sobrevivente_id ELSE di.drug_b_id END,
+SET drug_a_id = LEAST(
+      CASE WHEN di.drug_a_id = m.duplicado_id THEN m.sobrevivente_id ELSE di.drug_a_id END,
+      CASE WHEN di.drug_b_id = m.duplicado_id THEN m.sobrevivente_id ELSE di.drug_b_id END),
+    drug_b_id = GREATEST(
+      CASE WHEN di.drug_a_id = m.duplicado_id THEN m.sobrevivente_id ELSE di.drug_a_id END,
+      CASE WHEN di.drug_b_id = m.duplicado_id THEN m.sobrevivente_id ELSE di.drug_b_id END),
     updated_at = now()
 FROM _m283_ids m
 WHERE (di.drug_a_id = m.duplicado_id OR di.drug_b_id = m.duplicado_id)
@@ -176,17 +181,6 @@ WHERE (di.drug_a_id = m.duplicado_id OR di.drug_b_id = m.duplicado_id)
             CASE WHEN di.drug_a_id = m.duplicado_id THEN m.sobrevivente_id ELSE di.drug_a_id END,
             CASE WHEN di.drug_b_id = m.duplicado_id THEN m.sobrevivente_id ELSE di.drug_b_id END)
   );
-
--- 4D: re-canonicalizar (ERRO 2) — trocar os pares que ficaram invertidos.
---     Opar não respeita drug_a_id < drug_b_id → faz swap dos dois campos.
-UPDATE public.drug_interactions di
-SET drug_a_id = di.drug_b_id,
-    drug_b_id = di.drug_a_id,
-    updated_at = now()
-WHERE di.is_archived = false
-  AND di.drug_a_id > di.drug_b_id
-  AND (di.drug_a_id IN (SELECT i.sobrevivente_id FROM _m283_ids i)
-       OR di.drug_b_id IN (SELECT i.sobrevivente_id FROM _m283_ids i));
 
 -- ---------------------------------------------------------------------
 -- 5. Remapear drug_disease_interactions e drug_food_interactions
