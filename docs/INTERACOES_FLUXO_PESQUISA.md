@@ -1241,20 +1241,47 @@ foram verificadas programaticamente contra a BD de produção (service key) e
 
 | Lote | Fármacos | Migrações de origem | Doença | Alimento | Gravidez |
 |---|---|---|---|---|---|
-| Lote 1 | 23 | 255–258 (+259 interações FF, 277 doença, 280 alimento) | 21/23 ✅ | 21/23 ✅ | 0/23 ❌ |
+| Lote 1 | 23 | 255–258 (+259 interações FF, 277 doença, 280 alimento) | 21/23 ✅ | 21/23 ✅ | 4/23 🔄 (284) |
 | Lote 2 | 29 | 260–263 (+267 interações FF, 278 doença, 280 alimento) | 29/29 ✅ | 24/29 ✅ (4 excluídos por via IV/IM) | 0/29 ❌ |
-| Lote 3 | 13 | 264–266 (+271/272 FF, 275 doença, 279 alimento) | 11/13 ✅ | 11/13 ✅ | 0/13 ❌ |
-| Lote 4 | 6 | 268–270 (+272 FF, 275 doença, 279 alimento) | 6/6 ✅ | 4/6 ✅ | 0/6 ❌ |
+| Lote 3 | 13 | 264–266 (+271/272 FF, 275 doença, 279 alimento) | 11/13 ✅ | 11/13 ✅ | 5/13 🔄 (284) |
+| Lote 4 | 6 | 268–270 (+272 FF, 275 doença, 279 alimento) | 6/6 ✅ | 4/6 ✅ | 1/6 🔄 (284) |
 
-Registos totais na BD (2026-10-01, pós-280): doença **697** · alimento
-**444** · gravidez **281** (a gravidez mantém a cobertura da secção 18.6 —
-fármacos antigos pré-LNME; nenhum dos 71 novos tem registo 1:1).
+Registos totais na BD (2026-10-01, pós-284): doença **697** · alimento
+**444** · gravidez **291** (281 do lote antigo, secção 18.6, + 10 novos da
+migração 284 — os 10 fármacos dos Lotes 1–4 mais críticos clinicamente).
 
 Nota sobre o Lote 2 na tabela: o `aminofilina` (Lote 2, migração 260) recebeu
 os seus 2 pares de alimento na 279 — migração rotulada "Lotes 3/4" mas que na
 prática cobre 15 fármacos dos Lotes 3/4 + aminofilina. A cobertura efectiva
 da dimensão alimento nos lotes novos é: Lote 1 = 0/23, Lote 2 = 1/29,
 Lote 3 = 11/13, Lote 4 = 4/6.
+
+### 19.1.1 Gravidez — a migração 284 (primeira tranche 10/71)
+
+A [284_pregnancy_lotes34.sql](../supabase/migrations/284_pregnancy_lotes34.sql)
+iniciou a dimensão gravidez dos lotes novos com os **10 fármacos de maior
+risco materno-fetal**, registos 1:1 no padrão 061 (categoria, risco, trimestres,
+aleitamento, contracepção, fontes):
+
+| Fármaco | Lote | Categoria | Âncora clínica |
+|---|---|---|---|
+| misoprostol | 1 | contraindicated | abortífero; síndrome de Moebius (1.º T) |
+| metilergometrina | 1 | contraindicated | uterotóxico — só pós-expulsão; nunca indução |
+| retinol | 1 | caution | teratogénico em dose alta (>10.000 UI/dia) |
+| griseofulvina | 1 | contraindicated | embriotóxica/teratogénica em animais |
+| testosterona | 3 | contraindicated | virilização do feto feminino (D) |
+| carbimazol | 3 | caution | bócio neonatal + aplasia cutânea; PTU no 1.º T |
+| propiltiouracilo | 3 | caution | preferido no 1.º T; hepatotoxicidade depois |
+| sulfato-magnesio | 3 | compatible | eclâmpsia + neuroproteção fetal |
+| deferoxamina | 3 | caution | segurança não estabelecida |
+| ciproterona | 4 | contraindicated | antiandrogénio — hipospadias |
+
+Nota de lote: misoprostol, metilergometrina, retinol e griseofulvina são do
+**Lote 1** (255), não do 3/4 — incluídos na 284 por serem os mais críticos;
+sem eles, a primeira tranche perderia os dois uterotóxicos/abortíferos.
+Fontes: Prontuário Anexos 1/2 (linhas citadas no cabeçalho da migração) +
+EMC-UK SmPC 4.6. Padrão 061, idempotente (`ON CONFLICT (drug_id) DO NOTHING`).
+Pendentes nos Lotes 1/2: **48** (19 do Lote 1 + 29 do Lote 2); nos Lotes 3/4: **13**.
 
 ### 19.2 Lacunas justificadas (não são pendências)
 
@@ -1274,7 +1301,7 @@ honestas" e 13.1 do Fluxo 2):
 
 **Cobertura efectiva (excluindo justificadas): doença 67/67 ✅ · alimento
 35/35 ✅ (pós-280, em todos os fármacos com via aplicável) · gravidez
-pendente em todos.**
+10/71 🔄 (pós-284; pendente nos restantes 61).**
 
 ### 19.3 Pendências reais (próximas migrações)
 
@@ -1287,14 +1314,25 @@ pendente em todos.**
    heparina e vasopressores IV sem aplicação). A dimensão alimento está
    agora coberta em todos os fármacos dos 4 lotes a que se aplica por via
    de administração.
-3. **Gravidez (todos os Lotes 1–4, 0/71)** — a maior lacuna. A tabela
-   `drug_pregnancy_info` é 1:1 (`pregnancy_category`, `risk_pt/en`,
-   `trimester_pt/en`, `lactation_pt/en`, `contraception_pt/en`), o que exige
-   trabalho autoral completo por fármaco (não pares). Fontes: Prontuário
-   Anexo 1 (gravidez), EMC-UK SmPC 4.6, DailyMed. Priorizar: misoprostol,
-   metilergometrina, warfarina-adjacentes (heparina), antiepilépticos do
-   Lote 1/2 (carbamazepina, fenitoína), retinol (teratogénico em dose alta),
-   griseofulvina, testosterona (virilização fetal), ciproterona.
+3. **Gravidez Lotes 1–4** — 10/71 ✅ cobertos pela migração **284**
+   (primeira tranche: os 10 mais críticos — ver 19.1.1). Restam **61**:
+   - **Lote 2 (0/29, prioridade máxima)** — nenhum tem registo. Os
+     antiepilépticos (carbamazepina, fenitoína) e o co-trimoxazol ficaram
+     nos fármacos antigos, mas o Lote 2 inclui metotrexato? — não (é antigo);
+     os críticos do Lote 2 são: enalapril/IECA (toxicidade fetal 2.º–3.º T),
+     tetraciclina (dentes/osso), ácido valpróico-adjacentes, colchicina,
+     cloroquina (malária na gravidez — benefício), mebendazol.
+   - **Lote 1 restante (4/23)** — pendentes 19: oxitocina (uso obstétrico
+     padrão, compatible), heparina (anticoagulante de escolha na gravidez,
+     B), insulinas? — não (Lote 4), sulfato-ferroso (compatible),
+     levonorgestrel-EE (contracepção), tiamina, piridoxina, ácido fólico,
+     morfina, prometazina, etc.
+   - **Lotes 3/4 restantes (5/13 e 1/6)** — clomifeno (contraindicated),
+     progesterona (compatible), ácido tranexâmico, protamina, gluconato-cálcio,
+     n-acetilcisteina, piridoxina (Lote 3); insulina-regular, insulina-nph
+     (compatible — a insulina é o antidiabético de escolha na gravidez),
+     flucloxacilina, espectinomicina, permanganato-potassio (Lote 4).
+   Fontes: Prontuário Anexo 1 (gravidez), EMC-UK SmPC 4.6, DailyMed.
 4. **Fármaco-alimento dos fármacos antigos** — ✅ FECHADO pela migração
    281 (42 entradas para 46 fármacos antigos sem cobertura: 23 pares
    clínicos — álcool × BDZ/antidepressivos/antipsicóticos/antiepilépticos,
