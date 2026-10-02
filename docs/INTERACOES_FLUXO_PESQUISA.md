@@ -1461,6 +1461,37 @@ a fonte disponível — registado para não repetir o critério):
 Evidência completa (ficheiro, linha e snippet por ocorrência) em
 `_temp/_justificacoes_28.json`.
 
+### 20.8 Correção da auditoria: 2 dos zeros eram DUPLICADOS, não lacunas
+
+Verificação de 2026-10-02 (`_temp/_zeros_slug_duplicado.mjs`,
+`_temp/_detetar_todos_duplicados.mjs`): dois dos 16 fármacos que ficaram a zero
+**não têm lacuna clínica nenhuma** — os pares vivem num slug duplicado que o
+merge 283 deixou activo:
+
+| Slug LNME (0 pares) | Duplicado activo | Pares do duplicado |
+|---|---|---|
+| `vitamina-d` | `colecalciferol` (A11CC05, mesma substância) | 5 |
+| `amoxicilina-acido-clavulanico` | `amoxicilina-clavulanato` (J01CR02, nome PT idêntico) | 1 (warfarina) |
+
+A detecção por **ATC igual + nome normalizado igual** encontrou ainda 3 pares
+de gémeos underscore/hífen ambos activos, com os pares **separados** entre si
+(`acido_ascorbico` ↔ `acido-ascorbico`, `acido_folico` ↔ `acido-folico`,
+`acido_tranexamico` ↔ `acido-tranexamico`), e um 7.º duplicado cujo fármaco já
+estava arquivado mas com linhas pendentes (`losartano` ↔ `losartana`, com o par
+`espironolactona × losartano` e uma ficha de gravidez ainda activos).
+
+**Consequência para a contagem:** as lacunas FF reais dos LNME são **14, não
+16** — os dois slugs acima passam a ter cobertura (5 e 1 pares) depois da
+migração 290. A resolução (fusão dos 7 duplicados, com merge de conteúdo e
+resolução de colisões) é a migração **290**; o método e as armadilhas de fusão
+estão em `docs/ERROS_RECORRENTES_MIGRACOES.md` (ERRO 13 — colisão de segunda
+ordem).
+
+**Não são duplicados** (verificado e deliberadamente excluído):
+`carbimazol` ≡ `tiamazol` partilham H03BB01 por desenho (a 274 documenta que o
+carbimazol é profármaco do tiamazol — substâncias distintas), e `amoxicilina`
+(J01CA04) é um fármaco diferente da associação com clavulanato (J01CR02).
+
 ---
 
 ## Referências

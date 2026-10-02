@@ -159,6 +159,8 @@ Antes de escrever QUALQUER INSERT:
 - [ ] Nomes próprios/páginas em EN sem apóstrofo (`Graves Disease`, não `Graves' Disease`) — o apóstrofo em string quebra o SQL e em comentário quebra o validador de aspas (ver ERRO 12a)
 - [ ] Simulações read-only em Node: comparar UUIDs como strings, nunca com `Math.min`/`Math.max` (ver ERRO 12b); se a simulação disser "nada a fazer", verificar o script antes de concluir
 - [ ] Listas em comentário sem `X)` isolado (dá depth negativa no validador de parênteses): usar `A —`/`(A)`/`1.` (ver ERRO 12c)
+- [ ] Fusão de duplicados: decidir sobre a chave **pós-remapeamento** (colisões de 2.ª ordem com ambos os lados duplicados — ver ERRO 13); simular e verificar 0 chaves duplicadas, 0 fora de ordem, 0 órfãos
+- [ ] Incluir no âmbito slugs de duplicados **já arquivados** que ainda tenham pares/fichas activos (ver ERRO 13, corolário)
 
 ---
 
@@ -536,6 +538,63 @@ um → `FAIL parênteses (depth=-3, negativo=true)` com três itens.
 usar parêntese de fecho, abrir também (`(A)`). O balanço global do ficheiro
 (`abre == fecha`) pode dar 546/546 e ainda assim falhar por linha; o validador
 é o critério, não a contagem global.
+
+---
+
+## ERRO 13: FUSÃO DE DUPLICADOS — COLISÃO DE SEGUNDA ORDEM (2026-10-02)
+
+**Generalização do ERRO 7** para o caso em que **os dois lados de uma linha
+são duplicados**. O padrão da 283 (e o que a 290 usou inicialmente) compara as
+chaves dos pares **antes** do remapeamento: para cada linha do duplicado
+procura uma linha equivalente já existente no sobrevivente. Isso só detecta
+colisões de primeira ordem.
+
+**O que falha:** na consolidação dos 6 duplicados, a linha
+`ferro × acido_ascorbico` (moderate) tem **ambos** os ids duplicados
+(`ferro → sulfato-ferroso`, `acido_ascorbico → acido-ascorbico`). Ela não
+colide com `acido-ascorbico × sulfato-ferroso` (minor) por chave crua — só
+colide **depois** de substituir os dois lados. Com a lógica da 283, essa linha
+ficaria activa a apontar para dois fármacos arquivados: um **par órfão**, com
+a severidade errada (minor em vez de moderate) e invisível na verificação
+"nenhum par activo aponta para arquivado".
+
+```sql
+-- ❌ padrão da 283: chave CRUA (não vê a colisão de 2.ª ordem)
+JOIN keep ON LEAST(keep.drug_a_id, keep.drug_b_id) = t.par_a
+
+-- ✅ 290: calcular a chave FINAL de cada linha e decidir por grupo
+CREATE TEMP TABLE _m290_cand AS
+SELECT c.linha_id,
+       LEAST(c.sub_a, c.sub_b)    AS nova_a,
+       GREATEST(c.sub_a, c.sub_b) AS nova_b,
+       c.severity,
+       CASE WHEN c.sub_a <> c.drug_a_id OR c.sub_b <> c.drug_b_id THEN 1 ELSE 0 END AS precisa_remap
+FROM (SELECT di.id AS linha_id, di.drug_a_id, di.drug_b_id, di.severity,
+             COALESCE(i1.sobrevivente_id, di.drug_a_id) AS sub_a,
+             COALESCE(i2.sobrevivente_id, di.drug_b_id) AS sub_b
+      FROM public.drug_interactions di
+      LEFT JOIN _m290_ids i1 ON i1.duplicado_id = di.drug_a_id
+      LEFT JOIN _m290_ids i2 ON i2.duplicado_id = di.drug_b_id
+      WHERE di.is_archived = false) c;
+```
+
+**Ordem de desempate (determinística):** maior severidade → a que **não**
+precisa de remapeamento (é a linha do sobrevivente, critério da 283) → menor
+`id`. Sem o terceiro critério o resultado depende da ordem de leitura.
+
+**Regra:** ao fundir duplicados, decidir **sobre a chave pós-remapeamento**,
+não sobre os ids originais; e simular a fusão inteira em Node antes de escrever
+o SQL, verificando três invariantes: (1) 0 chaves duplicadas (violaria
+UNIQUE), (2) 0 linhas com `drug_a_id > drug_b_id` (violaria o CHECK, ERRO 10),
+(3) 0 pares activos a apontar para fármacos arquivados (órfãos).
+Ver `_temp/_simular_passo3.mjs` (290) e `_temp/_ordem_canonica_290.mjs`.
+
+**Corolário — duplicado já arquivado com linhas pendentes:** um merge anterior
+pode ter arquivado o fármaco mas deixado pares/fichas activos dele (caso
+`losartano`, arquivado, com o par `espironolactona × losartano` e uma ficha de
+gravidez ainda activos). A migração de consolidação deve incluir esses slugs
+no seu âmbito mesmo com `is_archived = true` — filtrar só por
+`d.is_archived = false` esconde-os.
 
 ---
 
