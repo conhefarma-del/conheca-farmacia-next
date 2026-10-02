@@ -158,6 +158,7 @@ Antes de escrever QUALQUER INSERT:
 - [ ] UPDATE ... FROM ... JOIN: o alias do target (e a tabela target sem alias) só aparece no SET e no WHERE — nunca no ON do JOIN (ver ERROS 6 e 11); correr `_temp/_detetar_alias_on.mjs` antes de commit
 - [ ] Nomes próprios/páginas em EN sem apóstrofo (`Graves Disease`, não `Graves' Disease`) — o apóstrofo em string quebra o SQL e em comentário quebra o validador de aspas (ver ERRO 12a)
 - [ ] Simulações read-only em Node: comparar UUIDs como strings, nunca com `Math.min`/`Math.max` (ver ERRO 12b); se a simulação disser "nada a fazer", verificar o script antes de concluir
+- [ ] Listas em comentário sem `X)` isolado (dá depth negativa no validador de parênteses): usar `A —`/`(A)`/`1.` (ver ERRO 12c)
 
 ---
 
@@ -514,6 +515,27 @@ const lo = (x, y) => (x < y ? x : y), hi = (x, y) => (x < y ? y : x);
 lexicográfica = ordem de bytes do `uuid` no Postgres para hex minúsculo). Se
 uma simulação de migração devolver "nada a fazer", desconfiar do script antes
 de concluir que a BD está vazia do problema.
+
+**12c — rótulos `A)` / `B)` / `C)` em comentários dão depth negativa.** O
+`_validar_sql_basico.mjs` conta parênteses **mesmo dentro de comentários** (é
+intencional: apanha tuples sem `)` de fecho, e o custo é este falso positivo),
+pelo que uma lista de itens em comentário escrita como `A)` abre zero e fecha
+um → `FAIL parênteses (depth=-3, negativo=true)` com três itens.
+
+```sql
+-- ❌ FAIL parênteses (depth=-3, negativo=true)
+--   A) Justificação explícita ...
+--   B) Justificação apenas ...
+--   C) Sem justificação ...
+
+-- ✅ usar travessão
+--   A — Justificação explícita ...
+```
+
+**Regra:** listas em comentário usam `—`, `:`, `·` ou numeração `1.`/`1)` — se
+usar parêntese de fecho, abrir também (`(A)`). O balanço global do ficheiro
+(`abre == fecha`) pode dar 546/546 e ainda assim falhar por linha; o validador
+é o critério, não a contagem global.
 
 ---
 

@@ -1424,6 +1424,43 @@ naquela atribuição). Fica registado para não se propagar a citações futuras
   `bash revalidar.sh`). Verificação A: 12 fármacos LNME deixam de ter 0 pares;
   verificação B: 4 pares órfãos passam a `is_archived = true`.
 
+### 20.7 Verificação exaustiva das justificações dos 28 (fonte a linha)
+
+Método (`_temp/_verificar_justificacoes.mjs`): para cada um dos 28 slugs,
+procurar o nome em **linhas de comentário** de todas as migrações (a 289
+excluída), olhar uma janela de ±3 linhas e testar marcadores estritos de
+ausência de pares (`SEM par`, `NÃO criado`, `OMITIDOS`, `excluído`,
+`regra 13.1`, `revisão futura`, `sem documentação`...). Separa as migrações de
+pares FF (259/267/271/272) das restantes, porque **uma justificação de outra
+dimensão (doença/alimento/gravidez) não justifica um zero FF**.
+
+| Grupo | N | Fármacos |
+|---|---|---|
+| **A** — justificação explícita em migração de pares FF | 16 | clotrimazol, retinol, tiamina (259) · lidocaina, clorexidina, tetracaina, iodopovidona, sulfato-zinco, acido-ascorbico, vitamina-d, flumazenil, clomifeno, propiltiouracilo, piridoxina (267) · tetracaina, espectinomicina (271) · espectinomicina, permanganato-potassio (272) |
+| **B** — justificação só fora das migrações de pares FF | 3 | mebendazol (058:14), pirantel (058:18), deferoxamina (168:41) |
+| **C** — sem justificação em sítio nenhum (omissão silenciosa) | 9 | amoxicilina-acido-clavulanico, acido-folico, bupivacaina, noreisterona, nitroprussiato, dobutamina, progesterona, carbimazol, ciproterona |
+
+**Resolução na 289:** o grupo C divide-se em 5 fármacos que passam a ter pares
+reais (acido-folico, noreisterona, nitroprussiato, dobutamina, carbimazol) e 4
+com justificação escrita na PARTE B (amoxicilina-acido-clavulanico,
+bupivacaina, progesterona, ciproterona); o grupo B ganha a justificação em falta
+(pirantel) ou o par que a tornava desnecessária (mebendazol, deferoxamina).
+
+**Exclusões anteriores revistas na 289** (a nota original era mais fraca do que
+a fonte disponível — registado para não repetir o critério):
+
+| Fármaco | Nota original | Fonte que a 289 usou |
+|---|---|---|
+| mebendazol | 058: "rótulo FDA não documenta interações" | Prontuário Mebendazol 1.4.1 (cimetidina, carbamazepina, fenitoína) |
+| sulfato-zinco | 267: "documentação insuficiente" | Prontuário Quinolonas (quelação por zinco) |
+| iodopovidona | 267: "sem interacções sistémicas relevantes" | Prontuário Iodopovidona 13.1.1 (absorção com efeito na tiróide) |
+| acido-ascorbico | 267: "sem rótulo mono-ingrediente FDA" | Prontuário Ferro 4.1.1 (potenciação da absorção) |
+| flumazenil | 267: "antídoto protocolar, não interação adversa" | Rótulo do flumazenil (convulsões de abstinência; intoxicação mista) |
+| propiltiouracilo | 267: citação mal atribuída (levotiroxina) | Farmacologia do estado tiroideu face aos AVK (PMC4065757) |
+
+Evidência completa (ficheiro, linha e snippet por ocorrência) em
+`_temp/_justificacoes_28.json`.
+
 ---
 
 ## Referências

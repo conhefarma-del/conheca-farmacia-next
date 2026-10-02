@@ -594,6 +594,61 @@ ON CONFLICT (drug_a_id, drug_b_id) DO NOTHING;
 --   associação co-formulada com etinilestradiol (G03HB01), não um par entre
 --   dois fármacos prescritos separadamente na base.
 --
+-- Distribuição dos 28 zeros por estado da justificação (verificação exaustiva
+-- com `_temp/_verificar_justificacoes.mjs`: nome do fármaco procurado em linhas
+-- de comentário de todas as migrações, janela de ±3 linhas, marcadores estritos
+-- de ausência de pares; 289 excluída do varrimento):
+--
+--   A — Justificação explícita numa migração de PARES FF (16):
+--      · 259 — clotrimazol (l. 19), retinol e tiamina (l. 64-66 e 568)
+--      · 267 — lidocaina/clorexidina/tetracaina (l. 714), iodopovidona (l. 714),
+--              sulfato-zinco e acido-ascorbico (l. 116 e 710-712),
+--              vitamina-d (l. 711), flumazenil (l. 92 e 703), clomifeno (l. 114
+--              e 710), propiltiouracilo (l. 52 — ver correcção abaixo),
+--              piridoxina (l. 116)
+--      · 271 — tetracaina × lidocaina (l. 310), vitamina-d × tiazidas (l. 313),
+--              espectinomicina (l. 315)
+--      · 272 — espectinomicina (l. 287), permanganato-potassio (l. 289)
+--
+--   B — Justificação registada apenas FORA das migrações de pares FF — a série
+--      LNME nunca a herdou (3):
+--      · mebendazol   — 058, l. 14: "Mebendazol OMITIDO: o rótulo FDA (incl.
+--                       EMVERM) não documenta interações com os [fármacos da base]".
+--      · pirantel     — 058, l. 18: "Flubendazol, piperazina e pirantel
+--                       OMITIDOS (interações com fármacos fora da base)".
+--      · deferoxamina — 168, l. 41: interação documentada com a procloroperazina,
+--                       que "não existe na BD".
+--
+--   C — SEM QUALQUER JUSTIFICAÇÃO REGISTADA — omissões silenciosas (9):
+--      amoxicilina-acido-clavulanico, acido-folico, bupivacaina, noreisterona,
+--      nitroprussiato, dobutamina, progesterona, carbimazol, ciproterona.
+--      Resolução nesta migração: 4 recebem justificação escrita (PARTE B) e 5
+--      ficam cobertas com pares reais (acido-folico × fenitoina; noreisterona ×
+--      rifampicina/carbamazepina/fenitoina; nitroprussiato × enalapril/
+--      metoprolol; dobutamina × metoprolol/propranolol; carbimazol ×
+--      warfarina/iodopovidona).
+--
+-- EXCLUSÕES ANTERIORES QUE ESTA MIGRAÇÃO REVÊ (a fonte disponível é mais forte
+-- do que a nota original — fica registado para não se repetir o critério):
+--   * mebendazol    — 058 omitiu por o rótulo FDA não documentar interações;
+--                     o Prontuário 1.4.1 documenta cimetidina, carbamazepina e
+--                     fenitoína (itens 14-16).
+--   * sulfato-zinco — 267 omitiu por "documentação insuficiente"; o Prontuário
+--                     (Quinolonas, l. 2330-2332) documenta explicitamente a
+--                     quelação por zinco (item 9).
+--   * iodopovidona  — 267 deu-a como sem "interacções sistémicas relevantes";
+--                     a ficha do próprio Prontuário (13.1.1) descreve absorção
+--                     sistémica com efeito na tiróide (itens 17-18).
+--   * acido-ascorbico — 267 omitiu por falta de rótulo mono-ingrediente FDA; o
+--                     Prontuário (Ferro 4.1.1) documenta a potenciação da
+--                     absorção do ferro (item 12).
+--   * flumazenil    — 267 excluiu-o como "antídoto protocolar, não interação
+--                     adversa"; o rótulo documenta convulsões de abstinência e a
+--                     exclusão em intoxicação mista (itens 1-2).
+--   * propiltiouracilo — a justificação da 267 assentava numa citação mal
+--                     atribuída (pertence à levotiroxina) — ver CORRECÇÃO DE
+--                     AUDITORIA no cabeçalho.
+--
 -- Verificações efectuadas nesta sessão (2026-10-02):
 --   _temp/_zero_pairs_artefacto.mjs — confirma que os 28 slugs estão activos
 --     e publicados (não é artefacto do merge 283) e que os pares são 0.
