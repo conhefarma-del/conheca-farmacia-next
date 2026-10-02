@@ -1345,6 +1345,87 @@ para DDL).
 
 ---
 
+## 20. Auditoria de cobertura fármaco-fármaco dos 71 LNME (2026-10-02, migração 289)
+
+### 20.1 Contexto
+
+A auditoria de cobertura do Fluxo 1 (`_temp/_auditar_fluxo1_lnme.mjs` →
+`_temp/_fluxo1_coverage.json`) contabilizou **782 pares `published`** na BD e
+identificou **28 dos 71 fármacos LNME (Lotes 1–4) com ZERO pares
+fármaco-fármaco** — a única das 4 dimensões em que os LNME ainda não estavam
+fechados (gravidez ficou 71/71 nas migrações 284–288).
+
+### 20.2 Os 28 zeros são reais (não artefacto do merge 283)
+
+Verificação `_temp/_zero_pairs_artefacto.mjs`: os 28 slugs estão **activos e
+publicados** com 0 pares cada — o merge de duplicados underscore (283) não
+esvaziou cobertura. O que o 283 deixou foram **5 pares órfãos** a apontar para
+fármacos arquivados (`cloreto_potassio`, `sulfato_magnesio`,
+sulfametoxazol-trimetoprima, `losartano`); 4 deles são duplicados de pares já
+publicados nos slugs activos e foram arquivados na PARTE C da 289 (decisão de
+não eliminar, apenas `is_archived = true`).
+
+### 20.3 Resultado: 12 fármacos ganharam pares (migração 289, 21 pares)
+
+| Fármaco LNME | Pares criados (severidade) | Fonte exata |
+|---|---|---|
+| **flumazenil** | × midazolam (critical), × imipramina (critical) | Rótulo flumazenil USP (Pfizer) — convulsões de abstinência em dependentes de BDZ; exclusão em intoxicação mista; Prontuário Anexo 7 (resedação) |
+| **dobutamina** | × metoprolol (critical), × propranolol (critical) | Rótulo dobutamina (Pfizer) — "the inotropic effect ... is reversed by concomitant administration of beta-blockers"; EMC-UK SmPC 4.5 (alfa não oposto) |
+| **carbimazol** | × warfarina (critical), × iodopovidona (moderate) | Drugs.com monografia profissional (efeito AVK "increased or decreased") + PMC4065757; Prontuário 13.1.1 (iodopovidona afecta a tiróide) |
+| **propiltiouracilo** | × warfarina (critical), × iodopovidona (moderate) | idem |
+| **nitroprussiato** | × enalapril (moderate), × metoprolol (moderate) | Prontuário Anexo 7 ("Aumentam o efeito hipotensor ... Nitroprussiato de sódio") |
+| **sulfato-zinco** | × ciprofloxacina (moderate), × sulfato-ferroso (moderate) | Prontuário Quinolonas (quelação por Zn2+) e Ferro 4.1.1 (competição Fe/Zn) |
+| **acido-ascorbico** | × deferoxamina (critical), × sulfato-ferroso (minor) | FDA/Desferal — disfunção cardíaca com vitamina C > 500 mg/dia; Prontuário Ferro 4.1.1 |
+| **acido-folico** | × fenitoina (moderate) | Prontuário Ácido fólico 4.1.2 (↑ metabolismo da fenitoína, risco convulsivo) |
+| **mebendazol** | × cimetidina, × carbamazepina, × fenitoina (moderate) | Prontuário Mebendazol 1.4.1 |
+| **iodopovidona** | × carbimazol, × propiltiouracilo (moderate) | Prontuário Iodopovidona 13.1.1 |
+| **noreisterona** | × rifampicina (critical), × carbamazepina, × fenitoina (moderate) | Prontuário Fenitoína 2.6 / Carbamazepina 2.6 / Anexo 7 — espelha os 3 pares já existentes do contracetivo combinado (267) |
+| **deferoxamina** | × acido-ascorbico (critical) | FDA Desferal, Drug Interactions (vitamina C) |
+
+### 20.4 Resultado: 16 fármacos permanecem sem par (justificação registada)
+
+| Fármaco | Motivo | Onde está registado |
+|---|---|---|
+| **pirantel** | Único antagonismo documentado é com a piperazina (Prontuário 1.4.1), que não existe na DB | **novo** (289 / PARTE B) |
+| **amoxicilina-acido-clavulanico** | Pares pré-merge (044/056) não ligados a este slug; candidatos exigem rótulo do combinado (regra 13.1) | **novo** (289) |
+| **bupivacaina** | Anestésico local amida — toxicidade combinada é conceito de dose máxima (mesmo critério da 271 para tetracaína) | **novo** (289) |
+| **progesterona** | Evidência de classe cobre progestagénios contracetivos (cobertos via noretisterona); progesterona micronizada obstétrica sem interação no Prontuário | **novo** (289) |
+| **ciproterona** | Associação co-formulada com etinilestradiol (G03HB01) — interação interna, não par entre fármacos separados | **novo** (289) |
+| **clotrimazol** | Tópico — absorção sistémica mínima | 259 (cabeçalho) |
+| **retinol**, **tiamina** | Sem rótulo mono-ingrediente FDA / sem pares relevantes | 259 (cabeçalho) |
+| **lidocaina**, **tetracaina**, **clorexidina** | Tópicos/uso regional — sem interação sistémica em rótulo mono-ingrediente | 267 (rodapé) + 271 (rodapé) |
+| **clomifeno** | Sem documentação adversa direta | 267 (rodapé) |
+| **piridoxina** | Suplemento sem interações relevantes documentadas | 267 (cabeçalho) |
+| **vitamina-d** | Corticoide em doses fisiológicas fora de âmbito; sem tiazida activa na DB | 267 + 271 (rodapés) |
+| **espectinomicina** | Toxicidade aditiva teórica sem rótulo humano (regra 13.1) | 271 + 272 (rodapés) |
+| **permanganato-potassio** | Uso externo sem absorção sistémica | 272 (rodapé) |
+
+### 20.5 Correção de auditoria (transparência)
+
+O cabeçalho da **267** afirma que a ficha do propiltiouracilo documenta
+"potencia o efeito dos anticoagulantes". Essa frase pertence à ficha da
+**LEVOTIROXINA** (Prontuário 8.3, l. 25847-25852); a ficha do PTU só refere
+indutores enzimáticos. Os pares tiomamidas × varfarina criados na 289
+assentam por isso na farmacologia do estado tiroideu face aos AVK (e não
+naquela atribuição). Fica registado para não se propagar a citações futuras.
+
+### 20.6 Validação e estado
+
+- `_temp/_check_parceiros289.mjs` — 21 pares: todos os slugs parceiros existem
+  e **nenhum dos 21 pares existia** antes (0 colisões → o `ON CONFLICT` da 289
+  não esconde nada).
+- `_temp/_simular_parteC.mjs` — simulação read-only da PARTE C: 4 linhas a
+  arquivar, todas com par equivalente publicado no slug activo.
+- `_temp/_validar_289.mjs` — 21 tuples × 17 campos, severidades válidas,
+  `LEAST`/`GREATEST`, aspas pares (ver ERRO 12).
+- `_temp/_validar_sql_basico.mjs`, `_temp/_auditar_bloco.mjs`,
+  `_temp/_detetar_alias_on.mjs` — todos OK.
+- **Estado: criada e validada; aplicação pendente** (SQL editor do Supabase +
+  `bash revalidar.sh`). Verificação A: 12 fármacos LNME deixam de ter 0 pares;
+  verificação B: 4 pares órfãos passam a `is_archived = true`.
+
+---
+
 ## Referências
 
 - Metodologia clínica + padrões SQL: este documento (secções 1–17).

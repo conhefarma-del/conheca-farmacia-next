@@ -156,6 +156,8 @@ Antes de escrever QUALQUER INSERT:
 - [ ] Regexes e padrões nunca se testam inline no bash — gravar script em `_temp/` e correr como ficheiro (ver ERRO 9)
 - [ ] UPDATE que remapeia os dois lados de um par com ordem obrigatória: produzir JÁ a ordem canónica no SET (LEAST/GREATEST) — CHECKs avaliam-se por linha, não no COMMIT (ver ERRO 10)
 - [ ] UPDATE ... FROM ... JOIN: o alias do target (e a tabela target sem alias) só aparece no SET e no WHERE — nunca no ON do JOIN (ver ERROS 6 e 11); correr `_temp/_detetar_alias_on.mjs` antes de commit
+- [ ] Nomes próprios/páginas em EN sem apóstrofo (`Graves Disease`, não `Graves' Disease`) — o apóstrofo em string quebra o SQL e em comentário quebra o validador de aspas (ver ERRO 12a)
+- [ ] Simulações read-only em Node: comparar UUIDs como strings, nunca com `Math.min`/`Math.max` (ver ERRO 12b); se a simulação disser "nada a fazer", verificar o script antes de concluir
 
 ---
 
@@ -472,6 +474,46 @@ segura: mover para o WHERE.
   dentro da secção FROM/JOIN/ON (sai com `exit 1` se houver).
 - Ver também ERRO 6 (JOIN LATERAL, 42P10) — a regra é a mesma: o target só
   vive no SET/WHERE; a diferença é só a fase em que o Postgres o detecta.
+
+---
+
+## ERRO 12: NOME PRÓPRIO COM APÓSTROFO E UUIDs EM SCRIPTS NODE (2026-10-02)
+
+Duas armadilhas de validação encontradas na migração 289 — nenhuma é erro de
+SQL inválido, mas ambas produzem falsos diagnósticos.
+
+**12a — apóstrofo em nome próprio (o validador de aspas não distingue
+contexto).** `Graves' Disease` tem nº ímpar de `'`: dentro de uma string SQL
+fecha o literal (erro de sintaxe); **dentro de um comentário `--` não estraga
+nada, mas faz o `_validar_sql_basico.mjs` falhar** — e um FAIL de aspas num
+comentário é ruído que pode esconder um FAIL real de string no mesmo ficheiro.
+
+```sql
+-- ❌ FAIL aspas ímpares nas linhas N (comentário: "Graves' Disease")
+-- ✅ escrever sem apóstrofo: "Graves Disease" (mantém a citação bibliográfica)
+```
+
+**Regra:** ao citar nomes próprios/páginas em EN (Graves, Crohn, Wilson,
+patient's...), escrever **sem apóstrofo** e correr o validador antes do commit.
+Se o apóstrofo for indispensável numa string, escapar `''` (dois plicas).
+
+**12b — `Math.min`/`Math.max` em UUIDs em scripts Node dá `NaN`.** Uma
+simulação read-only da PARTE C comparava ids com `Math.min(darq.id, dpar.id)`:
+o `Math.min` coage para Number e devolve `NaN`, pelo que **nenhum** par era
+encontrado (`orfaoExiste: false`) e a conclusão seria "a PARTE C não faz nada /
+não há órfãos" — quando havia 4. O SQL está correcto (`LEAST(a,b)` sobre tipo
+`uuid` compara bytes); o que estava errado era a validação em JS.
+
+```js
+// ❌ Math.min("3be6ac1a-...", "c47c2a9b-...") → NaN  (nunca casa nada)
+// ✅ comparar como strings
+const lo = (x, y) => (x < y ? x : y), hi = (x, y) => (x < y ? y : x);
+```
+
+**Regra:** em scripts de simulação, comparar UUIDs como **strings** (ordem
+lexicográfica = ordem de bytes do `uuid` no Postgres para hex minúsculo). Se
+uma simulação de migração devolver "nada a fazer", desconfiar do script antes
+de concluir que a BD está vazia do problema.
 
 ---
 
