@@ -93,6 +93,20 @@
 -- em que os DOIS lados são duplicados) e deixaria um par órfão a apontar
 -- para fármacos arquivados.
 --
+-- CORRECÇÃO APÓS FALHA EM PRODUÇÃO (2026-10-02): a 1.ª versão falhou com
+-- ERROR 23505 em drug_interactions_pair_unique ao remapear
+-- acido-ascorbico × sulfato-ferroso. Causa: o UNIQUE do PostgreSQL NÃO
+-- exclui linhas arquivadas, e a regra de desempate escolhia a linha de maior
+-- severidade (ferro × acido_ascorbico, moderate, que PRECISA de remapear)
+-- em vez da que já estava na chave final (minor, sem UPDATE). A correcção:
+--   1. desempate prefere SEMPRE a linha já na chave final (3.2);
+--   2. a severidade do grupo é harmonizada para o máximo (3.3), pelo que
+--      preferir a linha posicionada não perde severidade;
+--   3. o remapeamento (3.4) só ocorre se a chave final estiver LIVRE,
+--      contando com linhas arquivadas; as bloqueadas são arquivadas (3.5).
+-- Simulado em _temp/_simular_passo3_v2.mjs: 796 pares, 0 chaves duplicadas,
+-- 0 fora de ordem, 0 órfãos, 0 colisões com arquivadas.
+--
 -- Idempotente: todos os passos têm guarda (só copia campos vazios, só
 -- arquiva linhas activas, só remapeia o que ainda aponta ao duplicado).
 -- =====================================================================
@@ -186,6 +200,15 @@ SET risk_pt          = CASE WHEN sq.risk_pt          = '' THEN dq.risk_pt       
     contraception_en = CASE WHEN sq.contraception_en = '' THEN dq.contraception_en ELSE sq.contraception_en END,
     source_pt        = CASE WHEN sq.source_pt        = '' THEN dq.source_pt        ELSE sq.source_pt        END,
     source_en        = CASE WHEN sq.source_en        = '' THEN dq.source_en        ELSE sq.source_en        END,
+    -- categoria: a MAIS RESTRITIVA das duas (a consolidação nunca pode
+    -- afrouxar uma contraindicação). Só existe uma divergência real:
+    -- amoxicilina-acido-clavulanico (caution) vs amoxicilina-clavulanato
+    -- (compatible) → mantém-se caution.
+    pregnancy_category = CASE
+      WHEN dq.pregnancy_category = 'contraindicated' OR sq.pregnancy_category = 'contraindicated' THEN 'contraindicated'
+      WHEN dq.pregnancy_category = 'caution'         OR sq.pregnancy_category = 'caution'         THEN 'caution'
+      WHEN dq.pregnancy_category = 'compatible'      OR sq.pregnancy_category = 'compatible'      THEN 'compatible'
+      ELSE sq.pregnancy_category END,
     updated_at = now()
 FROM _m290_ids i
 JOIN public.drug_pregnancy_info dq
@@ -236,9 +259,20 @@ FROM (
   WHERE di.is_archived = false
 ) c;
 
--- 3.2 arquivar as linhas que perdem o grupo: fica a de maior severidade;
---     em empate fica a que NÃO precisa de remapeamento (a do sobrevivente,
---     critério da 283) e, se ambas precisarem, a de menor id (determinístico).
+-- 3.2 arquivar as linhas que perdem o grupo.
+--     ORDEM DE PREFERÊNCIA (determinística):
+--       1. a que JÁ está na chave final (precisa_remap = 0) — é a do
+--          sobrevivente e NÃO precisa de UPDATE, logo não pode violar o
+--          UNIQUE. Este critério é o primeiro, à frente da severidade, e é
+--          o que corrige o erro 23505 da 1.ª versão: quando a linha já na
+--          chave final é a de severidade MENOR, a versão anterior escolhia
+--          a de maior severidade (que precisa de remapear) e mandava-a para
+--          uma chave já ocupada pela linha arquivada — o UNIQUE do Postgres
+--          não exclui linhas arquivadas.
+--       2. maior severidade;
+--       3. menor id (determinismo).
+--     A severidade do grupo é harmonizada em 3.3, pelo que preferir a linha
+--     já posicionada NÃO perde a severidade maior.
 --     Também arquiva pares que colapsariam em si mesmos (nova_a = nova_b).
 UPDATE public.drug_interactions di
 SET is_archived = true, updated_at = now()
@@ -257,15 +291,36 @@ WHERE di.id = c.linha_id
         AND k.nova_a = c.nova_a
         AND k.nova_b = c.nova_b
         AND (
-          k.rk > c.rk
-          OR (k.rk = c.rk AND k.precisa_remap < c.precisa_remap)
-          OR (k.rk = c.rk AND k.precisa_remap = c.precisa_remap AND k.linha_id < c.linha_id)
+          k.precisa_remap < c.precisa_remap
+          OR (k.precisa_remap = c.precisa_remap AND k.rk > c.rk)
+          OR (k.precisa_remap = c.precisa_remap AND k.rk = c.rk AND k.linha_id < c.linha_id)
         )
     )
   );
 
--- 3.3 remapear as sobreviventes para a chave final (já canónica; todas as
---     colisões foram arquivadas em 3.2, pelo que não há violação do UNIQUE)
+-- 3.3 harmonizar a severidade do grupo: o par consolidado fica com a MAIOR
+--     severidade registada nos duplicados. Necessário porque 3.2 pode ter
+--     mantido a linha já posicionada com severidade menor (ex.:
+--     acido-ascorbico × sulfato-ferroso era minor no sobrevivente e
+--     moderate na linha ferro × acido_ascorbico que é arquivada).
+UPDATE public.drug_interactions di
+SET severity = maior.sev,
+    updated_at = now()
+FROM _m290_cand c
+JOIN (
+  SELECT nova_a, nova_b, MAX(rk) AS rk_max
+  FROM _m290_cand
+  GROUP BY nova_a, nova_b
+) g ON g.nova_a = c.nova_a AND g.nova_b = c.nova_b
+JOIN _m290_rank maior ON maior.rk = g.rk_max
+WHERE di.id = c.linha_id
+  AND di.is_archived = false
+  AND (SELECT rk FROM _m290_rank WHERE sev = di.severity) < g.rk_max;
+
+-- 3.4 remapear as sobreviventes cuja chave final está LIVRE. A guarda olha
+--     para TODAS as linhas (activas e arquivadas): o UNIQUE
+--     drug_interactions_pair_unique NÃO exclui arquivadas, pelo que um
+--     UPDATE para uma chave ocupada por linha arquivada falha com 23505.
 UPDATE public.drug_interactions di
 SET drug_a_id = c.nova_a,
     drug_b_id = c.nova_b,
@@ -273,7 +328,34 @@ SET drug_a_id = c.nova_a,
 FROM _m290_cand c
 WHERE di.id = c.linha_id
   AND di.is_archived = false
-  AND (di.drug_a_id <> c.nova_a OR di.drug_b_id <> c.nova_b);
+  AND (di.drug_a_id <> c.nova_a OR di.drug_b_id <> c.nova_b)
+  AND NOT EXISTS (
+    SELECT 1 FROM public.drug_interactions x
+    WHERE x.id <> di.id
+      AND x.drug_a_id = c.nova_a
+      AND x.drug_b_id = c.nova_b
+      AND x.is_archived = false
+  );
+
+-- 3.5 arquivar as linhas que continuam bloqueadas (a chave final está ocupada
+--     por uma linha ARQUIVADA de outro par — caso residual e raro).
+--     Preserva o sentido clínico: prefere-se arquivar a linha que ainda está
+--     na chave antiga, deixando activa a que já descreve o par consolidado.
+--     Nunca deixa órfão: a chave final está ocupada por uma linha que
+--     referencia os fármacos canónicos.
+UPDATE public.drug_interactions di
+SET is_archived = true, updated_at = now()
+FROM _m290_cand c
+WHERE di.id = c.linha_id
+  AND di.is_archived = false
+  AND (di.drug_a_id <> c.nova_a OR di.drug_b_id <> c.nova_b)
+  AND EXISTS (
+    SELECT 1 FROM public.drug_interactions x
+    WHERE x.id <> di.id
+      AND x.drug_a_id = c.nova_a
+      AND x.drug_b_id = c.nova_b
+      AND x.is_archived = true
+  );
 
 -- ---------------------------------------------------------------------
 -- 4. drug_food_interactions / drug_disease_interactions
