@@ -1,5 +1,5 @@
 import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
-import ReporClient from './reporClient'
+import ReporClient from '@/components/auth/ReporForm'
 
 export const dynamic = 'force-dynamic'
 

@@ -9,20 +9,93 @@ const PUBLIC_SECTIONS = [
   'pesquisa', 'sobre', 'unsubscribe',
 ]
 
+/**
+ * ÁREA DE CONTA — vive na raiz (sem `[lang]`) e no host `conta.*`.
+ *
+ * O mesmo código serve os dois hosts: em `conta.conhecafarmacia.com` responde
+ * aqui; nos restantes hosts estas rotas são enviadas para lá com 308 (e as
+ * páginas antigas `/{lang}/entrar`, `/{lang}/registo`, … idem). Em
+ * desenvolvimento (`localhost`) não há subdomínio, por isso as rotas são
+ * servidas localmente — é assim que se testa o hub sem DNS.
+ */
+const ACCOUNT_SECTIONS = new Set(['entrar', 'registar', 'recuperar', 'auth', 'perfil'])
+
+const LEGACY_ACCOUNT_PATHS = {
+  entrar: '/entrar',
+  registo: '/registar',
+  register: '/registar',
+  'esqueci-palavra-passe': '/recuperar',
+  'repor-palavra-passe': '/perfil/seguranca',
+  'conta-criada': '/perfil',
+}
+
+const origin = (value, fallback) => String(value || '').trim().replace(/\/+$/, '') || fallback
+
+const ACCOUNT_ORIGIN = origin(
+  process.env.NEXT_PUBLIC_ACCOUNT_ORIGIN,
+  'https://conta.conhecafarmacia.com',
+)
+const SITE_ORIGIN = origin(
+  process.env.NEXT_PUBLIC_SITE_URL,
+  'https://www.conhecafarmacia.com',
+)
+const COOKIE_DOMAIN = process.env.NEXT_PUBLIC_COOKIE_DOMAIN || undefined
+
+const sectionOf = (pathname) => pathname.split('/')[1] || ''
 
 export async function proxy(request) {
-  const { pathname } = request.nextUrl
+  const { pathname, search } = request.nextUrl
+  const hostname = (request.headers.get('host') || '').split(':')[0].toLowerCase()
+  const onCfDomain =
+    hostname === 'conhecafarmacia.com' || hostname.endsWith('.conhecafarmacia.com')
+  const onAccountHost = onCfDomain && hostname.startsWith('conta.')
 
-  // Root "/" → redirect to default language
+  // ---------------------------------------------------------------------
+  // conta.* — só a área de conta existe neste host.
+  // ---------------------------------------------------------------------
+  if (onAccountHost) {
+    if (pathname === '/') {
+      return NextResponse.redirect(new URL('/perfil', request.url))
+    }
+    if (!ACCOUNT_SECTIONS.has(sectionOf(pathname))) {
+      // O site de conteúdos nunca aparece debaixo do endereço da conta.
+      return NextResponse.redirect(`${SITE_ORIGIN}${pathname}${search}`, 308)
+    }
+  }
+
+  // ---------------------------------------------------------------------
+  // www / apex — as páginas de conta mudaram-se para conta.*.
+  // ---------------------------------------------------------------------
+  if (onCfDomain && !onAccountHost) {
+    if (pathname === '/') {
+      return NextResponse.redirect(new URL(`/${DEFAULT_LANG}`, request.url))
+    }
+
+    const segments = pathname.split('/')
+    const first = segments[1]
+    const legacy = SUPPORTED_LANGS.includes(first) ? LEGACY_ACCOUNT_PATHS[segments[2]] : null
+
+    if (legacy) {
+      // `search` preservado: um link de confirmação em curso não perde o código.
+      return NextResponse.redirect(`${ACCOUNT_ORIGIN}${legacy}${search}`, 308)
+    }
+    if (!SUPPORTED_LANGS.includes(first) && ACCOUNT_SECTIONS.has(first)) {
+      return NextResponse.redirect(`${ACCOUNT_ORIGIN}${pathname}${search}`, 308)
+    }
+  }
+
+  // Root "/" → redirect to default language (dev e previews)
   if (pathname === '/') {
     return NextResponse.redirect(new URL(`/${DEFAULT_LANG}`, request.url))
   }
 
   // Extract lang from first path segment
-  const lang = pathname.split('/')[1]
+  const lang = sectionOf(pathname)
+  const isLangRoute = SUPPORTED_LANGS.includes(lang)
+  const isAccountRoute = !isLangRoute && ACCOUNT_SECTIONS.has(lang)
 
-  // If not a supported language, pass through (let Next.js handle 404)
-  if (!SUPPORTED_LANGS.includes(lang)) {
+  // If not a language route nor an account route, pass through (let Next 404)
+  if (!isLangRoute && !isAccountRoute) {
     return NextResponse.next()
   }
 
@@ -54,7 +127,7 @@ export async function proxy(request) {
 
   // Create Supabase client for session management
   const requestHeaders = new Headers(request.headers)
-  requestHeaders.set('x-lang', lang)
+  requestHeaders.set('x-lang', isLangRoute ? lang : DEFAULT_LANG)
   requestHeaders.set('x-csp-nonce', nonce)
   let supabaseResponse = NextResponse.next({
     request: { headers: requestHeaders },
@@ -78,7 +151,11 @@ export async function proxy(request) {
           )
           supabaseResponse = NextResponse.next({ request: { headers: requestHeaders } })
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            supabaseResponse.cookies.set(
+              name,
+              value,
+              COOKIE_DOMAIN ? { ...options, domain: COOKIE_DOMAIN } : options,
+            )
           )
         },
       },
@@ -96,6 +173,12 @@ export async function proxy(request) {
       path: pathname,
       message: proxyErr?.message,
     })
+  }
+
+  // Área de conta: CSP aplicada + sessão renovada. Não há secções a proteger
+  // aqui — cada página decide (o hub redirecciona para /entrar sem sessão).
+  if (!isLangRoute) {
+    return supabaseResponse
   }
 
   // Extract section after lang: /pt/admin/dashboard → admin/dashboard

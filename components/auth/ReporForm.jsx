@@ -5,7 +5,14 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Lock, Eye, EyeOff, CheckCircle, ArrowLeft, Loader2 } from 'lucide-react'
 
-export default function ReporClient({ lang }) {
+/**
+ * Definição de nova senha a partir do link de reposição.
+ *
+ * No site principal continua em /pt/repor-palavra-passe; a área de conta não
+ * usa este ecrã — o link cai em /perfil/seguranca, que tem o mesmo formulário
+ * a par das restantes opções de segurança.
+ */
+export default function ReporClient({ lang, basePath = `/${lang}` }) {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -92,7 +99,7 @@ export default function ReporClient({ lang }) {
             Este link de reposição expirou ou já foi utilizado. Solicita um novo link.
           </p>
           <Link
-            href={`/${lang}/esqueci-palavra-passe`}
+            href={`${basePath}/esqueci-palavra-passe`}
             className="inline-flex items-center gap-2 bg-brand-accent text-white px-6 py-3 rounded-xl font-semibold hover:bg-brand-accent/90 transition-all"
           >
             Solicitar novo link
@@ -115,7 +122,7 @@ export default function ReporClient({ lang }) {
             A tua palavra-passe foi alterada com sucesso. Ya podes entrar com a nova password.
           </p>
           <Link
-            href={`/${lang}/entrar`}
+            href={`${basePath}/entrar`}
             className="inline-flex items-center gap-2 bg-brand-accent text-white px-6 py-3 rounded-xl font-semibold hover:bg-brand-accent/90 transition-all"
           >
             Entrar na conta
@@ -197,7 +204,7 @@ export default function ReporClient({ lang }) {
         </form>
 
         <p className="text-center text-sm text-brand-deep/60 mt-6">
-          <Link href={`/${lang}/entrar`} className="inline-flex items-center gap-1 text-brand-accent hover:underline">
+          <Link href={`${basePath}/entrar`} className="inline-flex items-center gap-1 text-brand-accent hover:underline">
             <ArrowLeft size={14} />
             Voltar ao login
           </Link>

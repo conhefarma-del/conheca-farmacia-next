@@ -123,7 +123,7 @@ html.dark .form-note {
   }
 
   .logo img {
-    @apply h-12 md:h-14 w-auto object-contain;
+    @apply h-9 md:h-10 w-auto object-contain;
   }
 
   /* Chrome superior fixo: a utility bar e o header são wrappers separados (ver
@@ -131,7 +131,10 @@ html.dark .form-note {
      framer-motion (mesma mola em ambos), mantendo a utility bar como elemento
      independente que fica visível acima do drawer. */
   .header {
-    @apply bg-brand-bg shadow-sm;
+    background: color-mix(in srgb, var(--color-brand-bg) 86%, transparent);
+    backdrop-filter: blur(14px) saturate(1.5);
+    border-bottom: 1px solid var(--color-brand-divider);
+    box-shadow: none;
   }
 
   .hero {
@@ -294,40 +297,48 @@ html.dark .form-note {
 
   /* Desktop Navigation Links */
   .nav-links {
-    @apply hidden md:flex items-center gap-8;
+    @apply hidden md:flex items-center;
+    gap: 2px;
+    padding: 4px;
+    border-radius: 999px;
+    background: var(--color-brand-bg-alt);
   }
   .nav-links a {
-    @apply text-brand-deep font-medium transition-colors duration-300 hover:text-brand-accent;
-    padding: 5px 10px;
+    @apply transition-colors duration-200 hover:text-brand-primary;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: color-mix(in srgb, var(--color-brand-deep) 62%, transparent);
   }
   html.dark .nav-links a {
-    color: var(--color-brand-deep);
-    padding: 5px 10px;
+    color: color-mix(in srgb, var(--color-brand-deep) 72%, transparent);
+    padding: 6px 14px;
   }
 
-  /* Desktop nav-links hover */
+  /* Hover: pílula clara, sem salto de tamanho. */
   .nav-links a:hover {
-    background: rgba(0, 73, 58, 0.06);
-    border-radius: 10px;
-    padding: 5px 10px;
+    background: color-mix(in srgb, var(--color-brand-bg) 70%, transparent);
+    border-radius: 999px;
+    padding: 6px 14px;
   }
 
-  /* Desktop nav-links active state (pill style) */
+  /* Activo: pílula branca, como no AppHeader do Localizador. */
   .nav-links a.nav-link-active {
-    background: rgba(0, 73, 58, 0.12);
+    background: var(--color-brand-card);
     color: var(--color-brand-primary);
     font-weight: 600;
-    border-radius: 10px;
-    padding: 5px 10px;
+    border-radius: 999px;
+    padding: 6px 14px;
+    box-shadow: 0 1px 2px rgba(0, 42, 50, 0.06);
   }
 
-  /* Dark mode nav-links active/hover */
   html.dark .nav-links a:hover {
-    background: rgba(0, 73, 58, 0.08);
+    background: rgba(255, 255, 255, 0.06);
   }
 
   html.dark .nav-links a.nav-link-active {
-    background: rgba(0, 73, 58, 0.4);
+    background: rgba(255, 255, 255, 0.08);
     color: var(--color-brand-deep);
   }
 
@@ -341,21 +352,22 @@ html.dark .form-note {
     border: none;
     cursor: pointer;
     font-family: inherit;
-    font-size: 1rem;
-    font-weight: 500;
-    color: var(--color-brand-deep);
-    padding: 5px 10px;
-    border-radius: 10px;
-    transition: color 0.3s, background 0.3s;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: color-mix(in srgb, var(--color-brand-deep) 62%, transparent);
+    padding: 6px 14px;
+    border-radius: 999px;
+    transition: color 0.2s, background 0.2s;
   }
   .nav-dropdown-btn:hover {
-    background: rgba(0, 73, 58, 0.06);
-    color: var(--color-brand-accent);
+    background: color-mix(in srgb, var(--color-brand-bg) 70%, transparent);
+    color: var(--color-brand-primary);
   }
   .nav-dropdown-btn.nav-link-active {
-    background: rgba(0, 73, 58, 0.12);
+    background: var(--color-brand-card);
     color: var(--color-brand-primary);
     font-weight: 600;
+    box-shadow: 0 1px 2px rgba(0, 42, 50, 0.06);
   }
   .nav-dropdown-chevron { transition: transform 0.2s ease; }
   .nav-dropdown-chevron.is-open { transform: rotate(180deg); }

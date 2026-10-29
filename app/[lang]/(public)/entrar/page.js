@@ -1,5 +1,5 @@
 import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
-import EntrarClient from './entrarClient'
+import EntrarClient from '@/components/auth/EntrarForm'
 
 export const dynamic = 'force-dynamic'
 

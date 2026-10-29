@@ -5,7 +5,22 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Mail, Lock, LogIn, Eye, EyeOff } from 'lucide-react'
 
-export default function EntrarClient({ lang }) {
+/**
+ * Formulário de entrada — partilhado pelo site (/pt/entrar) e pela área de
+ * conta (/entrar, em conta.conhecafarmacia.com).
+ *
+ * `basePath` é onde vivem as rotas de conta ("" em conta.*, "/pt" no site) e
+ * `siteBase` é o conteúdo do site (política de privacidade). `nextUrl` é o
+ * destino depois de entrar — já validado no servidor por `safeNext()`.
+ */
+export default function EntrarClient({
+  lang,
+  basePath = `/${lang}`,
+  nextUrl = null,
+  confirmPath = `/${lang}/conta-criada`,
+  siteBase = `/${lang}`,
+  notice = null,
+}) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -35,7 +50,7 @@ export default function EntrarClient({ lang }) {
 
       if (data.user) {
         setSuccess('Login efetuado com sucesso!')
-        window.location.href = `/${lang}/perfil`
+        window.location.href = nextUrl || `${basePath}/perfil`
       }
     } catch {
       setError('Erro ao conectar ao servidor')
@@ -48,11 +63,20 @@ export default function EntrarClient({ lang }) {
     setLoading(true)
     setError('')
     try {
+      // O redirect do OAuth leva só um caminho — o `next` viaja numa cookie
+      // curta que /auth/confirm lê e apaga. Sem isto, quem entra com Google a
+      // partir de outra página perdia o caminho de volta.
+      if (nextUrl) {
+        document.cookie = `cf-next=${encodeURIComponent(nextUrl)}; path=/; max-age=600; samesite=lax${
+          window.location.protocol === 'https:' ? '; secure' : ''
+        }`
+      }
+
       const supabase = createClient()
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/${lang}/conta-criada`,
+          redirectTo: `${window.location.origin}${confirmPath}`,
         },
       })
       if (oauthError) {
@@ -74,6 +98,15 @@ export default function EntrarClient({ lang }) {
           <p className="text-brand-deep/60">Acede à tua conta Conheça Farmácia</p>
         </div>
 
+        {notice && (
+          <div
+            role="status"
+            className="mb-6 rounded-xl border border-brand-divider bg-card px-4 py-3 text-center text-sm text-brand-deep/75"
+          >
+            {notice}
+          </div>
+        )}
+
         {/* Google Login */}
         <button
           onClick={handleGoogleLogin}
@@ -93,7 +126,7 @@ export default function EntrarClient({ lang }) {
           Ao continuar com Google, autorizas o acesso ao teu nome, email e fotografia de perfil.{' '}
           Esses dados são utilizados apenas para autenticação e não são partilhados com terceiros.{' '}
           Consulta a nossa{' '}
-          <a href={`/${lang}/politica-privacidade`} className="underline hover:text-brand-accent transition-colors">
+          <a href={`${siteBase}/politica-privacidade`} className="underline hover:text-brand-accent transition-colors">
             Política de Privacidade
           </a>.
         </p>
@@ -127,7 +160,7 @@ export default function EntrarClient({ lang }) {
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="text-sm font-medium text-brand-deep">Password</label>
-              <Link href={`/${lang}/esqueci-palavra-passe`} className="text-xs text-brand-accent hover:underline">
+              <Link href={`${basePath}/esqueci-palavra-passe`} className="text-xs text-brand-accent hover:underline">
                 Esqueci a palavra-passe
               </Link>
             </div>
@@ -172,7 +205,7 @@ export default function EntrarClient({ lang }) {
 
         <p className="text-center text-sm text-brand-deep/60 mt-6">
           Não tens conta?{' '}
-          <Link href={`/${lang}/registo`} className="text-brand-accent hover:underline">
+          <Link href={`${basePath}/registo`} className="text-brand-accent hover:underline">
             Criar conta
           </Link>
         </p>

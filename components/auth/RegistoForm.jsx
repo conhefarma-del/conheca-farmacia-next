@@ -5,7 +5,19 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Mail, Lock, UserPlus, Eye, EyeOff } from 'lucide-react'
 
-export default function RegistoClient({ lang }) {
+/**
+ * Formulário de criação de conta — partilhado pelo site (/pt/registo) e pela
+ * área de conta (/registar, em conta.conhecafarmacia.com).
+ *
+ * `confirmPath` é a rota que troca o código do Supabase (PKCE) por uma sessão;
+ * `nextUrl` (opcional, já validado no servidor) sobrevive ao OAuth numa cookie.
+ */
+export default function RegistoClient({
+  lang,
+  basePath = `/${lang}`,
+  nextUrl = null,
+  confirmPath = `/${lang}/conta-criada`,
+}) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -35,7 +47,7 @@ export default function RegistoClient({ lang }) {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/${lang}/conta-criada`,
+          emailRedirectTo: `${window.location.origin}${confirmPath}`,
           data: {
             display_name: email.split('@')[0],
           },
@@ -62,11 +74,19 @@ export default function RegistoClient({ lang }) {
     setLoading(true)
     setError('')
     try {
+      // Mesmo mecanismo do EntrarForm: o destino viaja numa cookie curta,
+      // porque o redirect do OAuth só aceita um caminho.
+      if (nextUrl) {
+        document.cookie = `cf-next=${encodeURIComponent(nextUrl)}; path=/; max-age=600; samesite=lax${
+          window.location.protocol === 'https:' ? '; secure' : ''
+        }`
+      }
+
       const supabase = createClient()
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/${lang}/conta-criada`,
+          redirectTo: `${window.location.origin}${confirmPath}`,
         },
       })
       if (oauthError) {
@@ -189,7 +209,7 @@ export default function RegistoClient({ lang }) {
 
         <p className="text-center text-sm text-brand-deep/60 mt-6">
           Já tens conta?{' '}
-          <Link href={`/${lang}/entrar`} className="text-brand-accent hover:underline">
+          <Link href={`${basePath}/entrar`} className="text-brand-accent hover:underline">
             Entrar
           </Link>
         </p>

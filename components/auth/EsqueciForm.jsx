@@ -5,7 +5,18 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Mail, KeyRound, ArrowLeft, CheckCircle } from 'lucide-react'
 
-export default function EsqueciClient({ lang }) {
+/**
+ * Pedido de reposição de senha — partilhado pelo site
+ * (/pt/esqueci-palavra-passe) e pela área de conta (/recuperar).
+ *
+ * `resetPath` é a rota que recebe o link do e-mail e troca o código por sessão
+ * (no conta.* é /auth/reset, que segue para /perfil/seguranca).
+ */
+export default function EsqueciClient({
+  lang,
+  basePath = `/${lang}`,
+  resetPath = `/${lang}/repor-palavra-passe`,
+}) {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -20,7 +31,7 @@ export default function EsqueciClient({ lang }) {
     try {
       const supabase = createClient()
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/${lang}/repor-palavra-passe`,
+        redirectTo: `${window.location.origin}${resetPath}`,
       })
 
       if (resetError) {
@@ -55,7 +66,7 @@ export default function EsqueciClient({ lang }) {
             Se não encontrares o email, verifica a pasta de spam ou Junta-te à comunidade criando uma conta.
           </p>
           <Link
-            href={`/${lang}/entrar`}
+            href={`${basePath}/entrar`}
             className="inline-flex items-center gap-2 text-brand-accent hover:underline font-medium"
           >
             <ArrowLeft size={16} />
@@ -114,7 +125,7 @@ export default function EsqueciClient({ lang }) {
 
         <p className="text-center text-sm text-brand-deep/60 mt-6">
           Lembra-te da password?{' '}
-          <Link href={`/${lang}/entrar`} className="text-brand-accent hover:underline">
+          <Link href={`${basePath}/entrar`} className="text-brand-accent hover:underline">
             Entrar
           </Link>
         </p>

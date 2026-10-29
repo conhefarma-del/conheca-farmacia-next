@@ -1,5 +1,5 @@
 import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
-import EsqueciClient from './esqueciClient'
+import EsqueciClient from '@/components/auth/EsqueciForm'
 
 export const dynamic = 'force-dynamic'
 

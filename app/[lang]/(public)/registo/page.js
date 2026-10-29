@@ -1,5 +1,5 @@
 import { loadTranslations, t, SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/i18n'
-import RegistoClient from './registoClient'
+import RegistoClient from '@/components/auth/RegistoForm'
 
 export const dynamic = 'force-dynamic'
 
