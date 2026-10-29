@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
+import { cookieDomainFor } from '@/lib/cookie-domain'
 
 const SUPPORTED_LANGS = ['pt', 'en']
 const DEFAULT_LANG = 'pt'
@@ -39,7 +40,7 @@ const SITE_ORIGIN = origin(
   process.env.NEXT_PUBLIC_SITE_URL,
   'https://www.conhecafarmacia.com',
 )
-const COOKIE_DOMAIN = process.env.NEXT_PUBLIC_COOKIE_DOMAIN || undefined
+
 
 const sectionOf = (pathname) => pathname.split('/')[1] || ''
 
@@ -49,6 +50,9 @@ export async function proxy(request) {
   const onCfDomain =
     hostname === 'conhecafarmacia.com' || hostname.endsWith('.conhecafarmacia.com')
   const onAccountHost = onCfDomain && hostname.startsWith('conta.')
+  // Domínio da cookie decidido contra o host: em `*.vercel.app` o domínio
+  // pai não se aplica e o browser recusava a cookie de sessão.
+  const COOKIE_DOMAIN = cookieDomainFor(hostname)
 
   // ---------------------------------------------------------------------
   // conta.* — só a área de conta existe neste host.
@@ -74,6 +78,18 @@ export async function proxy(request) {
     const segments = pathname.split('/')
     const first = segments[1]
     const legacy = SUPPORTED_LANGS.includes(first) ? LEGACY_ACCOUNT_PATHS[segments[2]] : null
+
+    // A CONTA mudou-se para conta.*; o PERFIL DE ESTUDANTE fica aqui — é
+    // para `/{lang}/perfil` que o hub manda (quizzes, competições, turma).
+    // Só a gestão da conta sai: as definições antigas são hoje
+    // `conta.*/perfil/seguranca`, e um marcador guardado não parte.
+    if (
+      SUPPORTED_LANGS.includes(first) &&
+      segments[2] === 'perfil' &&
+      segments[3] === 'definicoes'
+    ) {
+      return NextResponse.redirect(`${ACCOUNT_ORIGIN}/perfil/seguranca${search}`, 308)
+    }
 
     if (legacy) {
       // `search` preservado: um link de confirmação em curso não perde o código.
