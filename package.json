@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "node scripts/check-isr-dynamic-usage.mjs && next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "format": "npx prettier --write ."
   },
   "keywords": [],

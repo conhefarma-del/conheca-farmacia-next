@@ -6,40 +6,33 @@ import { createClient } from '@/lib/supabase/client'
 import { LOCATOR_ORIGIN, SITE_ORIGIN } from '@/lib/account-urls'
 import {
   Bookmark,
-  CalendarCheck,
   Camera,
   Check,
-  ChevronRight,
   GraduationCap,
   Loader2,
-  LogOut,
   NotebookPen,
   Pencil,
   Pill,
-  Shield,
   X,
 } from 'lucide-react'
 
 /**
- * Hub da conta (conta.conhecafarmacia.com/perfil).
+ * Visão geral da conta (conta.conhecafarmacia.com/perfil).
  *
- * É a casa comum das duas operações: identidade em cima, atalhos para o que
- * cada produto guarda em baixo. As listas **não** são renderizadas aqui — os
- * cartões de produto e o formato das reservas vivem no Localizador; o hub
- * liga para lá para não duplicar UI que depois diverge.
+ * É a casa comum das duas operações: identidade em cima, guardados e o
+ * resumo da conta em baixo. As listas completas vivem no Localizador — aqui
+ * fica o que a pessoa guardou, com o resto a um clique.
  *
  * O nome e a foto vivem em `auth.users.raw_user_meta_data` (`full_name`,
  * `display_name`, `avatar_url`) — o mesmo sítio que o site já usa. Não há
  * tabela `profiles`, e não é aqui que ela nasce.
+ *
+ * O conteúdo usa o chassi `.conta-*` partilhado com o site e o Localizador:
+ * painéis hairline, listas em linhas e raio de 12px. O antigo `max-w-3xl`
+ * centrado com cartões de 16px saiu com a unificação.
  */
 
-const CARD_LINKS = [
-  {
-    href: `${LOCATOR_ORIGIN}/reservas`,
-    title: 'As minhas reservas',
-    description: 'Histórico e estado das reservas',
-    icon: CalendarCheck,
-  },
+const SITE_LINKS = [
   {
     href: `${SITE_ORIGIN}/pt/guardados`,
     title: 'Conteúdos guardados',
@@ -67,7 +60,6 @@ export default function HubClient({ profile, saved = [], savedTotal = 0 }) {
   const [draft, setDraft] = useState(profile.name)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
-  const [leaving, setLeaving] = useState(false)
   const [message, setMessage] = useState('')
 
   const displayName = name || profile.email.split('@')[0] || 'Utilizador'
@@ -133,183 +125,169 @@ export default function HubClient({ profile, saved = [], savedTotal = 0 }) {
     }
   }
 
-  async function handleSignOut() {
-    setLeaving(true)
-    try {
-      const supabase = createClient()
-      await supabase.auth.signOut()
-    } catch {
-      // Mesmo que o pedido falhe, sair do hub é o que a pessoa pediu.
-    }
-    window.location.href = '/entrar'
-  }
-
   return (
-    <div className="container-center py-10 sm:py-14">
-      <div className="mx-auto max-w-3xl">
-        {message && (
-          <div
-            className="mb-5 rounded-xl border border-brand-divider bg-brand-card px-4 py-3 text-sm text-brand-deep/80"
-            role="status"
-          >
-            {message}
+    <main className="conta-page">
+      <header className="conta-page-head">
+        <div>
+          <p className="conta-kicker">A minha conta</p>
+          <h1 className="conta-title">{displayName}</h1>
+          <p className="conta-sub">
+            Uma conta para o site, o Localizador e as reservas nas farmácias.
+          </p>
+        </div>
+        <div className="conta-head-acts">
+          <Link href="/perfil/seguranca" className="conta-btn conta-btn--ghost conta-btn--sm">
+            Segurança e palavra-passe
+          </Link>
+        </div>
+      </header>
+
+      {message && (
+        <p
+          className={`conta-alert${message.includes('atualiz') ? ' conta-alert--ok' : ' conta-alert--bad'}`}
+          role="status"
+        >
+          {message}
+        </p>
+      )}
+
+      <section className="conta-panel">
+        <div className="conta-identity">
+          <div className="conta-avatar">
+            {avatar ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={avatar} alt={displayName} />
+            ) : (
+              initial
+            )}
+            <label
+              className="conta-avatar-edit"
+              title="Trocar fotografia"
+              aria-label="Trocar fotografia"
+            >
+              {uploading ? <Loader2 size={18} className="animate-spin" /> : <Camera size={18} />}
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarUpload}
+                disabled={uploading}
+              />
+            </label>
           </div>
-        )}
 
-        {/* Identidade */}
-        <section className="rounded-2xl border border-brand-divider bg-brand-card p-6 shadow-soft sm:p-8">
-          <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center">
-            <div className="relative shrink-0 group">
-              {avatar ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={avatar}
-                  alt={displayName}
-                  className="h-20 w-20 rounded-full object-cover"
-                />
-              ) : (
-                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-brand-accent/10 text-2xl font-semibold text-brand-accent">
-                  {initial}
-                </div>
-              )}
-              <label
-                className="absolute inset-0 flex cursor-pointer items-center justify-center rounded-full bg-black/45 text-white opacity-0 transition-opacity group-hover:opacity-100"
-                title="Trocar fotografia"
-              >
-                {uploading ? (
-                  <Loader2 size={18} className="animate-spin" />
-                ) : (
-                  <Camera size={18} />
-                )}
+          <div className="conta-identity-main">
+            {editing ? (
+              <div className="flex items-center gap-2">
                 <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleAvatarUpload}
-                  disabled={uploading}
-                />
-              </label>
-            </div>
-
-            <div className="min-w-0 flex-1">
-              {editing ? (
-                <div className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    value={draft}
-                    onChange={(event) => setDraft(event.target.value)}
-                    className="w-full rounded-lg border border-brand-divider bg-brand-bg px-3 py-2 text-lg font-semibold text-brand-deep focus:outline-none focus:ring-2 focus:ring-brand-accent"
-                    autoFocus
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter') handleSaveName()
-                      if (event.key === 'Escape') {
-                        setEditing(false)
-                        setDraft(name)
-                      }
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={handleSaveName}
-                    disabled={saving}
-                    className="rounded-lg bg-brand-accent p-2 text-white disabled:opacity-50"
-                    aria-label="Guardar nome"
-                  >
-                    {saving ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
+                  type="text"
+                  value={draft}
+                  onChange={(event) => setDraft(event.target.value)}
+                  className="conta-field"
+                  style={{ maxWidth: '22rem' }}
+                  autoFocus
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') handleSaveName()
+                    if (event.key === 'Escape') {
                       setEditing(false)
                       setDraft(name)
-                    }}
-                    className="rounded-lg border border-brand-divider p-2 text-brand-deep/60"
-                    aria-label="Cancelar"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <h1 className="truncate text-2xl font-bold text-brand-deep">{displayName}</h1>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setDraft(name)
-                      setEditing(true)
-                    }}
-                    className="rounded-lg p-1.5 text-brand-deep/40 hover:bg-brand-deep/5 hover:text-brand-deep"
-                    aria-label="Editar nome"
-                  >
-                    <Pencil size={15} />
-                  </button>
-                </div>
-              )}
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={handleSaveName}
+                  disabled={saving}
+                  className="conta-btn conta-btn--primary conta-btn--sm"
+                  aria-label="Guardar nome"
+                >
+                  {saving ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditing(false)
+                    setDraft(name)
+                  }}
+                  className="conta-btn conta-btn--ghost conta-btn--sm"
+                  aria-label="Cancelar"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ) : (
+              <h2 className="conta-identity-name">
+                {displayName}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDraft(name)
+                    setEditing(true)
+                  }}
+                  className="conta-btn conta-btn--ghost conta-btn--sm"
+                  aria-label="Editar nome"
+                  title="Editar nome"
+                >
+                  <Pencil size={13} />
+                </button>
+              </h2>
+            )}
 
-              <p className="mt-1 truncate text-sm text-brand-deep/60">{profile.email}</p>
-              <p className="mt-2 text-xs text-brand-deep/45">
-                {profile.membroDesde}
-                {profile.verified ? ' · e-mail confirmado' : ' · e-mail por confirmar'}
-              </p>
+            <p className="conta-identity-sub">{profile.email}</p>
+            <div className="conta-identity-tags">
+              <span className="conta-tag">{profile.membroDesde}</span>
+              <span className={`conta-tag${profile.verified ? ' conta-tag--ok' : ''}`}>
+                {profile.verified ? 'E-mail confirmado' : 'E-mail por confirmar'}
+              </span>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/*
-          Guardados: cada medicamento com os dois destinos — a página do
-          medicamento no site (quando existe) e as farmácias que o têm, no
-          Localizador. As listas completas continuam no Localizador; aqui fica
-          o que a pessoa guardou, com o resto a um clique.
-        */}
-        <section className="mt-6 overflow-hidden rounded-2xl border border-brand-divider bg-brand-card shadow-soft">
-          <div className="flex items-center justify-between gap-3 border-b border-brand-divider px-4 py-3">
-            <h2 className="flex items-center gap-2 text-sm font-semibold text-brand-deep">
-              <Pill size={16} className="text-brand-accent" />
+      <div className="conta-grid2">
+        <section className="conta-panel" aria-labelledby="conta-guardados">
+          <div className="conta-panel-head">
+            <h2 id="conta-guardados" className="conta-panel-title">
+              <Pill size={14} />
               Guardados
-              {savedTotal > 0 && (
-                <span className="rounded-full bg-brand-accent/10 px-2 py-0.5 text-[11px] font-semibold text-brand-accent">
-                  {savedTotal}
-                </span>
-              )}
+              {savedTotal > 0 && <span className="conta-panel-count">{savedTotal}</span>}
             </h2>
             <a
               href={`${LOCATOR_ORIGIN}/guardados`}
-              className="text-xs font-medium text-brand-accent hover:underline"
+              className="conta-btn conta-btn--ghost conta-btn--sm"
             >
               Ver todos
             </a>
           </div>
 
           {saved.length === 0 ? (
-            <p className="px-4 py-6 text-sm text-brand-deep/55">
-              Ainda não guardou nenhum medicamento no Localizador. Cada medicamento que guardar
-              aparece aqui com os preços das farmácias que o confirmaram.
-            </p>
+            <div className="conta-empty">
+              <p className="conta-empty-title">Ainda não guardou nenhum medicamento</p>
+              <p className="conta-empty-sub">
+                Cada medicamento que guardar no Localizador aparece aqui com os preços das
+                farmácias que o confirmaram.
+              </p>
+            </div>
           ) : (
-            <ul className="divide-y divide-brand-divider">
+            <ul className="conta-rows">
               {saved.map((item) => (
-                <li
-                  key={item.key}
-                  className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-brand-deep">{item.name}</p>
-                    {item.meta && (
-                      <p className="truncate text-xs text-brand-deep/55">{item.meta}</p>
-                    )}
+                <li key={item.key} className="conta-row">
+                  <div className="conta-row-main">
+                    <span className="conta-row-title">{item.name}</span>
+                    {item.meta && <span className="conta-row-meta">{item.meta}</span>}
                   </div>
-                  <div className="flex shrink-0 items-center gap-2">
+                  <div className="conta-row-acts">
                     {item.siteHref && (
                       <a
                         href={item.siteHref}
-                        className="rounded-lg border border-brand-divider px-3 py-1.5 text-xs font-medium text-brand-deep/75 transition-colors hover:border-brand-accent/40 hover:text-brand-deep"
+                        className="conta-btn conta-btn--ghost conta-btn--sm"
                       >
                         Ver no site
                       </a>
                     )}
                     <a
                       href={item.locatorHref}
-                      className="rounded-lg bg-brand-accent px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-brand-accent/90"
+                      className="conta-btn conta-btn--primary conta-btn--sm"
                     >
                       {item.cta}
                     </a>
@@ -320,63 +298,64 @@ export default function HubClient({ profile, saved = [], savedTotal = 0 }) {
           )}
         </section>
 
-        {/* Atalhos */}
-        <section className="mt-6 grid gap-3 sm:grid-cols-2">
-          {CARD_LINKS.map(({ href, title, description, icon: Icon }) => (
-            <a
-              key={href}
-              href={href}
-              className="group flex items-center gap-4 rounded-2xl border border-brand-divider bg-brand-card p-4 shadow-soft transition-colors hover:border-brand-accent/40"
-            >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-accent/10 text-brand-accent">
-                <Icon size={18} />
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm font-semibold text-brand-deep">{title}</span>
-                <span className="block truncate text-xs text-brand-deep/55">{description}</span>
-              </span>
-              <ChevronRight
-                size={16}
-                className="shrink-0 text-brand-deep/25 transition-transform group-hover:translate-x-0.5"
-              />
-            </a>
-          ))}
-        </section>
+        <div>
+          <section className="conta-panel" aria-labelledby="conta-dados">
+            <div className="conta-panel-head">
+              <h2 id="conta-dados" className="conta-panel-title">
+                A conta
+              </h2>
+            </div>
+            <ul className="conta-rows">
+              <li className="conta-row">
+                <div className="conta-row-main">
+                  <span className="conta-row-meta">E-mail</span>
+                  <span className="conta-row-title">{profile.email}</span>
+                </div>
+              </li>
+              <li className="conta-row">
+                <div className="conta-row-main">
+                  <span className="conta-row-meta">Estado</span>
+                  <span className="conta-row-title">
+                    {profile.verified ? 'Verificada' : 'Por confirmar'}
+                  </span>
+                </div>
+              </li>
+              <li className="conta-row">
+                <div className="conta-row-main">
+                  <span className="conta-row-meta">Membro desde</span>
+                  <span className="conta-row-title">{profile.membroDesde}</span>
+                </div>
+              </li>
+            </ul>
+          </section>
 
-        {/* Segurança e saída */}
-        <section className="mt-6 rounded-2xl border border-brand-divider bg-brand-card p-4 shadow-soft">
-          <Link
-            href="/perfil/seguranca"
-            className="group flex items-center gap-4 rounded-xl p-2 transition-colors hover:bg-brand-deep/5"
-          >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-accent/10 text-brand-accent">
-              <Shield size={18} />
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block text-sm font-semibold text-brand-deep">Segurança</span>
-              <span className="block text-xs text-brand-deep/55">
-                Palavra-passe, sessões e apagar conta
-              </span>
-            </span>
-            <ChevronRight
-              size={16}
-              className="shrink-0 text-brand-deep/25 transition-transform group-hover:translate-x-0.5"
-            />
-          </Link>
-
-          <div className="mt-2 border-t border-brand-divider pt-3">
-            <button
-              type="button"
-              onClick={handleSignOut}
-              disabled={leaving}
-              className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-brand-deep/70 transition-colors hover:bg-brand-deep/5 disabled:opacity-50"
-            >
-              {leaving ? <Loader2 size={16} className="animate-spin" /> : <LogOut size={16} />}
-              Sair da conta
-            </button>
-          </div>
-        </section>
+          <section className="conta-panel" aria-labelledby="conta-site">
+            <div className="conta-panel-head">
+              <h2 id="conta-site" className="conta-panel-title">
+                No site
+              </h2>
+            </div>
+            <ul className="conta-rows">
+              {SITE_LINKS.map(({ href, title, description, icon: Icon }) => (
+                <li key={href} className="conta-row">
+                  <div className="conta-row-main">
+                    <a className="conta-row-title" href={href}>
+                      {title}
+                    </a>
+                    <span className="conta-row-meta">{description}</span>
+                  </div>
+                  <div className="conta-row-acts">
+                    <a href={href} className="conta-btn conta-btn--ghost conta-btn--sm">
+                      <Icon size={13} />
+                      Abrir
+                    </a>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
       </div>
-    </div>
+    </main>
   )
 }

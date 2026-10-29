@@ -79,17 +79,11 @@ export async function proxy(request) {
     const first = segments[1]
     const legacy = SUPPORTED_LANGS.includes(first) ? LEGACY_ACCOUNT_PATHS[segments[2]] : null
 
-    // A CONTA mudou-se para conta.*; o PERFIL DE ESTUDANTE fica aqui — é
-    // para `/{lang}/perfil` que o hub manda (quizzes, competições, turma).
-    // Só a gestão da conta sai: as definições antigas são hoje
-    // `conta.*/perfil/seguranca`, e um marcador guardado não parte.
-    if (
-      SUPPORTED_LANGS.includes(first) &&
-      segments[2] === 'perfil' &&
-      segments[3] === 'definicoes'
-    ) {
-      return NextResponse.redirect(`${ACCOUNT_ORIGIN}/perfil/seguranca${search}`, 308)
-    }
+    // O PERFIL DE ESTUDANTE fica aqui — é para `/{lang}/perfil` que o hub
+    // manda (quizzes, competições, turma). As definições também: são o
+    // idioma e as notificações do site, não a segurança da conta (essa vive
+    // em `conta.*/perfil/seguranca`). As duas páginas usam o mesmo
+    // AccountShell, por isso já não há razão para desviar uma delas.
 
     if (legacy) {
       // `search` preservado: um link de confirmação em curso não perde o código.

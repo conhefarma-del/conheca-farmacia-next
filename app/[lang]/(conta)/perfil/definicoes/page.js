@@ -19,6 +19,8 @@ export async function generateMetadata({ params }) {
         en: '/en/profile/settings',
       },
     },
+    // Área de conta: não se indexa, como o resto do perfil.
+    robots: { index: false, follow: false },
   }
 }
 

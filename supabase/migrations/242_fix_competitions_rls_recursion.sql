@@ -25,4 +25,8 @@ CREATE POLICY friend_read_sessions ON public.competition_sessions
   FOR SELECT TO authenticated
   USING (
     user_id = auth.uid()
+    OR competition_id IN (
+      SELECT id FROM public.competitions
+      WHERE created_by_user_id = auth.uid()
+    )
   );

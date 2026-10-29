@@ -161,6 +161,7 @@ Antes de escrever QUALQUER INSERT:
 - [ ] Listas em comentário sem `X)` isolado (dá depth negativa no validador de parênteses): usar `A —`/`(A)`/`1.` (ver ERRO 12c)
 - [ ] Fusão de duplicados: decidir sobre a chave **pós-remapeamento** (colisões de 2.ª ordem com ambos os lados duplicados — ver ERRO 13); simular e verificar 0 chaves duplicadas, 0 fora de ordem, 0 órfãos
 - [ ] Incluir no âmbito slugs de duplicados **já arquivados** que ainda tenham pares/fichas activos (ver ERRO 13, corolário)
+- [ ] Remapeamento de colunas com `UNIQUE`/PK em tabelas com soft-delete: a chave de destino tem de estar livre **contando com linhas arquivadas**; o desempate de fusão prefere a linha que já ocupa a chave (ver ERRO 14)
 
 ---
 
@@ -595,6 +596,64 @@ pode ter arquivado o fármaco mas deixado pares/fichas activos dele (caso
 gravidez ainda activos). A migração de consolidação deve incluir esses slugs
 no seu âmbito mesmo com `is_archived = true` — filtrar só por
 `d.is_archived = false` esconde-os.
+
+---
+
+## ERRO 14: UNIQUE NÃO EXCLUI LINHAS ARQUIVADAS — 23505 NO REMAPEAMENTO (2026-10-02)
+
+**Falha real em produção na migração 290** (`drug_interactions_pair_unique`),
+ao remapear pares durante a fusão dos duplicados:
+
+```
+ERROR: 23505: duplicate key value violates unique constraint "drug_interactions_pair_unique"
+DETAIL: Key (drug_a_id, drug_b_id)=(7ffc94f5-..., a10463da-...) already exists.
+```
+
+**Causa:** o `UNIQUE (drug_a_id, drug_b_id)` é uma constraint de tabela — **não**
+tem cláusula de filtro, pelo que **uma linha arquivada continua a ocupar a
+chave**. A sequência era:
+
+1. `ferro × acido_ascorbico` (moderate) e `acido-ascorbico × sulfato-ferroso`
+   (minor) colapsam na mesma chave final depois da fusão;
+2. a regra de desempate escolheu a de **maior severidade** (a de `ferro`, que
+   precisa de UPDATE) para sobreviver;
+3. o passo seguinte arquivou a de `minor` — que já estava na chave final —
+   mas **a linha arquivada mantém a chave ocupada**;
+4. o UPDATE da linha sobrevivente para essa chave rebentou com 23505.
+
+**Correcção (três partes, todas necessárias):**
+
+1. **Desempate prefere a linha que JÁ está na chave final** (`precisa_remap = 0`)
+   — não sofre UPDATE, logo não pode violar o UNIQUE. Este critério vem
+   **antes** da severidade.
+2. **Harmonizar a severidade do grupo para o máximo** — assim preferir a linha
+   posicionada não perde severidade (`acido-ascorbico × sulfato-ferroso` passou
+   de `minor` a `moderate`). Sem este passo, a correcção 1 degradaria o par.
+3. **Guardar o remapeamento com `NOT EXISTS` contando com arquivadas**
+   (`x.is_archived = false` **não** basta — é preciso o inverso: verificar que
+   nenhuma linha, activa **ou arquivada**, ocupa a chave final), com um passo de
+   recurso que arquiva as bloqueadas residuais.
+
+```sql
+-- ❌ guarda insuficiente: ignora as arquivadas, que ocupam a chave
+AND NOT EXISTS (SELECT 1 FROM public.drug_interactions x
+  WHERE x.id <> di.id AND x.is_archived = false AND ...)
+
+-- ✅ conta com TODAS as linhas na chave final
+AND NOT EXISTS (SELECT 1 FROM public.drug_interactions x
+  WHERE x.id <> di.id
+    AND x.drug_a_id = c.nova_a AND x.drug_b_id = c.nova_b)
+```
+
+**Regra geral:** sempre que uma migração remapeia uma coluna coberta por
+`UNIQUE`/PK com soft-delete, a verificação de disponibilidade da chave tem de
+contar com as linhas **arquivadas**. O mesmo vale para `drug_pregnancy_info`,
+`drug_profiles` e `drug_pharmacology` (UNIQUE por `drug_id`).
+
+**Sinal de alerta:** um passo que "resolve colisões primeiro" e depois remapeia
+parece seguro, mas só é se a resolução escolher a linha que **já ocupa a chave
+de destino**. Se escolher a que precisa de mover, a chave fica ocupada pela
+linha arquivada.
 
 ---
 

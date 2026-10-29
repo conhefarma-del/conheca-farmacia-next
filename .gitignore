@@ -62,3 +62,4 @@ _temp/*.exit
 _temp/lint*.txt
 _temp/list_drugs.py
 
+.env*

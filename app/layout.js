@@ -6,6 +6,9 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import ThemeProvider from '@/components/providers/ThemeProvider'
 import PageViewTracker from '@/components/content/PageViewTracker'
 import '@/styles/globals.css'
+// Chassi das páginas de conta — o mesmo ficheiro que o Localizador importa,
+// para a conta ter uma só cara nos três hosts.
+import '@/styles/conta.css'
 
 const inter = Inter({
   subsets: ['latin'],
