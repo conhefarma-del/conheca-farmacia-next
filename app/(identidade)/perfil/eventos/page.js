@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { CalendarDays, CheckCircle2, Ticket } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { loadInscricoes } from '@/lib/account-inscricoes'
 import { getEvents } from '@/lib/api/events'
 import { SITE_ORIGIN } from '@/lib/account-urls'
 import CancelInscriptionButton from '@/components/account/CancelInscriptionButton'
@@ -49,18 +50,20 @@ export default async function EventosPage() {
   const lang = preferido === 'en' ? 'en' : 'pt'
   const locale = lang === 'en' ? 'en-GB' : 'pt-PT'
 
-  const email = (user.email || '').trim().toLowerCase()
   const dadosInscricao = meta.inscricao || {}
   const admin = createAdminClient()
 
   // Só os campos que a lista usa — nada de telefone ou profissão aqui.
-  const { data: inscricoes, error: inscricoesError } = await admin
-    .from('inscricoes')
-    .select('id, created_at, compareceu, share_code, evento_id')
-    .ilike('email', email)
-    .order('created_at', { ascending: false })
+  // Lê pelo `user_id` e por todos os e-mails da conta: uma troca de endereço
+  // não pode esconder as inscrições antigas.
+  const inscricoes = await loadInscricoes(admin, user, {
+    select: 'id, created_at, compareceu, share_code, evento_id',
+  })
+  const inscricoesError = null
 
-  const linhas = inscricoes || []
+  const linhas = (inscricoes || []).sort((a, b) =>
+    String(b.created_at).localeCompare(String(a.created_at)),
+  )
   const ids = [...new Set(linhas.map((row) => row.evento_id).filter(Boolean))]
 
   let eventosPorId = new Map()

@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { deleteMyAccount } from '@/lib/actions/account'
-import { KeyRound, Loader2, LogOut, ShieldAlert, Trash2 } from 'lucide-react'
+import { deleteMyAccount, pedirAlteracaoEmail } from '@/lib/actions/account'
+import { AtSign, KeyRound, Loader2, LogOut, ShieldAlert, Trash2 } from 'lucide-react'
 
 /**
  * Segurança da conta (conta.conhecafarmacia.com/perfil/seguranca).
@@ -23,6 +23,14 @@ import { KeyRound, Loader2, LogOut, ShieldAlert, Trash2 } from 'lucide-react'
  * com campos de raio pequeno. Nada de cartões centrados de 16px.
  */
 
+const ERROS_EMAIL = {
+  SEM_SESSAO: 'A sessão expirou. Entre novamente.',
+  EMAIL_INVALIDO: 'Indique um e-mail válido.',
+  MESMO_EMAIL: 'Este já é o e-mail da conta.',
+  JA_EXISTE: 'Já existe uma conta com este e-mail.',
+  FALHOU: 'Não foi possível pedir a alteração. Tente novamente.',
+}
+
 const ERROS = {
   CONFIRMACAO: 'Escreva APAGAR para confirmar.',
   SEM_SESSAO: 'A sessão expirou. Entre novamente.',
@@ -36,6 +44,11 @@ export default function SegurancaClient({ email, isInternal }) {
   const [passwordMessage, setPasswordMessage] = useState('')
   const [passwordError, setPasswordError] = useState('')
   const [savingPassword, setSavingPassword] = useState(false)
+
+  const [newEmail, setNewEmail] = useState('')
+  const [emailMessage, setEmailMessage] = useState('')
+  const [emailError, setEmailError] = useState('')
+  const [savingEmail, setSavingEmail] = useState(false)
 
   const [signingOutAll, setSigningOutAll] = useState(false)
   const [confirmacao, setConfirmacao] = useState('')
@@ -75,6 +88,46 @@ export default function SegurancaClient({ email, isInternal }) {
       setPasswordError('Não foi possível atualizar a palavra-passe.')
     } finally {
       setSavingPassword(false)
+    }
+  }
+
+  async function handleChangeEmail(event) {
+    event.preventDefault()
+    setEmailError('')
+    setEmailMessage('')
+
+    const next = newEmail.trim().toLowerCase()
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(next)) {
+      setEmailError('Indique um e-mail válido.')
+      return
+    }
+    if (next === email.trim().toLowerCase()) {
+      setEmailError('Este já é o e-mail da conta.')
+      return
+    }
+
+    setSavingEmail(true)
+    try {
+      // Server Action: reclama as inscrições antigas e guarda o e-mail atual
+      // antes de o Supabase pedir a confirmação no endereço novo.
+      const result = await pedirAlteracaoEmail(next)
+      if (!result?.ok) {
+        setEmailError(
+          ERROS_EMAIL[result?.error] || 'Não foi possível pedir a alteração. Tente novamente.',
+        )
+      } else {
+        // O Supabase só muda o endereço depois da confirmação — nunca dizemos
+        // que está mudado antes disso. Com confirmação dupla, chegam dois
+        // e-mails (ao antigo e ao novo).
+        setEmailMessage(
+          'Pedido enviado. Confirme no e-mail novo (e no atual, se a confirmação dupla estiver ativa).',
+        )
+        setNewEmail('')
+      }
+    } catch {
+      setEmailError('Não foi possível pedir a alteração. Tente novamente.')
+    } finally {
+      setSavingEmail(false)
     }
   }
 
@@ -120,6 +173,51 @@ export default function SegurancaClient({ email, isInternal }) {
 
       <div className="conta-grid2">
         <div>
+          <section className="conta-panel" aria-labelledby="conta-email">
+            <div className="conta-panel-head">
+              <h2 id="conta-email" className="conta-panel-title">
+                <AtSign size={14} />
+                E-mail da conta
+              </h2>
+            </div>
+            <div className="conta-panel-body">
+              <p className="conta-hint" style={{ marginTop: 0 }}>
+                É o endereço que liga as suas inscrições em eventos e a newsletter. A alteração
+                só fica ativa depois de confirmada no novo endereço.
+              </p>
+              <form onSubmit={handleChangeEmail} className="conta-form-row">
+                <label>
+                  <span className="conta-label">Novo e-mail</span>
+                  <input
+                    type="email"
+                    value={newEmail}
+                    onChange={(event) => setNewEmail(event.target.value)}
+                    autoComplete="email"
+                    placeholder={email}
+                    className="conta-field"
+                  />
+                </label>
+
+                {emailError && (
+                  <p className="conta-hint" style={{ color: '#a3231f' }} role="alert">
+                    {emailError}
+                  </p>
+                )}
+                {emailMessage && <p className="conta-hint">{emailMessage}</p>}
+
+                <button
+                  type="submit"
+                  disabled={savingEmail || !newEmail.trim()}
+                  className="conta-btn conta-btn--primary"
+                  style={{ width: '100%' }}
+                >
+                  {savingEmail ? <Loader2 size={15} className="animate-spin" /> : null}
+                  Enviar confirmação
+                </button>
+              </form>
+            </div>
+          </section>
+
           <section className="conta-panel" aria-labelledby="conta-palavra-passe">
             <div className="conta-panel-head">
               <h2 id="conta-palavra-passe" className="conta-panel-title">
@@ -214,7 +312,7 @@ export default function SegurancaClient({ email, isInternal }) {
                 palavra-passe aqui muda-a nos três sítios.
               </p>
               <p className="conta-hint">
-                O nome, a fotografia e o e-mail vivem em{' '}
+                O nome e a fotografia vivem em{' '}
                 <Link href="/perfil" style={{ color: 'var(--color-brand-accent)' }}>
                   A minha conta
                 </Link>

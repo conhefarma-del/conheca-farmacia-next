@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { LOCATOR_ORIGIN, SITE_ORIGIN } from '@/lib/account-urls'
+import { useTheme } from '@/components/providers/ThemeProvider'
 import {
   Bookmark,
   CalendarDays,
@@ -68,6 +69,7 @@ export default function HubClient({
   savedTotal = 0,
   proximoEvento = null,
   inscricoesTotal = 0,
+  preferencias = {},
 }) {
   const [name, setName] = useState(profile.name)
   const [avatarUrl, setAvatarUrl] = useState(profile.avatarUrl)
@@ -76,6 +78,17 @@ export default function HubClient({
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [message, setMessage] = useState('')
+  const { setMode } = useTheme()
+
+  // Aparelho novo (sem cookie partilhada): a aparência guardada na conta é a
+  // que manda. Com cookie já existe uma escolha local — e é essa que fica.
+  useEffect(() => {
+    if (!preferencias.theme) return
+    const hasLocalChoice = document.cookie
+      .split('; ')
+      .some((cookie) => cookie.startsWith('cf-theme='))
+    if (!hasLocalChoice) setMode(preferencias.theme)
+  }, [preferencias.theme, setMode])
 
   const displayName = name || profile.email.split('@')[0] || 'Utilizador'
   const initial = displayName.charAt(0).toUpperCase()
@@ -362,6 +375,40 @@ export default function HubClient({
                 </p>
               </div>
             )}
+          </section>
+
+          <section className="conta-panel" aria-labelledby="conta-gerir">
+            <div className="conta-panel-head">
+              <h2 id="conta-gerir" className="conta-panel-title">
+                Gerir a conta
+              </h2>
+            </div>
+            <ul className="conta-rows">
+              <li className="conta-row">
+                <div className="conta-row-main">
+                  <Link className="conta-row-title" href="/perfil/preferencias">
+                    Preferências
+                  </Link>
+                  <span className="conta-row-meta">Idioma, aparência, telefone e município</span>
+                </div>
+              </li>
+              <li className="conta-row">
+                <div className="conta-row-main">
+                  <Link className="conta-row-title" href="/perfil/privacidade">
+                    Privacidade e dados
+                  </Link>
+                  <span className="conta-row-meta">O que guardamos, exportar e apagar</span>
+                </div>
+              </li>
+              <li className="conta-row">
+                <div className="conta-row-main">
+                  <Link className="conta-row-title" href="/perfil/atividade">
+                    Atividade
+                  </Link>
+                  <span className="conta-row-meta">Guardados, reservas e inscrições</span>
+                </div>
+              </li>
+            </ul>
           </section>
 
           <section className="conta-panel" aria-labelledby="conta-dados">

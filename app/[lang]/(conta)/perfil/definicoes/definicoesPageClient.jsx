@@ -3,7 +3,8 @@
 import { useState, useEffect, useContext, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Lock, School, ClipboardList, Loader2, Search, Eye, EyeOff } from 'lucide-react'
+import { Lock, School, ClipboardList, Loader2, Search } from 'lucide-react'
+import { ACCOUNT_ORIGIN } from '@/lib/account-urls'
 import { LangContext } from '@/lib/contexts'
 
 export default function DefinicoesPageClient({ lang }) {
@@ -15,12 +16,6 @@ export default function DefinicoesPageClient({ lang }) {
   const [saving, setSaving] = useState(false)
   const [saveMsg, setSaveMsg] = useState('')
   const [saveMsgType, setSaveMsgType] = useState('success') // success | error
-
-  // Password
-  const [newPassword, setNewPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [passwordError, setPasswordError] = useState('')
 
   // School
   const [schoolName, setSchoolName] = useState('')
@@ -99,44 +94,6 @@ export default function DefinicoesPageClient({ lang }) {
     setSchoolSearch('')
     setSchoolResults([])
     setShowSchoolDropdown(false)
-  }
-
-  // Save password
-  const handleSavePassword = async () => {
-    setPasswordError('')
-    if (!newPassword) {
-      setPasswordError('Insere a nova palavra-passe')
-      return
-    }
-    if (newPassword.length < 6) {
-      setPasswordError('Mínimo de 6 caracteres')
-      return
-    }
-    if (newPassword !== confirmPassword) {
-      setPasswordError('As palavras-passe não coincidem')
-      return
-    }
-
-    setSaving(true)
-    setSaveMsg('')
-    try {
-      const supabase = createClient()
-      const { error } = await supabase.auth.updateUser({ password: newPassword })
-      if (error) {
-        setPasswordError(error.message)
-        setSaveMsgType('error')
-      } else {
-        setSaveMsg('Palavra-passe atualizada!')
-        setSaveMsgType('success')
-        setNewPassword('')
-        setConfirmPassword('')
-      }
-    } catch {
-      setPasswordError('Erro ao conectar ao servidor')
-      setSaveMsgType('error')
-    } finally {
-      setSaving(false)
-    }
   }
 
   // Save school
@@ -226,7 +183,7 @@ export default function DefinicoesPageClient({ lang }) {
 
       <div className="conta-grid2">
         <div>
-          {/* Password */}
+          {/* Palavra-passe e e-mail — um só sítio para os dois */}
           <section className="conta-panel" aria-labelledby="def-palavra-passe">
             <div className="conta-panel-head">
               <h2 id="def-palavra-passe" className="conta-panel-title">
@@ -235,70 +192,17 @@ export default function DefinicoesPageClient({ lang }) {
               </h2>
             </div>
             <div className="conta-panel-body">
-              <div className="conta-form-row">
-                <label>
-                  <span className="conta-label">{t('settings.new_password')}</span>
-                  <div style={{ position: 'relative' }}>
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      value={newPassword}
-                      onChange={(e) => {
-                        setNewPassword(e.target.value)
-                        setPasswordError('')
-                      }}
-                      className="conta-field"
-                      style={{ paddingRight: '2.5rem' }}
-                      placeholder={t('settings.password_placeholder')}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      style={{
-                        position: 'absolute',
-                        right: '0.65rem',
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        color: 'var(--conta-ink-45)',
-                        background: 'none',
-                        border: 0,
-                        cursor: 'pointer',
-                      }}
-                      aria-label={showPassword ? 'Esconder palavra-passe' : 'Mostrar palavra-passe'}
-                    >
-                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                    </button>
-                  </div>
-                </label>
-
-                <label>
-                  <span className="conta-label">{t('settings.confirm_password')}</span>
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={confirmPassword}
-                    onChange={(e) => {
-                      setConfirmPassword(e.target.value)
-                      setPasswordError('')
-                    }}
-                    className="conta-field"
-                    placeholder={t('settings.confirm_password_placeholder')}
-                  />
-                </label>
-
-                {passwordError && (
-                  <p className="conta-hint" style={{ color: '#a3231f' }} role="alert">
-                    {passwordError}
-                  </p>
-                )}
-
-                <button
-                  onClick={handleSavePassword}
-                  disabled={saving || !newPassword}
-                  className="conta-btn conta-btn--primary"
-                  style={{ width: '100%' }}
-                >
-                  {saving ? <Loader2 size={15} className="animate-spin" /> : t('settings.save_password')}
-                </button>
-              </div>
+              <p className="conta-hint" style={{ marginTop: 0 }}>
+                A palavra-passe e o e-mail são da conta Conheça Farmácia — mudam-se em Segurança
+                e passam a valer no site, no Localizador e nas reservas.
+              </p>
+              <a
+                href={`${ACCOUNT_ORIGIN}/perfil/seguranca`}
+                className="conta-btn conta-btn--primary"
+                style={{ width: '100%', marginTop: '0.75rem' }}
+              >
+                Abrir Segurança
+              </a>
             </div>
           </section>
 

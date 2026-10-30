@@ -83,6 +83,7 @@ export default async function RegisterPage({ params, searchParams }) {
         nome: dados.nome || meta.full_name || meta.display_name || '',
         email: user.email,
         telefone: dados.telefone || '',
+        municipio: dados.municipio || meta.municipality || '',
         genero: dados.genero || '',
         faixa_etaria: dados.faixa_etaria || '',
         profissao: dados.profissao || '',

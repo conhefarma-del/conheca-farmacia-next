@@ -5,13 +5,16 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 import {
+  Activity,
   Bookmark,
   CalendarCheck,
   CalendarDays,
   GraduationCap,
   LayoutDashboard,
+  LockKeyhole,
   Settings2,
   ShieldCheck,
+  SlidersHorizontal,
   X,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
@@ -67,6 +70,30 @@ const NAV = [
         path: '/perfil/eventos',
         label: 'Eventos',
         icon: CalendarDays,
+      },
+      {
+        key: 'preferencias',
+        surface: 'conta',
+        href: `${ACCOUNT_ORIGIN}/perfil/preferencias`,
+        path: '/perfil/preferencias',
+        label: 'Preferências',
+        icon: SlidersHorizontal,
+      },
+      {
+        key: 'atividade',
+        surface: 'conta',
+        href: `${ACCOUNT_ORIGIN}/perfil/atividade`,
+        path: '/perfil/atividade',
+        label: 'Atividade',
+        icon: Activity,
+      },
+      {
+        key: 'privacidade',
+        surface: 'conta',
+        href: `${ACCOUNT_ORIGIN}/perfil/privacidade`,
+        path: '/perfil/privacidade',
+        label: 'Privacidade',
+        icon: LockKeyhole,
       },
       {
         key: 'seguranca',

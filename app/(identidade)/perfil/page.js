@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient, createLocalizadorClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import HubClient from '@/components/account/HubClient'
+import { emailsDaConta, loadInscricoes } from '@/lib/account-inscricoes'
 import { LOCATOR_ORIGIN, SITE_ORIGIN } from '@/lib/account-urls'
 
 export const dynamic = 'force-dynamic'
@@ -98,13 +99,12 @@ async function loadSaved(supabase, userId) {
  * server-side, com o e-mail da sessão, e só devolve o evento em si.
  */
 async function loadProximaInscricao(supabase, user) {
-  const email = (user.email || '').trim().toLowerCase()
-  if (!email) return { evento: null, total: 0 }
+  if (!user?.email && !emailsDaConta(user).length) return { evento: null, total: 0 }
 
+  // Pelo `user_id` e por todos os e-mails da conta (incluindo os anteriores):
+  // uma troca de endereço não esconde as inscrições antigas.
   const admin = createAdminClient()
-  const { data } = await admin.from('inscricoes').select('evento_id').ilike('email', email)
-
-  const linhas = data || []
+  const linhas = await loadInscricoes(admin, user, { select: 'evento_id' })
   if (linhas.length === 0) return { evento: null, total: 0 }
 
   const ids = [...new Set(linhas.map((row) => row.evento_id).filter(Boolean))]
@@ -154,10 +154,21 @@ export default async function ContaPage() {
   const saved = await loadSaved(supabase, user.id)
   const eventos = await loadProximaInscricao(supabase, user)
 
+  // Preferências que a conta já guarda (nascem todas em `user_metadata`).
+  // O telefone cai para o das inscrições, para contas antigas não ficarem
+  // com o campo vazio.
+  const preferencias = {
+    lang: meta.lang === 'en' || meta.preferred_lang === 'en' || meta.idioma === 'en' ? 'en' : 'pt',
+    theme: ['light', 'dark', 'system'].includes(meta.theme) ? meta.theme : 'system',
+    phone: meta.phone || meta.inscricao?.telefone || '',
+    municipality: meta.municipality || '',
+  }
+
   return (
     <HubClient
       proximoEvento={eventos.evento}
       inscricoesTotal={eventos.total}
+      preferencias={preferencias}
       profile={{
         id: user.id,
         email: user.email || '',

@@ -35,6 +35,7 @@ export default function InscricaoPageClient({
     nome: prefill?.nome || '',
     email: prefill?.email || '',
     telefone: prefill?.telefone || '',
+    municipio: prefill?.municipio || '',
     genero: prefill?.genero || '',
     faixa_etaria: prefill?.faixa_etaria || '',
     profissao: prefill?.profissao || '',
@@ -515,6 +516,22 @@ export default function InscricaoPageClient({
                     data-validate="true"
                   />
                   {renderError('telefone')}
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="municipio" className="form-label">
+                    Município
+                  </label>
+                  <input
+                    id="municipio"
+                    type="text"
+                    name="municipio"
+                    className="form-input"
+                    placeholder="Ex.: Luanda"
+                    value={form.municipio}
+                    onChange={(e) => handleChange('municipio', e.target.value)}
+                    maxLength={80}
+                  />
                 </div>
 
                 {/* Section: Qualificação Profissional */}
