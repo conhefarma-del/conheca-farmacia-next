@@ -30,10 +30,13 @@ const TAB_KEYS = {
 const TYPE_LINKS = {
   drug: (lang, slug) => `/${lang}/medicamentos/${slug}`,
   interaction: (lang, slug) => {
+    // O slug guarda os dois fármacos (ou um só), separados por vírgula; a
+    // página de interações lê `farmacos` e abre com eles já escolhidos.
     if (slug && slug.includes('+')) {
       const [a, b] = slug.split('+')
       return `/${lang}/interacoes?farmaco=${a}&par=${b}`
     }
+    if (slug) return `/${lang}/interacoes?farmacos=${encodeURIComponent(slug)}`
     return `/${lang}/interacoes`
   },
   drug_class: (lang, slug) => `/${lang}/classes/${slug}`,

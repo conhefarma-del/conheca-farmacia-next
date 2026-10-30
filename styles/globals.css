@@ -3804,6 +3804,45 @@ html.dark .save-button--saved:hover {
   margin: 8px 0 1.5rem;
 }
 
+/* Par guardar+notas dentro de um cartão (interações).
+   Fica no fundo do cartão, alinhado à direita e compacto: o título do cartão
+   manda, e o botão pertence ao par que está a ser lido. */
+.card-save-row {
+  display: flex;
+  justify-content: flex-end;
+  margin: 10px 0 4px;
+  padding-top: 10px;
+  border-top: 1px solid var(--color-brand-divider);
+}
+
+.card-save-row .save-button-group {
+  flex-direction: row;
+}
+
+/* Visitante sem conta: o botão não existe, a linha também não. */
+.card-save-row:empty {
+  display: none;
+}
+
+.card-save-row .save-button {
+  width: auto;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 8px;
+  gap: 6px;
+}
+
+.card-save-row .save-notes-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+.notes-drawer-status--error {
+  color: #dc2626;
+  font-weight: 600;
+}
+
 .save-title-row .save-button,
 .save-title-row .save-notes-button {
   width: auto;

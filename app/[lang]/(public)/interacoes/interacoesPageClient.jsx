@@ -1,9 +1,11 @@
 'use client'
 
-import { useContext, useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import SaveWithNotes from '@/components/ui/SaveWithNotes'
+import { estadosDeGuardados } from '@/lib/actions/saved'
+import { chaveDoPar, idDeterministico } from '@/lib/item-id'
 
 import {
   AlertTriangle,
@@ -73,6 +75,9 @@ const InteracoesFaq = dynamic(
 // `unknown` = par SEM registo na base (não confundir com `none` da BD,
 // que significa interação confirmadamente sem relevância clínica).
 const SEVERITY_ORDER = { critical: 0, moderate: 1, minor: 2, none: 3, unknown: 4 }
+
+// Visitante sem conta: os cartões pedem o botão, o botão esconde-se.
+const SEM_CONTA = { autenticado: false, saved: false, hasNote: false }
 
 const SEVERITY_META = {
   critical: { icon: ShieldAlert },
@@ -404,6 +409,65 @@ export default function InteracoesPageClient({
     return lines.join('\n')
   }
 
+  // O que cada cartão guarda é o par que ele mostra (fármaco + parceiro), não
+  // o fármaco sozinho: é o conjunto que a pessoa quer reler mais tarde. Como um
+  // par calculado não tem UUID na base, o id é derivado do próprio par.
+  const itensDoCartao = useMemo(() => {
+    const lista = []
+    for (const par of results) {
+      lista.push({
+        itemType: 'interaction',
+        itemId: idDeterministico(chaveDoPar(par.a, par.b)),
+      })
+    }
+    for (const f of foodForSelection) {
+      lista.push({
+        itemType: 'interaction',
+        itemId: idDeterministico(`alimento:${f.drugId}:${f.entitySlug || f.entity}`),
+      })
+    }
+    for (const d of diseaseForSelection) {
+      lista.push({
+        itemType: 'interaction',
+        itemId: idDeterministico(`doenca:${d.drugId}:${d.conditionSlug || d.condition}`),
+      })
+    }
+    for (const p of pregnancyForSelection) {
+      lista.push({ itemType: 'interaction', itemId: idDeterministico(`gravidez:${p.drugId}`) })
+    }
+    return lista
+  }, [results, foodForSelection, diseaseForSelection, pregnancyForSelection])
+
+  // Estado de guardado de todos os cartões numa só chamada. Um pedido por
+  // botão (sessão + item + nota) era o que fazia o «Guardar» demorar.
+  const [estados, setEstados] = useState({})
+  const [sessao, setSessao] = useState(null) // null = ainda não sabemos
+
+  // Chave estável: o efeito só volta a pedir quando os cartões mudam.
+  const chaveItens = itensDoCartao
+    .map((i) => i.itemId)
+    .sort()
+    .join()
+
+  useEffect(() => {
+    if (!chaveItens) return undefined
+    let vivo = true
+    estadosDeGuardados(itensDoCartao)
+      .then((res) => {
+        if (!vivo) return
+        setEstados(res?.estados || {})
+        setSessao(Boolean(res?.autenticado))
+      })
+      .catch(() => {
+        if (vivo) setSessao(false)
+      })
+    return () => {
+      vivo = false
+    }
+    // `itensDoCartao` muda de identidade a cada render; a chave resume-o.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chaveItens])
+
   const hasSelection = selectedIds.length > 0
   const isSingleDrug = selectedIds.length === 1
   const firstName = drugsById[selectedIds[0]]?.name || ''
@@ -419,18 +483,6 @@ export default function InteracoesPageClient({
               {t('interacoes_page.hero_title')}
             </h1>
 
-            {/* Com um único fármaco escolhido, o que se guarda é esse fármaco:
-                é o item com id e página própria; o par verificado é cálculo. */}
-            {isSingleDrug && (
-              <div className="save-title-row save-title-row--center">
-                <SaveWithNotes
-                  itemType="drug"
-                  itemId={selectedIds[0]}
-                  itemName={firstName}
-                  lang={lang}
-                />
-              </div>
-            )}
             <p className="hero-subtitle text-center">
               {t('interacoes_page.hero_subtitle')}
             </p>
@@ -678,6 +730,7 @@ export default function InteracoesPageClient({
                         const drugA = drugsById[pair.a]
                         const drugB = drugsById[pair.b]
                         const inter = pair.interaction
+                        const itemId = idDeterministico(chaveDoPar(pair.a, pair.b))
                         const severity = inter ? inter.severity : 'unknown'
                         const Icon = SEVERITY_META[severity].icon
                         const hasDetails = !!inter && inter.hasDetails
@@ -713,6 +766,20 @@ export default function InteracoesPageClient({
                                 <Flag size={12} aria-hidden="true" />
                                 {t('feedback.reportar_interacao')}
                               </button>
+                            </div>
+
+                            <div className="card-save-row">
+                              <SaveWithNotes
+                                itemType="interaction"
+                                itemId={itemId}
+                                itemSlug={`${drugA?.slug || ''},${drugB?.slug || ''}`}
+                                itemName={`${drugA?.name || '—'} + ${drugB?.name || '—'}`}
+                                itemSubtitle={t(severityLabelKey(severity))}
+                                lang={lang}
+                                size="sm"
+                                estadoInicial={sessao === false ? SEM_CONTA : estados[`interaction:${itemId}`]}
+                                aguardarEstado={sessao === null}
+                              />
                             </div>
 
                             <p className="card-description">
@@ -841,6 +908,9 @@ export default function InteracoesPageClient({
                       {filteredFood.map((item) => {
                         const Icon = SEVERITY_META[item.severity]?.icon || Info
                         const drugName = drugsById[item.drugId]?.name || '—'
+                        const itemId = idDeterministico(
+                          `alimento:${item.drugId}:${item.entitySlug || item.entity}`,
+                        )
                         return (
                           <div
                             key={`${item.drugId}-${item.entitySlug}`}
@@ -867,6 +937,20 @@ export default function InteracoesPageClient({
                                 {t('feedback.reportar_interacao')}
                               </button>
                             </div>
+                            <div className="card-save-row">
+                              <SaveWithNotes
+                                itemType="interaction"
+                                itemId={itemId}
+                                itemSlug={drugsById[item.drugId]?.slug || ''}
+                                itemName={`${drugName} × ${item.entity}`}
+                                itemSubtitle={t(severityLabelKey(item.severity))}
+                                lang={lang}
+                                size="sm"
+                                estadoInicial={sessao === false ? SEM_CONTA : estados[`interaction:${itemId}`]}
+                                aguardarEstado={sessao === null}
+                              />
+                            </div>
+
                             {item.mechanism && (
                               <p className="card-description">{item.mechanism}</p>
                             )}
@@ -933,6 +1017,9 @@ export default function InteracoesPageClient({
                       {filteredDisease.map((item) => {
                         const drugName = drugsById[item.drugId]?.name || '—'
                         const isCI = item.interactionType === 'contraindication'
+                        const itemId = idDeterministico(
+                          `doenca:${item.drugId}:${item.conditionSlug || item.condition}`,
+                        )
                         return (
                           <div
                             key={`${item.drugId}-${item.conditionSlug}`}
@@ -961,6 +1048,20 @@ export default function InteracoesPageClient({
                                 {t('feedback.reportar_interacao')}
                               </button>
                             </div>
+                            <div className="card-save-row">
+                              <SaveWithNotes
+                                itemType="interaction"
+                                itemId={itemId}
+                                itemSlug={drugsById[item.drugId]?.slug || ''}
+                                itemName={`${drugName} × ${item.condition}`}
+                                itemSubtitle={t(severityLabelKey(item.severity))}
+                                lang={lang}
+                                size="sm"
+                                estadoInicial={sessao === false ? SEM_CONTA : estados[`interaction:${itemId}`]}
+                                aguardarEstado={sessao === null}
+                              />
+                            </div>
+
                             {item.reason && (
                               <p className="card-description">{item.reason}</p>
                             )}
@@ -1027,6 +1128,7 @@ export default function InteracoesPageClient({
                       {filteredPregnancy.map((item) => {
                         const drugName = drugsById[item.drugId]?.name || '—'
                         const isCI = item.pregnancyCategory === 'contraindicated'
+                        const itemId = idDeterministico(`gravidez:${item.drugId}`)
                         return (
                           <div
                             key={item.drugId}
@@ -1053,6 +1155,24 @@ export default function InteracoesPageClient({
                                 {t('feedback.reportar_interacao')}
                               </button>
                             </div>
+                            <div className="card-save-row">
+                              <SaveWithNotes
+                                itemType="interaction"
+                                itemId={itemId}
+                                itemSlug={drugsById[item.drugId]?.slug || ''}
+                                itemName={drugName}
+                                itemSubtitle={t(
+                                  isCI
+                                    ? 'interacoes_page.tipo_contraindicacao'
+                                    : 'interacoes_page.categoria_gravidez',
+                                )}
+                                lang={lang}
+                                size="sm"
+                                estadoInicial={sessao === false ? SEM_CONTA : estados[`interaction:${itemId}`]}
+                                aguardarEstado={sessao === null}
+                              />
+                            </div>
+
                             {item.risk && (
                               <p className="card-description">{item.risk}</p>
                             )}

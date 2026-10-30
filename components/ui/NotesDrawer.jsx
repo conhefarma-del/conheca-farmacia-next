@@ -10,7 +10,10 @@ import { LangContext } from '@/lib/contexts'
 
 const TYPE_LINKS = {
   drug: (lang, slug) => `/${lang}/medicamentos/${slug}`,
-  interaction: (lang, slug) => `/${lang}/interacoes`,
+  // O par guardado abre a página já com os fármacos escolhidos (`farmacos=`
+  // recebe slugs separados por vírgula).
+  interaction: (lang, slug) =>
+    slug ? `/${lang}/interacoes?farmacos=${encodeURIComponent(slug)}` : `/${lang}/interacoes`,
   drug_class: (lang, slug) => `/${lang}/classes/${slug}`,
   molecular_target: (lang, slug) => `/${lang}/alvos/${slug}`,
   article: (lang, slug) => `/${lang}/artigos/${slug}`,
@@ -47,6 +50,7 @@ export default function NotesDrawer({
   const [originalContent, setOriginalContent] = useState('')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [erro, setErro] = useState(false)
   const [loading, setLoading] = useState(true)
   const [isMobile, setIsMobile] = useState(false)
 
@@ -156,6 +160,7 @@ export default function NotesDrawer({
 
   const handleContentChange = (e) => {
     setContent(e.target.value)
+    setErro(false)
   }
 
   const toggleCollapsed = () => {
@@ -182,11 +187,15 @@ export default function NotesDrawer({
         result = await upsertNote(itemType, itemId, content.trim(), itemSlug, itemName, title.trim() || null)
       }
       if (result.success) {
+        setErro(false)
         setOriginalContent(content.trim())
         setOriginalTitle(title.trim())
         setSaved(true)
         if (isMobile) setEditing(false)
         setTimeout(() => setSaved(false), 2000)
+      } else {
+        // Sem isto, uma nota que a base recusava desaparecia sem aviso.
+        setErro(true)
       }
     } finally {
       setSaving(false)
@@ -323,6 +332,11 @@ export default function NotesDrawer({
                 {t('notes_drawer.saved')}
               </span>
             )}
+            {erro && !saving && (
+              <span className="notes-drawer-status notes-drawer-status--error">
+                {t('notes_drawer.error')}
+              </span>
+            )}
             <button
               type="button"
               onClick={handleClose}
@@ -357,11 +371,11 @@ export default function NotesDrawer({
                   onChange={handleContentChange}
                   placeholder={t('notes_drawer.empty')}
                   className="notes-drawer-textarea"
-                  maxLength={5000}
+                  maxLength={2000}
                 />
                 <div className="notes-drawer-edit-actions">
                   <span className="notes-drawer-chars">
-                    {content.length}/5000
+                    {content.length}/2000
                   </span>
                   <div className="notes-drawer-edit-buttons">
                     {isMobile && (

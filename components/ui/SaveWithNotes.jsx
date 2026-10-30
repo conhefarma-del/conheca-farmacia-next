@@ -17,6 +17,8 @@ export default function SaveWithNotes({
   lang = 'pt',
   size = 'md',
   className = '',
+  estadoInicial = null,
+  aguardarEstado = false,
 }) {
   const [notesOpen, setNotesOpen] = useState(false)
 
@@ -33,6 +35,8 @@ export default function SaveWithNotes({
         size={size}
         className={className}
         showNotesBtn={true}
+        estadoInicial={estadoInicial}
+        aguardarEstado={aguardarEstado}
         onNotesClick={() => setNotesOpen(true)}
       />
       
