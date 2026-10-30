@@ -3,7 +3,7 @@
 import { useState, useEffect, useContext } from 'react'
 import { useRouter } from 'next/navigation'
 import { Bookmark, BookmarkCheck, Pencil, Loader2, Info } from 'lucide-react'
-import { toggleSaveItem, isItemSaved, hasNoteForItem } from '@/lib/actions/saved'
+import { toggleSaveItem, isItemSaved, hasNoteForItem, sessaoActiva } from '@/lib/actions/saved'
 import { LangContext } from '@/lib/contexts'
 
 /**
@@ -40,6 +40,9 @@ export default function SaveButton({
   const [hasNote, setHasNote] = useState(false)
   const [loading, setLoading] = useState(true)
   const [toggling, setToggling] = useState(false)
+  // Sem conta não há botão nenhum: as ações devolvem `auth_required` e
+  // clicar só levava a um erro ou a um redirect para a entrada.
+  const [semConta, setSemConta] = useState(false)
   const router = useRouter()
 
   const sizeMap = { sm: 16, md: 20, lg: 24 }
@@ -50,6 +53,13 @@ export default function SaveButton({
     let cancelled = false
     async function check() {
       try {
+        const autenticado = await sessaoActiva()
+        if (cancelled) return
+        if (!autenticado) {
+          setSemConta(true)
+          return
+        }
+
         const [isSaved, noteExists] = await Promise.all([
           isItemSaved(itemType, itemId),
           showNotesBtn ? hasNoteForItem(itemType, itemId) : Promise.resolve(false),
@@ -111,6 +121,9 @@ export default function SaveButton({
     if (onNotesClick) onNotesClick()
   }
 
+  // Visitante sem conta: nada disto aparece na página.
+  if (semConta) return null
+
   if (loading) {
     return (
       <span
@@ -141,6 +154,9 @@ export default function SaveButton({
         ) : (
           <Bookmark size={iconSize} />
         )}
+        <span className="save-button-label">
+          {saved ? t('saved.unsave') || 'Remover' : t('saved.save') || 'Guardar'}
+        </span>
       </button>
 
       {/* Botão Notas */}

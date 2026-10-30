@@ -22,6 +22,7 @@ import {
   Stethoscope,
 } from "lucide-react";
 import { LangContext } from "@/lib/contexts";
+import SaveWithNotes from "@/components/ui/SaveWithNotes";
 import FeedbackBox from "@/components/feedback/FeedbackBox";
 import TargetLinks from "@/components/interacoes/TargetLinks";
 
@@ -281,6 +282,16 @@ export default function MedicamentoDetailClient({
               <h1 className="text-5xl md:text-7xl font-bold text-brand-deep break-words">
                 {drug.name}
               </h1>
+            </div>
+            <div className="save-title-row save-title-row--center">
+              <SaveWithNotes
+                itemType="drug"
+                itemId={drug.id}
+                itemSlug={drug.slug || ""}
+                itemName={drug.name}
+                itemSubtitle={drug.className || ""}
+                lang={lang}
+              />
             </div>
             {drug.className && (
               <p className="hero-subtitle text-center">

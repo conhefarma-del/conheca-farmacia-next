@@ -3789,6 +3789,42 @@ html.dark .save-button--saved:hover {
   }
 }
 
+/* Save + notas sozinhos, abaixo do título da página.
+   Antes ficavam ao lado do título; em página de detalhe o título manda e o
+   par de ações fica por baixo, com etiqueta, para não ser um ícone solto. */
+.save-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 2rem;
+}
+
+.save-title-row--center {
+  justify-content: center;
+  margin: 8px 0 1.5rem;
+}
+
+.save-title-row .save-button,
+.save-title-row .save-notes-button {
+  width: auto;
+  height: 36px;
+  padding: 0 12px;
+  gap: 6px;
+}
+
+.save-button-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+@media (max-width: 640px) {
+  /* Debaixo do título há largura: empilhar os dois botões só os afastava. */
+  .save-title-row .save-button-group {
+    flex-direction: row;
+  }
+}
+
 .save-notes-button {
   display: inline-flex;
   align-items: center;

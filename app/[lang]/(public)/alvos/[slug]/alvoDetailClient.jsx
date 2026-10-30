@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, BookOpen, Info, Lightbulb } from "lucide-react";
 import { LangContext } from "@/lib/contexts";
 import { getFlockhartEvidence } from "@/lib/targets/flockhart-evidence";
+import SaveWithNotes from "@/components/ui/SaveWithNotes";
 
 function Section({ icon, title, count, children }) {
   return (
@@ -170,6 +171,17 @@ export default function AlvoDetailClient({ lang, target, drugs = [] }) {
           </span>
           <div className="flex items-center gap-3">
             <h1 className="alvo-detail-title">{target.name}</h1>
+          </div>
+
+          <div className="save-title-row">
+            <SaveWithNotes
+              itemType="molecular_target"
+              itemId={target.id}
+              itemSlug={target.slug || ""}
+              itemName={target.name}
+              itemSubtitle={target.fullName || ""}
+              lang={lang}
+            />
           </div>
           {target.fullName && (
             <p className="alvo-detail-fullname">{target.fullName}</p>

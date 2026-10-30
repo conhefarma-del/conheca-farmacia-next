@@ -3,6 +3,7 @@
 import { useContext, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
+import SaveWithNotes from '@/components/ui/SaveWithNotes'
 
 import {
   AlertTriangle,
@@ -417,6 +418,19 @@ export default function InteracoesPageClient({
             <h1 className="text-5xl md:text-7xl font-bold text-brand-deep mb-6 break-words">
               {t('interacoes_page.hero_title')}
             </h1>
+
+            {/* Com um único fármaco escolhido, o que se guarda é esse fármaco:
+                é o item com id e página própria; o par verificado é cálculo. */}
+            {isSingleDrug && (
+              <div className="save-title-row save-title-row--center">
+                <SaveWithNotes
+                  itemType="drug"
+                  itemId={selectedIds[0]}
+                  itemName={firstName}
+                  lang={lang}
+                />
+              </div>
+            )}
             <p className="hero-subtitle text-center">
               {t('interacoes_page.hero_subtitle')}
             </p>

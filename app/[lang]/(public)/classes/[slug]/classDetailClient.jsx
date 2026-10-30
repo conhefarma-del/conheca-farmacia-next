@@ -4,6 +4,7 @@ import { useContext, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, ExternalLink, Pill } from "lucide-react";
 import { LangContext } from "@/lib/contexts";
+import SaveWithNotes from "@/components/ui/SaveWithNotes";
 
 export default function ClassDetailClient({ lang, cls }) {
   const { t } = useContext(LangContext);
@@ -26,6 +27,17 @@ export default function ClassDetailClient({ lang, cls }) {
               <h1 className="text-5xl md:text-7xl font-bold text-brand-deep break-words">
                 {cls.name}
               </h1>
+            </div>
+
+            <div className="save-title-row save-title-row--center">
+              <SaveWithNotes
+                itemType="drug_class"
+                itemId={cls.id}
+                itemSlug={cls.slug || ""}
+                itemName={cls.name}
+                itemSubtitle={cls.atcPrefix || ""}
+                lang={lang}
+              />
             </div>
             {cls.atcPrefix && (
               <p className="text-center text-sm text-gray-500 dark:text-gray-400 mb-2 font-mono">

@@ -13,6 +13,7 @@ import ReadingTimeTracker from '@/components/content/ReadingTimeTracker'
 import ViewCountTracker from '@/components/content/ViewCountTracker'
 import { slugify } from '@/lib/utils/slugify'
 import TranslationFallbackBanner from '@/components/i18n/TranslationFallbackBanner'
+import SaveWithNotes from '@/components/ui/SaveWithNotes'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -196,8 +197,18 @@ export default async function ArticleDetailPage({ params }) {
           </div>
 
           {/* Title */}
-          <div className="flex items-start justify-between gap-4 mb-10">
-            <h1 className="article-hero-title flex-1">{article.title}</h1>
+          <h1 className="article-hero-title">{article.title}</h1>
+
+          {/* Guardar e notas — abaixo do título, e só com sessão iniciada. */}
+          <div className="save-title-row">
+            <SaveWithNotes
+              itemType="article"
+              itemId={article.id}
+              itemSlug={article.slug}
+              itemName={article.title}
+              itemSubtitle={article.categoryLabel}
+              lang={safeLang}
+            />
           </div>
 
           {/* Featured Image */}
