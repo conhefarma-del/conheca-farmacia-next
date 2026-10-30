@@ -113,6 +113,7 @@ export default function MobileDrawer({ lang, t, open, onClose }) {
             height={40}
             className="drawer-logo-dark"
           />
+          <span className="drawer-eyebrow">{t('nav.tagline')}</span>
         </div>
 
         <ul className="drawer-links">
@@ -123,6 +124,8 @@ export default function MobileDrawer({ lang, t, open, onClose }) {
               </Link>
             </li>
           ))}
+          {/* Separa a navegação das ferramentas, como nas opções de conta. */}
+          <li className="drawer-sep" aria-hidden="true" />
           <li>
             <button
               className={`drawer-submenu-btn${toolsActive ? ' drawer-submenu-btn--active' : ''}`}
