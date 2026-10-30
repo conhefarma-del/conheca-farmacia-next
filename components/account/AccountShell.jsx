@@ -48,44 +48,12 @@ const NAV = [
         icon: LayoutDashboard,
       },
       {
-        key: 'guardados',
-        surface: 'localizador',
-        href: `${LOCATOR_ORIGIN}/guardados`,
-        path: '/guardados',
-        label: 'Guardados',
-        icon: Bookmark,
-      },
-      {
-        key: 'reservas',
-        surface: 'localizador',
-        href: `${LOCATOR_ORIGIN}/reservas`,
-        path: '/reservas',
-        label: 'Reservas',
-        icon: CalendarCheck,
-      },
-      {
-        key: 'eventos',
-        surface: 'conta',
-        href: `${ACCOUNT_ORIGIN}/perfil/eventos`,
-        path: '/perfil/eventos',
-        label: 'Eventos',
-        icon: CalendarDays,
-      },
-      {
         key: 'preferencias',
         surface: 'conta',
         href: `${ACCOUNT_ORIGIN}/perfil/preferencias`,
         path: '/perfil/preferencias',
         label: 'Preferências',
         icon: SlidersHorizontal,
-      },
-      {
-        key: 'atividade',
-        surface: 'conta',
-        href: `${ACCOUNT_ORIGIN}/perfil/atividade`,
-        path: '/perfil/atividade',
-        label: 'Atividade',
-        icon: Activity,
       },
       {
         key: 'privacidade',
@@ -102,6 +70,53 @@ const NAV = [
         path: '/perfil/seguranca',
         label: 'Segurança',
         icon: ShieldCheck,
+      },
+    ],
+  },
+  {
+    // O que acontece com a conta fora das definições: inscrições em eventos
+    // e o registo do que já fez. Fica separado da «Conta» porque é conteúdo,
+    // não configuração.
+    group: 'Participação',
+    items: [
+      {
+        key: 'eventos',
+        surface: 'conta',
+        href: `${ACCOUNT_ORIGIN}/perfil/eventos`,
+        path: '/perfil/eventos',
+        label: 'Eventos',
+        icon: CalendarDays,
+      },
+      {
+        key: 'atividade',
+        surface: 'conta',
+        href: `${ACCOUNT_ORIGIN}/perfil/atividade`,
+        path: '/perfil/atividade',
+        label: 'Atividade',
+        icon: Activity,
+      },
+    ],
+  },
+  {
+    // O que a pessoa fez no Localizador. Vive noutro host, por isso o grupo
+    // existe também para o cérebro saber onde está antes de saltar.
+    group: 'Localizador',
+    items: [
+      {
+        key: 'guardados',
+        surface: 'localizador',
+        href: `${LOCATOR_ORIGIN}/guardados`,
+        path: '/guardados',
+        label: 'Guardados',
+        icon: Bookmark,
+      },
+      {
+        key: 'reservas',
+        surface: 'localizador',
+        href: `${LOCATOR_ORIGIN}/reservas`,
+        path: '/reservas',
+        label: 'Reservas',
+        icon: CalendarCheck,
       },
     ],
   },
