@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { Atom, Bookmark, BookOpen, BrainCircuit, ChevronDown, ClipboardList, LogIn, LogOut, Pencil, Pill, Tablets, Trophy, User } from 'lucide-react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
+import GlassNavPill from '@/components/layout/GlassNavPill'
 import InviteNotifications from '@/components/ui/InviteNotifications'
 import { getSectionHref } from '@/lib/i18n-routes'
 import { featureEnabled } from '@/lib/features'
@@ -34,6 +35,9 @@ export default function Header({ lang, t, onToggleDrawer }) {
   const toolsRef = useRef(null)
   const [profileOpen, setProfileOpen] = useState(false)
   const profileRef = useRef(null)
+  // A pílula de vidro mede a aba ativa em relação ao contentor da nav.
+  const navRef = useRef(null)
+  const activeNavRef = useRef(null)
   const [user, setUser] = useState(null)
   const [avatarUrl, setAvatarUrl] = useState(null)
   // URL morto (ficheiro apagado no Storage) não pode deixar o círculo vazio:
@@ -163,12 +167,25 @@ export default function Header({ lang, t, onToggleDrawer }) {
           <Image src="/logo/3.png" alt="Conheça Farmácia" width={120} height={40} priority />
         </Link>
 
-        <div className="nav-links">
-          {navLinks.map((link) => (
-            <Link key={link.path} href={link.href} className={isActive(link.path)}>
-              {link.label}
-            </Link>
-          ))}
+        <div className="nav-links" ref={navRef}>
+          <GlassNavPill
+            containerRef={navRef}
+            anchorRef={activeNavRef}
+            signature={pathname}
+          />
+          {navLinks.map((link) => {
+            const active = isActive(link.path)
+            return (
+              <Link
+                key={link.path}
+                ref={active ? activeNavRef : null}
+                href={link.href}
+                className={active}
+              >
+                {link.label}
+              </Link>
+            )
+          })}
 
           <div
             className="nav-item"
@@ -177,6 +194,7 @@ export default function Header({ lang, t, onToggleDrawer }) {
             onMouseLeave={() => setToolsOpen(false)}
           >
             <button
+              ref={toolsActive ? activeNavRef : null}
               className={`nav-dropdown-btn${toolsActive ? ' nav-link-active' : ''}`}
               onClick={() => setToolsOpen((o) => !o)}
               aria-expanded={toolsOpen}
