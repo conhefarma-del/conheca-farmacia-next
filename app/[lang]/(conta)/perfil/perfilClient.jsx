@@ -193,7 +193,7 @@ export default function PerfilClient({ lang }) {
     : []
 
   return (
-    <main className="conta-page">
+    <main className="conta-page conta-profile">
       <header className="conta-page-head">
         <div>
           <p className="conta-kicker">Perfil de estudante</p>
@@ -298,10 +298,7 @@ export default function PerfilClient({ lang }) {
         </div>
       </section>
 
-      <div
-        className="conta-stats"
-        style={{ gridTemplateColumns: `repeat(${mostraCompeticao ? 4 : 3}, minmax(0, 1fr))` }}
-      >
+      <div className={`conta-stats conta-stats--${mostraCompeticao ? 4 : 3}`}>
         <div className="conta-stat">
           <span className="conta-stat-label">Quizzes realizados</span>
           <span className="conta-stat-value">
@@ -330,7 +327,7 @@ export default function PerfilClient({ lang }) {
         )}
       </div>
 
-      <div className="conta-grid2">
+      <div className="conta-grid2 conta-profile-grid">
         <section className="conta-panel" aria-labelledby="perfil-guardados">
           <div className="conta-panel-head">
             <h2 id="perfil-guardados" className="conta-panel-title">
@@ -384,7 +381,7 @@ export default function PerfilClient({ lang }) {
           )}
         </section>
 
-        <div>
+        <div className="conta-profile-stack">
           <section className="conta-panel" aria-labelledby="perfil-notas">
             <div className="conta-panel-head">
               <h2 id="perfil-notas" className="conta-panel-title">
