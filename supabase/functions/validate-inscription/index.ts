@@ -2,6 +2,26 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
 // Configuração de CORS — origem dinâmica (whitelist)
+// SEC (O Sentinela, 2026-10-30): a anon key é pública, por isso exigir
+// `apikey` não autentica nada — qualquer visitante conseguia correr esta
+// função com service-role e usar o `duplicate` como oráculo de quem está
+// inscrito em que evento. O único chamador é o servidor Next.js, que já
+// envia `Authorization: Bearer <service role key>`; é essa chave que passa a
+// ser o segredo, comparada em tempo constante.
+const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+
+function chaveValida(req: Request): boolean {
+  if (!SERVICE_KEY) return false;
+  const esperado = `Bearer ${SERVICE_KEY}`;
+  const recebido = req.headers.get('authorization') || '';
+  if (recebido.length !== esperado.length) return false;
+  let dif = 0;
+  for (let i = 0; i < esperado.length; i++) {
+    dif |= recebido.charCodeAt(i) ^ esperado.charCodeAt(i);
+  }
+  return dif === 0;
+}
+
 const ALLOWED_ORIGINS = [
   "https://conheca-farmacia-next.vercel.app",
   "https://conhecafarmacia.com",
@@ -70,6 +90,13 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'Method not allowed' }), {
         status: 405,
         headers: { ...getCorsHeaders(req.headers.get("origin")), 'Content-Type': 'application/json' }
+      });
+    }
+
+    if (!chaveValida(req)) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...getCorsHeaders(req.headers.get("origin")), 'Content-Type': 'application/json' },
       });
     }
 
