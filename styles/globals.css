@@ -118,8 +118,10 @@ html.dark .form-note {
     @apply px-8 py-4 text-lg;
   }
 
+  /* Altura igual à do header do Localizador (64px) — as duas barras têm de
+     medir o mesmo, em mobile e em desktop. */
   .nav-container {
-    @apply w-full max-w-[1400px] mx-auto px-6 md:px-12 flex items-center justify-between h-20;
+    @apply w-full max-w-[1400px] mx-auto px-6 md:px-12 flex items-center justify-between h-16;
   }
 
   .logo img {

@@ -17,9 +17,9 @@ export default function AnimatedChrome({
   onToggleDrawer,
   onCloseDrawer,
 }) {
-  // utility=60 + header=80 (h-20)
+  // utility=60 + header=64 (h-16) — a mesma altura do header do Localizador
   const UTILITY_HEIGHT = 60
-  const HEADER_HEIGHT = 80
+  const HEADER_HEIGHT = 64
 
   // Spring partilhado: utility bar e header usam a MESMA física de mola, por isso
   // deslizam em sincronia num único movimento suave quando a utility some no scroll.

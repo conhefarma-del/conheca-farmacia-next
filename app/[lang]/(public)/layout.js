@@ -63,9 +63,9 @@ export default function PublicLayout({ children }) {
     return () => document.body.classList.remove('utility-hidden')
   }, [utilityBarVisible])
 
-  // utility=60 + header=80 (h-20)
+  // utility=60 + header=64 (h-16) — a mesma altura do header do Localizador
   const UTILITY_HEIGHT = 60
-  const HEADER_HEIGHT = 80
+  const HEADER_HEIGHT = 64
   const MAIN_PADDING_TOP = utilityBarVisible ? UTILITY_HEIGHT + HEADER_HEIGHT : HEADER_HEIGHT
 
   return (

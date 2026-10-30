@@ -48,11 +48,11 @@ export default function ProtocoloDetailClient({ lang, protocol, related = [] }) 
   const readingMin = useMemo(() => estimateReadingTime(protocol), [protocol])
 
   // Barra 'Passo X de Y' sticky — segue o fundo real do chrome fixo (utility
-  // 60px + header 80px), que desliza no scroll. Usa o MESMO motor de frames do
+  // 60px + header 64px), que desliza no scroll. Usa o MESMO motor de frames do
   // framer-motion (useAnimationFrame) que anima o header/utility, ligando o
   // bottom do chrome a uma motionValue aplicada no `top` da barra: acompanha a
   // mola do chrome sem janelas nem re-renders.
-  const chromeBottom = useMotionValue(140)
+  const chromeBottom = useMotionValue(124)
   const headerElRef = useRef(null)
 
   useEffect(() => {
