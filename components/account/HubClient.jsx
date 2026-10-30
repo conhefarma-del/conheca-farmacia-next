@@ -143,7 +143,9 @@ export default function HubClient({
       const { data } = supabase.storage.from('avatars').getPublicUrl(path)
       const publicUrl = `${data.publicUrl}?t=${Date.now()}`
       const { error: updateError } = await supabase.auth.updateUser({
-        data: { avatar_url: publicUrl },
+        // `avatar_url_upload` guarda a escolha da pessoa; `avatar_url` sozinho
+        // é reescrito pela foto da conta Google no login seguinte.
+        data: { avatar_url: publicUrl, avatar_url_upload: publicUrl },
       })
       if (updateError) throw updateError
 

@@ -1,17 +1,23 @@
 import '@/styles/admin/admin.css'
-import { createClient } from '@/lib/supabase/server'
 import AuthGuard from '@/components/admin/AuthGuard'
 import AdminSidebar from '@/components/layout/AdminSidebar'
 import AdminTopBar from '@/components/layout/AdminTopBar'
+import { getAdminSession } from '@/lib/admin-guard'
 
+/**
+ * Layout legado do admin (route group antigo). O gate verdadeiro continua a
+ * ser o `AuthGuard` (cliente) e o layout `admin/(protected)` (servidor); o
+ * perfil da top-bar sai do guard único, para não haver aqui uma segunda
+ * definição de «quem é admin».
+ */
 export default async function AdminLayout({ children, params }) {
   const { lang } = await params
 
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
+  const ctx = await getAdminSession()
   let adminProfile = null
-  if (user) {
+
+  if (ctx) {
+    const { supabase, user } = ctx
     const { data: adminUser } = await supabase
       .from('admin_users')
       .select('name, email')

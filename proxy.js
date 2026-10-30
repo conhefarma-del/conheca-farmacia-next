@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookieDomainFor } from '@/lib/cookie-domain'
+import { ADMIN_ROLES } from '@/lib/admin-roles'
 
 const SUPPORTED_LANGS = ['pt', 'en']
 const DEFAULT_LANG = 'pt'
@@ -203,10 +204,13 @@ export async function proxy(request) {
   if (section === 'admin') {
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
+      // Existir linha não é ser admin: `admin_users` também guarda as
+      // contas `farmacia` do portal.
       const { data: adminUser } = await supabase
         .from('admin_users')
-        .select('user_id')
+        .select('user_id, role')
         .eq('user_id', user.id)
+        .in('role', ADMIN_ROLES)
         .single()
       if (adminUser) {
         return NextResponse.redirect(new URL(`/${lang}/admin/dashboard`, request.url))
@@ -223,15 +227,18 @@ export async function proxy(request) {
       return NextResponse.redirect(new URL(`/${lang}/admin`, request.url))
     }
 
-    // SEC-ATH-02: Never trust session alone — verify admin_users
+    // SEC-ATH-02: Never trust session alone — verify admin_users, e o
+    // `role` (as contas de farmácia vivem na mesma tabela).
     const { data: adminUser, error } = await supabase
       .from('admin_users')
-      .select('user_id')
+      .select('user_id, role')
       .eq('user_id', user.id)
+      .in('role', ADMIN_ROLES)
       .single()
 
     if (error || !adminUser) {
-      await supabase.auth.signOut()
+      // Sem `signOut`: a sessão é da conta pessoal, partilhada com o site e
+      // o Localizador. Sair aqui desligava a pessoa de todo o lado.
       return NextResponse.redirect(new URL(`/${lang}/admin`, request.url))
     }
 

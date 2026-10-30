@@ -182,7 +182,7 @@ export default async function ContaPage() {
         id: user.id,
         email: user.email || '',
         name: meta.full_name || meta.display_name || '',
-        avatarUrl: meta.avatar_url || '',
+        avatarUrl: meta.avatar_url_upload || meta.avatar_url || '',
         verified: Boolean(user.email_confirmed_at || user.confirmed_at),
         membroDesde,
       }}

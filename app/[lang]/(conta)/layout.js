@@ -36,7 +36,7 @@ export default async function ContaSiteLayout({ children, params }) {
       user={{
         name: meta.full_name || meta.display_name || '',
         email: user.email || '',
-        avatarUrl: meta.avatar_url || '',
+        avatarUrl: meta.avatar_url_upload || meta.avatar_url || '',
       }}
     >
       {children}

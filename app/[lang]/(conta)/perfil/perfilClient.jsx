@@ -114,13 +114,16 @@ export default function PerfilClient({ lang }) {
     user.user_metadata?.display_name ||
     user.email?.split('@')[0] ||
     t('student_profile.user')
-  const avatarUrl = user.user_metadata?.avatar_url
-
-  // Gravatar fallback for email/password users
-  const gravatarUrl = !avatarUrl && user.email
-    ? `https://www.gravatar.com/avatar/${encodeURIComponent(user.email.trim().toLowerCase())}?d=identicon&s=200`
-    : null
-  const displayAvatar = avatarUrl || gravatarUrl
+  // A foto carregada vive em `avatar_url_upload`: o login com Google
+  // reescreve `avatar_url` com a foto da conta Google, por isso essa chave
+  // não serve para guardar a escolha da pessoa.
+  const avatarUrl = user.user_metadata?.avatar_url_upload || user.user_metadata?.avatar_url
+  const displayAvatar = avatarUrl || null
+  const initials = (() => {
+    const parts = String(displayName).trim().split(/\s+/).filter(Boolean)
+    if (parts.length === 0) return 'U'
+    return (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase()
+  })()
 
   const handleAvatarUpload = async (e) => {
     const file = e.target.files?.[0]
@@ -143,12 +146,18 @@ export default function PerfilClient({ lang }) {
         .getPublicUrl(filePath)
       const publicUrl = urlData.publicUrl + '?t=' + Date.now()
       const { error: updateError } = await supabase.auth.updateUser({
-        data: { avatar_url: publicUrl },
+        // `avatar_url_upload` é a chave que sobrevive ao login com Google;
+        // `avatar_url` fica também para quem lê só a chave genérica.
+        data: { avatar_url: publicUrl, avatar_url_upload: publicUrl },
       })
       if (updateError) throw updateError
       setUser((prev) => ({
         ...prev,
-        user_metadata: { ...prev.user_metadata, avatar_url: publicUrl },
+        user_metadata: {
+          ...prev.user_metadata,
+          avatar_url: publicUrl,
+          avatar_url_upload: publicUrl,
+        },
       }))
       setSaveMsg(t('student_profile.photoSaved'))
     } catch (err) {
@@ -222,7 +231,7 @@ export default function PerfilClient({ lang }) {
               // eslint-disable-next-line @next/next/no-img-element
               <img src={displayAvatar} alt={displayName} />
             ) : (
-              displayName.charAt(0).toUpperCase()
+              initials
             )}
             <label
               className="conta-avatar-edit"

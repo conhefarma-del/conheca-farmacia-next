@@ -11,6 +11,23 @@ import { getSectionHref } from '@/lib/i18n-routes'
 import { featureEnabled } from '@/lib/features'
 import { createClient } from '@/lib/supabase/client'
 
+/**
+ * A foto da conta manda (`avatar_url_upload`), a do Google serve de recurso
+ * quando ainda não há upload. Sem nenhuma, o avatar são as iniciais — o
+ * identicon do Gravatar parecia uma imagem falhada.
+ */
+const avatarDe = (u) => u?.user_metadata?.avatar_url_upload || u?.user_metadata?.avatar_url || null
+
+const iniciaisDe = (u) => {
+  const nome =
+    u?.user_metadata?.full_name ||
+    u?.user_metadata?.display_name ||
+    (u?.email ? u.email.split('@')[0] : '')
+  const parts = String(nome).trim().split(/\s+/).filter(Boolean)
+  if (parts.length === 0) return 'U'
+  return (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase()
+}
+
 export default function Header({ lang, t, onToggleDrawer }) {
   const pathname = usePathname()
   const [toolsOpen, setToolsOpen] = useState(false)
@@ -25,27 +42,13 @@ export default function Header({ lang, t, onToggleDrawer }) {
     supabase.auth.getUser().then(({ data }) => {
       if (data.user) {
         setUser(data.user)
-        const av = data.user.user_metadata?.avatar_url
-        if (av) {
-          setAvatarUrl(av)
-        } else if (data.user.email) {
-          setAvatarUrl(`https://www.gravatar.com/avatar/${encodeURIComponent(data.user.email.trim().toLowerCase())}?d=identicon&s=64`)
-        } else {
-          setAvatarUrl(null)
-        }
+        setAvatarUrl(avatarDe(data.user))
       }
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         setUser(session.user)
-        const av = session.user.user_metadata?.avatar_url
-        if (av) {
-          setAvatarUrl(av)
-        } else if (session.user.email) {
-          setAvatarUrl(`https://www.gravatar.com/avatar/${encodeURIComponent(session.user.email.trim().toLowerCase())}?d=identicon&s=64`)
-        } else {
-          setAvatarUrl(null)
-        }
+        setAvatarUrl(avatarDe(session.user))
       } else {
         setUser(null)
         setAvatarUrl(null)
@@ -220,8 +223,12 @@ export default function Header({ lang, t, onToggleDrawer }) {
                   {avatarUrl ? (
                     <img src={avatarUrl} alt="" className="profile-avatar" width={32} height={32} />
                   ) : (
-                    <div className="profile-avatar-placeholder">
-                      <User size={18} />
+                    <div
+                      className="profile-avatar-placeholder"
+                      style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.02em' }}
+                      aria-hidden="true"
+                    >
+                      {iniciaisDe(user)}
                     </div>
                   )}
                 </button>
