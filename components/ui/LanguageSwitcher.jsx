@@ -3,6 +3,7 @@
 import { useRouter, usePathname } from 'next/navigation'
 import { useState, useEffect, useRef } from 'react'
 import { getLocalizedPath } from '@/lib/i18n-routes'
+import { createClient } from '@/lib/supabase/client'
 
 export default function LanguageSwitcher({ currentLang }) {
   const router = useRouter()
@@ -20,9 +21,35 @@ export default function LanguageSwitcher({ currentLang }) {
     return () => document.removeEventListener('click', handleClickOutside)
   }, [])
 
+  /**
+   * O site guarda o idioma no URL (`/pt/...`, `/en/...`); a conta
+   * (`conta.conhecafarmacia.com`) não tem `[lang]` — lê a preferência de
+   * `user_metadata.lang`. Sem gravar aqui, trocar para inglês no utility bar
+   * mudava o site e deixava o perfil em português.
+   *
+   * A gravação não bloqueia a navegação: o pedido segue e o `router.push`
+   * acontece logo depois. Sem sessão (ou sem rede), nada disto corre e o
+   * caminho normal do site continua a funcionar.
+   */
   const switchLang = (newLang) => {
-    router.push(getLocalizedPath(pathname, newLang))
     setOpen(false)
+    const destino = getLocalizedPath(pathname, newLang)
+
+    if (newLang !== currentLang) {
+      try {
+        const supabase = createClient()
+        supabase.auth
+          .getUser()
+          .then(({ data }) =>
+            data?.user ? supabase.auth.updateUser({ data: { lang: newLang } }) : null,
+          )
+          .catch(() => {})
+      } catch {
+        // Sem cliente (ambiente sem chaves): fica só o idioma do URL.
+      }
+    }
+
+    router.push(destino)
   }
 
   return (

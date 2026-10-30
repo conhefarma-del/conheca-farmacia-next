@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { accountLang } from '@/lib/account-i18n'
 import AccountShell from '@/components/account/AccountShell'
 
 export const dynamic = 'force-dynamic'
@@ -9,6 +10,9 @@ export const dynamic = 'force-dynamic'
  * O layout lê a sessão só para a sidebar saber quem está do outro lado; a
  * autoridade continua nas páginas (redirect para /entrar quando não há
  * sessão). O `next` de cada página é o seu próprio caminho.
+ *
+ * O `lang` não é decorativo: é o que faz os atalhos para o site apontarem
+ * para `/en/...` quando a pessoa escolheu inglês na conta.
  */
 export default async function PerfilLayout({ children }) {
   const supabase = await createClient()
@@ -20,6 +24,7 @@ export default async function PerfilLayout({ children }) {
   return (
     <AccountShell
       surface="conta"
+      lang={accountLang(user)}
       user={{
         name: meta.full_name || meta.display_name || '',
         email: user?.email || '',

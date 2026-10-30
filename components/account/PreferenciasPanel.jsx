@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { Loader2, SlidersHorizontal } from 'lucide-react'
 import { guardarPreferencias } from '@/lib/actions/account'
 import { useTheme } from '@/components/providers/ThemeProvider'
+import { LangContext } from '@/lib/contexts'
 
 /**
  * Preferências da conta (idioma, aparência, contacto).
@@ -19,24 +20,24 @@ import { useTheme } from '@/components/providers/ThemeProvider'
  */
 
 const IDIOMAS = [
-  { value: 'pt', label: 'Português' },
-  { value: 'en', label: 'English' },
+  { value: 'pt', key: 'account.preferences.portuguese' },
+  { value: 'en', key: 'account.preferences.english' },
 ]
 
 const APARENCIAS = [
-  { value: 'light', label: 'Claro' },
-  { value: 'dark', label: 'Escuro' },
-  { value: 'system', label: 'Sistema' },
+  { value: 'light', key: 'account.preferences.light' },
+  { value: 'dark', key: 'account.preferences.dark' },
+  { value: 'system', key: 'account.preferences.system' },
 ]
 
 const ERROS = {
-  SEM_SESSAO: 'A sessão expirou. Entre novamente.',
-  TELEFONE: 'Telefone inválido — indique 9 dígitos (ex.: 923 114 500).',
-  INVALIDO: 'Escolha um idioma e uma aparência.',
-  FALHOU: 'Não foi possível guardar as preferências.',
+  SEM_SESSAO: 'account.preferences.errors.session',
+  TELEFONE: 'account.preferences.errors.phone',
+  INVALIDO: 'account.preferences.errors.invalid',
+  FALHOU: 'account.preferences.errors.failed',
 }
 
-function Segmented({ label, options, value, onChange }) {
+function Segmented({ label, options, value, onChange, t }) {
   return (
     <div>
       <span className="conta-label">{label}</span>
@@ -55,7 +56,7 @@ function Segmented({ label, options, value, onChange }) {
               value === option.value ? 'conta-btn--primary' : 'conta-btn--ghost'
             }`}
           >
-            {option.label}
+            {t(option.key)}
           </button>
         ))}
       </div>
@@ -64,6 +65,7 @@ function Segmented({ label, options, value, onChange }) {
 }
 
 export default function PreferenciasPanel({ lang, theme, phone, municipality }) {
+  const { t } = useContext(LangContext)
   const { setMode } = useTheme()
   const [idioma, setIdioma] = useState(lang === 'en' ? 'en' : 'pt')
   const [aparencia, setAparencia] = useState(
@@ -93,12 +95,12 @@ export default function PreferenciasPanel({ lang, theme, phone, municipality }) 
         municipality: municipio,
       })
       if (result?.ok) {
-        setMessage('Preferências guardadas nesta conta.')
+        setMessage(t('account.preferences.saved'))
       } else {
-        setError(ERROS[result?.error] || ERROS.FALHOU)
+        setError(t(ERROS[result?.error] || 'account.preferences.errors.failed'))
       }
     } catch {
-      setError(ERROS.FALHOU)
+      setError(t('account.preferences.errors.failed'))
     } finally {
       setSaving(false)
     }
@@ -109,21 +111,28 @@ export default function PreferenciasPanel({ lang, theme, phone, municipality }) 
       <div className="conta-panel-head">
         <h2 id="conta-preferencias" className="conta-panel-title">
           <SlidersHorizontal size={14} aria-hidden="true" />
-          Preferências
+          {t('account.preferences.panel')}
         </h2>
       </div>
       <div className="conta-panel-body">
         <form onSubmit={handleSubmit} className="conta-form-row" style={{ marginTop: 0 }}>
-          <Segmented label="Idioma" options={IDIOMAS} value={idioma} onChange={setIdioma} />
           <Segmented
-            label="Aparência"
+            t={t}
+            label={t('account.preferences.language')}
+            options={IDIOMAS}
+            value={idioma}
+            onChange={setIdioma}
+          />
+          <Segmented
+            t={t}
+            label={t('account.preferences.appearance')}
             options={APARENCIAS}
             value={aparencia}
             onChange={chooseAparencia}
           />
 
           <label>
-            <span className="conta-label">Telemóvel</span>
+            <span className="conta-label">{t('account.preferences.phone')}</span>
             <input
               type="tel"
               inputMode="tel"
@@ -134,13 +143,10 @@ export default function PreferenciasPanel({ lang, theme, phone, municipality }) 
               autoComplete="tel"
             />
           </label>
-          <p className="conta-hint">
-            Usado para pré-preencher as reservas no Localizador. Pode sempre alterar o número em
-            cada reserva.
-          </p>
+          <p className="conta-hint">{t('account.preferences.phoneHint')}</p>
 
           <label>
-            <span className="conta-label">Município</span>
+            <span className="conta-label">{t('account.preferences.municipality')}</span>
             <input
               type="text"
               value={municipio}
@@ -165,7 +171,7 @@ export default function PreferenciasPanel({ lang, theme, phone, municipality }) 
             style={{ width: '100%' }}
           >
             {saving ? <Loader2 size={15} className="animate-spin" /> : null}
-            Guardar preferências
+            {t('account.preferences.save')}
           </button>
         </form>
       </div>

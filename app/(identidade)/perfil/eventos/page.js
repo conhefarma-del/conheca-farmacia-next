@@ -6,6 +6,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { loadInscricoes } from '@/lib/account-inscricoes'
 import { getEvents } from '@/lib/api/events'
 import { SITE_ORIGIN } from '@/lib/account-urls'
+import { accountLocale, accountTranslator } from '@/lib/account-i18n'
 import CancelInscriptionButton from '@/components/account/CancelInscriptionButton'
 import InscriptionDetailsForm from '@/components/account/InscriptionDetailsForm'
 
@@ -43,12 +44,11 @@ export default async function EventosPage() {
 
   if (!user) redirect('/entrar?next=/perfil/eventos')
 
-  // «Seguir o idioma do perfil»: a conta não tem idioma no URL; o perfil de
-  // estudante grava a preferência nos metadados. Sem preferência, PT.
+  // O idioma vem da preferência da conta (`lib/account-i18n`) — a mesma que
+  // alimenta o LangProvider do layout. Sem preferência, PT.
   const meta = user.user_metadata || {}
-  const preferido = meta.lang || meta.preferred_lang || meta.idioma
-  const lang = preferido === 'en' ? 'en' : 'pt'
-  const locale = lang === 'en' ? 'en-GB' : 'pt-PT'
+  const { lang, t } = accountTranslator(user)
+  const locale = accountLocale(lang)
 
   const dadosInscricao = meta.inscricao || {}
   const admin = createAdminClient()
@@ -127,33 +127,29 @@ export default async function EventosPage() {
       : null
 
   const estado = (item) => {
-    if (!item.passado) return { label: 'Inscrição confirmada', tone: 'ok' }
-    if (item.compareceu) return { label: 'Compareceu', tone: 'ok' }
-    return { label: 'Já decorreu', tone: '' }
+    if (!item.passado) return { label: t('account.events.confirmed'), tone: 'ok' }
+    if (item.compareceu) return { label: t('account.events.attended'), tone: 'ok' }
+    return { label: t('account.events.past'), tone: '' }
   }
 
   return (
     <main className="conta-page">
       <header className="conta-page-head">
         <div>
-          <p className="conta-kicker">A minha conta</p>
-          <h1 className="conta-title">Eventos</h1>
-          <p className="conta-sub">
-            As suas inscrições e os próximos eventos da Conheça Farmácia. A inscrição abre na
-            página do evento, no site.
-          </p>
+          <p className="conta-kicker">{t('account.kicker')}</p>
+          <h1 className="conta-title">{t('account.events.title')}</h1>
+          <p className="conta-sub">{t('account.events.sub')}</p>
         </div>
         <div className="conta-head-acts">
           <Link className="conta-btn conta-btn--ghost conta-btn--sm" href="/perfil">
-            Voltar à visão geral
+            {t('account.common.back')}
           </Link>
         </div>
       </header>
 
       {inscricoesError && (
         <p className="conta-alert conta-alert--bad" role="alert">
-          Não foi possível abrir as suas inscrições. Tente outra vez daqui a pouco — a inscrição
-          continua registada.
+          {t('account.events.loadError')}
         </p>
       )}
 
@@ -161,18 +157,15 @@ export default async function EventosPage() {
         <div className="conta-panel-head">
           <h2 id="conta-inscricoes" className="conta-panel-title">
             <Ticket size={15} aria-hidden="true" />
-            As minhas inscrições
+            {t('account.events.mine')}
             {proximas.length > 0 && <span className="conta-panel-count">{proximas.length}</span>}
           </h2>
         </div>
 
         {proximas.length === 0 ? (
           <div className="conta-empty">
-            <p className="conta-empty-title">Sem inscrições em eventos futuros</p>
-            <p className="conta-empty-sub">
-              Escolha um dos próximos eventos abaixo e inscreva-se na página do evento. A inscrição
-              aparece aqui assim que estiver feita.
-            </p>
+            <p className="conta-empty-title">{t('account.events.emptyTitle')}</p>
+            <p className="conta-empty-sub">{t('account.events.emptySub')}</p>
           </div>
         ) : (
           <ul className="conta-rows">
@@ -196,7 +189,7 @@ export default async function EventosPage() {
                   </div>
                   <div className="conta-row-acts">
                     <a className="conta-btn conta-btn--ghost conta-btn--sm" href={hrefEvento(item.evento)}>
-                      Ver evento
+                      {t('account.common.viewEvent')}
                     </a>
                     {comprovativo(item) && (
                       <a
@@ -205,7 +198,7 @@ export default async function EventosPage() {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Comprovativo
+                        {t('account.common.receipt')}
                       </a>
                     )}
                     <CancelInscriptionButton id={item.id} />
@@ -220,7 +213,7 @@ export default async function EventosPage() {
       <section className="conta-panel" aria-labelledby="conta-dados-inscricao">
         <div className="conta-panel-head">
           <h2 id="conta-dados-inscricao" className="conta-panel-title">
-            Dados de inscrição
+            {t('account.inscription.title')}
           </h2>
         </div>
         <InscriptionDetailsForm
@@ -240,22 +233,20 @@ export default async function EventosPage() {
         <div className="conta-panel-head">
           <h2 id="conta-proximos" className="conta-panel-title">
             <CalendarDays size={15} aria-hidden="true" />
-            Próximos eventos
+            {t('account.events.upcomingTitle')}
           </h2>
           <a
             className="conta-btn conta-btn--ghost conta-btn--sm"
             href={`${SITE_ORIGIN}/${lang}/eventos`}
           >
-            Ver todos
+            {t('account.common.seeAll')}
           </a>
         </div>
 
         {proximosEventos.length === 0 ? (
           <div className="conta-empty">
-            <p className="conta-empty-title">Ainda não há eventos anunciados</p>
-            <p className="conta-empty-sub">
-              A agenda é atualizada no site; volte aqui quando houver uma data nova.
-            </p>
+            <p className="conta-empty-title">{t('account.events.upcomingEmptyTitle')}</p>
+            <p className="conta-empty-sub">{t('account.events.upcomingEmptySub')}</p>
           </div>
         ) : (
           <ul className="conta-rows">
@@ -277,7 +268,7 @@ export default async function EventosPage() {
                 </div>
                 <div className="conta-row-acts">
                   <a className="conta-btn conta-btn--primary conta-btn--sm" href={hrefEvento(evento)}>
-                    Ver e inscrever
+                    {t('account.common.viewAndRegister')}
                   </a>
                 </div>
               </li>
@@ -291,7 +282,7 @@ export default async function EventosPage() {
           <div className="conta-panel-head">
             <h2 id="conta-passadas" className="conta-panel-title">
               <CheckCircle2 size={15} aria-hidden="true" />
-              Inscrições passadas
+              {t('account.events.pastTitle')}
               <span className="conta-panel-count">{passadas.length}</span>
             </h2>
           </div>
@@ -300,14 +291,14 @@ export default async function EventosPage() {
               <li key={item.id} className="conta-row">
                 <div className="conta-row-main">
                   <span className="conta-row-kicker">
-                    {item.evento ? fmtData(item.evento.date) : 'Evento removido'}
+                    {item.evento ? fmtData(item.evento.date) : t('account.events.removedEvent')}
                   </span>
                   {item.evento ? (
                     <a className="conta-row-title" href={hrefEvento(item.evento)}>
                       {item.evento.title}
                     </a>
                   ) : (
-                    <span className="conta-row-title">Evento já não disponível</span>
+                    <span className="conta-row-title">{t('account.events.unavailable')}</span>
                   )}
                   <span className="conta-row-meta">
                     {[item.evento?.location || item.evento?.platform, estado(item).label]

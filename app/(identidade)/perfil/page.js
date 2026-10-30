@@ -4,6 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import HubClient from '@/components/account/HubClient'
 import { emailsDaConta, loadInscricoes } from '@/lib/account-inscricoes'
 import { LOCATOR_ORIGIN, SITE_ORIGIN } from '@/lib/account-urls'
+import { accountLocale, accountTranslator } from '@/lib/account-i18n'
 
 export const dynamic = 'force-dynamic'
 
@@ -37,7 +38,7 @@ const normalize = (value) =>
  * de farmácias que o têm, no Localizador. As farmácias guardadas só têm o
  * segundo.
  */
-async function loadSaved(supabase, userId) {
+async function loadSaved(supabase, userId, { t, lang }) {
   const localizador = await createLocalizadorClient()
   const { data: favorites } = await localizador
     .from('favorites')
@@ -68,17 +69,17 @@ async function loadSaved(supabase, userId) {
           key: `drug-${row.id}`,
           name: row.drugs.name,
           meta: [row.drugs.form, row.drugs.dosage, row.drugs.molecule].filter(Boolean).join(' · '),
-          cta: 'Ver farmácias',
+          cta: t('account.overview.savedCtaDrug'),
           locatorHref: `${LOCATOR_ORIGIN}/medicamento/${row.drug_id}`,
-          siteHref: slug ? `${SITE_ORIGIN}/pt/medicamento/${slug}` : null,
+          siteHref: slug ? `${SITE_ORIGIN}/${lang}/medicamento/${slug}` : null,
         }
       }
       if (row.pharmacy_id && row.pharmacies) {
         return {
           key: `pharmacy-${row.id}`,
           name: row.pharmacies.name,
-          meta: row.pharmacies.municipio || 'Farmácia parceira',
-          cta: 'Ver farmácia',
+          meta: row.pharmacies.municipio || t('account.overview.savedMetaPharmacy'),
+          cta: t('account.overview.savedCtaPharmacy'),
           locatorHref: `${LOCATOR_ORIGIN}/farmacia/${row.pharmacies.slug}`,
           siteHref: null,
         }
@@ -144,21 +145,25 @@ export default async function ContaPage() {
   if (!user) redirect('/entrar?next=/perfil')
 
   const meta = user.user_metadata || {}
-  const membroDesde = user.created_at
-    ? `Membro desde ${new Date(user.created_at).toLocaleDateString('pt-PT', {
-        month: 'long',
-        year: 'numeric',
-      })}`
-    : 'Conta Conheça Farmácia'
+  const { lang, t } = accountTranslator(user)
 
-  const saved = await loadSaved(supabase, user.id)
+  const membroDesde = user.created_at
+    ? t('account.overview.memberSinceValue', {
+        date: new Date(user.created_at).toLocaleDateString(accountLocale(lang), {
+          month: 'long',
+          year: 'numeric',
+        }),
+      })
+    : t('account.overview.accountDefault')
+
+  const saved = await loadSaved(supabase, user.id, { t, lang })
   const eventos = await loadProximaInscricao(supabase, user)
 
   // Preferências que a conta já guarda (nascem todas em `user_metadata`).
   // O telefone cai para o das inscrições, para contas antigas não ficarem
   // com o campo vazio.
   const preferencias = {
-    lang: meta.lang === 'en' || meta.preferred_lang === 'en' || meta.idioma === 'en' ? 'en' : 'pt',
+    lang,
     theme: ['light', 'dark', 'system'].includes(meta.theme) ? meta.theme : 'system',
     phone: meta.phone || meta.inscricao?.telefone || '',
     municipality: meta.municipality || '',

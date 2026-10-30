@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { deleteMyAccount, pedirAlteracaoEmail } from '@/lib/actions/account'
 import { AtSign, KeyRound, Loader2, LogOut, ShieldAlert, Trash2 } from 'lucide-react'
+import { LangContext } from '@/lib/contexts'
 
 /**
  * Segurança da conta (conta.conhecafarmacia.com/perfil/seguranca).
@@ -24,21 +25,22 @@ import { AtSign, KeyRound, Loader2, LogOut, ShieldAlert, Trash2 } from 'lucide-r
  */
 
 const ERROS_EMAIL = {
-  SEM_SESSAO: 'A sessão expirou. Entre novamente.',
-  EMAIL_INVALIDO: 'Indique um e-mail válido.',
-  MESMO_EMAIL: 'Este já é o e-mail da conta.',
-  JA_EXISTE: 'Já existe uma conta com este e-mail.',
-  FALHOU: 'Não foi possível pedir a alteração. Tente novamente.',
+  SEM_SESSAO: 'account.security.emailErrors.session',
+  EMAIL_INVALIDO: 'account.security.emailErrors.invalid',
+  MESMO_EMAIL: 'account.security.emailErrors.same',
+  JA_EXISTE: 'account.security.emailErrors.exists',
+  FALHOU: 'account.security.emailErrors.failed',
 }
 
 const ERROS = {
-  CONFIRMACAO: 'Escreva APAGAR para confirmar.',
-  SEM_SESSAO: 'A sessão expirou. Entre novamente.',
-  CONTA_INTERNA: 'Esta conta pertence à equipa interna e não pode ser apagada aqui.',
-  FALHOU: 'Não foi possível apagar a conta. Tente novamente.',
+  CONFIRMACAO: 'account.security.deleteErrors.confirm',
+  SEM_SESSAO: 'account.security.deleteErrors.session',
+  CONTA_INTERNA: 'account.security.deleteErrors.internal',
+  FALHOU: 'account.security.deleteErrors.failed',
 }
 
 export default function SegurancaClient({ email, isInternal }) {
+  const { t } = useContext(LangContext)
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [passwordMessage, setPasswordMessage] = useState('')
@@ -61,11 +63,11 @@ export default function SegurancaClient({ email, isInternal }) {
     setPasswordMessage('')
 
     if (newPassword.length < 8) {
-      setPasswordError('A palavra-passe deve ter pelo menos 8 caracteres.')
+      setPasswordError(t('account.security.passwordErrors.short'))
       return
     }
     if (newPassword !== confirmPassword) {
-      setPasswordError('As palavras-passe não coincidem.')
+      setPasswordError(t('account.security.passwordErrors.mismatch'))
       return
     }
 
@@ -76,16 +78,16 @@ export default function SegurancaClient({ email, isInternal }) {
       if (error) {
         setPasswordError(
           error.message?.includes('different from the old password')
-            ? 'A nova palavra-passe tem de ser diferente da atual.'
-            : 'Não foi possível atualizar a palavra-passe.',
+            ? t('account.security.passwordErrors.different')
+            : t('account.security.passwordErrors.failed'),
         )
       } else {
-        setPasswordMessage('Palavra-passe atualizada.')
+        setPasswordMessage(t('account.security.passwordUpdated'))
         setNewPassword('')
         setConfirmPassword('')
       }
     } catch {
-      setPasswordError('Não foi possível atualizar a palavra-passe.')
+      setPasswordError(t('account.security.passwordErrors.failed'))
     } finally {
       setSavingPassword(false)
     }
@@ -98,11 +100,11 @@ export default function SegurancaClient({ email, isInternal }) {
 
     const next = newEmail.trim().toLowerCase()
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(next)) {
-      setEmailError('Indique um e-mail válido.')
+      setEmailError(t('account.security.emailErrors.invalid'))
       return
     }
     if (next === email.trim().toLowerCase()) {
-      setEmailError('Este já é o e-mail da conta.')
+      setEmailError(t('account.security.emailErrors.same'))
       return
     }
 
@@ -112,20 +114,16 @@ export default function SegurancaClient({ email, isInternal }) {
       // antes de o Supabase pedir a confirmação no endereço novo.
       const result = await pedirAlteracaoEmail(next)
       if (!result?.ok) {
-        setEmailError(
-          ERROS_EMAIL[result?.error] || 'Não foi possível pedir a alteração. Tente novamente.',
-        )
+        setEmailError(t(ERROS_EMAIL[result?.error] || 'account.security.emailErrors.failed'))
       } else {
         // O Supabase só muda o endereço depois da confirmação — nunca dizemos
         // que está mudado antes disso. Com confirmação dupla, chegam dois
         // e-mails (ao antigo e ao novo).
-        setEmailMessage(
-          'Pedido enviado. Confirme no e-mail novo (e no atual, se a confirmação dupla estiver ativa).',
-        )
+        setEmailMessage(t('account.security.emailSent'))
         setNewEmail('')
       }
     } catch {
-      setEmailError('Não foi possível pedir a alteração. Tente novamente.')
+      setEmailError(t('account.security.emailErrors.failed'))
     } finally {
       setSavingEmail(false)
     }
@@ -151,9 +149,9 @@ export default function SegurancaClient({ email, isInternal }) {
         window.location.href = '/entrar?motivo=CONTA_APAGADA'
         return
       }
-      setDeleteError(ERROS[result?.error] || ERROS.FALHOU)
+      setDeleteError(t(ERROS[result?.error] || 'account.security.deleteErrors.failed'))
     } catch {
-      setDeleteError(ERROS.FALHOU)
+      setDeleteError(t('account.security.deleteErrors.failed'))
     } finally {
       setDeleting(false)
     }
@@ -163,10 +161,10 @@ export default function SegurancaClient({ email, isInternal }) {
     <main className="conta-page">
       <header className="conta-page-head">
         <div>
-          <p className="conta-kicker">A minha conta</p>
-          <h1 className="conta-title">Segurança</h1>
+          <p className="conta-kicker">{t('account.kicker')}</p>
+          <h1 className="conta-title">{t('account.security.title')}</h1>
           <p className="conta-sub">
-            Sessão iniciada como <strong>{email}</strong>.
+            {t('account.security.signedInAs')} <strong>{email}</strong>.
           </p>
         </div>
       </header>
@@ -177,17 +175,16 @@ export default function SegurancaClient({ email, isInternal }) {
             <div className="conta-panel-head">
               <h2 id="conta-email" className="conta-panel-title">
                 <AtSign size={14} />
-                E-mail da conta
+                {t('account.security.emailTitle')}
               </h2>
             </div>
             <div className="conta-panel-body">
               <p className="conta-hint" style={{ marginTop: 0 }}>
-                É o endereço que liga as suas inscrições em eventos e a newsletter. A alteração
-                só fica ativa depois de confirmada no novo endereço.
+                {t('account.security.emailHint')}
               </p>
               <form onSubmit={handleChangeEmail} className="conta-form-row">
                 <label>
-                  <span className="conta-label">Novo e-mail</span>
+                  <span className="conta-label">{t('account.security.newEmail')}</span>
                   <input
                     type="email"
                     value={newEmail}
@@ -212,7 +209,7 @@ export default function SegurancaClient({ email, isInternal }) {
                   style={{ width: '100%' }}
                 >
                   {savingEmail ? <Loader2 size={15} className="animate-spin" /> : null}
-                  Enviar confirmação
+                  {t('account.security.send')}
                 </button>
               </form>
             </div>
@@ -222,33 +219,33 @@ export default function SegurancaClient({ email, isInternal }) {
             <div className="conta-panel-head">
               <h2 id="conta-palavra-passe" className="conta-panel-title">
                 <KeyRound size={14} />
-                Alterar palavra-passe
+                {t('account.security.passwordTitle')}
               </h2>
             </div>
             <div className="conta-panel-body">
               <form onSubmit={handleChangePassword} className="conta-form-row">
                 <label>
-                  <span className="conta-label">Nova palavra-passe</span>
+                  <span className="conta-label">{t('account.security.newPassword')}</span>
                   <input
                     type="password"
                     value={newPassword}
                     onChange={(event) => setNewPassword(event.target.value)}
                     autoComplete="new-password"
                     minLength={8}
-                    placeholder="Mínimo 8 caracteres"
+                    placeholder={t('account.security.newPasswordPlaceholder')}
                     className="conta-field"
                   />
                 </label>
 
                 <label>
-                  <span className="conta-label">Confirmar palavra-passe</span>
+                  <span className="conta-label">{t('account.security.confirmPassword')}</span>
                   <input
                     type="password"
                     value={confirmPassword}
                     onChange={(event) => setConfirmPassword(event.target.value)}
                     autoComplete="new-password"
                     minLength={8}
-                    placeholder="Repita a palavra-passe"
+                    placeholder={t('account.security.confirmPasswordPlaceholder')}
                     className="conta-field"
                   />
                 </label>
@@ -267,7 +264,7 @@ export default function SegurancaClient({ email, isInternal }) {
                   style={{ width: '100%' }}
                 >
                   {savingPassword ? <Loader2 size={15} className="animate-spin" /> : null}
-                  Atualizar palavra-passe
+                  {t('account.security.updatePassword')}
                 </button>
               </form>
             </div>
@@ -277,13 +274,12 @@ export default function SegurancaClient({ email, isInternal }) {
             <div className="conta-panel-head">
               <h2 id="conta-sessoes" className="conta-panel-title">
                 <LogOut size={14} />
-                Sessões
+                {t('account.security.sessionsTitle')}
               </h2>
             </div>
             <div className="conta-panel-body">
               <p className="conta-hint" style={{ marginTop: 0 }}>
-                Sair aqui termina a sessão neste aparelho. Se perdeu um telemóvel ou entrou num
-                computador partilhado, termine todas.
+                {t('account.security.sessionsHint')}
               </p>
               <button
                 type="button"
@@ -293,7 +289,7 @@ export default function SegurancaClient({ email, isInternal }) {
                 style={{ width: '100%', marginTop: '0.75rem' }}
               >
                 {signingOutAll ? <Loader2 size={15} className="animate-spin" /> : null}
-                Terminar sessão em todos os dispositivos
+                {t('account.security.signOutAll')}
               </button>
             </div>
           </section>
@@ -303,18 +299,16 @@ export default function SegurancaClient({ email, isInternal }) {
           <section className="conta-panel" aria-labelledby="conta-info">
             <div className="conta-panel-head">
               <h2 id="conta-info" className="conta-panel-title">
-                A mesma conta em todo o lado
+                {t('account.security.infoTitle')}
               </h2>
             </div>
             <div className="conta-panel-body">
               <p className="conta-hint" style={{ marginTop: 0 }}>
-                Esta conta serve o site, o Localizador e as reservas nas farmácias. Mudar a
-                palavra-passe aqui muda-a nos três sítios.
+                {t('account.security.infoHint')}
               </p>
               <p className="conta-hint">
-                O nome e a fotografia vivem em{' '}
                 <Link href="/perfil" style={{ color: 'var(--color-brand-accent)' }}>
-                  A minha conta
+                  {t('account.security.infoLink')}
                 </Link>
                 .
               </p>
@@ -325,33 +319,28 @@ export default function SegurancaClient({ email, isInternal }) {
             <div className="conta-panel-head">
               <h2 id="conta-apagar" className="conta-panel-title conta-panel-title--danger">
                 <Trash2 size={14} />
-                Apagar conta
+                {t('account.security.dangerTitle')}
               </h2>
             </div>
             <div className="conta-panel-body">
               {isInternal ? (
                 <p className="conta-hint" style={{ marginTop: 0 }}>
-                  Esta conta pertence à equipa interna e não pode ser apagada por aqui. Fale com
-                  um superadmin.
+                  {t('account.security.dangerInternal')}
                 </p>
               ) : (
                 <>
                   <p className="conta-hint" style={{ marginTop: 0 }}>
-                    Apaga a conta e tudo o que está ligado a ela: guardados do Localizador e do
-                    site, anotações e histórico de estudo. As reservas que fez ficam na farmácia,
-                    sem ligação à sua conta. Não há como desfazer.
+                    {t('account.security.dangerHint')}
                   </p>
 
                   <label style={{ display: 'block', marginTop: '0.75rem' }}>
-                    <span className="conta-label">
-                      Escreva <strong>APAGAR</strong> para confirmar
-                    </span>
+                    <span className="conta-label">{t('account.security.confirmLabel')}</span>
                     <input
                       type="text"
                       value={confirmacao}
                       onChange={(event) => setConfirmacao(event.target.value)}
                       className="conta-field conta-field--danger"
-                      placeholder="APAGAR"
+                      placeholder={t('account.security.confirmPlaceholder')}
                       autoComplete="off"
                     />
                   </label>
@@ -374,7 +363,7 @@ export default function SegurancaClient({ email, isInternal }) {
                     ) : (
                       <ShieldAlert size={15} />
                     )}
-                    Apagar a minha conta
+                    {t('account.security.deleteAccount')}
                   </button>
                 </>
               )}

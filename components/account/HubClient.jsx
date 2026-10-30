@@ -1,10 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { LOCATOR_ORIGIN, SITE_ORIGIN } from '@/lib/account-urls'
 import { useTheme } from '@/components/providers/ThemeProvider'
+import { LangContext } from '@/lib/contexts'
 import {
   Bookmark,
   CalendarDays,
@@ -36,28 +37,28 @@ import {
 
 const SITE_LINKS = [
   {
-    href: `${SITE_ORIGIN}/pt/guardados`,
-    title: 'Conteúdos guardados',
-    description: 'Artigos, medicamentos e classes do site',
+    path: '/guardados',
+    titleKey: 'account.overview.siteSaved',
+    descriptionKey: 'account.overview.siteSavedSub',
     icon: Bookmark,
   },
   {
-    href: `${SITE_ORIGIN}/pt/anotacoes`,
-    title: 'Anotações',
-    description: 'Notas dos conteúdos que guardou',
+    path: '/anotacoes',
+    titleKey: 'account.overview.siteNotes',
+    descriptionKey: 'account.overview.siteNotesSub',
     icon: NotebookPen,
   },
   {
-    href: `${SITE_ORIGIN}/pt/perfil`,
-    title: 'Perfil de estudante',
-    description: 'Quizzes, competições e turma',
+    path: '/perfil',
+    titleKey: 'account.overview.siteStudent',
+    descriptionKey: 'account.overview.siteStudentSub',
     icon: GraduationCap,
   },
 ]
 
-const fmtDia = (value) =>
+const fmtDia = (value, locale) =>
   value
-    ? new Date(`${value}T00:00:00`).toLocaleDateString('pt-PT', {
+    ? new Date(`${value}T00:00:00`).toLocaleDateString(locale, {
         day: '2-digit',
         month: 'long',
       })
@@ -71,13 +72,15 @@ export default function HubClient({
   inscricoesTotal = 0,
   preferencias = {},
 }) {
+  const { t, lang } = useContext(LangContext)
+  const locale = lang === 'en' ? 'en-GB' : 'pt-PT'
   const [name, setName] = useState(profile.name)
   const [avatarUrl, setAvatarUrl] = useState(profile.avatarUrl)
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(profile.name)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
-  const [message, setMessage] = useState('')
+  const [feedback, setFeedback] = useState({ tone: '', text: '' })
   const { setMode } = useTheme()
 
   // Aparelho novo (sem cookie partilhada): a aparência guardada na conta é a
@@ -90,7 +93,7 @@ export default function HubClient({
     if (!hasLocalChoice) setMode(preferencias.theme)
   }, [preferencias.theme, setMode])
 
-  const displayName = name || profile.email.split('@')[0] || 'Utilizador'
+  const displayName = name || profile.email.split('@')[0] || t('account.kicker')
   const initial = displayName.charAt(0).toUpperCase()
   const avatar = avatarUrl || null
 
@@ -98,21 +101,21 @@ export default function HubClient({
     const value = draft.trim()
     if (!value) return
     setSaving(true)
-    setMessage('')
+    setFeedback({ tone: '', text: '' })
     try {
       const supabase = createClient()
       const { error } = await supabase.auth.updateUser({
         data: { full_name: value, display_name: value },
       })
       if (error) {
-        setMessage('Não foi possível guardar o nome. Tente novamente.')
+        setFeedback({ tone: 'bad', text: t('account.overview.nameFailed') })
       } else {
         setName(value)
         setEditing(false)
-        setMessage('Nome atualizado.')
+        setFeedback({ tone: 'ok', text: t('account.overview.nameSaved') })
       }
     } catch {
-      setMessage('Não foi possível guardar o nome. Tente novamente.')
+      setFeedback({ tone: 'bad', text: t('account.overview.nameFailed') })
     } finally {
       setSaving(false)
     }
@@ -122,12 +125,12 @@ export default function HubClient({
     const file = event.target.files?.[0]
     if (!file) return
     if (file.size > 2 * 1024 * 1024) {
-      setMessage('A imagem deve ter menos de 2 MB.')
+      setFeedback({ tone: 'bad', text: t('account.overview.photoTooBig') })
       return
     }
 
     setUploading(true)
-    setMessage('')
+    setFeedback({ tone: '', text: '' })
     try {
       const supabase = createClient()
       const extension = (file.name.split('.').pop() || 'jpg').toLowerCase()
@@ -145,9 +148,9 @@ export default function HubClient({
       if (updateError) throw updateError
 
       setAvatarUrl(publicUrl)
-      setMessage('Fotografia atualizada.')
+      setFeedback({ tone: 'ok', text: t('account.overview.photoSaved') })
     } catch {
-      setMessage('Não foi possível enviar a fotografia.')
+      setFeedback({ tone: 'bad', text: t('account.overview.photoFailed') })
     } finally {
       setUploading(false)
     }
@@ -157,25 +160,23 @@ export default function HubClient({
     <main className="conta-page">
       <header className="conta-page-head">
         <div>
-          <p className="conta-kicker">A minha conta</p>
+          <p className="conta-kicker">{t('account.kicker')}</p>
           <h1 className="conta-title">{displayName}</h1>
-          <p className="conta-sub">
-            Uma conta para o site, o Localizador e as reservas nas farmácias.
-          </p>
+          <p className="conta-sub">{t('account.overview.sub')}</p>
         </div>
         <div className="conta-head-acts">
           <Link href="/perfil/seguranca" className="conta-btn conta-btn--ghost conta-btn--sm">
-            Segurança e palavra-passe
+            {t('account.overview.securityCta')}
           </Link>
         </div>
       </header>
 
-      {message && (
+      {feedback.text && (
         <p
-          className={`conta-alert${message.includes('atualiz') ? ' conta-alert--ok' : ' conta-alert--bad'}`}
+          className={`conta-alert${feedback.tone === 'ok' ? ' conta-alert--ok' : ' conta-alert--bad'}`}
           role="status"
         >
-          {message}
+          {feedback.text}
         </p>
       )}
 
@@ -190,8 +191,8 @@ export default function HubClient({
             )}
             <label
               className="conta-avatar-edit"
-              title="Trocar fotografia"
-              aria-label="Trocar fotografia"
+              title={t('account.overview.changePhoto')}
+              aria-label={t('account.overview.changePhoto')}
             >
               {uploading ? <Loader2 size={18} className="animate-spin" /> : <Camera size={18} />}
               <input
@@ -227,7 +228,7 @@ export default function HubClient({
                   onClick={handleSaveName}
                   disabled={saving}
                   className="conta-btn conta-btn--primary conta-btn--sm"
-                  aria-label="Guardar nome"
+                  aria-label={t('account.overview.saveName')}
                 >
                   {saving ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
                 </button>
@@ -238,7 +239,7 @@ export default function HubClient({
                     setDraft(name)
                   }}
                   className="conta-btn conta-btn--ghost conta-btn--sm"
-                  aria-label="Cancelar"
+                  aria-label={t('account.common.cancel')}
                 >
                   <X size={14} />
                 </button>
@@ -253,8 +254,8 @@ export default function HubClient({
                     setEditing(true)
                   }}
                   className="conta-btn conta-btn--ghost conta-btn--sm"
-                  aria-label="Editar nome"
-                  title="Editar nome"
+                  aria-label={t('account.overview.editName')}
+                  title={t('account.overview.editName')}
                 >
                   <Pencil size={13} />
                 </button>
@@ -265,7 +266,9 @@ export default function HubClient({
             <div className="conta-identity-tags">
               <span className="conta-tag">{profile.membroDesde}</span>
               <span className={`conta-tag${profile.verified ? ' conta-tag--ok' : ''}`}>
-                {profile.verified ? 'E-mail confirmado' : 'E-mail por confirmar'}
+                {profile.verified
+                  ? t('account.overview.emailVerified')
+                  : t('account.overview.emailPending')}
               </span>
             </div>
           </div>
@@ -277,24 +280,21 @@ export default function HubClient({
           <div className="conta-panel-head">
             <h2 id="conta-guardados" className="conta-panel-title">
               <Pill size={14} />
-              Guardados
+              {t('account.overview.savedTitle')}
               {savedTotal > 0 && <span className="conta-panel-count">{savedTotal}</span>}
             </h2>
             <a
               href={`${LOCATOR_ORIGIN}/guardados`}
               className="conta-btn conta-btn--ghost conta-btn--sm"
             >
-              Ver todos
+              {t('account.common.seeAll')}
             </a>
           </div>
 
           {saved.length === 0 ? (
             <div className="conta-empty">
-              <p className="conta-empty-title">Ainda não guardou nenhum medicamento</p>
-              <p className="conta-empty-sub">
-                Cada medicamento que guardar no Localizador aparece aqui com os preços das
-                farmácias que o confirmaram.
-              </p>
+              <p className="conta-empty-title">{t('account.overview.savedEmptyTitle')}</p>
+              <p className="conta-empty-sub">{t('account.overview.savedEmptySub')}</p>
             </div>
           ) : (
             <ul className="conta-rows">
@@ -310,7 +310,7 @@ export default function HubClient({
                         href={item.siteHref}
                         className="conta-btn conta-btn--ghost conta-btn--sm"
                       >
-                        Ver no site
+                        {t('account.overview.viewOnSite')}
                       </a>
                     )}
                     <a
@@ -331,7 +331,7 @@ export default function HubClient({
             <div className="conta-panel-head">
               <h2 id="conta-eventos" className="conta-panel-title">
                 <CalendarDays size={14} aria-hidden="true" />
-                Eventos
+                {t('account.overview.eventsTitle')}
                 {inscricoesTotal > 0 && (
                   <span className="conta-panel-count">{inscricoesTotal}</span>
                 )}
@@ -340,7 +340,7 @@ export default function HubClient({
                 href="/perfil/eventos"
                 className="conta-btn conta-btn--ghost conta-btn--sm"
               >
-                Ver eventos
+                {t('account.overview.viewEvents')}
               </Link>
             </div>
 
@@ -349,17 +349,20 @@ export default function HubClient({
                 <li className="conta-row">
                   <div className="conta-row-main">
                     <span className="conta-row-kicker">
-                      Próximo · {fmtDia(proximoEvento.date)}
+                      {t('account.overview.next')} · {fmtDia(proximoEvento.date, locale)}
                       {proximoEvento.time ? ` · ${proximoEvento.time}` : ''}
                     </span>
                     <a
                       className="conta-row-title"
-                      href={`${SITE_ORIGIN}/pt/eventos/${proximoEvento.slug}`}
+                      href={`${SITE_ORIGIN}/${lang}/eventos/${proximoEvento.slug}`}
                     >
                       {proximoEvento.title}
                     </a>
                     <span className="conta-row-meta">
-                      {[proximoEvento.location || proximoEvento.platform, 'Inscrição confirmada']
+                      {[
+                        proximoEvento.location || proximoEvento.platform,
+                        t('account.overview.confirmed'),
+                      ]
                         .filter(Boolean)
                         .join(' · ')}
                     </span>
@@ -368,11 +371,8 @@ export default function HubClient({
               </ul>
             ) : (
               <div className="conta-empty">
-                <p className="conta-empty-title">Ainda sem inscrições</p>
-                <p className="conta-empty-sub">
-                  Veja os próximos eventos e inscreva-se. As suas inscrições e os dados que
-                  deixar guardados ficam em Eventos.
-                </p>
+                <p className="conta-empty-title">{t('account.overview.eventsEmptyTitle')}</p>
+                <p className="conta-empty-sub">{t('account.overview.eventsEmptySub')}</p>
               </div>
             )}
           </section>
@@ -380,32 +380,32 @@ export default function HubClient({
           <section className="conta-panel" aria-labelledby="conta-gerir">
             <div className="conta-panel-head">
               <h2 id="conta-gerir" className="conta-panel-title">
-                Gerir a conta
+                {t('account.overview.manageTitle')}
               </h2>
             </div>
             <ul className="conta-rows">
               <li className="conta-row">
                 <div className="conta-row-main">
                   <Link className="conta-row-title" href="/perfil/preferencias">
-                    Preferências
+                    {t('account.overview.preferences')}
                   </Link>
-                  <span className="conta-row-meta">Idioma, aparência, telefone e município</span>
+                  <span className="conta-row-meta">{t('account.overview.preferencesSub')}</span>
                 </div>
               </li>
               <li className="conta-row">
                 <div className="conta-row-main">
                   <Link className="conta-row-title" href="/perfil/privacidade">
-                    Privacidade e dados
+                    {t('account.overview.privacy')}
                   </Link>
-                  <span className="conta-row-meta">O que guardamos, exportar e apagar</span>
+                  <span className="conta-row-meta">{t('account.overview.privacySub')}</span>
                 </div>
               </li>
               <li className="conta-row">
                 <div className="conta-row-main">
                   <Link className="conta-row-title" href="/perfil/atividade">
-                    Atividade
+                    {t('account.overview.activity')}
                   </Link>
-                  <span className="conta-row-meta">Guardados, reservas e inscrições</span>
+                  <span className="conta-row-meta">{t('account.overview.activitySub')}</span>
                 </div>
               </li>
             </ul>
@@ -414,27 +414,29 @@ export default function HubClient({
           <section className="conta-panel" aria-labelledby="conta-dados">
             <div className="conta-panel-head">
               <h2 id="conta-dados" className="conta-panel-title">
-                A conta
+                {t('account.overview.accountTitle')}
               </h2>
             </div>
             <ul className="conta-rows">
               <li className="conta-row">
                 <div className="conta-row-main">
-                  <span className="conta-row-meta">E-mail</span>
+                  <span className="conta-row-meta">{t('account.overview.email')}</span>
                   <span className="conta-row-title">{profile.email}</span>
                 </div>
               </li>
               <li className="conta-row">
                 <div className="conta-row-main">
-                  <span className="conta-row-meta">Estado</span>
+                  <span className="conta-row-meta">{t('account.overview.status')}</span>
                   <span className="conta-row-title">
-                    {profile.verified ? 'Verificada' : 'Por confirmar'}
+                    {profile.verified
+                      ? t('account.overview.verified')
+                      : t('account.overview.pending')}
                   </span>
                 </div>
               </li>
               <li className="conta-row">
                 <div className="conta-row-main">
-                  <span className="conta-row-meta">Membro desde</span>
+                  <span className="conta-row-meta">{t('account.overview.memberSince')}</span>
                   <span className="conta-row-title">{profile.membroDesde}</span>
                 </div>
               </li>
@@ -444,26 +446,29 @@ export default function HubClient({
           <section className="conta-panel" aria-labelledby="conta-site">
             <div className="conta-panel-head">
               <h2 id="conta-site" className="conta-panel-title">
-                No site
+                {t('account.overview.onSite')}
               </h2>
             </div>
             <ul className="conta-rows">
-              {SITE_LINKS.map(({ href, title, description, icon: Icon }) => (
-                <li key={href} className="conta-row">
-                  <div className="conta-row-main">
-                    <a className="conta-row-title" href={href}>
-                      {title}
-                    </a>
-                    <span className="conta-row-meta">{description}</span>
-                  </div>
-                  <div className="conta-row-acts">
-                    <a href={href} className="conta-btn conta-btn--ghost conta-btn--sm">
-                      <Icon size={13} />
-                      Abrir
-                    </a>
-                  </div>
-                </li>
-              ))}
+              {SITE_LINKS.map(({ path, titleKey, descriptionKey, icon: Icon }) => {
+                const href = `${SITE_ORIGIN}/${lang}${path}`
+                return (
+                  <li key={path} className="conta-row">
+                    <div className="conta-row-main">
+                      <a className="conta-row-title" href={href}>
+                        {t(titleKey)}
+                      </a>
+                      <span className="conta-row-meta">{t(descriptionKey)}</span>
+                    </div>
+                    <div className="conta-row-acts">
+                      <a href={href} className="conta-btn conta-btn--ghost conta-btn--sm">
+                        <Icon size={13} />
+                        {t('account.common.open')}
+                      </a>
+                    </div>
+                  </li>
+                )
+              })}
             </ul>
           </section>
         </div>

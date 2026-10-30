@@ -5,6 +5,7 @@ import { createClient, createLocalizadorClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { loadInscricoes } from '@/lib/account-inscricoes'
 import { LOCATOR_ORIGIN, SITE_ORIGIN } from '@/lib/account-urls'
+import { accountLocale, accountTranslator } from '@/lib/account-i18n'
 
 export const dynamic = 'force-dynamic'
 
@@ -13,9 +14,9 @@ export const metadata = {
   robots: { index: false, follow: false },
 }
 
-const fmt = (iso) =>
+const fmt = (iso, locale) =>
   iso
-    ? new Date(iso).toLocaleDateString('pt-PT', {
+    ? new Date(iso).toLocaleDateString(locale, {
         day: '2-digit',
         month: 'long',
         year: 'numeric',
@@ -36,6 +37,9 @@ export default async function AtividadePage() {
   } = await supabase.auth.getUser()
 
   if (!user) redirect('/entrar?next=/perfil/atividade')
+
+  const { lang, t } = accountTranslator(user)
+  const locale = accountLocale(lang)
 
   const localizador = await createLocalizadorClient()
 
@@ -71,9 +75,13 @@ export default async function AtividadePage() {
     ...(favoritos.data || []).map((row) => ({
       key: `favorito-${row.id}`,
       date: row.created_at,
-      kind: 'Guardou',
-      title: row.drugs?.name || row.pharmacies?.name || 'Item guardado',
-      meta: row.drugs ? 'Medicamento · Localizador' : row.pharmacies?.name ? 'Farmácia · Localizador' : '',
+      kind: t('account.activity.kindSaved'),
+      title: row.drugs?.name || row.pharmacies?.name || t('account.activity.fallbackSaved'),
+      meta: row.drugs
+        ? t('account.activity.metaDrug')
+        : row.pharmacies?.name
+          ? t('account.activity.metaPharmacy')
+          : '',
       href: row.drugs?.id
         ? `${LOCATOR_ORIGIN}/medicamento/${row.drugs.id}`
         : row.pharmacies?.slug
@@ -83,8 +91,8 @@ export default async function AtividadePage() {
     ...(reservas.data || []).map((row) => ({
       key: `reserva-${row.id}`,
       date: row.created_at,
-      kind: 'Reservou',
-      title: row.drugs?.name || 'Reserva',
+      kind: t('account.activity.kindReserved'),
+      title: row.drugs?.name || t('account.activity.fallbackReservation'),
       meta: [row.pharmacies?.name, `${row.quantity} un.`, row.status].filter(Boolean).join(' · '),
       href:
         row.access_token && row.id
@@ -96,12 +104,15 @@ export default async function AtividadePage() {
       return {
         key: `inscricao-${row.id}`,
         date: row.created_at,
-        kind: 'Inscreveu-se',
-        title: evento?.title || 'Evento',
-        meta: [fmt(evento?.date), row.compareceu ? 'Compareceu' : 'Inscrição confirmada']
+        kind: t('account.activity.kindRegistered'),
+        title: evento?.title || t('account.activity.fallbackEvent'),
+        meta: [
+          fmt(evento?.date, locale),
+          row.compareceu ? t('account.activity.attended') : t('account.activity.confirmed'),
+        ]
           .filter(Boolean)
           .join(' · '),
-        href: evento?.slug ? `${SITE_ORIGIN}/pt/eventos/${evento.slug}` : null,
+        href: evento?.slug ? `${SITE_ORIGIN}/${lang}/eventos/${evento.slug}` : null,
       }
     }),
   ]
@@ -113,28 +124,23 @@ export default async function AtividadePage() {
     <main className="conta-page">
       <header className="conta-page-head">
         <div>
-          <p className="conta-kicker">A minha conta</p>
-          <h1 className="conta-title">Atividade</h1>
-          <p className="conta-sub">
-            O que guardou, reservou e em que se inscreveu — do mais recente para o mais antigo.
-          </p>
+          <p className="conta-kicker">{t('account.kicker')}</p>
+          <h1 className="conta-title">{t('account.activity.title')}</h1>
+          <p className="conta-sub">{t('account.activity.sub')}</p>
         </div>
       </header>
 
       {itens.length === 0 ? (
         <section className="conta-panel">
           <div className="conta-empty">
-            <p className="conta-empty-title">Ainda não há atividade</p>
-            <p className="conta-empty-sub">
-              Guardar um medicamento no Localizador, fazer uma reserva ou inscrever-se num evento
-              deixa a primeira linha aqui.
-            </p>
+            <p className="conta-empty-title">{t('account.activity.emptyTitle')}</p>
+            <p className="conta-empty-sub">{t('account.activity.emptySub')}</p>
             <p className="conta-empty-acts">
               <Link className="conta-btn conta-btn--primary" href={`${LOCATOR_ORIGIN}/pesquisa`}>
-                Pesquisar medicamento
+                {t('account.activity.searchDrug')}
               </Link>
-              <a className="conta-btn conta-btn--ghost" href={`${SITE_ORIGIN}/pt/eventos`}>
-                Ver eventos
+              <a className="conta-btn conta-btn--ghost" href={`${SITE_ORIGIN}/${lang}/eventos`}>
+                {t('account.activity.viewEvents')}
               </a>
             </p>
           </div>
@@ -144,7 +150,7 @@ export default async function AtividadePage() {
           <div className="conta-panel-head">
             <h2 id="conta-atividade" className="conta-panel-title">
               <Activity size={14} aria-hidden="true" />
-              Linha temporal
+              {t('account.activity.timeline')}
             </h2>
             <span className="conta-panel-count">{itens.length}</span>
           </div>
@@ -153,7 +159,7 @@ export default async function AtividadePage() {
               <li key={item.key} className="conta-row">
                 <div className="conta-row-main">
                   <span className="conta-row-kicker">
-                    {item.kind} · {fmt(item.date)}
+                    {item.kind} · {fmt(item.date, locale)}
                   </span>
                   {item.href ? (
                     <a className="conta-row-title" href={item.href}>

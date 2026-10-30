@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import PreferenciasPanel from '@/components/account/PreferenciasPanel'
+import { accountTranslator } from '@/lib/account-i18n'
 
 export const dynamic = 'force-dynamic'
 
@@ -25,22 +26,20 @@ export default async function PreferenciasPage() {
   if (!user) redirect('/entrar?next=/perfil/preferencias')
 
   const meta = user.user_metadata || {}
+  const { lang, t } = accountTranslator(user)
 
   return (
     <main className="conta-page">
       <header className="conta-page-head">
         <div>
-          <p className="conta-kicker">A minha conta</p>
-          <h1 className="conta-title">Preferências</h1>
-          <p className="conta-sub">
-            Idioma da conta, aparência e os dados de contacto que já vêm escritos nos formulários
-            do site e do Localizador.
-          </p>
+          <p className="conta-kicker">{t('account.kicker')}</p>
+          <h1 className="conta-title">{t('account.preferences.title')}</h1>
+          <p className="conta-sub">{t('account.preferences.sub')}</p>
         </div>
       </header>
 
       <PreferenciasPanel
-        lang={meta.lang === 'en' || meta.preferred_lang === 'en' ? 'en' : 'pt'}
+        lang={lang}
         theme={['light', 'dark', 'system'].includes(meta.theme) ? meta.theme : 'system'}
         phone={meta.phone || meta.inscricao?.telefone || ''}
         municipality={meta.municipality || ''}

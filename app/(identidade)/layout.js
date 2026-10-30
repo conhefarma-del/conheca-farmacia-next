@@ -1,4 +1,6 @@
+import { createClient } from '@/lib/supabase/server'
 import { loadTranslations } from '@/lib/i18n'
+import { accountLang } from '@/lib/account-i18n'
 import LangProvider from '@/components/providers/LangProvider'
 
 /**
@@ -10,8 +12,10 @@ import LangProvider from '@/components/providers/LangProvider'
  * o mesmo do Localizador e do perfil de estudante.
  *
  * As rotas vivem na raiz (`/entrar`, `/perfil`), sem `[lang]`: em conta.* não
- * há idioma no URL. O LangProvider entra na mesma porque os formulários
- * reutilizados do site leem `LangContext` para as traduções.
+ * há idioma no URL. O idioma vem daqui — da preferência guardada na conta —
+ * e é o que faz o perfil deixar de estar sempre em português depois de a
+ * pessoa escolher inglês em Preferências. Sem sessão (ou sem preferência),
+ * fica PT.
  */
 
 export const metadata = {
@@ -22,11 +26,16 @@ export const metadata = {
   robots: { index: false, follow: false },
 }
 
-export default function AccountGroupLayout({ children }) {
-  const translations = loadTranslations('pt')
+export default async function AccountGroupLayout({ children }) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  const lang = accountLang(user)
 
   return (
-    <LangProvider lang="pt" translations={translations}>
+    <LangProvider lang={lang} translations={loadTranslations(lang)}>
       {children}
     </LangProvider>
   )
