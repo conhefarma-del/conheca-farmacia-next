@@ -8,18 +8,17 @@ import { createClient } from 'jsr:@supabase/supabase-js@2';
 // inscrito em que evento. O único chamador é o servidor Next.js, que já
 // envia `Authorization: Bearer <service role key>`; é essa chave que passa a
 // ser o segredo, comparada em tempo constante.
-const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+const INTERNAL_KEY = Deno.env.get('EDGE_INTERNAL_KEY') || '';
+
+function mesmaChave(a: string, b: string): boolean {
+  if (!a || !b || a.length !== b.length) return false;
+  let dif = 0;
+  for (let i = 0; i < a.length; i++) dif |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return dif === 0;
+}
 
 function chaveValida(req: Request): boolean {
-  if (!SERVICE_KEY) return false;
-  const esperado = `Bearer ${SERVICE_KEY}`;
-  const recebido = req.headers.get('authorization') || '';
-  if (recebido.length !== esperado.length) return false;
-  let dif = 0;
-  for (let i = 0; i < esperado.length; i++) {
-    dif |= recebido.charCodeAt(i) ^ esperado.charCodeAt(i);
-  }
-  return dif === 0;
+  return mesmaChave(req.headers.get('x-internal-key') || '', INTERNAL_KEY);
 }
 
 const ALLOWED_ORIGINS = [
