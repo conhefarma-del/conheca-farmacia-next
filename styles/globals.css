@@ -547,10 +547,12 @@ html.dark .form-note {
     opacity: 0.5;
   }
 
-  /* Separador entre grupos da gaveta */
+  /* Separador entre grupos da gaveta. `flex: 0 0 1px` impede que a coluna
+     flex o comprima a zero quando a lista enche o ecrã. */
   .drawer-sep {
     list-style: none;
-    height: 1px;
+    flex: 0 0 1px;
+    min-height: 1px;
     margin: 0.75rem 0.25rem;
     padding: 0;
     background: var(--color-brand-line);
