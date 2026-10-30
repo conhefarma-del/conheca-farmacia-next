@@ -189,6 +189,11 @@ Deno.serve(async (req) => {
 
     // CONECTAR AO SUPABASE
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    // ATENÇÃO: no runtime das Edge Functions, SUPABASE_SERVICE_ROLE_KEY é uma
+    // chave do formato novo (`sb_secret_…`, ~41 caracteres) — não é o JWT de
+    // 219 caracteres que o Next.js usa em produção. As duas são válidas e
+    // apontam para o mesmo projecto. Nunca compares uma com a outra para
+    // autenticar um pedido: é para isso que existe o `x-internal-key`.
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
     if (!supabaseUrl || !supabaseServiceKey) {
