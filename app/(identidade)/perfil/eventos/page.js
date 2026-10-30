@@ -12,9 +12,13 @@ import InscriptionDetailsForm from '@/components/account/InscriptionDetailsForm'
 
 export const dynamic = 'force-dynamic'
 
-export const metadata = {
-  title: 'Eventos',
-  robots: { index: false, follow: false },
+export async function generateMetadata() {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  const { t } = accountTranslator(user)
+  return { title: t('account.events.title'), robots: { index: false, follow: false } }
 }
 
 /** Quantos próximos eventos a página mostra antes de mandar ao site. */

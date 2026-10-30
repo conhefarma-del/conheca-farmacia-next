@@ -1,12 +1,17 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import SegurancaClient from '@/components/account/SegurancaClient'
+import { accountTranslator } from '@/lib/account-i18n'
 
 export const dynamic = 'force-dynamic'
 
-export const metadata = {
-  title: 'Segurança',
-  robots: { index: false, follow: false },
+export async function generateMetadata() {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  const { t } = accountTranslator(user)
+  return { title: t('account.security.title'), robots: { index: false, follow: false } }
 }
 
 /**

@@ -8,9 +8,13 @@ import { accountLocale, accountTranslator } from '@/lib/account-i18n'
 
 export const dynamic = 'force-dynamic'
 
-export const metadata = {
-  title: 'A minha conta',
-  robots: { index: false, follow: false },
+export async function generateMetadata() {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  const { t } = accountTranslator(user)
+  return { title: t('account.kicker'), robots: { index: false, follow: false } }
 }
 
 /** Quantos guardados o hub mostra antes de mandar «ver tudo» para o Localizador. */

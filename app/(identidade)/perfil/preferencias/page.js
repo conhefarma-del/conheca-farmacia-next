@@ -5,9 +5,13 @@ import { accountTranslator } from '@/lib/account-i18n'
 
 export const dynamic = 'force-dynamic'
 
-export const metadata = {
-  title: 'Preferências',
-  robots: { index: false, follow: false },
+export async function generateMetadata() {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  const { t } = accountTranslator(user)
+  return { title: t('account.preferences.title'), robots: { index: false, follow: false } }
 }
 
 /**
