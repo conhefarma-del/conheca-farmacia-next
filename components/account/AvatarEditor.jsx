@@ -82,7 +82,6 @@ export default function AvatarEditor({
       altura,
     )
     // `dimensoes` lê só refs e `zoom`; as dependências certas são estas.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [zoom, deslocamento, pronta])
 
   function comecarArrasto(event) {
