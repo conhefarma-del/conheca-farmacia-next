@@ -97,7 +97,22 @@ export default function MobileDrawer({ lang, t, open, onClose }) {
         </button>
 
         <div className="drawer-logo">
-          <Image src="/logo/logo-principal-branco.svg" alt="Conheça Farmácia" width={120} height={40} />
+          {/* Painel branco: o logótipo verde no tema claro, o branco no escuro. */}
+          <Image
+            src="/logo/logo-principal-verde.svg"
+            alt="Conheça Farmácia"
+            width={120}
+            height={40}
+            className="drawer-logo-light"
+          />
+          <Image
+            src="/logo/logo-principal-branco.svg"
+            alt=""
+            aria-hidden="true"
+            width={120}
+            height={40}
+            className="drawer-logo-dark"
+          />
         </div>
 
         <ul className="drawer-links">

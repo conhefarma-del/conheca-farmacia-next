@@ -764,6 +764,154 @@ html.dark .form-note {
     border-color: #dc2626;
   }
 
+  /* ========================================
+     GAVETA DE SUPERFÍCIE BRANCA + BARRA LATERAL
+     A gaveta deixa de ser verde: usa o branco da página (cartão no escuro),
+     como a do Localizador, e a página activa passa a marcar-se com uma barra
+     da cor da marca à esquerda. Geometria, movimento e conteúdo não mudam.
+     ======================================== */
+
+  .mobile-drawer {
+    background: var(--color-brand-bg);
+    border-left: 1px solid var(--color-brand-line);
+    box-shadow: -8px 0 30px rgba(0, 42, 50, 0.1);
+    color: var(--color-brand-deep);
+  }
+
+  html.dark .mobile-drawer {
+    background: var(--color-brand-card);
+    border-left-color: var(--color-brand-divider);
+  }
+
+  .drawer-logo-light { display: block; }
+  .drawer-logo-dark { display: none; }
+  html.dark .drawer-logo-light { display: none; }
+  html.dark .drawer-logo-dark { display: block; }
+
+  .drawer-close {
+    background: transparent;
+    border: 1px solid var(--color-brand-line);
+    color: var(--color-brand-deep);
+  }
+
+  .drawer-close:hover {
+    background: var(--color-brand-bg-alt);
+    border-color: color-mix(in srgb, var(--color-brand-deep) 28%, transparent);
+  }
+
+  html.dark .drawer-close { border-color: var(--color-brand-divider); }
+  html.dark .drawer-close:hover { background: rgba(255, 255, 255, 0.06); }
+
+  .drawer-links li a,
+  .drawer-submenu-btn {
+    color: var(--color-brand-deep);
+    opacity: 0.86;
+  }
+
+  .drawer-links li a:hover,
+  .drawer-submenu-btn:hover {
+    background: var(--color-brand-bg-alt);
+    color: var(--color-brand-primary);
+    opacity: 1;
+  }
+
+  /* Página activa: barra da cor da marca à esquerda */
+  .drawer-links li a.drawer-link-active {
+    background: rgba(10, 132, 79, 0.1);
+    color: var(--color-brand-primary);
+    font-weight: 600;
+    border-left: 3px solid var(--color-brand-accent);
+    padding-left: calc(0.875rem - 3px);
+    border-radius: 3px 10px 10px 3px;
+    opacity: 1;
+  }
+
+  .drawer-submenu-btn--active {
+    background: rgba(10, 132, 79, 0.1);
+    color: var(--color-brand-primary);
+    font-weight: 600;
+    border-left: 3px solid var(--color-brand-accent);
+    padding-left: calc(0.875rem - 3px);
+    border-radius: 3px 10px 10px 3px;
+    opacity: 1;
+  }
+
+  .drawer-submenu-btn svg { color: inherit; opacity: 0.6; }
+
+  .drawer-submenu li a {
+    color: var(--color-brand-deep);
+    opacity: 0.72;
+  }
+
+  .drawer-submenu li a:hover {
+    background: var(--color-brand-bg-alt);
+    color: var(--color-brand-primary);
+    opacity: 1;
+  }
+
+  .drawer-submenu li a.drawer-link-active {
+    background: rgba(10, 132, 79, 0.1);
+    color: var(--color-brand-primary);
+    font-weight: 600;
+    opacity: 1;
+  }
+
+  .drawer-submenu li a.drawer-link-active::before {
+    background: var(--color-brand-accent);
+  }
+
+  .drawer-footer { border-top-color: var(--color-brand-line); }
+  html.dark .drawer-footer { border-top-color: var(--color-brand-divider); }
+
+  .drawer-brand-mini {
+    color: var(--color-brand-deep);
+    opacity: 0.45;
+  }
+
+  .drawer-theme-toggle {
+    border-color: var(--color-brand-line);
+    color: var(--color-brand-deep);
+  }
+
+  html.dark .drawer-theme-toggle { border-color: var(--color-brand-divider); }
+
+  .drawer-auth-link {
+    color: var(--color-brand-deep);
+    border-color: var(--color-brand-line);
+  }
+
+  .drawer-auth-link:hover { background-color: var(--color-brand-bg-alt); }
+
+  .drawer-auth-logout {
+    color: #b91c1c;
+    border-color: color-mix(in srgb, #b91c1c 35%, transparent);
+  }
+
+  html.dark .drawer-auth-logout {
+    color: #fca5a5;
+    border-color: rgba(252, 165, 165, 0.5);
+  }
+
+  .drawer-auth-logout:hover {
+    background-color: #dc2626;
+    color: #ffffff;
+    border-color: #dc2626;
+  }
+
+  .drawer-links li a:focus-visible,
+  .drawer-submenu-btn:focus-visible,
+  .drawer-submenu li a:focus-visible,
+  .drawer-close:focus-visible,
+  .drawer-theme-toggle:focus-visible {
+    outline: 2px solid var(--color-brand-accent);
+    outline-offset: 2px;
+  }
+
+  html.dark .drawer-links li a.drawer-link-active {
+    background: rgba(13, 153, 95, 0.16);
+    color: #7fd4ab;
+  }
+
   /* Transições globais: o padding-top do main acompanha o deslize do header
      no scroll (0.4s), e os efeitos do drawer (mobile) seguem com o bloco
      interno. Assim conteúdo e header movem-se em sintonia, sem saltos. */
