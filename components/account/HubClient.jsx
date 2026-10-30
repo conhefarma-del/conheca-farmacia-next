@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { LOCATOR_ORIGIN, SITE_ORIGIN } from '@/lib/account-urls'
 import { useTheme } from '@/components/providers/ThemeProvider'
+import AvatarEditor from '@/components/account/AvatarEditor'
 import { LangContext } from '@/lib/contexts'
 import {
   Bookmark,
@@ -16,6 +17,7 @@ import {
   NotebookPen,
   Pencil,
   Pill,
+  Trash2,
   X,
 } from 'lucide-react'
 
@@ -80,6 +82,12 @@ export default function HubClient({
   const [draft, setDraft] = useState(profile.name)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [removing, setRemoving] = useState(false)
+  // A imagem que não carrega (ficheiro apagado no Storage, URL antigo) não
+  // pode deixar o círculo vazio: cai para as iniciais, como se não houvesse
+  // fotografia nenhuma.
+  const [avatarQuebrado, setAvatarQuebrado] = useState(false)
+  const [editorFile, setEditorFile] = useState(null)
   const [feedback, setFeedback] = useState({ tone: '', text: '' })
   const { setMode } = useTheme()
 
@@ -121,23 +129,40 @@ export default function HubClient({
     }
   }
 
-  async function handleAvatarUpload(event) {
+  /**
+   * A fotografia passa primeiro pelo editor (AvatarEditor): o que sobe é um
+   * JPEG de 256×256, seja qual for o formato e a dimensão do original. Aqui
+   * só se recusa o que não é imagem ou o que é grande demais para o browser
+   * processar.
+   */
+  function prepararFoto(event) {
     const file = event.target.files?.[0]
+    // Sem isto, escolher o mesmo ficheiro duas vezes não dispara `change`.
+    event.target.value = ''
     if (!file) return
-    if (file.size > 2 * 1024 * 1024) {
+    if (!file.type.startsWith('image/')) {
+      setFeedback({ tone: 'bad', text: t('account.overview.photoNotImage') })
+      return
+    }
+    if (file.size > 10 * 1024 * 1024) {
       setFeedback({ tone: 'bad', text: t('account.overview.photoTooBig') })
       return
     }
+    setFeedback({ tone: '', text: '' })
+    setEditorFile(file)
+  }
 
+  async function guardarFoto(blob) {
     setUploading(true)
     setFeedback({ tone: '', text: '' })
     try {
       const supabase = createClient()
-      const extension = (file.name.split('.').pop() || 'jpg').toLowerCase()
-      const path = `${profile.id}/avatar.${extension}`
+      // Sempre `.jpg`: o editor devolve JPEG, e um nome fixo evita acumular
+      // um ficheiro por cada formato que a pessoa experimentou.
+      const path = `${profile.id}/avatar.jpg`
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(path, file, { upsert: true, contentType: file.type })
+        .upload(path, blob, { upsert: true, contentType: 'image/jpeg' })
       if (uploadError) throw uploadError
 
       const { data } = supabase.storage.from('avatars').getPublicUrl(path)
@@ -150,11 +175,45 @@ export default function HubClient({
       if (updateError) throw updateError
 
       setAvatarUrl(publicUrl)
+      setAvatarQuebrado(false)
       setFeedback({ tone: 'ok', text: t('account.overview.photoSaved') })
     } catch {
       setFeedback({ tone: 'bad', text: t('account.overview.photoFailed') })
     } finally {
       setUploading(false)
+      setEditorFile(null)
+    }
+  }
+
+  /**
+   * Remover a fotografia: apaga o que estiver na pasta da pessoa no bucket e
+   * limpa as duas chaves dos metadados. Sem `avatar_url_upload` e sem
+   * `avatar_url`, a interface desenha as iniciais do nome.
+   */
+  async function removerFoto() {
+    setRemoving(true)
+    setFeedback({ tone: '', text: '' })
+    try {
+      const supabase = createClient()
+      const { data: ficheiros } = await supabase.storage.from('avatars').list(profile.id)
+      const caminhos = (ficheiros || []).map((ficheiro) => `${profile.id}/${ficheiro.name}`)
+      if (caminhos.length > 0) {
+        const { error: erroRemover } = await supabase.storage.from('avatars').remove(caminhos)
+        if (erroRemover) throw erroRemover
+      }
+
+      const { error: updateError } = await supabase.auth.updateUser({
+        data: { avatar_url: null, avatar_url_upload: null },
+      })
+      if (updateError) throw updateError
+
+      setAvatarUrl(null)
+      setAvatarQuebrado(false)
+      setFeedback({ tone: 'ok', text: t('account.overview.photoRemoved') })
+    } catch {
+      setFeedback({ tone: 'bad', text: t('account.overview.photoRemoveFailed') })
+    } finally {
+      setRemoving(false)
     }
   }
 
@@ -184,27 +243,45 @@ export default function HubClient({
 
       <section className="conta-panel">
         <div className="conta-identity">
-          <div className="conta-avatar">
-            {avatar ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={avatar} alt={displayName} />
-            ) : (
-              initial
+          <div className="conta-avatar-col">
+            <div className="conta-avatar">
+              {avatar && !avatarQuebrado ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={avatar}
+                  alt={displayName}
+                  onError={() => setAvatarQuebrado(true)}
+                />
+              ) : (
+                initial
+              )}
+              <label
+                className="conta-avatar-edit"
+                title={t('account.overview.changePhoto')}
+                aria-label={t('account.overview.changePhoto')}
+              >
+                {uploading ? <Loader2 size={18} className="animate-spin" /> : <Camera size={18} />}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={prepararFoto}
+                  disabled={uploading}
+                />
+              </label>
+            </div>
+
+            {avatar && !avatarQuebrado && (
+              <button
+                type="button"
+                className="conta-photo-remove"
+                onClick={removerFoto}
+                disabled={removing}
+              >
+                {removing ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />}
+                {t('account.overview.photoRemove')}
+              </button>
             )}
-            <label
-              className="conta-avatar-edit"
-              title={t('account.overview.changePhoto')}
-              aria-label={t('account.overview.changePhoto')}
-            >
-              {uploading ? <Loader2 size={18} className="animate-spin" /> : <Camera size={18} />}
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleAvatarUpload}
-                disabled={uploading}
-              />
-            </label>
           </div>
 
           <div className="conta-identity-main">
@@ -475,6 +552,19 @@ export default function HubClient({
           </section>
         </div>
       </div>
+      {editorFile && (
+        <AvatarEditor
+          file={editorFile}
+          title={t('account.overview.photoAdjustTitle')}
+          hint={t('account.overview.photoAdjustHint')}
+          zoomLabel={t('account.overview.photoZoom')}
+          applyLabel={t('account.overview.photoApply')}
+          cancelLabel={t('account.common.cancel')}
+          busy={uploading}
+          onCancel={() => setEditorFile(null)}
+          onApply={guardarFoto}
+        />
+      )}
     </main>
   )
 }

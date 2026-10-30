@@ -36,6 +36,9 @@ export default function Header({ lang, t, onToggleDrawer }) {
   const profileRef = useRef(null)
   const [user, setUser] = useState(null)
   const [avatarUrl, setAvatarUrl] = useState(null)
+  // URL morto (ficheiro apagado no Storage) não pode deixar o círculo vazio:
+  // cai para as iniciais, como se não houvesse fotografia.
+  const [avatarQuebrado, setAvatarQuebrado] = useState(false)
 
   useEffect(() => {
     const supabase = createClient()
@@ -43,12 +46,14 @@ export default function Header({ lang, t, onToggleDrawer }) {
       if (data.user) {
         setUser(data.user)
         setAvatarUrl(avatarDe(data.user))
+        setAvatarQuebrado(false)
       }
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         setUser(session.user)
         setAvatarUrl(avatarDe(session.user))
+        setAvatarQuebrado(false)
       } else {
         setUser(null)
         setAvatarUrl(null)
@@ -220,8 +225,15 @@ export default function Header({ lang, t, onToggleDrawer }) {
                   aria-haspopup="true"
                   aria-label="Perfil"
                 >
-                  {avatarUrl ? (
-                    <img src={avatarUrl} alt="" className="profile-avatar" width={32} height={32} />
+                  {avatarUrl && !avatarQuebrado ? (
+                    <img
+                      src={avatarUrl}
+                      alt=""
+                      className="profile-avatar"
+                      width={32}
+                      height={32}
+                      onError={() => setAvatarQuebrado(true)}
+                    />
                   ) : (
                     <div
                       className="profile-avatar-placeholder"
