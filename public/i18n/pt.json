@@ -996,6 +996,7 @@
     "question_of": "Pergunta {current} de {total}",
     "type_flashcard": "Flashcards",
     "type_pharmacology": "Farmacologia",
+    "type_drug_class": "Classe terapêutica",
     "type_interaction": "Interações",
     "type_protocol": "Protocolos",
     "correct": "Correto!",

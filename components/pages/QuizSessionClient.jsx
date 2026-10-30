@@ -60,6 +60,7 @@ export default function QuizSessionClient({ lang = 'pt', mode = 'rapido', level 
     const key = {
       flashcard: 'quiz_session.type_flashcard',
       pharmacology: 'quiz_session.type_pharmacology',
+      drug_class: 'quiz_session.type_drug_class',
       interaction: 'quiz_session.type_interaction',
       protocol: 'quiz_session.type_protocol',
     }[current?.type]
