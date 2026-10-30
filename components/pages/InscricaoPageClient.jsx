@@ -11,7 +11,15 @@ import { AlertCircle, Printer, CheckCircle2, Download } from 'lucide-react'
 
 const RATE_LIMIT_MS = 5000
 
-export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventTitle, capacity, initialInscriptionCount = 0 }) {
+export default function InscricaoPageClient({
+  lang,
+  eventoId,
+  eventoSlug,
+  eventTitle,
+  capacity,
+  initialInscriptionCount = 0,
+  prefill = null,
+}) {
   const { t } = useContext(LangContext)
   const router = useRouter()
   const lastSubmitRef = useRef(0)
@@ -21,14 +29,16 @@ export default function InscricaoPageClient({ lang, eventoId, eventoSlug, eventT
   const { inscriptionCount } = useCapacityPolling(eventoId, initialInscriptionCount)
   const isEventFull = capacity && inscriptionCount >= capacity
 
+  // Quem tem sessão entra com os dados que guardou em «Dados de inscrição»
+  // (conta.*). Sem sessão, `prefill` é nulo e o formulário começa vazio.
   const [form, setForm] = useState({
-    nome: '',
-    email: '',
-    telefone: '',
-    genero: '',
-    faixa_etaria: '',
-    profissao: '',
-    nivel_escolaridade: '',
+    nome: prefill?.nome || '',
+    email: prefill?.email || '',
+    telefone: prefill?.telefone || '',
+    genero: prefill?.genero || '',
+    faixa_etaria: prefill?.faixa_etaria || '',
+    profissao: prefill?.profissao || '',
+    nivel_escolaridade: prefill?.nivel_escolaridade || '',
     origem_evento: '',
     menor_consentimento: false,
   })

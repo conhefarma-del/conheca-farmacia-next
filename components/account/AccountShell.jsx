@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from 'react'
 import {
   Bookmark,
   CalendarCheck,
+  CalendarDays,
   GraduationCap,
   LayoutDashboard,
   Settings2,
@@ -58,6 +59,14 @@ const NAV = [
         path: '/reservas',
         label: 'Reservas',
         icon: CalendarCheck,
+      },
+      {
+        key: 'eventos',
+        surface: 'conta',
+        href: `${ACCOUNT_ORIGIN}/perfil/eventos`,
+        path: '/perfil/eventos',
+        label: 'Eventos',
+        icon: CalendarDays,
       },
       {
         key: 'seguranca',

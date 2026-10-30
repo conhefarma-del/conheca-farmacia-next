@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient, createLocalizadorClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import HubClient from '@/components/account/HubClient'
 import { LOCATOR_ORIGIN, SITE_ORIGIN } from '@/lib/account-urls'
 
@@ -11,7 +12,7 @@ export const metadata = {
 }
 
 /** Quantos guardados o hub mostra antes de mandar «ver tudo» para o Localizador. */
-const VISIVEIS = 6
+const VISIVEIS = 3
 
 /** `Ben-u-ron` e `ben u ron` têm de casar: os dois catálogos são independentes. */
 const normalize = (value) =>
@@ -91,6 +92,42 @@ async function loadSaved(supabase, userId) {
 }
 
 /**
+ * O próximo evento em que a pessoa está inscrita.
+ *
+ * `inscricoes` não tem `user_id` e a RLS só deixa ler admins — a leitura é
+ * server-side, com o e-mail da sessão, e só devolve o evento em si.
+ */
+async function loadProximaInscricao(supabase, user) {
+  const email = (user.email || '').trim().toLowerCase()
+  if (!email) return { evento: null, total: 0 }
+
+  const admin = createAdminClient()
+  const { data } = await admin.from('inscricoes').select('evento_id').ilike('email', email)
+
+  const linhas = data || []
+  if (linhas.length === 0) return { evento: null, total: 0 }
+
+  const ids = [...new Set(linhas.map((row) => row.evento_id).filter(Boolean))]
+  if (ids.length === 0) return { evento: null, total: linhas.length }
+
+  const hoje = new Date()
+  hoje.setMinutes(hoje.getMinutes() - hoje.getTimezoneOffset())
+  const hojeISO = hoje.toISOString().slice(0, 10)
+
+  const { data: eventos } = await supabase
+    .from('events')
+    .select('id, slug, title, date, time, location, platform, is_archived')
+    .in('id', ids)
+
+  const evento =
+    (eventos || [])
+      .filter((item) => !item.is_archived && item.date && item.date >= hojeISO)
+      .sort((a, b) => String(a.date).localeCompare(String(b.date)))[0] || null
+
+  return { evento, total: linhas.length }
+}
+
+/**
  * Hub da conta.
  *
  * Lê a sessão no servidor (cookies partilhadas em `.conhecafarmacia.com`) e
@@ -115,9 +152,12 @@ export default async function ContaPage() {
     : 'Conta Conheça Farmácia'
 
   const saved = await loadSaved(supabase, user.id)
+  const eventos = await loadProximaInscricao(supabase, user)
 
   return (
     <HubClient
+      proximoEvento={eventos.evento}
+      inscricoesTotal={eventos.total}
       profile={{
         id: user.id,
         email: user.email || '',

@@ -888,6 +888,18 @@ html.dark .conta-avatar {
   gap: 0.75rem;
 }
 
+/* Dados de inscrição: dois campos por linha a partir de 40rem. */
+.conta-form-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 40rem) {
+  .conta-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .conta-actions {
   display: flex;
   align-items: center;

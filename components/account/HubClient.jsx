@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { LOCATOR_ORIGIN, SITE_ORIGIN } from '@/lib/account-urls'
 import {
   Bookmark,
+  CalendarDays,
   Camera,
   Check,
   GraduationCap,
@@ -53,7 +54,21 @@ const SITE_LINKS = [
   },
 ]
 
-export default function HubClient({ profile, saved = [], savedTotal = 0 }) {
+const fmtDia = (value) =>
+  value
+    ? new Date(`${value}T00:00:00`).toLocaleDateString('pt-PT', {
+        day: '2-digit',
+        month: 'long',
+      })
+    : ''
+
+export default function HubClient({
+  profile,
+  saved = [],
+  savedTotal = 0,
+  proximoEvento = null,
+  inscricoesTotal = 0,
+}) {
   const [name, setName] = useState(profile.name)
   const [avatarUrl, setAvatarUrl] = useState(profile.avatarUrl)
   const [editing, setEditing] = useState(false)
@@ -299,6 +314,56 @@ export default function HubClient({ profile, saved = [], savedTotal = 0 }) {
         </section>
 
         <div>
+          <section className="conta-panel" aria-labelledby="conta-eventos">
+            <div className="conta-panel-head">
+              <h2 id="conta-eventos" className="conta-panel-title">
+                <CalendarDays size={14} aria-hidden="true" />
+                Eventos
+                {inscricoesTotal > 0 && (
+                  <span className="conta-panel-count">{inscricoesTotal}</span>
+                )}
+              </h2>
+              <Link
+                href="/perfil/eventos"
+                className="conta-btn conta-btn--ghost conta-btn--sm"
+              >
+                Ver eventos
+              </Link>
+            </div>
+
+            {proximoEvento ? (
+              <ul className="conta-rows">
+                <li className="conta-row">
+                  <div className="conta-row-main">
+                    <span className="conta-row-kicker">
+                      Próximo · {fmtDia(proximoEvento.date)}
+                      {proximoEvento.time ? ` · ${proximoEvento.time}` : ''}
+                    </span>
+                    <a
+                      className="conta-row-title"
+                      href={`${SITE_ORIGIN}/pt/eventos/${proximoEvento.slug}`}
+                    >
+                      {proximoEvento.title}
+                    </a>
+                    <span className="conta-row-meta">
+                      {[proximoEvento.location || proximoEvento.platform, 'Inscrição confirmada']
+                        .filter(Boolean)
+                        .join(' · ')}
+                    </span>
+                  </div>
+                </li>
+              </ul>
+            ) : (
+              <div className="conta-empty">
+                <p className="conta-empty-title">Ainda sem inscrições</p>
+                <p className="conta-empty-sub">
+                  Veja os próximos eventos e inscreva-se. As suas inscrições e os dados que
+                  deixar guardados ficam em Eventos.
+                </p>
+              </div>
+            )}
+          </section>
+
           <section className="conta-panel" aria-labelledby="conta-dados">
             <div className="conta-panel-head">
               <h2 id="conta-dados" className="conta-panel-title">

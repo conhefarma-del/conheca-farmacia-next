@@ -68,6 +68,29 @@ export default async function RegisterPage({ params, searchParams }) {
     } catch {}
   }
 
+  // Quem tem sessão recebe o formulário pré-preenchido com os dados que
+  // guardou na conta (`user_metadata.inscricao`). Visitantes entram vazios.
+  let prefill = null
+  try {
+    const supabase = await createClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (user?.email) {
+      const meta = user.user_metadata || {}
+      const dados = meta.inscricao || {}
+      prefill = {
+        nome: dados.nome || meta.full_name || meta.display_name || '',
+        email: user.email,
+        telefone: dados.telefone || '',
+        genero: dados.genero || '',
+        faixa_etaria: dados.faixa_etaria || '',
+        profissao: dados.profissao || '',
+        nivel_escolaridade: dados.nivel_escolaridade || '',
+      }
+    }
+  } catch {}
+
   return (
     <InscricaoPageClient
       lang={safeLang}
@@ -76,6 +99,7 @@ export default async function RegisterPage({ params, searchParams }) {
       eventTitle={eventTitle}
       capacity={event?.capacity || null}
       initialInscriptionCount={initialCount}
+      prefill={prefill}
     />
   )
 }
