@@ -70,14 +70,14 @@ function getInscriptionEmailTemplate(
                 </tr>
                 <tr>
                     <td style="padding: 40px 30px;">
-                        <p style="margin: 0 0 20px 0; font-size: 16px; color: #333333; font-weight: 600;">Olá <strong>${nomeParticipante}</strong>,</p>
+                        <p style="margin: 0 0 20px 0; font-size: 16px; color: #333333; font-weight: 600;">Olá <strong>${escapeHtml(nomeParticipante)}</strong>,</p>
                         <p style="margin: 0 0 24px 0; font-size: 15px; color: #555555; line-height: 1.6;">Recebemos a sua candidatura com sucesso!</p>
                         <p style="margin: 0 0 24px 0; font-size: 15px; color: #555555; line-height: 1.6;">Confirma-se o seu registo para o evento:</p>
                         <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f9f9f9; border-left: 4px solid #00493a; margin-bottom: 24px;">
                             <tr>
                                 <td style="padding: 20px; font-size: 15px; color: #333333;">
                                     <p style="margin: 0 0 12px 0; font-weight: 700; color: #00493a; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Evento</p>
-                                    <p style="margin: 0 0 16px 0; font-weight: 600; font-size: 16px; color: #333333;">${nomeEvento}</p>
+                                    <p style="margin: 0 0 16px 0; font-weight: 600; font-size: 16px; color: #333333;">${escapeHtml(nomeEvento)}</p>
                                     <p style="margin: 0; font-size: 14px; color: #666666;">Data de Inscrição: <strong>${dataFormatada}</strong></p>
                                 </td>
                             </tr>

@@ -49,6 +49,7 @@ check-supabase.mjs
 # Agent tooling / private local state — never committed
 .zcode/
 .freebuff/
+.openclaude/
 skills/
 C.password.io..TEMP/
 REBOOT_RECOVERY_NOTES.md
