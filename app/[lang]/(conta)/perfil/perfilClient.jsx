@@ -81,17 +81,17 @@ export default function PerfilClient({ lang }) {
         data: { full_name: newName.trim(), display_name: newName.trim() },
       })
       if (error) {
-        setSaveMsg('Erro ao guardar: ' + error.message)
+        setSaveMsg(`${t('student_profile.nameError')} ${error.message}`)
       } else {
         setUser((prev) => ({
           ...prev,
           user_metadata: { ...prev.user_metadata, full_name: newName.trim(), display_name: newName.trim() },
         }))
         setEditingName(false)
-        setSaveMsg('Nome atualizado!')
+        setSaveMsg(t('student_profile.nameSaved'))
       }
     } catch {
-      setSaveMsg('Erro ao conectar ao servidor')
+      setSaveMsg(t('student_profile.connectionError'))
     } finally {
       setSaving(false)
     }
@@ -113,7 +113,7 @@ export default function PerfilClient({ lang }) {
     user.user_metadata?.full_name ||
     user.user_metadata?.display_name ||
     user.email?.split('@')[0] ||
-    'Utilizador'
+    t('student_profile.user')
   const avatarUrl = user.user_metadata?.avatar_url
 
   // Gravatar fallback for email/password users
@@ -126,7 +126,7 @@ export default function PerfilClient({ lang }) {
     const file = e.target.files?.[0]
     if (!file) return
     if (file.size > 2 * 1024 * 1024) {
-      setSaveMsg('A imagem deve ter menos de 2MB')
+      setSaveMsg(t('student_profile.photoTooBig'))
       return
     }
     setUploadingAvatar(true)
@@ -150,14 +150,16 @@ export default function PerfilClient({ lang }) {
         ...prev,
         user_metadata: { ...prev.user_metadata, avatar_url: publicUrl },
       }))
-      setSaveMsg('Foto atualizada!')
+      setSaveMsg(t('student_profile.photoSaved'))
     } catch (err) {
-      setSaveMsg('Erro ao enviar foto: ' + (err.message || 'Tenta novamente'))
+      setSaveMsg(`${t('student_profile.photoError')} ${err.message || ''}`.trim())
     } finally {
       setUploadingAvatar(false)
     }
   }
-  const createdAt = new Date(user.created_at).toLocaleDateString('pt-PT', {
+  const createdAt = new Date(user.created_at).toLocaleDateString(
+    lang === 'en' ? 'en-GB' : 'pt-PT',
+    {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -196,16 +198,13 @@ export default function PerfilClient({ lang }) {
     <main className="conta-page conta-profile">
       <header className="conta-page-head">
         <div>
-          <p className="conta-kicker">Perfil de estudante</p>
+          <p className="conta-kicker">{t('student_profile.kicker')}</p>
           <h1 className="conta-title">{displayName}</h1>
-          <p className="conta-sub">
-            Quizzes, competições e o que guardou no site. A mesma conta serve o Localizador e as
-            reservas nas farmácias.
-          </p>
+          <p className="conta-sub">{t('student_profile.sub')}</p>
         </div>
         <div className="conta-head-acts">
           <Link href={`/${lang}/perfil/definicoes`} className="conta-btn conta-btn--ghost conta-btn--sm">
-            Definições
+            {t('student_profile.settings')}
           </Link>
         </div>
       </header>
@@ -225,7 +224,11 @@ export default function PerfilClient({ lang }) {
             ) : (
               displayName.charAt(0).toUpperCase()
             )}
-            <label className="conta-avatar-edit" title="Trocar fotografia" aria-label="Trocar fotografia">
+            <label
+              className="conta-avatar-edit"
+              title={t('student_profile.changePhoto')}
+              aria-label={t('student_profile.changePhoto')}
+            >
               {uploadingAvatar ? <Loader2 size={18} className="animate-spin" /> : <Camera size={18} />}
               <input
                 type="file"
@@ -259,7 +262,7 @@ export default function PerfilClient({ lang }) {
                   onClick={handleSaveName}
                   disabled={saving}
                   className="conta-btn conta-btn--primary conta-btn--sm"
-                  aria-label="Guardar nome"
+                  aria-label={t('student_profile.saveName')}
                 >
                   <Save size={14} />
                 </button>
@@ -269,7 +272,7 @@ export default function PerfilClient({ lang }) {
                     setNewName(user.user_metadata?.full_name || '')
                   }}
                   className="conta-btn conta-btn--ghost conta-btn--sm"
-                  aria-label="Cancelar"
+                  aria-label={t('student_profile.cancel')}
                 >
                   <X size={14} />
                 </button>
@@ -280,8 +283,8 @@ export default function PerfilClient({ lang }) {
                 <button
                   onClick={() => setEditingName(true)}
                   className="conta-btn conta-btn--ghost conta-btn--sm"
-                  aria-label="Editar nome"
-                  title="Editar nome"
+                  aria-label={t('student_profile.editName')}
+                  title={t('student_profile.editName')}
                 >
                   <Edit3 size={13} />
                 </button>
@@ -290,7 +293,9 @@ export default function PerfilClient({ lang }) {
 
             <p className="conta-identity-sub">{user.email}</p>
             <div className="conta-identity-tags">
-              <span className="conta-tag">Membro desde {createdAt}</span>
+              <span className="conta-tag">
+                {t('student_profile.memberSince', { date: createdAt })}
+              </span>
               {schoolName && <span className="conta-tag">{schoolName}</span>}
               {className_ && <span className="conta-tag">{className_}</span>}
             </div>
@@ -300,26 +305,26 @@ export default function PerfilClient({ lang }) {
 
       <div className={`conta-stats conta-stats--${mostraCompeticao ? 4 : 3}`}>
         <div className="conta-stat">
-          <span className="conta-stat-label">Quizzes realizados</span>
+          <span className="conta-stat-label">{t('student_profile.stats.quizzes')}</span>
           <span className="conta-stat-value">
             {!statsLoading ? stats?.quiz?.totalQuizzes || 0 : '—'}
           </span>
         </div>
         <div className="conta-stat">
-          <span className="conta-stat-label">Precisão média</span>
+          <span className="conta-stat-label">{t('student_profile.stats.accuracy')}</span>
           <span className="conta-stat-value conta-stat-value--accent">
             {!statsLoading ? `${stats?.quiz?.quizAccuracy || 0}%` : '—'}
           </span>
         </div>
         <div className="conta-stat">
-          <span className="conta-stat-label">Melhor streak</span>
+          <span className="conta-stat-label">{t('student_profile.stats.streak')}</span>
           <span className="conta-stat-value">
             {!statsLoading ? stats?.quiz?.bestQuizStreak || 0 : '—'}
           </span>
         </div>
         {mostraCompeticao && (
           <div className="conta-stat">
-            <span className="conta-stat-label">Desafios ganhos</span>
+            <span className="conta-stat-label">{t('student_profile.stats.challenges')}</span>
             <span className="conta-stat-value">
               {!statsLoading ? stats?.competitions?.totalSessions || 0 : '—'}
             </span>
@@ -344,7 +349,7 @@ export default function PerfilClient({ lang }) {
           </div>
 
           {savedLoading ? (
-            <p className="conta-panel-note">A carregar…</p>
+            <p className="conta-panel-note">{t('student_profile.loading')}</p>
           ) : savedItems.length > 0 ? (
             <ul className="conta-rows">
               {savedItems.map((item) => {
@@ -366,7 +371,7 @@ export default function PerfilClient({ lang }) {
                     </div>
                     <div className="conta-row-acts">
                       <Link href={href} className="conta-btn conta-btn--ghost conta-btn--sm">
-                        Abrir
+                        {t('student_profile.open')}
                       </Link>
                     </div>
                   </li>
@@ -394,17 +399,19 @@ export default function PerfilClient({ lang }) {
             </div>
 
             {notesLoading ? (
-              <p className="conta-panel-note">A carregar…</p>
+              <p className="conta-panel-note">{t('student_profile.loading')}</p>
             ) : notas.length > 0 ? (
               <ul className="conta-rows">
                 {notas.map(([key, count]) => (
                   <li key={key} className="conta-row">
                     <div className="conta-row-main">
                       <span className="conta-row-title">
-                        {key === 'standalone' ? 'Soltas' : key}
+                        {key === 'standalone' ? t('student_profile.standalone') : key}
                       </span>
                       <span className="conta-row-meta">
-                        {count} {count === 1 ? 'nota' : 'notas'}
+                        {t(count === 1 ? 'student_profile.notesOne' : 'student_profile.notesMany', {
+                          n: count,
+                        })}
                       </span>
                     </div>
                     <div className="conta-row-acts">
@@ -412,7 +419,7 @@ export default function PerfilClient({ lang }) {
                         href={`/${lang}/anotacoes`}
                         className="conta-btn conta-btn--ghost conta-btn--sm"
                       >
-                        Abrir
+                        {t('student_profile.open')}
                       </Link>
                     </div>
                   </li>
@@ -421,7 +428,7 @@ export default function PerfilClient({ lang }) {
             ) : (
               <div className="conta-empty">
                 <StickyNote size={22} style={{ opacity: 0.25, margin: '0 auto 0.4rem' }} />
-                <p className="conta-empty-sub">Ainda não tens anotações</p>
+                <p className="conta-empty-sub">{t('student_profile.notesEmpty')}</p>
               </div>
             )}
           </section>
@@ -430,19 +437,19 @@ export default function PerfilClient({ lang }) {
             <div className="conta-panel-head">
               <h2 id="perfil-instituicao" className="conta-panel-title">
                 <School size={14} />
-                Instituição
+                {t('student_profile.institution')}
               </h2>
             </div>
             <ul className="conta-rows">
               <li className="conta-row">
                 <div className="conta-row-main">
-                  <span className="conta-row-meta">Escola</span>
+                  <span className="conta-row-meta">{t('student_profile.school')}</span>
                   <span className="conta-row-title">{schoolName || '—'}</span>
                 </div>
               </li>
               <li className="conta-row">
                 <div className="conta-row-main">
-                  <span className="conta-row-meta">Turma</span>
+                  <span className="conta-row-meta">{t('student_profile.class')}</span>
                   <span className="conta-row-title">{className_ || '—'}</span>
                 </div>
               </li>
@@ -450,7 +457,7 @@ export default function PerfilClient({ lang }) {
                 <div className="conta-row-main">
                   <span className="conta-row-meta">
                     <Mail size={12} style={{ marginRight: 4 }} />
-                    E-mail
+                    {t('student_profile.email')}
                   </span>
                   <span className="conta-row-title">{user.email}</span>
                 </div>
@@ -465,7 +472,7 @@ export default function PerfilClient({ lang }) {
           <div className="conta-panel-head">
             <h2 id="perfil-competicoes" className="conta-panel-title">
               <Trophy size={14} />
-              Competições recentes
+              {t('student_profile.competitions')}
             </h2>
             <span className="conta-panel-count">{compHistory.length}</span>
           </div>
@@ -475,16 +482,17 @@ export default function PerfilClient({ lang }) {
                 <div className="conta-row-main">
                   <span className="conta-row-title">{comp.competitionName}</span>
                   <span className="conta-row-meta">
-                    {comp.correctCount}/{comp.totalAnswered} corretas · {comp.accuracy}% ·{' '}
-                    {new Date(comp.createdAt).toLocaleDateString('pt-PT', {
-                      day: 'numeric',
-                      month: 'short',
-                    })}
+                    {comp.correctCount}/{comp.totalAnswered} {t('student_profile.correct')} ·{' '}
+                    {comp.accuracy}% ·{' '}
+                    {new Date(comp.createdAt).toLocaleDateString(
+                      lang === 'en' ? 'en-GB' : 'pt-PT',
+                      { day: 'numeric', month: 'short' },
+                    )}
                   </span>
                 </div>
                 <div className="conta-row-acts">
                   <span className="conta-row-title">{comp.totalScore}</span>
-                  <span className="conta-row-meta">pontos</span>
+                  <span className="conta-row-meta">{t('student_profile.points')}</span>
                 </div>
               </li>
             ))}

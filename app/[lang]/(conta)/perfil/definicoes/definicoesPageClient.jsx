@@ -106,18 +106,18 @@ export default function DefinicoesPageClient({ lang }) {
         data: { school: schoolName.trim() },
       })
       if (error) {
-        setSaveMsg('Erro ao guardar escola')
+        setSaveMsg(t('settings.school_error'))
         setSaveMsgType('error')
       } else {
         setUser((prev) => ({
           ...prev,
           user_metadata: { ...prev.user_metadata, school: schoolName.trim() },
         }))
-        setSaveMsg('Escola atualizada!')
+        setSaveMsg(t('settings.school_saved'))
         setSaveMsgType('success')
       }
     } catch {
-      setSaveMsg('Erro ao conectar ao servidor')
+      setSaveMsg(t('settings.connection_error'))
       setSaveMsgType('error')
     } finally {
       setSaving(false)
@@ -134,18 +134,18 @@ export default function DefinicoesPageClient({ lang }) {
         data: { class_name: className_.trim() },
       })
       if (error) {
-        setSaveMsg('Erro ao guardar turma')
+        setSaveMsg(t('settings.class_error'))
         setSaveMsgType('error')
       } else {
         setUser((prev) => ({
           ...prev,
           user_metadata: { ...prev.user_metadata, class_name: className_.trim() },
         }))
-        setSaveMsg('Turma atualizada!')
+        setSaveMsg(t('settings.class_saved'))
         setSaveMsgType('success')
       }
     } catch {
-      setSaveMsg('Erro ao conectar ao servidor')
+      setSaveMsg(t('settings.connection_error'))
       setSaveMsgType('error')
     } finally {
       setSaving(false)
@@ -166,7 +166,7 @@ export default function DefinicoesPageClient({ lang }) {
     <main className="conta-page">
       <header className="conta-page-head">
         <div>
-          <p className="conta-kicker">Perfil de estudante</p>
+          <p className="conta-kicker">{t('settings.student_kicker')}</p>
           <h1 className="conta-title">{t('settings.page_title')}</h1>
           <p className="conta-sub">{t('settings.page_description')}</p>
         </div>
@@ -193,15 +193,14 @@ export default function DefinicoesPageClient({ lang }) {
             </div>
             <div className="conta-panel-body">
               <p className="conta-hint" style={{ marginTop: 0 }}>
-                A palavra-passe e o e-mail são da conta Conheça Farmácia — mudam-se em Segurança
-                e passam a valer no site, no Localizador e nas reservas.
+                {t('settings.password_hint')}
               </p>
               <a
                 href={`${ACCOUNT_ORIGIN}/perfil/seguranca`}
                 className="conta-btn conta-btn--primary"
                 style={{ width: '100%', marginTop: '0.75rem' }}
               >
-                Abrir Segurança
+                {t('settings.open_security')}
               </a>
             </div>
           </section>
@@ -345,13 +344,12 @@ export default function DefinicoesPageClient({ lang }) {
           <section className="conta-panel" aria-labelledby="def-conta">
             <div className="conta-panel-head">
               <h2 id="def-conta" className="conta-panel-title">
-                A mesma conta em todo o lado
+                {t('settings.shared_title')}
               </h2>
             </div>
             <div className="conta-panel-body">
               <p className="conta-hint" style={{ marginTop: 0 }}>
-                A escola e a turma são do perfil de estudante. O nome, a fotografia e o e-mail
-                vivem em A minha conta, e servem também o Localizador.
+                {t('settings.shared_hint')}
               </p>
               <button
                 type="button"
@@ -359,7 +357,7 @@ export default function DefinicoesPageClient({ lang }) {
                 className="conta-btn conta-btn--ghost"
                 style={{ width: '100%', marginTop: '0.75rem' }}
               >
-                Voltar ao perfil
+                {t('settings.back_to_profile')}
               </button>
             </div>
           </section>
