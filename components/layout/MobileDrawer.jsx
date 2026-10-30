@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { ChevronDown, LogIn, LogOut, Trophy, User } from 'lucide-react'
+import { ArrowUpRight, ChevronDown, LogIn, LogOut, Trophy, User } from 'lucide-react'
 import { getSectionHref } from '@/lib/i18n-routes'
 import { featureEnabled } from '@/lib/features'
 import ThemeToggle from '@/components/ui/ThemeToggle'
@@ -68,7 +68,6 @@ export default function MobileDrawer({ lang, t, open, onClose }) {
     ...(featureEnabled('protocolos')
       ? [{ href: getSectionHref(lang, 'protocolos'), label: t('nav.protocolos'), path: 'protocolos' }]
       : []),
-    { href: getSectionHref(lang, 'interacoes'), label: t('nav.interacoes'), path: 'interacoes' },
     { href: getSectionHref(lang, 'medicamentos'), label: t('nav.medicamentos'), path: 'medicamentos' },
     { href: getSectionHref(lang, 'alvos'), label: t('nav.alvos'), path: 'alvos' },
     ...(featureEnabled('competicao')
@@ -124,6 +123,17 @@ export default function MobileDrawer({ lang, t, open, onClose }) {
               </Link>
             </li>
           ))}
+          {/* Interações é a ferramenta maior do site: primeiro nível, um clique. */}
+          <li>
+            <Link
+              href={getSectionHref(lang, 'interacoes')}
+              className="drawer-featured"
+              onClick={handleClose}
+            >
+              {t('nav.interacoes')}
+              <ArrowUpRight size={15} aria-hidden="true" />
+            </Link>
+          </li>
           {/* Separa a navegação das ferramentas, como nas opções de conta. */}
           <li className="drawer-sep" aria-hidden="true" />
           <li>
