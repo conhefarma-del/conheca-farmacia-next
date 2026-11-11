@@ -14,5 +14,5 @@ export const metadata = {
  * separado: seria o mesmo formulário num sítio a mais.
  */
 export default function RecuperarPage() {
-  return <EsqueciClient lang="pt" basePath="" resetPath="/auth/reset" />
+  return <EsqueciClient lang="pt" basePath="" />
 }

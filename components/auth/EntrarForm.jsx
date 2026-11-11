@@ -205,7 +205,9 @@ export default function EntrarClient({
 
         <p className="text-center text-sm text-brand-deep/60 mt-6">
           Não tens conta?{' '}
-          <Link href={`${basePath}/registo`} className="text-brand-accent hover:underline">
+          {/* `/registar` é a rota desta área; `/registo` não existe e o proxy
+              mandava quem clicava para o site de conteúdos, no domínio real. */}
+          <Link href={`${basePath}/registar`} className="text-brand-accent hover:underline">
             Criar conta
           </Link>
         </p>

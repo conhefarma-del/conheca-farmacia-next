@@ -2,21 +2,22 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/client'
+import { pedirReposicaoSenha } from '@/lib/actions/auth'
 import { Mail, KeyRound, ArrowLeft, CheckCircle } from 'lucide-react'
 
 /**
  * Pedido de reposição de senha — partilhado pelo site
  * (/pt/esqueci-palavra-passe) e pela área de conta (/recuperar).
  *
- * `resetPath` é a rota que recebe o link do e-mail e troca o código por sessão
- * (no conta.* é /auth/reset, que segue para /perfil/seguranca).
+ * O link do e-mail cai em `/auth/reset`, que troca o código por sessão e leva
+ * a pessoa a definir a nova senha.
+ *
+ * O pedido passa por uma Server Action (`pedirReposicaoSenha`), porque só o
+ * servidor sabe distinguir a conta do site das contas do localizador e do
+ * interno — que partilham `auth.users` mas repõem a senha na área delas. O
+ * `redirectTo` também é montado lá, a partir do próprio pedido.
  */
-export default function EsqueciClient({
-  lang,
-  basePath = `/${lang}`,
-  resetPath = `/${lang}/repor-palavra-passe`,
-}) {
+export default function EsqueciClient({ lang, basePath = `/${lang}` }) {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -29,13 +30,10 @@ export default function EsqueciClient({
     setError('')
 
     try {
-      const supabase = createClient()
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}${resetPath}`,
-      })
+      const resultado = await pedirReposicaoSenha(email)
 
-      if (resetError) {
-        setError(resetError.message || 'Erro ao enviar email')
+      if (!resultado?.success) {
+        setError(resultado?.error || 'Erro ao enviar email')
         setLoading(false)
         return
       }
