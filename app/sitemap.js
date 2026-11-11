@@ -49,7 +49,9 @@ export default async function sitemap() {
     faq:           { pt: '/faq',        en: '/faq' },
     'politica-privacidade': { pt: '/politica-privacidade', en: '/privacy-policy' },
     termos:         { pt: '/termos',       en: '/terms' },
-    inscricao:     { pt: '/inscricao',  en: '/register' },
+    // `inscricao`/`register` fica de fora: é o formulário por evento, marcado
+    // `noindex` (sem evento no URL não há página para indexar) e com dois
+    // nomes para o mesmo ecrã. O sitemap só deve listar o que quer indexado.
   }
 
   // Secções ocultas (lib/features.js): não entram no sitemap

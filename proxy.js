@@ -37,7 +37,9 @@ const ACCOUNT_ROOT_ALIASES = {
 const LEGACY_ACCOUNT_PATHS = {
   entrar: '/entrar',
   registo: '/registar',
-  register: '/registar',
+  // `register` NÃO entra aqui: em inglês é a inscrição num evento
+  // (`/en/register`, com `/pt/inscricao` como par). Estava a ser desviado
+  // para a conta e a página de inscrição EN não existia para ninguém.
   'esqueci-palavra-passe': '/recuperar',
   'repor-palavra-passe': '/perfil/seguranca',
   'conta-criada': '/perfil',
