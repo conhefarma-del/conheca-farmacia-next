@@ -9,6 +9,7 @@ import {
 import { getAllNotes, getNotesCount, updateNote, deleteNoteById, upsertStandaloneNote } from '@/lib/actions/saved'
 import NotesDrawer from '@/components/ui/NotesDrawer'
 import { LangContext } from '@/lib/contexts'
+import { getSectionHref } from '@/lib/i18n-routes'
 
 const TAB_KEYS = {
   all: 'notes_page.tabs_all',
@@ -30,7 +31,8 @@ const TYPE_ICONS = {
 }
 
 const TYPE_LINKS = {
-  drug: (lang, slug) => `/${lang}/medicamentos/${slug}`,
+  // Singular: é `/pt/medicamento/<slug>` (o plural é a lista).
+  drug: (lang, slug) => `${getSectionHref(lang, 'medicamento')}/${slug}`,
   interaction: (lang, slug) => `/${lang}/interacoes`,
   drug_class: (lang, slug) => `/${lang}/classes/${slug}`,
   molecular_target: (lang, slug) => `/${lang}/alvos/${slug}`,

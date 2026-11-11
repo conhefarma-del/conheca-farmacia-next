@@ -8,6 +8,7 @@ import {
 } from 'lucide-react'
 import { getSavedItems, getSavedCounts } from '@/lib/actions/saved'
 import { LangContext } from '@/lib/contexts'
+import { getSectionHref } from '@/lib/i18n-routes'
 
 const ITEM_TYPES = [
   { key: 'all', icon: Bookmark, labelKey: 'all' },
@@ -28,7 +29,9 @@ const TAB_KEYS = {
 }
 
 const TYPE_LINKS = {
-  drug: (lang, slug) => `/${lang}/medicamentos/${slug}`,
+  // O detalhe é singular (`/pt/medicamento`, `/en/medicine`); a lista é que é
+  // `medicamentos`. Com o plural, cada medicamento guardado dava 404.
+  drug: (lang, slug) => `${getSectionHref(lang, 'medicamento')}/${slug}`,
   interaction: (lang, slug) => {
     // O slug guarda os dois fármacos (ou um só), separados por vírgula; a
     // página de interações lê `farmacos` e abre com eles já escolhidos.

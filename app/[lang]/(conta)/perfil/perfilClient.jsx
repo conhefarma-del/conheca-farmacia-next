@@ -28,6 +28,7 @@ import { getUserStats, getUserCompetitionHistory } from '@/lib/actions/profile'
 import { getSavedItems, getSavedCounts, getNotesCount } from '@/lib/actions/saved'
 import { featureEnabled } from '@/lib/features'
 import { LangContext } from '@/lib/contexts'
+import { getSectionHref } from '@/lib/i18n-routes'
 
 export default function PerfilClient({ lang }) {
   const { t } = useContext(LangContext)
@@ -183,7 +184,8 @@ export default function PerfilClient({ lang }) {
   }
 
   const savedTypeLinks = {
-    drug: (slug) => `/${lang}/medicamentos/${slug}`,
+    // Singular: é `/pt/medicamento/<slug>` (o plural é a lista).
+    drug: (slug) => `${getSectionHref(lang, 'medicamento')}/${slug}`,
     interaction: (slug) => {
       if (slug && slug.includes('+')) {
         const [a, b] = slug.split('+')

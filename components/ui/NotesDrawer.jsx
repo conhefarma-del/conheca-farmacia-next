@@ -7,9 +7,11 @@ import {
 } from 'lucide-react'
 import { getNoteForItem, upsertNote, upsertStandaloneNote, deleteNoteById, getNoteById } from '@/lib/actions/saved'
 import { LangContext } from '@/lib/contexts'
+import { getSectionHref } from '@/lib/i18n-routes'
 
 const TYPE_LINKS = {
-  drug: (lang, slug) => `/${lang}/medicamentos/${slug}`,
+  // Singular: é `/pt/medicamento/<slug>` (o plural é a lista).
+  drug: (lang, slug) => `${getSectionHref(lang, 'medicamento')}/${slug}`,
   // O par guardado abre a página já com os fármacos escolhidos (`farmacos=`
   // recebe slugs separados por vírgula).
   interaction: (lang, slug) =>
