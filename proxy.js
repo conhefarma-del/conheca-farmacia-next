@@ -45,6 +45,44 @@ const LEGACY_ACCOUNT_PATHS = {
   'conta-criada': '/perfil',
 }
 
+/**
+ * Secções que têm nome diferente nos dois idiomas. As páginas existem nos dois
+ * nomes e em qualquer idioma, por isso `/pt/medicines` e `/en/medicamentos`
+ * respondiam 200 com o mesmo conteúdo da versão certa — quatro URLs por
+ * secção, sem canónico. Aqui o nome do outro idioma volta ao canónico.
+ *
+ * Ficam de fora de propósito `inscricao`/`register` (o formulário por evento
+ * e `noindex`) e as páginas de conta (`conta-criada`).
+ */
+const LANG_SECTION_SLUGS = {
+  pt: {
+    articles: 'artigos',
+    events: 'eventos',
+    about: 'sobre',
+    search: 'pesquisa',
+    guides: 'guias',
+    protocols: 'protocolos',
+    interactions: 'interacoes',
+    medicines: 'medicamentos',
+    medicine: 'medicamento',
+    terms: 'termos',
+    'privacy-policy': 'politica-privacidade',
+  },
+  en: {
+    artigos: 'articles',
+    eventos: 'events',
+    sobre: 'about',
+    pesquisa: 'search',
+    guias: 'guides',
+    protocolos: 'protocols',
+    interacoes: 'interactions',
+    medicamentos: 'medicines',
+    medicamento: 'medicine',
+    termos: 'terms',
+    'politica-privacidade': 'privacy-policy',
+  },
+}
+
 const origin = (value, fallback) => String(value || '').trim().replace(/\/+$/, '') || fallback
 
 const ACCOUNT_ORIGIN = origin(
@@ -112,6 +150,20 @@ export async function proxy(request) {
     }
     if (!SUPPORTED_LANGS.includes(first) && ACCOUNT_SECTIONS.has(first)) {
       return NextResponse.redirect(`${ACCOUNT_ORIGIN}${pathname}${search}`, 308)
+    }
+  }
+
+  // Nome da secção no outro idioma → nome canónico, no idioma do URL.
+  {
+    const segments = pathname.split('/')
+    const lang = segments[1]
+    const canonico = LANG_SECTION_SLUGS[lang]?.[segments[2]]
+    if (canonico) {
+      const resto = segments.slice(3).join('/')
+      return NextResponse.redirect(
+        new URL(`/${lang}/${canonico}${resto ? `/${resto}` : ''}${search}`, request.url),
+        308,
+      )
     }
   }
 
