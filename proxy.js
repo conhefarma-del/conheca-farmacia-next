@@ -22,6 +22,18 @@ const PUBLIC_SECTIONS = [
  */
 const ACCOUNT_SECTIONS = new Set(['entrar', 'registar', 'recuperar', 'auth', 'perfil'])
 
+/**
+ * Nomes antigos (ou do site) pedidos na RAIZ de conta.*. Sem isto, um link
+ * guardado para `/esqueci-palavra-passe` era tratado como página de
+ * conteúdos e ia para www — onde também não existe.
+ */
+const ACCOUNT_ROOT_ALIASES = {
+  registo: '/registar',
+  register: '/registar',
+  'esqueci-palavra-passe': '/recuperar',
+  'repor-palavra-passe': '/perfil/seguranca',
+}
+
 const LEGACY_ACCOUNT_PATHS = {
   entrar: '/entrar',
   registo: '/registar',
@@ -61,6 +73,12 @@ export async function proxy(request) {
   if (onAccountHost) {
     if (pathname === '/') {
       return NextResponse.redirect(new URL('/perfil', request.url))
+    }
+    const aliasConta = ACCOUNT_ROOT_ALIASES[sectionOf(pathname)]
+    if (aliasConta) {
+      // `new URL(..., request.url)` e não ACCOUNT_ORIGIN: num preview o
+      // alias tem de ficar no host que a pessoa está a usar.
+      return NextResponse.redirect(new URL(`${aliasConta}${search}`, request.url), 308)
     }
     if (!ACCOUNT_SECTIONS.has(sectionOf(pathname))) {
       // O site de conteúdos nunca aparece debaixo do endereço da conta.

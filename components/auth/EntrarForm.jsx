@@ -12,6 +12,10 @@ import { Mail, Lock, LogIn, Eye, EyeOff } from 'lucide-react'
  * `basePath` é onde vivem as rotas de conta ("" em conta.*, "/pt" no site) e
  * `siteBase` é o conteúdo do site (política de privacidade). `nextUrl` é o
  * destino depois de entrar — já validado no servidor por `safeNext()`.
+ *
+ * `recoveryPath` não se deduz de `basePath`: o pedido de reposição chama-se
+ * `/recuperar` em conta.* e `/pt/esqueci-palavra-passe` no site. Com o nome
+ * do site, o botão em conta.* saía para o domínio errado.
  */
 export default function EntrarClient({
   lang,
@@ -19,6 +23,7 @@ export default function EntrarClient({
   nextUrl = null,
   confirmPath = `/${lang}/conta-criada`,
   siteBase = `/${lang}`,
+  recoveryPath = `/${lang}/esqueci-palavra-passe`,
   notice = null,
 }) {
   const [email, setEmail] = useState('')
@@ -160,7 +165,7 @@ export default function EntrarClient({
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="text-sm font-medium text-brand-deep">Password</label>
-              <Link href={`${basePath}/esqueci-palavra-passe`} className="text-xs text-brand-accent hover:underline">
+              <Link href={recoveryPath} className="text-xs text-brand-accent hover:underline">
                 Esqueci a palavra-passe
               </Link>
             </div>

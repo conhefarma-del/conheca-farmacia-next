@@ -47,6 +47,9 @@ export default async function EntrarPage({ searchParams }) {
       nextUrl={next}
       confirmPath="/auth/confirm"
       siteBase={`${SITE_ORIGIN}/pt`}
+      // A reposição desta área chama-se `/recuperar` (o nome do site não existe
+      // aqui e caía no 308 para www).
+      recoveryPath="/recuperar"
       notice={notice}
     />
   )
