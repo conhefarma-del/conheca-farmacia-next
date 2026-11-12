@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { apiGetEventInscriptionCount } from '@/lib/actions/inscription'
 
 const INITIAL_INTERVAL = 30000  // 30s
 const MAX_INTERVAL = 120000     // 2min
@@ -9,8 +8,10 @@ const MAX_RETRIES = 5
 
 /**
  * Poll inscription count for an event with exponential backoff.
- * Calls a Server Action (Service Role on the server) instead of querying
- * `inscricoes` directly in the browser — RLS blocks SELECT for `anon`.
+ *
+ * Usa a rota pública `/api/events/[id]/capacity`, que devolve apenas um
+ * número e tem cache curto (10s). Antes chamava uma Server Action por
+ * visitante a cada 30s, sem cache.
  */
 export function useCapacityPolling(eventId, initialCount = 0) {
   const [inscriptionCount, setInscriptionCount] = useState(initialCount)
@@ -24,9 +25,11 @@ export function useCapacityPolling(eventId, initialCount = 0) {
 
     try {
       setLoading(true)
-      const { count } = await apiGetEventInscriptionCount(eventId)
+      const res = await fetch(`/api/events/${eventId}/capacity`, { cache: 'no-store' })
+      if (!res.ok) throw new Error('capacity fetch failed')
+      const json = await res.json()
 
-      setInscriptionCount(count || 0)
+      setInscriptionCount(Number(json.count) || 0)
       intervalRef.current = INITIAL_INTERVAL
       retriesRef.current = 0
     } catch {

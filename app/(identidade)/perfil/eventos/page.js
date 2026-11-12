@@ -61,13 +61,16 @@ export default async function EventosPage() {
   // Lê pelo `user_id` e por todos os e-mails da conta: uma troca de endereço
   // não pode esconder as inscrições antigas.
   const inscricoes = await loadInscricoes(admin, user, {
-    select: 'id, created_at, compareceu, share_code, evento_id',
+    select: 'id, created_at, compareceu, share_code, evento_id, status, cancelada_em',
   })
   const inscricoesError = null
 
-  const linhas = (inscricoes || []).sort((a, b) =>
-    String(b.created_at).localeCompare(String(a.created_at)),
-  )
+  // Canceladas ficam no histórico da base de dados, mas não na lista activa.
+  const linhas = (inscricoes || [])
+    .filter((row) => row.status !== 'cancelada')
+    .sort((a, b) =>
+      String(b.created_at).localeCompare(String(a.created_at)),
+    )
   const ids = [...new Set(linhas.map((row) => row.evento_id).filter(Boolean))]
 
   let eventosPorId = new Map()

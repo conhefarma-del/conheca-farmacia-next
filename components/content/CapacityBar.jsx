@@ -8,7 +8,8 @@ export default function CapacityBar({ eventId, capacity, initialCount = 0, isPas
   const { t } = useContext(LangContext)
   const { inscriptionCount } = useCapacityPolling(eventId, initialCount)
 
-  if (isPast) return null
+  // Capacidade nula = vagas ilimitadas: não há barra nem saldo a mostrar.
+  if (isPast || capacity == null) return null
   const percentage = capacity > 0 ? Math.min((inscriptionCount / capacity) * 100, 100) : 0
   const isFull = inscriptionCount >= capacity
   const barColor = isFull ? '#dc2626' : '#00493a'

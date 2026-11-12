@@ -3,7 +3,7 @@
 import { useState, useRef, useContext, useEffect, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { LangContext } from '@/lib/contexts'
-import { validateField, submitInscription, checkDuplicate } from '@/lib/api/inscription'
+import { validateField, submitInscription, checkDuplicate, joinWaitlist } from '@/lib/api/inscription'
 import { useCapacityPolling } from '@/hooks/useCapacityPolling'
 import Breadcrumb from '@/components/ui/Breadcrumb'
 import InscricaoBilhete from '@/components/pages/InscricaoBilhete'
@@ -179,6 +179,28 @@ export default function InscricaoPageClient({
     }
   }
 
+  const handleWaitlist = async () => {
+    if (!validateAll()) return
+    setStatus('waiting')
+    setErrorMsg('')
+    try {
+      const result = await joinWaitlist(form, eventoId, eventoSlug, lang)
+      if (result?.success) {
+        setStatus('waitlist')
+        return
+      }
+      setStatus('error')
+      setErrorMsg(
+        result?.code === 'duplicate'
+          ? 'Já existe uma inscrição ou pedido de lista de espera para este e-mail.'
+          : 'Não foi possível entrar na lista de espera. Tente novamente.'
+      )
+    } catch {
+      setStatus('error')
+      setErrorMsg('Não foi possível entrar na lista de espera. Tente novamente.')
+    }
+  }
+
   const renderError = (name) => {
     if (!touched[name] || !errors[name]) return null
     return <p className="error-message visible">{errors[name]}</p>
@@ -347,12 +369,33 @@ export default function InscricaoPageClient({
               {isEventFull && (
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 12, padding: '16px 20px',
-                  borderRadius: 10, marginBottom: 24,
+                  borderRadius: 10, marginBottom: 24, flexWrap: 'wrap',
                   background: 'rgba(220, 38, 38, 0.08)', border: '1px solid rgba(220, 38, 38, 0.2)',
                   color: '#dc2626', fontSize: 15, fontWeight: 500,
                 }}>
                   <AlertCircle size={20} />
-                  <span>Evento completo — sem vagas disponíveis</span>
+                  <span style={{ flex: 1 }}>Evento completo — sem vagas disponíveis</span>
+                  {status !== 'waitlist' && (
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={handleWaitlist}
+                      disabled={status === 'waiting'}
+                      style={{ padding: '8px 14px', fontSize: 14 }}
+                    >
+                      {status === 'waiting' ? 'A enviar…' : 'Entrar na lista de espera'}
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {status === 'waitlist' && (
+                <div style={{
+                  padding: '16px 20px', borderRadius: 10, marginBottom: 24,
+                  background: 'rgba(10, 132, 79, 0.08)', border: '1px solid rgba(10, 132, 79, 0.25)',
+                  color: '#0a844f', fontSize: 15, fontWeight: 500,
+                }}>
+                  Pedido registado na lista de espera. Avisaremos se abrir uma vaga.
                 </div>
               )}
 

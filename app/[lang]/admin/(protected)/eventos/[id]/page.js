@@ -13,11 +13,19 @@ export default async function EditEventPage({ params }) {
 
   const { data: event } = await supabase
     .from('events')
-    .select('id, slug, title, excerpt, category, category_label, date, time, end_time, location, type, capacity, registration_link, image_url, hosts, status, featured')
+    .select('id, slug, title, excerpt, category, category_label, date, time, end_time, location, type, capacity, registration_link, image_url, hosts, status, featured, updated_at')
     .eq('id', id)
     .single()
 
   if (!event) redirect(`/${lang}/admin/eventos`)
+
+  // Número de inscrições confirmadas: o formulário mostra as vagas e avisa
+  // antes de reduzir a capacidade abaixo deste valor.
+  const { count: inscriptionCount } = await supabase
+    .from('inscricoes')
+    .select('id', { count: 'exact', head: true })
+    .eq('evento_id', id)
+    .eq('status', 'confirmada')
 
   // Carrega tradução EN (pode ser null) para o BilingualTabs
   const translation = await getTranslationByEntityId('event', id, 'en')
@@ -28,7 +36,12 @@ export default async function EditEventPage({ params }) {
         <h1 className="admin-page-title">Editar Evento</h1>
         <p className="admin-page-subtitle">{event.title}</p>
       </div>
-      <EventForm mode="edit" initialData={event} lang={lang} />
+      <EventForm
+        mode="edit"
+        initialData={event}
+        lang={lang}
+        inscriptionCount={inscriptionCount || 0}
+      />
 
       <section
         className="admin-section"

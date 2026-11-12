@@ -1,21 +1,52 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { marcarCompareceu } from '@/lib/actions/content'
-import { maskEmail } from '@/lib/validar'
+import {
+  marcarCompareceu,
+  cancelarInscricaoAdmin,
+  emitirCertificado,
+} from '@/lib/actions/content'
 import ComprovativoModal from '@/components/admin/ComprovativoModal'
 import CertificadoParticipacao from '@/components/admin/CertificadoParticipacao'
 
-export default function InscritosListPage({ lang, inscricoes, eventos, currentUserRole }) {
+export default function InscritosListPage({
+  lang,
+  inscricoes,
+  eventos,
+  currentUserRole,
+  total = 0,
+  page = 1,
+  pageSize = 25,
+  busca = '',
+  filtroEvento = '',
+}) {
   const router = useRouter()
 
-  const [filtroEvento, setFiltroEvento] = useState('')
-  const [busca, setBusca] = useState('')
+  const [termo, setTermo] = useState(busca)
   const [erro, setErro] = useState(null)
   const [comprovativoId, setComprovativoId] = useState(null)
-  const [certificadoId, setCertificadoId] = useState(null)
+  const [certificado, setCertificado] = useState(null)
+  const [certificadoLoading, setCertificadoLoading] = useState(null)
   const [loadingId, setLoadingId] = useState(null)
+  const [cancelandoId, setCancelandoId] = useState(null)
+
+  const totalPages = Math.max(1, Math.ceil(total / pageSize))
+  const inicio = total === 0 ? 0 : (page - 1) * pageSize + 1
+  const fim = Math.min(page * pageSize, total)
+
+  // Filtros e paginação vivem na URL — o servidor só envia 25 linhas.
+  function navegar(next = {}) {
+    const params = new URLSearchParams()
+    const q = next.q !== undefined ? next.q : termo
+    const evento = next.evento !== undefined ? next.evento : filtroEvento
+    const p = next.page !== undefined ? next.page : 1
+    if (q) params.set('q', q)
+    if (evento) params.set('evento', evento)
+    if (p > 1) params.set('page', String(p))
+    const qs = params.toString()
+    router.push(`/${lang}/admin/inscritos${qs ? `?${qs}` : ''}`)
+  }
 
   // Estado local optimístico: sobrepõe o valor da prop inscricoes[i].compareceu
   const [localCompareceu, setLocalCompareceu] = useState({})
@@ -26,25 +57,40 @@ export default function InscritosListPage({ lang, inscricoes, eventos, currentUs
     return !!inscricao.compareceu
   }
 
-  const filtrados = useMemo(() => {
-    const termo = busca.trim().toLowerCase()
-    return inscricoes.filter((i) => {
-      const okEvento = !filtroEvento || i.evento_id === filtroEvento
-      const okBusca =
-        !termo ||
-        (i.nome && i.nome.toLowerCase().includes(termo)) ||
-        (i.email && i.email.toLowerCase().includes(termo))
-      return okEvento && okBusca
-    })
-  }, [inscricoes, filtroEvento, busca])
-
   const inscricaoSel = inscricoes.find((i) => i.id === comprovativoId)
   const eventoSel = eventos.find((e) => e.id === inscricaoSel?.evento_id)
 
-  const certInscricao = inscricoes.find((i) => i.id === certificadoId)
-  // Usa estado local para saber se o inscrito do certificado tem compareceu ativo
+  const certInscricao = certificado
+    ? inscricoes.find((i) => i.id === certificado.id)
+    : null
   const certCompareceu = certInscricao ? getCompareceu(certInscricao) : false
   const certEvento = eventos.find((e) => e.id === certInscricao?.evento_id)
+
+  async function abrirCertificado(id) {
+    setErro(null)
+    setCertificadoLoading(id)
+    const result = await emitirCertificado(id)
+    if (result.success) {
+      setCertificado({ id, token: result.token })
+    } else {
+      setErro(result.error || 'Não foi possível emitir o certificado.')
+    }
+    setCertificadoLoading(null)
+  }
+
+  async function cancelarInscricao(id) {
+    const motivo = window.prompt('Motivo do cancelamento (opcional):')
+    if (motivo === null) return
+    setErro(null)
+    setCancelandoId(id)
+    const result = await cancelarInscricaoAdmin(id, motivo)
+    if (!result.success) {
+      setErro(result.error || 'Erro ao cancelar a inscrição.')
+    } else {
+      router.refresh()
+    }
+    setCancelandoId(null)
+  }
 
   function onToggleCompareceu(id, novoValor) {
     setErro(null)
@@ -76,7 +122,9 @@ export default function InscritosListPage({ lang, inscricoes, eventos, currentUs
 
   return (
     <div className="admin-inscritos">
-      <h1 style={{ marginBottom: 24, fontSize: 24, fontWeight: 700 }}>Inscritos</h1>
+      <h1 style={{ marginBottom: 24, fontSize: 24, fontWeight: 700 }}>
+        Inscritos <span style={{ fontSize: 14, color: '#6b7280', fontWeight: 400 }}>({total})</span>
+      </h1>
 
       {/* Filtros */}
       <div
@@ -90,7 +138,7 @@ export default function InscritosListPage({ lang, inscricoes, eventos, currentUs
       >
         <select
           value={filtroEvento}
-          onChange={(e) => setFiltroEvento(e.target.value)}
+          onChange={(e) => navegar({ evento: e.target.value, page: 1 })}
           className="admin-input"
           style={{ maxWidth: 300 }}
         >
@@ -101,14 +149,29 @@ export default function InscritosListPage({ lang, inscricoes, eventos, currentUs
             </option>
           ))}
         </select>
-        <input
-          type="search"
-          placeholder="Buscar por nome ou email"
-          value={busca}
-          onChange={(e) => setBusca(e.target.value)}
-          className="admin-input"
-          style={{ maxWidth: 300 }}
-        />
+        <form
+          onSubmit={(e) => { e.preventDefault(); navegar({ q: termo, page: 1 }) }}
+          style={{ display: 'flex', gap: 8 }}
+        >
+          <input
+            type="search"
+            placeholder="Buscar por nome ou email"
+            value={termo}
+            onChange={(e) => setTermo(e.target.value)}
+            className="admin-input"
+            style={{ maxWidth: 300 }}
+          />
+          <button type="submit" className="admin-btn admin-btn-secondary">Filtrar</button>
+        </form>
+        <a
+          className="admin-btn admin-btn-secondary"
+          href={`/api/admin/inscricoes/export?${new URLSearchParams({
+            ...(termo ? { q: termo } : {}),
+            ...(filtroEvento ? { evento: filtroEvento } : {}),
+          }).toString()}`}
+        >
+          Exportar CSV
+        </a>
       </div>
 
       {erro && (
@@ -134,14 +197,14 @@ export default function InscritosListPage({ lang, inscricoes, eventos, currentUs
             </tr>
           </thead>
           <tbody>
-            {filtrados.length === 0 && (
+            {inscricoes.length === 0 && (
               <tr>
                 <td colSpan={6} style={{ textAlign: 'center', padding: 32, color: '#888' }}>
                   Nenhuma inscrição encontrada.
                 </td>
               </tr>
             )}
-            {filtrados.map((i) => {
+            {inscricoes.map((i) => {
               const compareceu = getCompareceu(i)
               const isPending = loadingId === i.id
 
@@ -150,6 +213,25 @@ export default function InscritosListPage({ lang, inscricoes, eventos, currentUs
                   <td>
                     <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                       {i.nome}
+                      {i.status === 'cancelada' && (
+                        <span
+                          title="Inscrição cancelada"
+                          style={{
+                            display: 'inline-block',
+                            padding: '1px 8px',
+                            borderRadius: 10,
+                            background: '#f3f4f6',
+                            color: '#4b5563',
+                            border: '1px solid #d1d5db',
+                            fontSize: 11,
+                            fontWeight: 700,
+                            lineHeight: '16px',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          Cancelada
+                        </span>
+                      )}
                       {i.menor_consentimento && (
                         <span
                           title="Inscrição de menor de 18 anos com consentimento do responsável legal"
@@ -171,7 +253,7 @@ export default function InscritosListPage({ lang, inscricoes, eventos, currentUs
                       )}
                     </div>
                   </td>
-                  <td>{maskEmail(i.email)}</td>
+                  <td>{i.email}</td>
                   <td>{i.evento?.title || i.evento_slug || '—'}</td>
                   <td>
                     {i.created_at
@@ -246,9 +328,18 @@ export default function InscritosListPage({ lang, inscricoes, eventos, currentUs
                             ? ''
                             : 'Selecione "Sim" primeiro'
                         }
-                        onClick={() => compareceu && setCertificadoId(i.id)}
+                        onClick={() => compareceu && abrirCertificado(i.id)}
                       >
-                        Gerar certificado
+                        {certificadoLoading === i.id ? 'A emitir…' : 'Gerar certificado'}
+                      </button>
+                      <button
+                        type="button"
+                        className="admin-btn admin-btn-secondary"
+                        style={{ fontSize: 13, padding: '4px 10px', color: '#b91c1c' }}
+                        disabled={cancelandoId === i.id || i.status === 'cancelada'}
+                        onClick={() => cancelarInscricao(i.id)}
+                      >
+                        {cancelandoId === i.id ? 'A cancelar…' : 'Cancelar'}
                       </button>
                     </div>
                   </td>
@@ -268,14 +359,46 @@ export default function InscritosListPage({ lang, inscricoes, eventos, currentUs
         />
       )}
 
-      {certificadoId && certInscricao && certCompareceu && (
+      {certificado && certInscricao && certCompareceu && (
         <CertificadoParticipacao
           inscricao={certInscricao}
           evento={certEvento}
-          certificadoToken={certInscricao.certificado_token}
-          onClose={() => setCertificadoId(null)}
+          certificadoToken={certificado.token}
+          onClose={() => setCertificado(null)}
         />
       )}
+
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: 12,
+          marginTop: 16,
+        }}
+      >
+        <span style={{ fontSize: 13, color: '#6b7280' }}>
+          {inicio}–{fim} de {total}
+        </span>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            type="button"
+            className="admin-btn admin-btn-secondary"
+            disabled={page <= 1}
+            onClick={() => navegar({ page: page - 1 })}
+          >
+            Anterior
+          </button>
+          <button
+            type="button"
+            className="admin-btn admin-btn-secondary"
+            disabled={page >= totalPages}
+            onClick={() => navegar({ page: page + 1 })}
+          >
+            Próxima
+          </button>
+        </div>
+      </div>
 
       <style>{`
         .admin-inscritos {

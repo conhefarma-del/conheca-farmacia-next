@@ -228,7 +228,8 @@ Deno.serve(async (req) => {
     const { count: currentCount, error: countError } = await supabase
       .from('inscricoes')
       .select('*', { count: 'exact', head: true })
-      .eq('evento_slug', evento_slug);
+      .eq('evento_slug', evento_slug)
+      .eq('status', 'confirmada');
 
     if (countError) {
       console.error('❌ Erro ao contar inscrições:', countError);
@@ -236,12 +237,13 @@ Deno.serve(async (req) => {
     }
 
     const inscriptionCount = currentCount || 0;
-    const spotsLeft = capacity - inscriptionCount;
+    // Capacidade nula = vagas ilimitadas (o valor passou a ser explícito na 295).
+  const spotsLeft = capacity == null ? null : capacity - inscriptionCount;
 
     console.log(`📈 Evento ${evento_slug}: Capacidade=${capacity}, Inscrições=${inscriptionCount}, Vagas=${spotsLeft}`);
 
     // VERIFICAR SE EVENTO ESTÁ CHEIO
-    if (spotsLeft <= 0) {
+    if (spotsLeft !== null && spotsLeft <= 0) {
       console.warn(`🚫 Evento completo: ${evento_slug} (IP: ${clientIp})`);
       return new Response(JSON.stringify({
         error: 'event_full',
@@ -258,6 +260,7 @@ Deno.serve(async (req) => {
       .select('id')
       .eq('email', email)
       .eq('evento_slug', evento_slug)
+      .neq('status', 'cancelada')
       .limit(1);
 
     if (!queryError && existingInscriptions && existingInscriptions.length > 0) {

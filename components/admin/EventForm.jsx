@@ -31,7 +31,7 @@ function generateSlug(title) {
     .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 }
 
-export default function EventForm({ mode = 'create', initialData = null, lang = 'pt' }) {
+export default function EventForm({ mode = 'create', initialData = null, lang = 'pt', inscriptionCount = 0 }) {
   const router = useRouter()
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -50,7 +50,8 @@ export default function EventForm({ mode = 'create', initialData = null, lang = 
   const [locationMapsUrl, setLocationMapsUrl] = useState(initialData?.location_maps_url || '')
   const [locationMapsEmbedUrl, setLocationMapsEmbedUrl] = useState(initialData?.location_maps_embed_url || '')
   const [type, setType] = useState(initialData?.type || '')
-  const [capacity, setCapacity] = useState(initialData?.capacity || '')
+  const [capacity, setCapacity] = useState(initialData?.capacity ?? '')
+  const [semLimite, setSemLimite] = useState(initialData ? initialData.capacity == null : false)
   const [registrationLink, setRegistrationLink] = useState(initialData?.registration_link || '')
   // Campos de evento online (fundidos das lives — migração 159)
   const [platform, setPlatform] = useState(initialData?.platform || '')
@@ -88,6 +89,22 @@ export default function EventForm({ mode = 'create', initialData = null, lang = 
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault()
     setError('')
+
+    const capacidadeNum = semLimite ? null : Number(capacity)
+    const reduzirAbaixo =
+      mode === 'edit' &&
+      !semLimite &&
+      capacity !== '' &&
+      Number.isInteger(capacidadeNum) &&
+      capacidadeNum < inscriptionCount
+
+    if (reduzirAbaixo) {
+      const confirmou = window.confirm(
+        `Há ${inscriptionCount} inscritos. Reduzir para ${capacidadeNum} fecha o evento e mantém todas as inscrições. Continuar?`
+      )
+      if (!confirmou) return
+    }
+
     setSaving(true)
 
     const categoryLabel = CATEGORIES.find(c => c.value === category)?.label || category
@@ -95,7 +112,8 @@ export default function EventForm({ mode = 'create', initialData = null, lang = 
     const formData = {
       title, slug, category, category_label: categoryLabel, status, featured_langs: featuredLangs,
       excerpt, date, time, end_time: endTime, location, location_maps_url: locationMapsUrl,
-      location_maps_embed_url: locationMapsEmbedUrl, type, capacity,
+      location_maps_embed_url: locationMapsEmbedUrl, type, capacity: semLimite ? '' : capacity,
+      expected_updated_at: initialData?.updated_at || null,
       registration_link: registrationLink, image_url: imageUrl, hosts,
       // Campos de evento online
       platform, access_link: accessLink, meeting_id: meetingId, password,
@@ -113,7 +131,10 @@ export default function EventForm({ mode = 'create', initialData = null, lang = 
 
     try {
       const result = mode === 'edit' && initialData?.id
-        ? await updateEvent(initialData.id, formData)
+        ? await updateEvent(initialData.id, formData, {
+            forceCapacity: reduzirAbaixo,
+            expectedUpdatedAt: initialData?.updated_at || null,
+          })
         : await createEvent(formData)
 
       if (result.success) {
@@ -127,7 +148,7 @@ export default function EventForm({ mode = 'create', initialData = null, lang = 
       setSaving(false)
     }
   }, [title, slug, category, status, featuredLangs, excerpt, date, time, endTime,
-    location, locationMapsUrl, locationMapsEmbedUrl, type, capacity, registrationLink,
+    location, locationMapsUrl, locationMapsEmbedUrl, type, capacity, semLimite, inscriptionCount, registrationLink,
     platform, accessLink, meetingId, password, materials, topic, registrationEnabled,
     imageUrl, hosts,
     certificadoCor, certificadoTexto, certificadoLogoUrl, certificadoCargaHoraria,
@@ -277,8 +298,39 @@ export default function EventForm({ mode = 'create', initialData = null, lang = 
         </div>
         <div className="admin-form-group">
           <label>Capacidade</label>
-          <input type="number" value={capacity} onChange={(e) => setCapacity(e.target.value)}
-            className="admin-input" placeholder="100" />
+          <input
+            type="number"
+            value={capacity}
+            onChange={(e) => setCapacity(e.target.value)}
+            className="admin-input"
+            placeholder="100"
+            min={1}
+            step={1}
+            disabled={semLimite}
+          />
+          <label style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6, fontSize: 13 }}>
+            <input
+              type="checkbox"
+              checked={semLimite}
+              onChange={(e) => setSemLimite(e.target.checked)}
+            />
+            Sem limite de vagas
+          </label>
+          {mode === 'edit' && (
+            <span style={{ display: 'block', marginTop: 6, fontSize: 12, color: '#6b7280' }}>
+              {inscriptionCount} inscritos ·{' '}
+              {semLimite
+                ? 'vagas ilimitadas'
+                : capacity !== ''
+                  ? `${Math.max(Number(capacity) - inscriptionCount, 0)} vagas`
+                  : 'sem capacidade definida'}
+            </span>
+          )}
+          {mode === 'edit' && !semLimite && capacity !== '' && Number(capacity) < inscriptionCount && (
+            <span style={{ display: 'block', marginTop: 6, fontSize: 12, color: '#b45309' }}>
+              A capacidade é inferior ao número de inscritos. Ao guardar, o evento fica fechado.
+            </span>
+          )}
         </div>
         <div className="admin-form-group">
           <label>Link de Inscrição</label>
